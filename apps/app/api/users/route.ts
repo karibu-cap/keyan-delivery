@@ -5,8 +5,8 @@ import { NextRequest, NextResponse } from 'next/server'
 export const POST = async (request: NextRequest) => {
   const data = await request.json()
 
-  if (!data.email || !data.userId) {
-    return NextResponse.json('Invalid data: email and userId are required', { status: 400 })
+  if (!data.email || !data.authId) {
+    return NextResponse.json('Invalid data: email and authId are required', { status: 400 })
   }
 
   try {
