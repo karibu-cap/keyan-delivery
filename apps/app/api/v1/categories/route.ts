@@ -1,6 +1,21 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Type for the category with included relations from Prisma query
+type CategoryWithRelations = {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  image?: { url: string } | null;
+  _count: { products: number };
+  seoMetadata?: {
+    seoTitle?: string | null;
+    seoDescription?: string | null;
+    keywords?: string[];
+  } | null;
+};
+
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
@@ -8,16 +23,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const merchantType = searchParams.get('merchantType');
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (merchantType) {
-      where.merchants = {
-        some: {
-          merchant: {
-            merchantType: merchantType as any
-          }
-        }
-      };
-    }
+       where.merchants = {
+         some: {
+           merchant: {
+             merchantType: merchantType
+           }
+         }
+       };
+     }
 
     const categories = await prisma.category.findMany({
       where,
@@ -43,7 +58,7 @@ export async function GET(request: NextRequest) {
         description: 'All available categories',
         productCount: 0,
       },
-      ...categories.map(category => ({
+      ...categories.map((category: CategoryWithRelations) => ({
         id: category.id,
         name: category.name,
         slug: category.slug,

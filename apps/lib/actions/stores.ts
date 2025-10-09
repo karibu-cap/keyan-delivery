@@ -69,7 +69,7 @@ export async function fetchMerchants(
     params.append('offset', offset.toString());
 
     const response = await fetch(
-      `${baseUrl}/api/merchants?${params.toString()}`,
+      `${baseUrl}/api/v1/merchants?${params.toString()}`,
       {
         cache: 'no-store',
       }
@@ -96,7 +96,7 @@ export async function fetchCategories(): Promise<{ categories: Category[] }> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const response = await fetch(
-      `${baseUrl}/api/categories`,
+      `${baseUrl}/api/v1/categories`,
       {
         cache: 'no-store',
       }
@@ -123,7 +123,7 @@ export async function searchStores(searchQuery: string): Promise<IMerchant[]> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const response = await fetch(
-      `${baseUrl}/api/merchants?search=${encodeURIComponent(searchQuery)}`,
+      `${baseUrl}/api/v1/merchants?search=${encodeURIComponent(searchQuery)}`,
       {
         cache: 'no-store',
       }
@@ -150,7 +150,7 @@ export async function filterStoresByCategory(categoryId: string): Promise<IMerch
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const response = await fetch(
-      `${baseUrl}/api/merchants?category=${encodeURIComponent(categoryId)}`,
+      `${baseUrl}/api/v1/merchants?category=${encodeURIComponent(categoryId)}`,
       {
         cache: 'no-store',
       }
