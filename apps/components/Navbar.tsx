@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingCart, Menu, X, User, Store, Search, MapPin, Zap, ChevronDown } from "lucide-react";
+import { ShoppingCart, Menu, X, User, Store, Search, MapPin, Zap, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ROUTES } from "@/lib/router";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useCart } from "@/hooks/use-cart";
@@ -28,6 +29,7 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -35,9 +37,19 @@ const Navbar = () => {
   const debouncedQuery = useDebounce(searchQuery, 300);
 
   const isActive = (path: string) => pathname === path;
-  const { user } = useAuthStore()
+  const { user, logout } = useAuthStore()
   const { cartItems, totalItems } = useCart()
   const quantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      setIsPopoverOpen(false);
+      router.push('/');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
 
   // Search API call
   const searchItems = async (query: string) => {
@@ -258,12 +270,37 @@ const Navbar = () => {
                 </Link>
               </Button>
             ) : (
-              <Button variant="ghost" className="hidden sm:flex" asChild>
-                <Link href={ROUTES.profile}>
-                  <User className="w-5 h-5 mr-2" />
-                  Profile
-                </Link>
-              </Button>
+              <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" className="hidden sm:flex">
+                    <User className="w-5 h-5 mr-2" />
+                    Profile
+                    <ChevronDown className="w-4 h-4 ml-1" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-2" align="end">
+                  <div className="space-y-1">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link href={ROUTES.profile} onClick={() => setIsPopoverOpen(false)}>
+                        <User className="w-4 h-4 mr-2" />
+                        Profile
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             )}
 
             {/* Mobile Menu Button */}

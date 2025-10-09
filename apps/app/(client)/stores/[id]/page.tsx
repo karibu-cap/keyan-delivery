@@ -1,7 +1,7 @@
 "use server";
 
 import Navbar from "@/components/Navbar";
-import MerchantProductList from "@/components/stores/MerchantProductList";
+import MerchantProductList from "@/components/client/stores/MerchantProductList";
 import { IMerchant } from "@/lib/actions/stores";
 
 

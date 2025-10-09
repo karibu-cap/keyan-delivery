@@ -1,8 +1,8 @@
 "use client";
 
 import { Minus, Plus, Star, CheckCircle } from "lucide-react";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
+import { Button } from "../../ui/button";
+import { Badge } from "../../ui/badge";
 import Image from "next/image";
 import { useCart } from "@/hooks/use-cart";
 import { IProduct } from "@/lib/actions/stores";
