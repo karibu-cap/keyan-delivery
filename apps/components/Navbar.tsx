@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShoppingCart, Menu, X, User, Store, Search, MapPin, Zap, ChevronDown, LogOut } from "lucide-react";
+import { ShoppingCart, Menu, X, User, Store, Search, MapPin, Zap, ChevronDown, LogOut, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -288,6 +288,16 @@ const Navbar = () => {
                       <Link href={ROUTES.profile} onClick={() => setIsPopoverOpen(false)}>
                         <User className="w-4 h-4 mr-2" />
                         Profile
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link href={ROUTES.orders}>
+                        <Package className="w-4 h-4 mr-2" />
+                        Orders
                       </Link>
                     </Button>
                     <Button
