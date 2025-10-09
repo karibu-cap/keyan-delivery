@@ -174,10 +174,19 @@ async function seedDatabase() {
     )
 
     const categoryNames = [
-       'Grocery',
-       'Pharmacy',
-       'Food',
-     ]
+        'Produce',
+        'Meat & Seafood',
+        'Deli',
+        'Bakery',
+        'Frozen',
+        'Dairy & Eggs',
+        'Pantry',
+        'Beverages',
+        'Health & Beauty',
+        'Household',
+        'Pet Care',
+        'Baby',
+      ]
     const categoryRecords: Array<{ id: string; name: string; slug: string }> = []
 
     // Seed Categories with sequential creation
@@ -207,35 +216,89 @@ async function seedDatabase() {
       categoryRecords.push(category)
     }
     const merchantCategories = randomArrayElements(categoryRecords, { min: 1, max: 2 })
-    // Seed Merchants
+    // Seed Merchants with specific types for Instacart-style stores
+    const merchantData = [
+      {
+        name: "Whole Foods Market",
+        type: "GROCERY",
+        phone: faker.phone.number(),
+        logoUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&h=200&fit=crop",
+        bannerUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=300&fit=crop",
+        deliveryTime: "By 10:30am",
+        rating: 4.5,
+      },
+      {
+        name: "Costco",
+        type: "GROCERY",
+        phone: faker.phone.number(),
+        logoUrl: "https://images.unsplash.com/photo-1580828343064-fde4fc206bc6?w=200&h=200&fit=crop",
+        bannerUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=300&fit=crop",
+        deliveryTime: "By 11:00am",
+        rating: 4.3,
+      },
+      {
+        name: "CVS Pharmacy",
+        type: "PHARMACY",
+        phone: faker.phone.number(),
+        logoUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=200&h=200&fit=crop",
+        bannerUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=300&fit=crop",
+        deliveryTime: "By 2:00pm",
+        rating: 4.2,
+      },
+      {
+        name: "Walgreens",
+        type: "PHARMACY",
+        phone: faker.phone.number(),
+        logoUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=200&h=200&fit=crop",
+        bannerUrl: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=300&fit=crop",
+        deliveryTime: "By 3:00pm",
+        rating: 4.1,
+      },
+      {
+        name: "Shake Shack",
+        type: "FOOD",
+        phone: faker.phone.number(),
+        logoUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200&h=200&fit=crop",
+        bannerUrl: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&h=300&fit=crop",
+        deliveryTime: "By 8:30am",
+        rating: 4.4,
+      },
+      {
+        name: "Chipotle",
+        type: "FOOD",
+        phone: faker.phone.number(),
+        logoUrl: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=200&h=200&fit=crop",
+        bannerUrl: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&h=300&fit=crop",
+        deliveryTime: "By 9:00am",
+        rating: 4.3,
+      }
+    ]
+
     const merchantRecords = await Promise.all(
-      Array(5)
-        .fill(null)
-        .map((_, index) =>
-          prisma.merchant.create({
-            data: {
-              businessName: faker.company.name(),
-              phone: faker.phone.number(),
-              logoUrl: unsplashImages[index % unsplashImages.length],
-              bannerUrl: unsplashImages[index % unsplashImages.length],
-              isVerified: Math.random() > 0.1,
-              deliveryTime: faker.date.past().toISOString(),
-              rating: faker.number.float({ min: 0, max: 5 }),
-              createdAt: faker.date.past().toISOString(),
-              updatedAt: faker.date.past().toISOString(),
-              address: {
-                latitude: faker.location.latitude(),
-                longitude: faker.location.longitude(),
-              },
-              categories: {
-                create: merchantCategories.map(category => ({
-                  categoryId: category.id,
-                  assignedAt: new Date(),
-                })),
-              },
+      merchantData.map((merchant) =>
+        prisma.merchant.create({
+          data: {
+            businessName: merchant.name,
+            phone: merchant.phone,
+            logoUrl: merchant.logoUrl,
+            bannerUrl: merchant.bannerUrl,
+            isVerified: true,
+            merchantType: merchant.type as 'FOOD' | 'PHARMACY' | 'GROCERY',
+            deliveryTime: merchant.deliveryTime,
+            rating: merchant.rating,
+            address: {
+              latitude: faker.location.latitude(),
+              longitude: faker.location.longitude(),
             },
-          }),
-        ),
+            categories: {
+              create: merchantCategories.map(category => ({
+                categoryId: category.id,
+                assignedAt: new Date(),
+              })),
+            },
+          },
+        }),
+      ),
     )
 
     // Connect categories to merchants using the junction table
@@ -301,45 +364,87 @@ async function seedDatabase() {
     )
 
 
-    // Seed Products first (needed for orders and wishlists)
-    const productRecords = await Promise.all(
-      Array(50)
-        .fill(null)
-        .map(async () => {
-          const productMedia = faker.helpers.arrayElement(mediaRecords) as { id: string }
-          const productCategories = randomArrayElements(categoryRecords, { min: 1, max: 2 })
+    // Instacart-style product data
+    const productTemplates = [
+      // Grocery products
+      { name: "Organic Bananas", category: "Produce", price: 2.99, compareAtPrice: 3.49, unit: "lb", badges: ["ORGANIC", "BEST_SELLER"] },
+      { name: "Fresh Atlantic Salmon", category: "Meat & Seafood", price: 12.99, compareAtPrice: 14.99, unit: "lb", badges: ["BEST_SELLER", "NON_GMO"] },
+      { name: "Organic Free Range Eggs", category: "Dairy & Eggs", price: 5.99, compareAtPrice: 6.99, unit: "dozen", badges: ["ORGANIC", "NON_GMO"] },
+      { name: "Sourdough Bread Loaf", category: "Bakery", price: 4.99, compareAtPrice: 5.49, unit: "loaf", badges: ["NO_PRESERVATIVES"] },
+      { name: "Organic Spinach", category: "Produce", price: 3.49, compareAtPrice: 3.99, unit: "bunch", badges: ["ORGANIC", "LOW_FAT"] },
+      { name: "Grass-Fed Ground Beef", category: "Meat & Seafood", price: 8.99, compareAtPrice: 9.99, unit: "lb", badges: ["ORGANIC", "NON_GMO"] },
+      { name: "Greek Yogurt", category: "Dairy & Eggs", price: 4.49, compareAtPrice: 4.99, unit: "container", badges: ["LOW_FAT", "NON_GMO"] },
+      { name: "Organic Strawberries", category: "Produce", price: 5.99, compareAtPrice: 6.99, unit: "lb", badges: ["ORGANIC", "BEST_SELLER"] },
 
-          return prisma.product.create({
-            data: {
-              creatorId: creatorId,
-              title: faker.commerce.productName(),
-              slug: faker.helpers.slugify(faker.commerce.productName()),
-              description: faker.commerce.productDescription(),
-              inventory: {
-                quantity: faker.number.int({ min: 0, max: 100 }),
-                lowStockThreshold: faker.number.int({ min: 5, max: 20 }),
-                stockQuantity: faker.number.int({ min: 0, max: 100 }),
-              },
-              unit: faker.helpers.arrayElement(['piece', 'kg', 'lb', 'pack', 'box', 'bottle']),
-              mediaId: productMedia.id,
-               price: parseFloat(faker.commerce.price()),
-               status: faker.helpers.arrayElement(['DRAFT', 'VERIFIED', 'REJECTED'] as const),
-               visibility: Math.random() > 0.2, // 80% visible by default
-               metadata: {
-                 seoTitle: faker.lorem.words(3),
-                 seoDescription: faker.lorem.sentence(),
-                 keywords: faker.lorem.words(5).split(' '),
-               },
-               merchantId: faker.helpers.arrayElement(merchantRecords).id,
-               categories: {
-                 create: productCategories.map(category => ({
-                   categoryId: category.id,
-                   assignedAt: new Date(),
-                 })),
-               },
-             },
-           })
-        }),
+      // Pharmacy products
+      { name: "Advil Pain Relief", category: "Health & Beauty", price: 9.99, compareAtPrice: 11.99, unit: "bottle", badges: ["BEST_SELLER"] },
+      { name: "Vitamin D3 Supplement", category: "Health & Beauty", price: 14.99, compareAtPrice: 16.99, unit: "bottle", badges: ["NON_GMO"] },
+      { name: "Hand Sanitizer", category: "Health & Beauty", price: 3.99, compareAtPrice: 4.49, unit: "bottle", badges: ["BEST_SELLER"] },
+      { name: "Allergy Relief Medicine", category: "Health & Beauty", price: 12.99, compareAtPrice: 14.99, unit: "box", badges: ["NON_GMO"] },
+
+      // Food products
+      { name: "Shake Shack Burger", category: "Food", price: 8.99, compareAtPrice: 9.99, unit: "burger", badges: ["BEST_SELLER"] },
+      { name: "Chipotle Burrito Bowl", category: "Food", price: 11.99, compareAtPrice: 12.99, unit: "bowl", badges: ["NON_GMO"] },
+      { name: "Caesar Salad", category: "Food", price: 9.99, compareAtPrice: 10.99, unit: "salad", badges: ["LOW_FAT"] },
+      { name: "Margherita Pizza", category: "Food", price: 14.99, compareAtPrice: 16.99, unit: "pizza", badges: ["NEW"] },
+    ]
+
+    // Seed Products with realistic Instacart-style data
+    const productRecords = await Promise.all(
+      productTemplates.map(async (template, index) => {
+        const productMedia = mediaRecords[index % mediaRecords.length]
+        const productCategories = categoryRecords.filter(cat =>
+          cat.name.toLowerCase().includes(template.category.toLowerCase().split(' ')[0])
+        )
+
+        const basePrice = template.price
+        const savings = template.compareAtPrice ? template.compareAtPrice - basePrice : 0
+
+        return prisma.product.create({
+          data: {
+            creatorId: creatorId,
+            title: template.name,
+            slug: faker.helpers.slugify(template.name),
+            description: `${template.name} - Premium quality ${template.category.toLowerCase()} product`,
+            mediaId: productMedia.id,
+            price: basePrice,
+            compareAtPrice: template.compareAtPrice,
+            inventory: {
+              quantity: faker.number.int({ min: 10, max: 100 }),
+              lowStockThreshold: faker.number.int({ min: 5, max: 15 }),
+              stockQuantity: faker.number.int({ min: 20, max: 200 }),
+            },
+            unit: template.unit,
+            status: 'VERIFIED',
+            visibility: true,
+            rating: faker.number.float({ min: 3.5, max: 5.0 }),
+            reviewCount: faker.number.int({ min: 50, max: 500 }),
+            stock: faker.number.int({ min: 20, max: 200 }),
+            images: Array(faker.number.int({ min: 2, max: 5 })).fill(null).map((_, i) =>
+              unsplashImages[(index + i) % unsplashImages.length]
+            ),
+            badges: template.badges as ('BEST_SELLER' | 'ORGANIC' | 'NO_PRESERVATIVES' | 'LOW_FAT' | 'LOW_SUGAR' | 'NON_GMO' | 'NEW' | 'SALE')[],
+            weight: template.unit === 'lb' ? faker.number.float({ min: 0.5, max: 5.0 }) : undefined,
+            weightUnit: template.unit === 'lb' ? 'lb' : undefined,
+            metadata: {
+              seoTitle: template.name,
+              seoDescription: `Buy ${template.name} online with fast delivery`,
+              keywords: [template.category.toLowerCase(), 'grocery', 'delivery', 'fresh'],
+            },
+            merchantId: faker.helpers.arrayElement(merchantRecords.filter(m =>
+              (template.category === 'Health & Beauty' && m.merchantType === 'PHARMACY') ||
+              (template.category === 'Food' && m.merchantType === 'FOOD') ||
+              (m.merchantType === 'GROCERY')
+            )).id,
+            categories: {
+              create: productCategories.slice(0, 2).map(category => ({
+                categoryId: category.id,
+                assignedAt: new Date(),
+              })),
+            },
+          },
+        })
+      }),
     )
 
     // Now seed wishlist items after products exist

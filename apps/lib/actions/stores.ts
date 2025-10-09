@@ -9,6 +9,7 @@ export type IProduct = Prisma.ProductGetPayload<{
       }
     }
     media: true
+    merchant: true
   }
 }>
 export type IMerchant = Prisma.MerchantGetPayload<{
@@ -21,6 +22,7 @@ export type IMerchant = Prisma.MerchantGetPayload<{
           }
         }
         media: true
+        merchant: true
       }
     };
     managers: true;

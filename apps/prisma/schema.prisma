@@ -31,15 +31,18 @@ type SeoMetadata {
 }
 
 model Category {
-    id          String                 @id @default(auto()) @map("_id") @db.ObjectId
-    name        String
-    slug        String                 @unique(map: "slug_1")
-    description String?
-    image       Media?                 @relation(fields: [imageId], references: [id])
-    imageId     String?                @db.ObjectId
-    products    CategoriesOnProducts[]
-    merchants   CategoryOnMerchant[]
-    seoMetadata SeoMetadata?
+    id               String                 @id @default(auto()) @map("_id") @db.ObjectId
+    name             String
+    slug             String                 @unique(map: "slug_1")
+    description      String?
+    image            Media?                 @relation(fields: [imageId], references: [id])
+    imageId          String?                @db.ObjectId
+    products         CategoriesOnProducts[]
+    merchants        CategoryOnMerchant[]
+    seoMetadata      SeoMetadata?
+    parentCategoryId String?                @db.ObjectId
+    parentCategory   Category?              @relation("CategoryParent", fields: [parentCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    subcategories    Category[]             @relation("CategoryParent")
 
     createdAt  DateTime  @default(now())
     updatedAt  DateTime  @updatedAt
@@ -82,6 +85,30 @@ enum PaymentStatus {
     FAILED
 }
 
+enum MerchantType {
+    FOOD
+    PHARMACY
+    GROCERY
+}
+
+enum ProductBadge {
+    BEST_SELLER
+    ORGANIC
+    NO_PRESERVATIVES
+    LOW_FAT
+    LOW_SUGAR
+    NON_GMO
+    NEW
+    SALE
+}
+
+enum PromotionType {
+    SPEND_X_SAVE_Y
+    BUY_X_GET_Y_FREE
+    PERCENTAGE_OFF
+    FIXED_AMOUNT_OFF
+}
+
 type Inventory {
     quantity          Int @default(0)
     lowStockThreshold Int @default(5)
@@ -95,26 +122,38 @@ type ProductSeoMetadata {
 }
 
 model Product {
-    id           String                 @id @default(auto()) @map("_id") @db.ObjectId
-    title        String
-    slug         String                 @unique(map: "slug_1")
-    description  String
-    mediaId      String                 @db.ObjectId
-    media        Media                  @relation(fields: [mediaId], references: [id])
-    categories   CategoriesOnProducts[]
-    price        Float
-    inventory    Inventory?
-    unit         String?
-    status       ProductStatus          @default(DRAFT)
-    visibility   Boolean                @default(true)
-    merchant     Merchant               @relation(fields: [merchantId], references: [id])
-    merchantId   String                 @db.ObjectId
-    metadata     ProductSeoMetadata
-    createdAt    DateTime               @default(now())
-    updatedAt    DateTime               @updatedAt
-    OrderItem    OrderItem[]
-    userWishlist Wishlist[]
-    creatorId    String
+    id             String                 @id @default(auto()) @map("_id") @db.ObjectId
+    title          String
+    slug           String                 @unique(map: "slug_1")
+    description    String
+    mediaId        String                 @db.ObjectId
+    media          Media                  @relation(fields: [mediaId], references: [id])
+    categories     CategoriesOnProducts[]
+    price          Float
+    compareAtPrice Float?
+    inventory      Inventory?
+    unit           String?
+    status         ProductStatus          @default(DRAFT)
+    visibility     Boolean                @default(true)
+    merchant       Merchant               @relation(fields: [merchantId], references: [id])
+    merchantId     String                 @db.ObjectId
+    metadata       ProductSeoMetadata
+    rating         Float?                 @default(0)
+    reviewCount    Int?                   @default(0)
+    stock          Int?                   @default(0)
+    images         String[]               @default([])
+    badges         ProductBadge[]         @default([])
+    weight         Float?
+    weightUnit     String?                @default("lb")
+    createdAt      DateTime               @default(now())
+    updatedAt      DateTime               @updatedAt
+    OrderItem      OrderItem[]
+    userWishlist   Wishlist[]
+    creatorId      String
+    promotions     ProductPromotion[]
+    cartItems      CartItem[]
+    SavedList      SavedList?             @relation(fields: [savedListId], references: [id])
+    savedListId    String?                @db.ObjectId
 }
 
 // --------------------------------order model------------------------------------
@@ -194,6 +233,8 @@ model User {
     orders           Order[]
     merchantManagers UserMerchantManager[]
     payments         Payment[]
+    CartItem         CartItem[]
+    SavedList        SavedList[]
 }
 
 // --------------------------------merchant model------------------------------------
@@ -211,6 +252,7 @@ model Merchant {
     categories   CategoryOnMerchant[]
     bannerUrl    String?
     isVerified   Boolean               @default(false)
+    merchantType MerchantType          @default(GROCERY)
     address      MerchantAddress
     createdAt    DateTime              @default(now())
     updatedAt    DateTime              @updatedAt
@@ -301,6 +343,55 @@ model CategoryOnMerchant {
     assignedAt DateTime @default(now())
 
     @@unique([merchantId, categoryId])
+}
+
+model ProductPromotion {
+    id              String        @id @default(auto()) @map("_id") @db.ObjectId
+    product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+    productId       String        @db.ObjectId
+    type            PromotionType
+    title           String
+    description     String?
+    spendAmount     Float?
+    saveAmount      Float?
+    discountPercent Float?
+    minQuantity     Int?          @default(1)
+    maxDiscount     Float?
+    isActive        Boolean       @default(true)
+    startDate       DateTime?
+    endDate         DateTime?
+    createdAt       DateTime      @default(now())
+    updatedAt       DateTime      @updatedAt
+
+    @@unique([productId, type])
+}
+
+model CartItem {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId         String   @db.ObjectId
+    product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+    productId      String   @db.ObjectId
+    quantity       Int      @default(1)
+    selectedWeight Float?
+    priceAtAdd     Float
+    unit           String?
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+
+    @@unique([userId, productId])
+}
+
+model SavedList {
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String    @db.ObjectId
+    name        String
+    description String?
+    products    Product[]
+    isDefault   Boolean   @default(false)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 }
 
 model Wishlist {

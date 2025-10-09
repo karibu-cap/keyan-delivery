@@ -11,6 +11,7 @@
 !.yarn/versions
 **/.history
 **/.next
+**/.next-local
 /dist
 
 # testing

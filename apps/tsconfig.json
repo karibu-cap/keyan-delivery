@@ -29,11 +29,12 @@
     }
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "tsconfig.seed.json"
+    "next-env.d.ts",
+    "tsconfig.seed.json",
+    ".next-local/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

@@ -44,6 +44,8 @@ const nextConfig = {
             resolveExtensions: ['.tsx', '.ts', '.jsx', '.js'],
         },
     },
+    // Use local cache directory for better performance
+    distDir: process.env.NODE_ENV === 'development' ? '.next-local' : '.next',
 }
 
 export default nextConfig

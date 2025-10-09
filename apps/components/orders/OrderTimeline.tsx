@@ -13,8 +13,8 @@ export function OrderTimeline({ status }: OrderTimelineProps) {
         { id: OrderStatus.COMPLETED, label: "Delivered", icon: HomeIcon },
     ]
 
-    const statusOrder = [OrderStatus.ACCEPTED_BY_MERCHANT, OrderStatus.IN_PREPARATION, OrderStatus.ON_THE_WAY, OrderStatus.COMPLETED]
-    const currentIndex = statusOrder.indexOf(status)
+    const statusOrder = [OrderStatus.ACCEPTED_BY_MERCHANT, OrderStatus.IN_PREPARATION, OrderStatus.ON_THE_WAY, OrderStatus.COMPLETED] as OrderStatus[]
+    const currentIndex = statusOrder.includes(status as OrderStatus) ? statusOrder.indexOf(status as OrderStatus) : -1
 
     return (
         <div className="relative">

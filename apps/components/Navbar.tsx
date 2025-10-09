@@ -1,116 +1,382 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ShoppingCart, Menu, X, User, Store } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ShoppingCart, Menu, X, User, Store, Search, MapPin, Zap, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ROUTES } from "@/lib/router";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useCart } from "@/hooks/use-cart";
+import { useDebounce } from "@/hooks/use-debounce";
+import Image from "next/image";
+
+interface SearchResult {
+  id: string;
+  title: string;
+  type: 'product' | 'merchant' | 'category';
+  image?: string;
+  price?: number;
+  category?: string;
+}
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  const navLinks = [
-    { href: ROUTES.stores, label: "Stores" },
-    { href: ROUTES.orders, label: "Orders" },
-  ];
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchRef = useRef<HTMLDivElement>(null);
+  const debouncedQuery = useDebounce(searchQuery, 300);
 
   const isActive = (path: string) => pathname === path;
   const { user } = useAuthStore()
   const { cartItems, totalItems } = useCart()
   const quantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Search API call
+  const searchItems = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data.results || []);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (debouncedQuery) {
+      searchItems(debouncedQuery);
+      setIsSearchOpen(true);
+    } else {
+      setSearchResults([]);
+      setIsSearchOpen(false);
+    }
+  }, [debouncedQuery]);
+
+  // Close search dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
+        setSelectedIndex(-1);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setIsSearchOpen(false);
+    }
+  };
+
+  const handleResultClick = (result: SearchResult) => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+
+    switch (result.type) {
+      case 'product':
+        router.push(`/product/${result.id}`);
+        break;
+      case 'merchant':
+        router.push(`/stores/${result.id}`);
+        break;
+      case 'category':
+        router.push(`/category/${result.id}`);
+        break;
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isSearchOpen || searchResults.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev =>
+          prev < searchResults.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0) {
+          handleResultClick(searchResults[selectedIndex]);
+        } else {
+          handleSearchSubmit(e);
+        }
+        break;
+      case 'Escape':
+        setIsSearchOpen(false);
+        setSelectedIndex(-1);
+        break;
+    }
+  };
 
   return (
-    <nav className="bg-background border-b border-border sticky top-0 z-50 backdrop-blur-sm">
-      <div className="container mx-auto max-w-7xl px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 rounded-2xl gradient-hero flex items-center justify-center transform group-hover:scale-110 transition-transform duration-200">
-              <Store className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-primary">Keyan</span>
-          </Link>
-
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${isActive(link.href) ? "text-primary" : "text-muted-foreground"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-16 gap-4">
+          {/* Logo and Store Selector */}
+          <div className="flex items-center space-x-4">
+            <Link href="/" className="flex items-center space-x-2 group">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <ShoppingCart className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-bold text-primary hidden sm:block">Keyan</span>
+            </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Search Bar - Hidden on mobile */}
+          <div className="hidden md:flex flex-1 max-w-lg mx-8" ref={searchRef}>
+            <div className="relative w-full">
+              <form onSubmit={handleSearchSubmit}>
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search products, stores, and recipes"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </form>
+
+              {/* Search Results Dropdown */}
+              {isSearchOpen && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                  {isLoading ? (
+                    <div className="p-4 text-center text-gray-500">
+                      <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                      Searching...
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div className="py-2">
+                      {searchResults.map((result, index) => (
+                        <button
+                          key={`${result.type}-${result.id}`}
+                          onClick={() => handleResultClick(result)}
+                          className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 ${index === selectedIndex ? 'bg-gray-50' : ''
+                            }`}
+                        >
+                          {result.image && (
+                            <Image
+                              src={result.image}
+                              alt={result.title}
+                              width={40}
+                              height={40}
+                              className="w-10 h-10 rounded-lg object-cover"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 truncate">
+                              {result.title}
+                            </div>
+                            <div className="text-sm text-gray-500 flex items-center space-x-2">
+                              <span className="capitalize">{result.type}</span>
+                              {result.category && <span>•</span>}
+                              {result.category && <span>{result.category}</span>}
+                            </div>
+                          </div>
+                          {result.price && (
+                            <div className="font-semibold text-primary">
+                              ${result.price.toFixed(2)}
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  ) : searchQuery && !isLoading ? (
+                    <div className="p-4 text-center text-gray-500">
+                      No results found for &ldquo;{searchQuery}&rdquo;
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Delivery/Pickup Toggle and Location */}
+          <div className="flex items-center space-x-4">
+            {/* Delivery/Pickup Toggle */}
+
+            {/* Location Selector */}
+            <Button variant="ghost" className="hidden md:flex items-center space-x-1 text-sm">
+              <MapPin className="w-4 h-4 text-gray-500" />
+              <span className="text-gray-700">New York, NY</span>
+              <ChevronDown className="w-4 h-4 text-gray-500" />
+            </Button>
+
+            {/* Delivery Time Badge */}
+            <div className="hidden lg:flex items-center space-x-1 bg-primary text-white px-3 py-1 rounded-full text-xs font-medium">
+              <Zap className="w-3 h-3" />
+              <span>By 10:30am</span>
+            </div>
+
+            {/* Cart Button */}
             <Button variant="ghost" size="icon" className="relative" asChild>
               <Link href="/cart">
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-5 h-5 text-gray-700" />
                 {quantity > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-primary text-xs">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-primary text-xs text-white rounded-full">
                     {quantity}
                   </Badge>
                 )}
               </Link>
             </Button>
 
-            {!user && <Button asChild variant="ghost">
-              <Link href={ROUTES.signIn}>
-                <User className="w-5 h-5 mr-2" />
-                Sign In
-              </Link>
-            </Button>}
-
-            {user && <Button asChild variant="ghost">
-              <Link href={ROUTES.profile}>
-                <User className="w-5 h-5 mr-2" />
-                Profile
-              </Link>
-            </Button>}
-
-          </div>
-
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-accent transition-colors"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 space-y-4 animate-slide-up">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMenuOpen(false)}
-                className={`block py-2 text-sm font-medium transition-colors hover:text-primary ${isActive(link.href) ? "text-primary" : "text-muted-foreground"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-4 space-y-2">
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/auth" onClick={() => setIsMenuOpen(false)}>
+            {/* User Menu */}
+            {!user ? (
+              <Button variant="ghost" className="hidden sm:flex" asChild>
+                <Link href={ROUTES.signIn}>
                   <User className="w-5 h-5 mr-2" />
                   Sign In
                 </Link>
               </Button>
-              <Button asChild className="w-full rounded-2xl">
-                <Link href="/admin" onClick={() => setIsMenuOpen(false)}>
-                  Admin Portal
+            ) : (
+              <Button variant="ghost" className="hidden sm:flex" asChild>
+                <Link href={ROUTES.profile}>
+                  <User className="w-5 h-5 mr-2" />
+                  Profile
                 </Link>
               </Button>
+            )}
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Search Bar */}
+        <div className="md:hidden pb-4">
+          <div className="relative" ref={searchRef}>
+            <form onSubmit={handleSearchSubmit}>
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search products, stores, and recipes"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+            </form>
+
+            {/* Mobile Search Results Dropdown */}
+            {isSearchOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                {isLoading ? (
+                  <div className="p-4 text-center text-gray-500">
+                    <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                    Searching...
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  <div className="py-2">
+                    {searchResults.map((result, index) => (
+                      <button
+                        key={`${result.type}-${result.id}`}
+                        onClick={() => handleResultClick(result)}
+                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 ${index === selectedIndex ? 'bg-gray-50' : ''
+                          }`}
+                      >
+                        {result.image && (
+                          <Image
+                            src={result.image}
+                            alt={result.title}
+                            width={40}
+                            height={40}
+                            className="w-10 h-10 rounded-lg object-cover"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-gray-900 truncate">
+                            {result.title}
+                          </div>
+                          <div className="text-sm text-gray-500 flex items-center space-x-2">
+                            <span className="capitalize">{result.type}</span>
+                            {result.category && <span>•</span>}
+                            {result.category && <span>{result.category}</span>}
+                          </div>
+                        </div>
+                        {result.price && (
+                          <div className="font-semibold text-primary">
+                            ${result.price.toFixed(2)}
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                ) : searchQuery && !isLoading ? (
+                  <div className="p-4 text-center text-gray-500">
+                    No results found for &ldquo;{searchQuery}&rdquo;
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 space-y-4 border-t border-gray-200 animate-slide-up">
+            {/* Mobile Delivery/Pickup Toggle */}
+            <div className="space-y-2">
+              <Button variant="ghost" className="w-full justify-start" asChild>
+                <Link href={ROUTES.stores}>
+                  <Store className="w-5 h-5 mr-3" />
+                  Stores
+                </Link>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start" asChild>
+                <Link href={ROUTES.orders}>
+                  <ShoppingCart className="w-5 h-5 mr-3" />
+                  Orders
+                </Link>
+              </Button>
+              {!user ? (
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href={ROUTES.signIn}>
+                    <User className="w-5 h-5 mr-2" />
+                    Sign In
+                  </Link>
+                </Button>
+              ) : (
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href={ROUTES.profile}>
+                    <User className="w-5 h-5 mr-2" />
+                    Profile
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         )}
