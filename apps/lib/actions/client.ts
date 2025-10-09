@@ -5,7 +5,7 @@ export const uploadImages = async (files: File[]): Promise<Media[] | null> => {
   files.forEach(file => {
     formData.append(`files`, file)
   })
-  const result = await fetch('/api/media/upload', {
+  const result = await fetch('/api/v1/media/upload', {
     method: 'POST',
     body: formData,
   })
@@ -17,7 +17,7 @@ export const uploadImages = async (files: File[]): Promise<Media[] | null> => {
 }
 
 export const getMediaById = async (mediaId: string, token: string): Promise<string | null> => {
-  const media = await fetch(`/api/media/${mediaId}`, {
+  const media = await fetch(`/api/v1/media/${mediaId}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -42,7 +42,7 @@ export const getUserById = async (id: string): Promise<User | null> => {
 }
 
 export const setUser = async (data: unknown) => {
-  const user = await fetch(`/api/users`, {
+  const user = await fetch(`/api/v1/users`, {
     method: 'POST',
     body: JSON.stringify(data),
   })
