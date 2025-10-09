@@ -47,6 +47,13 @@ export default async function ProfilePage() {
     where: {
       authId: token.decodedToken.uid,
     },
+    include: {
+      merchantManagers: {
+        include: {
+          merchant: true,
+        },
+      },
+    },
   });
 
   if (!user) {

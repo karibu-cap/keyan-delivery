@@ -1,8 +1,10 @@
+// apps/app/page.tsx
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { ShoppingBag, Clock, Shield, Zap } from "lucide-react";
+import { ShoppingBag, Clock, Shield, Zap, Store, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/lib/router";
 
 const Index = () => {
@@ -34,6 +36,103 @@ const Index = () => {
       <Navbar />
       <Hero />
 
+      {/* Partner CTA Section */}
+      <section className="py-16 px-4 bg-accent/30">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Grow Your Business With Us
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Join thousands of merchants and drivers earning with our platform
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Become a Merchant */}
+            <Card className="p-8 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-2xl gradient-hero flex items-center justify-center mb-4">
+                  <Store className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3">Become a Merchant</h3>
+                <p className="text-muted-foreground mb-6">
+                  List your products and reach thousands of customers in your area
+                </p>
+                <ul className="text-sm text-muted-foreground mb-6 space-y-2 text-left w-full">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">✓</span>
+                    <span>Zero upfront costs</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">✓</span>
+                    <span>Easy product management</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">✓</span>
+                    <span>Get paid weekly</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">✓</span>
+                    <span>Analytics & insights</span>
+                  </li>
+                </ul>
+                <Button
+                  asChild
+                  size="lg"
+                  className="w-full bg-primary hover:bg-primary/90 shadow-primary"
+                >
+                  <Link href={ROUTES.newMerchant}>
+                    Apply as Merchant
+                  </Link>
+                </Button>
+              </div>
+            </Card>
+
+            {/* Become a Driver */}
+            <Card className="p-8 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-2xl gradient-hero flex items-center justify-center mb-4">
+                  <Car className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-3">Become a Driver</h3>
+                <p className="text-muted-foreground mb-6">
+                  Earn money on your schedule by delivering orders in your area
+                </p>
+                <ul className="text-sm text-muted-foreground mb-6 space-y-2 text-left w-full">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">✓</span>
+                    <span>Flexible working hours</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">✓</span>
+                    <span>Competitive earnings</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">✓</span>
+                    <span>Weekly payouts</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-1">✓</span>
+                    <span>24/7 support team</span>
+                  </li>
+                </ul>
+                <Button
+                  asChild
+                  size="lg"
+                  className="w-full bg-primary hover:bg-primary/90 shadow-primary"
+                >
+                  <Link href={ROUTES.newDriver}>
+                    Apply as Driver
+                  </Link>
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-16">
@@ -63,6 +162,7 @@ const Index = () => {
         </div>
       </section>
 
+      {/* CTA Section */}
       <section className="py-20 px-4 gradient-hero">
         <div className="container mx-auto max-w-4xl text-center text-white">
           <h2 className="text-4xl font-bold mb-6">
@@ -87,7 +187,7 @@ const Index = () => {
               variant="outline"
               className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
             >
-              <Link href={ROUTES.merchant}>
+              <Link href={ROUTES.newMerchant}>
                 Partner With Us
               </Link>
             </Button>
@@ -123,8 +223,8 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">For Partners</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/merchant" className="hover:text-primary transition-colors">Become a Merchant</Link></li>
-                <li><Link href="/driver" className="hover:text-primary transition-colors">Become a Driver</Link></li>
+                <li><Link href="/merchant/new-merchant" className="hover:text-primary transition-colors">Become a Merchant</Link></li>
+                <li><Link href="/driver/new-driver" className="hover:text-primary transition-colors">Become a Driver</Link></li>
               </ul>
             </div>
 

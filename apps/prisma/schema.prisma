@@ -213,6 +213,8 @@ model Order {
     updatedAt    DateTime     @updatedAt
     user         User         @relation(fields: [userId], references: [id])
     userId       String       @db.ObjectId
+    merchantId   String       @db.ObjectId
+    merchant     Merchant     @relation(fields: [merchantId], references: [id])
     pickupCode   String?
     deliveryCode String?
     payment      Payment?     @relation(fields: [paymentId], references: [id])
@@ -221,8 +223,8 @@ model Order {
 
 model User {
     id               String                @id @default(auto()) @map("_id") @db.ObjectId
-    authId           String?               @unique
-    email            String?               @unique
+    authId           String                @unique
+    email            String                @unique
     fullName         String?
     phone            String?
     roles            UserRole[]            @default([customer])
@@ -261,6 +263,7 @@ model Merchant {
     deliveryTime String?
     rating       Float?
     Category     Category[]
+    Order        Order[]
 }
 
 // --------------------------------merchant manager relation------------------------------------

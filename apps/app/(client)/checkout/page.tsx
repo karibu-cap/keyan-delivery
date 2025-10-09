@@ -22,6 +22,7 @@ import { useCart } from "@/hooks/use-cart";
 import { ROUTES } from "@/lib/router";
 import Image from "next/image";
 import { createOrders } from "@/lib/actions/orders";
+import { useToast } from "@/hooks/use-toast";
 
 interface DeliveryInfo {
   address: string;
@@ -34,6 +35,7 @@ interface DeliveryInfo {
 const EnhancedCheckout = () => {
   const router = useRouter();
   const { cartItems, total: cartTotal, clearCart } = useCart();
+  const { toast } = useToast()
   const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfo>({
     address: "",
     latitude: 0,
@@ -53,14 +55,26 @@ const EnhancedCheckout = () => {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           }));
-          toast.success("Location captured successfully");
+          toast({
+            title: 'Location captured successfully',
+            description: 'Please try again later',
+            variant: 'default',
+          })
         },
         (error) => {
-          toast.error("Failed to get location. Please enter manually.");
+          toast({
+            title: 'Failed to get location',
+            description: 'Please enter manually',
+            variant: 'destructive',
+          })
         }
       );
     } else {
-      toast.error("Geolocation is not supported by your browser");
+      toast({
+        title: 'Geolocation not supported',
+        description: 'Please enter manually',
+        variant: 'destructive',
+      })
     }
   };
 
@@ -101,12 +115,20 @@ const EnhancedCheckout = () => {
   const handlePlaceOrder = async () => {
     // Validate delivery information
     if (!deliveryInfo.address || !deliveryInfo.contact) {
-      toast.error("Please fill in all required delivery information");
+      toast({
+        title: 'Please fill in all required delivery information',
+        description: 'Please try again later',
+        variant: 'destructive',
+      })
       return;
     }
 
     if (!deliveryInfo.latitude || !deliveryInfo.longitude) {
-      toast.error("Please capture your delivery location");
+      toast({
+        title: 'Please capture your delivery location',
+        description: 'Please try again later',
+        variant: 'destructive',
+      })
       return;
     }
 
@@ -142,15 +164,19 @@ const EnhancedCheckout = () => {
     const response = await createOrders(orderData);
 
     if (!response) {
-      toast.error("Failed to place order", {
-        description: "Please try again or contact support if the issue persists.",
-      });
+      toast({
+        title: 'Failed to place order',
+        description: 'Please try again or contact support if the issue persists.',
+        variant: 'destructive',
+      })
       return;
     }
 
-    toast.success("Order placed successfully!", {
+    toast({
+      title: 'Order placed successfully!',
       description: `Your delivery code is: ${deliveryCode}`,
-    });
+      variant: 'default',
+    })
 
     // Clear cart and redirect
     clearCart();

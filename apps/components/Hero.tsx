@@ -1,12 +1,13 @@
 import { ShoppingBag, Store, Pill } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ROUTES } from "@/lib/router";
 
 const Hero = () => {
   return (
     <section className="relative overflow-hidden gradient-hero py-24 px-4">
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE4YzAtOS45NC04LjA2LTE4LTE4LTE4UzAgOC4wNiAwIDE4YzAgOS45NCA4LjA2IDE4IDE4IDE4czE4LTguMDYgMTgtMTh6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
-      
+
       <div className="container mx-auto max-w-7xl relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
@@ -16,13 +17,13 @@ const Hero = () => {
                 🚀 Fast & Reliable Delivery
               </span>
             </div>
-            
+
             <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
               Everything You Need,
               <br />
               <span className="text-primary-light">Delivered Fast</span>
             </h1>
-            
+
             <p className="text-xl text-white/90 leading-relaxed">
               Groceries, pharmacy, and food delivery in minutes. Your neighborhood stores,
               now at your fingertips.
@@ -38,14 +39,14 @@ const Hero = () => {
                   Start Shopping
                 </Link>
               </Button>
-              
+
               <Button
                 asChild
                 size="lg"
                 variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-primary transition-all duration-200 text-lg px-8 rounded-2xl"
+                className="border-2 border-white text-white hover:text-white bg-primary hover:bg-primary px-8 rounded-2xl"
               >
-                <Link href="/merchant">
+                <Link href={ROUTES.newMerchant}>
                   Become a Merchant
                 </Link>
               </Button>

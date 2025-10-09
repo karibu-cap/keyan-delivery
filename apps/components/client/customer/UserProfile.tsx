@@ -7,20 +7,24 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
+import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { ArrowLeftIcon, UserIcon, MapPinIcon, CreditCardIcon, BellIcon, ShieldIcon, HelpCircleIcon } from "lucide-react"
-import { useState } from "react";
+import { ArrowLeftIcon, UserIcon, MapPinIcon, CreditCardIcon, BellIcon, ShieldIcon, HelpCircleIcon, StoreIcon, CheckCircleIcon, ClockIcon, Store } from "lucide-react"
+import { useState, useEffect } from "react";
+import { getUserMerchants } from "@/lib/actions/client";
+import { Merchant, Prisma, User } from "@prisma/client";
 
-type User = {
-    id: string;
-    authId?: string | null;
-    email?: string | null;
-    fullName?: string | null;
-    phone?: string | null;
-    roles: string[];
-};
+type IUser = Prisma.UserGetPayload<{
+    include: {
+        merchantManagers: {
+            include: {
+                merchant: true,
+            },
+        },
+    },
+}>;
 
-export function UserProfile({ user }: { user: User }) {
+export function UserProfile({ user }: { user: IUser }) {
     const [currentUser, setCurrentUser] = useState<User>(user);
     const [isEditing, setIsEditing] = useState(false);
     const [notifications, setNotifications] = useState({
@@ -28,6 +32,8 @@ export function UserProfile({ user }: { user: User }) {
         promotions: false,
         newsletter: true
     });
+
+    const merchants = user.merchantManagers.map((manager) => manager.merchant);
 
     const handleSaveProfile = async () => {
         if (!currentUser) return;
@@ -61,8 +67,9 @@ export function UserProfile({ user }: { user: User }) {
                 <h1 className="mb-6 text-3xl font-bold">Profile & Settings</h1>
 
                 <Tabs defaultValue="profile" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-6">
                         <TabsTrigger value="profile">Profile</TabsTrigger>
+                        <TabsTrigger value="merchants">Merchants</TabsTrigger>
                         <TabsTrigger value="addresses">Addresses</TabsTrigger>
                         <TabsTrigger value="payment">Payment</TabsTrigger>
                         <TabsTrigger value="notifications">Notifications</TabsTrigger>
@@ -132,6 +139,76 @@ export function UserProfile({ user }: { user: User }) {
                                         disabled={!isEditing}
                                     />
                                 </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="merchants">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <StoreIcon className="h-5 w-5" />
+                                    My Merchants
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {merchants.length > 0 ? (
+                                    <div className="space-y-4">
+                                        {merchants.map((merchant) => (
+                                            <div key={merchant.id} className="rounded-lg border p-4">
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex gap-3">
+                                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0aad0a]/10">
+                                                            <StoreIcon className="h-6 w-6 text-[#0aad0a]" />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="mb-2 flex items-center gap-2">
+                                                                <h3 className="font-semibold">{merchant.businessName}</h3>
+                                                                <Badge variant={merchant.isVerified ? "default" : "secondary"} className={merchant.isVerified ? "bg-green-100 text-green-800" : ""}>
+                                                                    {merchant.isVerified ? (
+                                                                        <>
+                                                                            <CheckCircleIcon className="mr-1 h-3 w-3" />
+                                                                            Verified
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <ClockIcon className="mr-1 h-3 w-3" />
+                                                                            Pending
+                                                                        </>
+                                                                    )}
+                                                                </Badge>
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground mb-2">{merchant.phone}</p>
+                                                            <div className="flex flex-wrap gap-1 mb-2">
+                                                                <Badge variant="outline">{merchant.merchantType}</Badge>
+                                                            </div>
+                                                            <div className="text-xs text-muted-foreground">
+                                                                Manager since: {new Date(merchant.createdAt).toLocaleDateString()}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        {merchant.isVerified && <Button variant="outline" size="sm" asChild>
+                                                            <Link href={`/merchant/${merchant.id}`}>
+                                                                <Store className="w-4 h-4 mr-2" />
+                                                                Manage
+                                                            </Link>
+                                                        </Button>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        <StoreIcon className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                                        <p className="mb-2">No merchants found</p>
+                                        <p className="text-sm">You are not managing any merchants yet</p>
+                                        <div className="mt-4">
+                                            <p className="text-sm">Contact an administrator to get access to manage merchants</p>
+                                        </div>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     </TabsContent>

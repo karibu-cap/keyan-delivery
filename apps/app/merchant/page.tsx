@@ -38,9 +38,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 const Merchant = () => {
   const [isOnboarded, setIsOnboarded] = useState(true); // Mock: true for demo
+  const { toast } = useToast()
 
   const stats = [
     { label: "Total Products", value: "156", icon: Package, change: "+12%" },
@@ -85,9 +87,11 @@ const Merchant = () => {
   ];
 
   const handleProductSubmit = () => {
-    toast.success("Product submitted for review", {
-      description: "Admin will review your product within 24 hours",
-    });
+    toast({
+      title: 'Product submitted for review',
+      description: 'Admin will review your product within 24 hours',
+      variant: 'default',
+    })
   };
 
   const statusColors = {
@@ -165,14 +169,14 @@ const Merchant = () => {
                     Fill in the product details. You can save as draft or submit for review.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="space-y-4 mt-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Product Name *</Label>
                       <Input id="name" placeholder="e.g., Fresh Organic Apples" />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="category">Category *</Label>
                       <Select>
@@ -202,12 +206,12 @@ const Merchant = () => {
                       <Label htmlFor="price">Price *</Label>
                       <Input id="price" type="number" step="0.01" placeholder="0.00" />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="stock">Stock Quantity *</Label>
                       <Input id="stock" type="number" placeholder="0" />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="unit">Unit</Label>
                       <Input id="unit" placeholder="e.g., per kg" />
@@ -248,7 +252,7 @@ const Merchant = () => {
           <div className="space-y-3">
             {products.map((product) => {
               const StatusIcon = statusIcons[product.status as keyof typeof statusIcons];
-              
+
               return (
                 <div
                   key={product.id}
@@ -259,7 +263,7 @@ const Merchant = () => {
                     alt={product.name}
                     className="w-16 h-16 rounded-2xl object-cover"
                   />
-                  
+
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold truncate">{product.name}</h3>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">

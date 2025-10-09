@@ -31,6 +31,7 @@ const Admin = () => {
   const [reviewDialog, setReviewDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
+
   const stats = [
     { label: "Total Stores", value: "156", icon: Store, change: "+12" },
     { label: "Active Drivers", value: "89", icon: Users, change: "+5" },
@@ -177,7 +178,7 @@ const Admin = () => {
                       alt={product.name}
                       className="w-20 h-20 rounded-2xl object-cover"
                     />
-                    
+
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-lg">{product.name}</h3>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
@@ -241,7 +242,7 @@ const Admin = () => {
                     <div className="w-16 h-16 rounded-2xl gradient-hero flex items-center justify-center text-white text-2xl font-bold">
                       {driver.name[0]}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-lg">{driver.name}</h3>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
@@ -305,22 +306,20 @@ const Admin = () => {
                 {recentAlerts.map((alert) => (
                   <div
                     key={alert.id}
-                    className={`flex items-start gap-3 p-4 rounded-2xl ${
-                      alert.type === "urgent"
+                    className={`flex items-start gap-3 p-4 rounded-2xl ${alert.type === "urgent"
                         ? "bg-destructive/10 border border-destructive/20"
                         : alert.type === "warning"
-                        ? "bg-warning/10 border border-warning/20"
-                        : "bg-accent border border-border"
-                    }`}
+                          ? "bg-warning/10 border border-warning/20"
+                          : "bg-accent border border-border"
+                      }`}
                   >
                     <AlertCircle
-                      className={`w-5 h-5 mt-0.5 ${
-                        alert.type === "urgent"
+                      className={`w-5 h-5 mt-0.5 ${alert.type === "urgent"
                           ? "text-destructive"
                           : alert.type === "warning"
-                          ? "text-warning"
-                          : "text-primary"
-                      }`}
+                            ? "text-warning"
+                            : "text-primary"
+                        }`}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium">{alert.message}</p>
@@ -346,7 +345,7 @@ const Admin = () => {
               Review and provide feedback for approval or rejection
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             {selectedItem && (
               <>

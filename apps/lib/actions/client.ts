@@ -1,5 +1,6 @@
+import { Media, Merchant, User } from "@prisma/client"
 
-export const uploadImages = async (files: File[]): Promise<string | null> => {
+export const uploadImages = async (files: File[]): Promise<Media[] | null> => {
   const formData = new FormData()
   files.forEach(file => {
     formData.append(`files`, file)
@@ -10,7 +11,7 @@ export const uploadImages = async (files: File[]): Promise<string | null> => {
   })
   if (result.ok) {
     const data = await result.json()
-    return data.data.files[0].url
+    return data.data.files
   }
   return null
 }
@@ -29,14 +30,15 @@ export const getMediaById = async (mediaId: string, token: string): Promise<stri
   return null
 }
 
-export const getUserById = async (id: string) => {
-const user = await fetch(`/api/users/${id}`, {
+export const getUserById = async (id: string): Promise<User | null> => {
+  const user = await fetch(`/api/users/${id}`, {
     method: 'GET',
   })
   if (!user.ok) {
     return null
   }
-  return user.json()
+  const res = await user.json()
+  return res.data.user
 }
 
 export const setUser = async (data: unknown) => {
@@ -49,3 +51,14 @@ export const setUser = async (data: unknown) => {
   }
   return false
 }
+
+export const getUserMerchants = async (userId: string): Promise<Merchant[]> => {
+  const user = await fetch(`/api/users/${userId}`)
+  if (!user.ok) {
+    return []
+  }
+  const res = await user.json()
+  return res.data.merchants
+
+}
+
