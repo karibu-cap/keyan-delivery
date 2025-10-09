@@ -1,3 +1,4 @@
+import { getUserById, setUser } from '@/lib/actions/client'
 import { getAuthErrorMessage } from '@/lib/firebase-client/auth-error'
 import { auth } from '@/lib/firebase-client/firebase'
 import { User, UserRole } from '@prisma/client'
@@ -62,7 +63,10 @@ const useAuthStore = create(
             },
           })
 
-          set({ user: userCredential.user })
+          /// get user from db 
+          const user = await getUserById(userCredential.user.uid)
+          console.log(user);
+          set({ user: user })
         } catch (error) {
           const authError = error as AuthError
           set({ error: getAuthErrorMessage(authError.code), loading: false })
@@ -100,15 +104,9 @@ const useAuthStore = create(
             driverDocument: data.driverDocument || null,
           }
 
-          const response = await fetch('/api/users', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-          })
+          const response = await setUser(userData)
 
-          if (!response.ok) {
+          if (!response) {
             set({
               error: getAuthErrorMessage('auth/failed-to-add-user'),
               loading: false,
@@ -142,15 +140,9 @@ const useAuthStore = create(
             driverDocument: data.driverDocument || null,
           }
 
-          const response = await fetch('/api/users', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-          })
+          const response = await setUser(userData) 
 
-          if (!response.ok) {
+          if (!response) {
             set({
               error: getAuthErrorMessage('auth/failed-to-add-user'),
               loading: false,

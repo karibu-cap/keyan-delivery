@@ -4,7 +4,7 @@ import Link from "next/link"
 import { getUserTokens } from "@/lib/firebase-client/firebase-utils"
 
 import { prisma } from "@/lib/prisma"
-import { UserProfile } from "@/components/customer/UserProfile"
+import { UserProfile } from "@/components/client/customer/UserProfile"
 
 export default async function ProfilePage() {
   const token = await getUserTokens();

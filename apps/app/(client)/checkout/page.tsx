@@ -2,33 +2,67 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
-  CreditCard,
   MapPin,
-  Clock,
+  Phone,
+  CreditCard,
   Shield,
-  Plus,
-  Minus,
-  Trash2,
-  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/hooks/use-cart";
-import { CartItem } from "@/hooks/use-cart";
 import { ROUTES } from "@/lib/router";
+import Image from "next/image";
+import { createOrders } from "@/lib/actions/orders";
 
-const Checkout = () => {
-  const [allowSubstitutions, setAllowSubstitutions] = useState(true);
-  const { cartItems, total: cartTotal, totalItems, clearCart } = useCart();
+interface DeliveryInfo {
+  address: string;
+  latitude: number;
+  longitude: number;
+  contact: string;
+  notes: string;
+}
+
+const EnhancedCheckout = () => {
+  const router = useRouter();
+  const { cartItems, total: cartTotal, clearCart } = useCart();
+  const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfo>({
+    address: "",
+    latitude: 0,
+    longitude: 0,
+    contact: "",
+    notes: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get user's current location
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setDeliveryInfo(prev => ({
+            ...prev,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          }));
+          toast.success("Location captured successfully");
+        },
+        (error) => {
+          toast.error("Failed to get location. Please enter manually.");
+        }
+      );
+    } else {
+      toast.error("Geolocation is not supported by your browser");
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -65,21 +99,64 @@ const Checkout = () => {
   const total = subtotal + deliveryFee + serviceFee;
 
   const handlePlaceOrder = async () => {
-    try {
-      // Here you would typically make an API call to place the order
-      // For now, we'll just simulate success
+    // Validate delivery information
+    if (!deliveryInfo.address || !deliveryInfo.contact) {
+      toast.error("Please fill in all required delivery information");
+      return;
+    }
 
-      toast.success("Order placed successfully!", {
-        description: "Your delivery code will be shared shortly.",
-      });
+    if (!deliveryInfo.latitude || !deliveryInfo.longitude) {
+      toast.error("Please capture your delivery location");
+      return;
+    }
 
-      // Clear the cart after successful order
-      clearCart();
-    } catch (error) {
+    setIsSubmitting(true);
+
+    const deliveryCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    // Prepare order data
+    const orderData = {
+      items: cartItems.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      deliveryInfo: {
+        address: deliveryInfo.address,
+        delivery_latitude: deliveryInfo.latitude,
+        delivery_longitude: deliveryInfo.longitude,
+        deliveryContact: deliveryInfo.contact,
+        additionalNotes: deliveryInfo.notes || null,
+      },
+      orderPrices: {
+        subtotal,
+        shipping: deliveryFee,
+        discount: 0,
+        total,
+        deliveryFee,
+      },
+      deliveryCode,
+    };
+
+    // Call API to create order
+    const response = await createOrders(orderData);
+
+    if (!response) {
       toast.error("Failed to place order", {
         description: "Please try again or contact support if the issue persists.",
       });
+      return;
     }
+
+    toast.success("Order placed successfully!", {
+      description: `Your delivery code is: ${deliveryCode}`,
+    });
+
+    // Clear cart and redirect
+    clearCart();
+    setIsSubmitting(false);
+    router.push(`/orders`);
+
   };
 
   return (
@@ -108,69 +185,79 @@ const Checkout = () => {
                     <MapPin className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold">Delivery Address</h2>
+                    <h2 className="text-xl font-semibold">Delivery Location</h2>
                     <p className="text-sm text-muted-foreground">Where should we deliver?</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm">Edit</Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={getCurrentLocation}
+                >
+                  Use Current Location
+                </Button>
               </div>
 
-              <div className="bg-accent p-4 rounded-2xl">
-                <p className="font-medium">Home</p>
-                <p className="text-sm text-muted-foreground">123 Main Street, Apt 4B</p>
-                <p className="text-sm text-muted-foreground">Kigali, Rwanda</p>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="address">Delivery Address *</Label>
+                  <Textarea
+                    id="address"
+                    placeholder="Enter your full delivery address"
+                    value={deliveryInfo.address}
+                    onChange={(e) => setDeliveryInfo(prev => ({ ...prev, address: e.target.value }))}
+                    className="mt-2"
+                    rows={3}
+                  />
+                </div>
+
+                {deliveryInfo.latitude !== 0 && deliveryInfo.longitude !== 0 && (
+                  <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
+                    <p className="text-sm text-success-foreground">
+                      ✓ Location captured: {deliveryInfo.latitude.toFixed(6)}, {deliveryInfo.longitude.toFixed(6)}
+                    </p>
+                  </div>
+                )}
               </div>
             </Card>
 
-            {/* Delivery Time */}
+            {/* Contact Information */}
             <Card className="p-6 rounded-2xl shadow-card">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-primary" />
+                  <Phone className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">Delivery Time</h2>
-                  <p className="text-sm text-muted-foreground">Estimated: 25-35 minutes</p>
+                  <h2 className="text-xl font-semibold">Contact Information</h2>
+                  <p className="text-sm text-muted-foreground">For delivery updates</p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Button variant="default" className="rounded-2xl flex-1">
-                  ASAP
-                </Button>
-                <Button variant="outline" className="rounded-2xl flex-1">
-                  Schedule
-                </Button>
-              </div>
-            </Card>
-
-            {/* Substitution Preferences - Real-time toggle */}
-            <Card className="p-6 rounded-2xl shadow-card">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
-                    <RefreshCw className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Allow Substitutions</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Let us replace out-of-stock items with similar alternatives
-                    </p>
-                  </div>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="contact">Phone Number *</Label>
+                  <Input
+                    id="contact"
+                    type="tel"
+                    placeholder="+1 234 567 8900"
+                    value={deliveryInfo.contact}
+                    onChange={(e) => setDeliveryInfo(prev => ({ ...prev, contact: e.target.value }))}
+                    className="mt-2"
+                  />
                 </div>
-                <Switch
-                  checked={allowSubstitutions}
-                  onCheckedChange={setAllowSubstitutions}
-                />
-              </div>
 
-              {allowSubstitutions && (
-                <div className="mt-4 p-3 bg-success/10 border border-success/20 rounded-2xl animate-slide-up">
-                  <p className="text-sm text-success-foreground">
-                    ✓ Merchant will be notified of your substitution preferences
-                  </p>
+                <div>
+                  <Label htmlFor="notes">Additional Notes (Optional)</Label>
+                  <Textarea
+                    id="notes"
+                    placeholder="Any special instructions for delivery?"
+                    value={deliveryInfo.notes}
+                    onChange={(e) => setDeliveryInfo(prev => ({ ...prev, notes: e.target.value }))}
+                    className="mt-2"
+                    rows={2}
+                  />
                 </div>
-              )}
+              </div>
             </Card>
 
             {/* Payment Method */}
@@ -189,8 +276,8 @@ const Checkout = () => {
                 <Button variant="outline" className="w-full justify-start rounded-2xl h-auto p-4">
                   <CreditCard className="w-5 h-5 mr-3" />
                   <div className="text-left">
-                    <div className="font-medium">Credit Card</div>
-                    <div className="text-sm text-muted-foreground">•••• 4242</div>
+                    <div className="font-medium">Cash on Delivery</div>
+                    <div className="text-sm text-muted-foreground">Pay when you receive</div>
                   </div>
                 </Button>
 
@@ -205,7 +292,7 @@ const Checkout = () => {
             </Card>
           </div>
 
-          {/* Order Summary Sidebar - Sticky */}
+          {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-24">
               <Card className="p-6 rounded-2xl shadow-card">
@@ -213,12 +300,14 @@ const Checkout = () => {
 
                 {/* Cart Items */}
                 <div className="space-y-4 mb-6">
-                  {cartItems.map((item: CartItem) => (
+                  {cartItems.map((item) => (
                     <div key={item.product.id} className="flex gap-3">
-                      <img
+                      <Image
                         src={item.product.media?.url || "/placeholder.svg"}
                         alt={item.product.title}
                         className="w-16 h-16 rounded-2xl object-cover"
+                        width={64}
+                        height={64}
                       />
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm line-clamp-2">{item.product.title}</h4>
@@ -260,7 +349,7 @@ const Checkout = () => {
                 <div className="flex items-center gap-2 p-3 bg-accent rounded-2xl mb-6">
                   <Shield className="w-5 h-5 text-success" />
                   <p className="text-sm text-muted-foreground">
-                    Secure payment with pickup & delivery codes
+                    Secure delivery with confirmation code
                   </p>
                 </div>
 
@@ -269,8 +358,9 @@ const Checkout = () => {
                   size="lg"
                   className="w-full rounded-2xl shadow-primary"
                   onClick={handlePlaceOrder}
+                  disabled={isSubmitting}
                 >
-                  Place Order
+                  {isSubmitting ? "Placing Order..." : "Place Order"}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground mt-4">
@@ -285,4 +375,4 @@ const Checkout = () => {
   );
 };
 
-export default Checkout;
+export default EnhancedCheckout;

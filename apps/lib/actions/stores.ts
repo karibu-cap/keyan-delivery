@@ -28,7 +28,7 @@ export type IMerchant = Prisma.MerchantGetPayload<{
     managers: true;
     categories: true;
   };
-}>  ;
+}>;
 
 interface SeoMetadata {
   seoTitle?: string;
@@ -78,7 +78,7 @@ export async function fetchMerchants(
     if (!response.ok) {
       throw new Error('Failed to fetch merchants');
     }
-    
+
     const data = await response.json();
 
     if (!data.success) {
@@ -92,9 +92,18 @@ export async function fetchMerchants(
   }
 }
 
-export async function fetchCategories(): Promise<{ categories: Category[] }> {
+export async function fetchCategories(search?: string,
+  category?: string,
+  limit: number = 20,
+  offset: number = 0): Promise<{ categories: Category[] }> {
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (category) params.append('category', category);
+  params.append('limit', limit.toString());
+  params.append('offset', offset.toString());
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const response = await fetch(
       `${baseUrl}/api/v1/categories`,
       {
@@ -103,19 +112,19 @@ export async function fetchCategories(): Promise<{ categories: Category[] }> {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch categories');
+      return { categories: [] };
     }
 
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch categories');
+      return { categories: [] };
     }
 
     return data.data;
   } catch (error) {
     console.error('Error fetching categories:', error);
-    throw new Error('Failed to fetch categories');
+    return { categories: [] };
   }
 }
 

@@ -1,6 +1,3 @@
-import { doc, getDoc } from 'firebase/firestore'
-import { CollectionsName } from '../collection-name'
-import { db } from '../firebase-client/firebase'
 
 export const uploadImages = async (files: File[]): Promise<string | null> => {
   const formData = new FormData()
@@ -33,12 +30,13 @@ export const getMediaById = async (mediaId: string, token: string): Promise<stri
 }
 
 export const getUserById = async (id: string) => {
-  const userRef = doc(db, `${CollectionsName.Users}/${id}`)
-  const docSnap = await getDoc(userRef)
-  if (!docSnap.exists()) {
+const user = await fetch(`/api/users/${id}`, {
+    method: 'GET',
+  })
+  if (!user.ok) {
     return null
   }
-  return docSnap.data()
+  return user.json()
 }
 
 export const setUser = async (data: unknown) => {
