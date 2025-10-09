@@ -19,7 +19,7 @@ export default async function OrdersPage() {
                 <main className="container mx-auto px-4 py-6">
                     <div className="py-16 text-center">
                         <h2 className="mb-2 text-2xl font-bold">Authentication Required</h2>
-                        <p className="mb-6 text-muted-foreground">Please sign in to view your orders</p>
+                        <p className="mb-6 text-muted-foreground">Please sign in to view your orders </p>
                         <Link href="/sign-in">
                             <Button className="bg-[#0aad0a] hover:bg-[#089808]">Sign In</Button>
                         </Link>

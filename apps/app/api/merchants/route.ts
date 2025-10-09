@@ -55,31 +55,12 @@ export async function GET(request: NextRequest) {
 
     const totalCount = await prisma.merchant.count({ where: whereClause });
 
-    // Transform the data to match the expected format
-    const transformedMerchants = merchants.map(merchant => ({
-      id: merchant.id,
-      businessName: merchant.businessName,
-      phone: merchant.phone,
-      logoUrl: merchant.logoUrl,
-      bannerUrl: merchant.bannerUrl,
-      isVerified: merchant.isVerified,
-      address: merchant.address,
-      createdAt: merchant.createdAt,
-      updatedAt: merchant.updatedAt,
-      products: merchant.products,
-      managers: merchant.managers,
-      categories: merchant.categories.map(category => category.category),
-      rating: merchant.rating, // Default rating since it's not in the model
-      deliveryTime: merchant.deliveryTime, // Default delivery time
-      image: merchant.logoUrl || merchant.bannerUrl,
-      badge: merchant.isVerified ? "Verified" : "New",
-      productsCount: merchant.products.length,
-    }));
+  
 
     return NextResponse.json({
       success: true,
       data: {
-        merchants: transformedMerchants,
+        merchants: merchants,
         pagination: {
           total: totalCount,
           limit,

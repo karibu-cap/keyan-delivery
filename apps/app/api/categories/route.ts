@@ -1,11 +1,26 @@
 import { PrismaClient } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const merchantType = searchParams.get('merchantType');
+
+    const where: any = {};
+    if (merchantType) {
+      where.merchants = {
+        some: {
+          merchant: {
+            merchantType: merchantType as any
+          }
+        }
+      };
+    }
+
     const categories = await prisma.category.findMany({
+      where,
       orderBy: { name: 'asc' },
       include: {
         image: {
@@ -23,10 +38,10 @@ export async function GET() {
     const transformedCategories = [
       {
         id: 'all',
-        name: 'All Stores',
+        name: 'All Categories',
         slug: 'all',
-        description: 'All available stores',
-        productCount: 0, // Will be calculated from all merchants
+        description: 'All available categories',
+        productCount: 0,
       },
       ...categories.map(category => ({
         id: category.id,

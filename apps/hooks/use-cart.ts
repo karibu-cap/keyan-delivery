@@ -3,6 +3,16 @@ import { IProduct } from '@/lib/actions/stores'
 import { DeliveryInfo } from '@prisma/client'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+
+// Enhanced Cart Item interface for API integration
+export interface EnhancedCartItem extends CartItem {
+    id?: string;
+    selectedWeight?: number | null;
+    unit?: string | null;
+    priceAtAdd: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
 export interface CartShipment {
     method: 'DELIVERY' | 'EXPEDITION'
     cost: number

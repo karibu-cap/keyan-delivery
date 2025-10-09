@@ -46,61 +46,71 @@
 
 @layer base {
   :root {
-    /* Keyan Brand Colors - Lilwa inspired violet theme */
-    --background: 0 0% 100%;
-    --foreground: 280 5% 15%;
+    /* Instacart Brand Colors - Green theme */
+    --background: 220 20% 98%;
+    /* #F6F7F8 - light gray background */
+    --foreground: 210 8% 20%;
+    /* #343538 - primary text */
 
     --card: 0 0% 100%;
-    --card-foreground: 280 5% 15%;
+    /* #FFFFFF - pure white cards */
+    --card-foreground: 210 8% 20%;
+    /* #343538 - card text */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 280 5% 15%;
+    --popover-foreground: 210 8% 20%;
 
-    /* Primary: Violet-600 base (#6B21A8) */
-    --primary: 280 85% 39%;
+    /* Primary: Instacart green (#0AAD0A) */
+    --primary: 125 85% 35%;
+    /* #0AAD0A */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 280 70% 50%;
-    --primary-dark: 280 90% 30%;
+    --primary-light: 125 80% 45%;
+    --primary-dark: 125 90% 25%;
 
-    /* Secondary: Complementary colors */
-    --secondary: 260 60% 96%;
-    --secondary-foreground: 280 85% 39%;
+    /* Secondary: Gray tones */
+    --secondary: 220 15% 96%;
+    --secondary-foreground: 210 8% 20%;
 
-    --muted: 260 40% 96%;
-    --muted-foreground: 280 10% 45%;
+    --muted: 220 15% 96%;
+    --muted-foreground: 210 5% 50%;
+    /* #7C7C7C */
 
-    --accent: 280 60% 94%;
-    --accent-foreground: 280 85% 39%;
+    --accent: 35 100% 50%;
+    /* #FF8B00 - orange accent */
+    --accent-foreground: 0 0% 100%;
 
-    /* Success, warning, destructive */
-    --success: 142 76% 36%;
+    /* Success: Bright green (#00A100) */
+    --success: 120 100% 32%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    /* Warning: Yellow (#FFD600) */
+    --warning: 50 100% 50%;
+    --warning-foreground: 0 0% 0%;
 
-    --destructive: 0 84% 60%;
+    /* Destructive: Red (#DC2626) */
+    --destructive: 0 75% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Borders and inputs - clean instacart style */
-    --border: 280 20% 90%;
-    --input: 280 20% 90%;
-    --ring: 280 85% 39%;
+    /* Borders and inputs - light gray */
+    --border: 220 15% 92%;
+    --input: 220 15% 92%;
+    --ring: 125 85% 35%;
+    /* #0AAD0A */
 
-    /* Rounded corners - 2xl */
-    --radius: 1rem;
+    /* Rounded corners - smaller for Instacart style */
+    --radius: 0.5rem;
 
-    /* Hero gradient - lilwa style */
-    --gradient-hero-start: 142 76% 36%;
-    --gradient-hero-end: 142 76% 46%;
+    /* Hero gradient - Instacart green */
+    --gradient-hero-start: 125 85% 35%;
+    --gradient-hero-end: 125 80% 45%;
 
     /* Subtle background gradient */
-    --gradient-bg-start: 260 100% 99%;
-    --gradient-bg-end: 280 100% 98%;
+    --gradient-bg-start: 220 20% 98%;
+    --gradient-bg-end: 220 15% 96%;
 
-    /* Shadows with violet tint */
-    --shadow-primary: 280 85% 39% / 0.15;
-    --shadow-card: 280 10% 20% / 0.08;
+    /* Shadows - clean and minimal */
+    --shadow-primary: 125 85% 35% / 0.15;
+    --shadow-card: 220 10% 20% / 0.08;
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
@@ -118,7 +128,7 @@
     --card-foreground: oklch(0.129 0.042 264.695);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.129 0.042 264.695);
-    --primary: oklch(0.208 0.042 265.755);
+    --primary: hsl(125, 85%, 35%);
     --primary-foreground: oklch(0.984 0.003 247.858);
     --secondary: oklch(0.968 0.007 247.896);
     --secondary-foreground: oklch(0.208 0.042 265.755);
@@ -143,63 +153,6 @@
     --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
     --sidebar-border: oklch(0.929 0.013 255.508);
     --sidebar-ring: oklch(0.704 0.04 256.788);
-  }
-
-  .dark {
-    --background: 280 15% 8%;
-    --foreground: 0 0% 95%;
-
-    --card: 280 15% 10%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 280 15% 10%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 280 75% 55%;
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 280 70% 65%;
-    --primary-dark: 280 85% 45%;
-
-    --secondary: 280 20% 15%;
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 280 15% 15%;
-    --muted-foreground: 280 5% 60%;
-
-    --accent: 280 20% 18%;
-    --accent-foreground: 0 0% 95%;
-
-    --success: 142 70% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 38 90% 55%;
-    --warning-foreground: 0 0% 100%;
-
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 280 20% 20%;
-    --input: 280 20% 20%;
-    --ring: 280 75% 55%;
-
-    --gradient-hero-start: 280 75% 45%;
-    --gradient-hero-end: 260 65% 55%;
-
-
-    --gradient-bg-start: 280 20% 9%;
-    --gradient-bg-end: 280 15% 8%;
-
-    --shadow-primary: 280 75% 55% / 0.25;
-    --shadow-card: 0 0% 0% / 0.3;
-
-    --sidebar-background: 280 15% 10%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 280 75% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 280 20% 15%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 280 20% 20%;
-    --sidebar-ring: 280 75% 55%;
   }
 }
 
