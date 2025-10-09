@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { ShoppingBag, Clock, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/router";
 
 const Index = () => {
   const features = [
@@ -76,7 +77,7 @@ const Index = () => {
               size="lg"
               className="bg-white text-primary hover:bg-white/90 shadow-lg text-lg px-8 rounded-2xl"
             >
-              <Link href="/stores">
+              <Link href={ROUTES.stores}>
                 Browse Stores
               </Link>
             </Button>
@@ -86,7 +87,7 @@ const Index = () => {
               variant="outline"
               className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
             >
-              <Link href="/merchant">
+              <Link href={ROUTES.merchant}>
                 Partner With Us
               </Link>
             </Button>

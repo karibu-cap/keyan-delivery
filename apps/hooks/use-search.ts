@@ -1,4 +1,4 @@
-import { Category, IMerchant, IProduct } from '@/lib/actions/stores';
+import { Category, fetchCategories, fetchMerchants, IMerchant, IProduct } from '@/lib/actions/stores';
 import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from './use-debounce';
 
@@ -32,7 +32,7 @@ export const useSearch = (): UseSearchReturn => {
 
     const searchProducts = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
         try {
-            const response = await fetch(`/api/products?search=${encodeURIComponent(searchQuery)}&limit=5`);
+            const response = await fetch(`/api/client/products?search=${encodeURIComponent(searchQuery)}&limit=5`);
             if (!response.ok) throw new Error('Search failed');
 
             const data = await response.json();
@@ -54,17 +54,15 @@ export const useSearch = (): UseSearchReturn => {
 
     const searchMerchants = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
         try {
-            const response = await fetch(`/api/merchants?search=${encodeURIComponent(searchQuery)}&limit=3`);
-            if (!response.ok) throw new Error('Search failed');
+            const response = await fetchMerchants(searchQuery);
+            if (!response.merchants.length) return [];
 
-            const data = await response.json();
-            if (!data.success) throw new Error('Search failed');
-
-            return data.data.merchants.map((merchant: IMerchant) => ({
+            return response.merchants.map((merchant: IMerchant) => ({
                 id: merchant.id,
                 title: merchant.businessName,
                 type: 'merchant' as const,
-                image: merchant.logoUrl,
+                image: merchant.logoUrl ?? merchant.bannerUrl ?? '',
+                merchant: merchant.businessName,
             }));
         } catch (error) {
             console.error('Merchant search error:', error);
@@ -74,13 +72,10 @@ export const useSearch = (): UseSearchReturn => {
 
     const searchCategories = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
         try {
-            const response = await fetch(`/api/categories?search=${encodeURIComponent(searchQuery)}&limit=3`);
-            if (!response.ok) throw new Error('Search failed');
+            const response = await fetchCategories(searchQuery);
+            if (!response.categories.length) return [];
 
-            const data = await response.json();
-            if (!data.success) throw new Error('Search failed');
-
-            return data.data.categories.map((category: Category) => ({
+            return response.categories.map((category: Category) => ({
                 id: category.id,
                 title: category.name,
                 type: 'category' as const,
@@ -113,7 +108,7 @@ export const useSearch = (): UseSearchReturn => {
                     ...productResults,
                     ...merchantResults,
                     ...categoryResults,
-                ].slice(0, 8); // Limit total results
+                ].slice(0, 8);
 
                 setResults(allResults);
                 setIsOpen(allResults.length > 0);

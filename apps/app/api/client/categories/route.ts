@@ -1,26 +1,24 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
-
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const merchantType = searchParams.get('merchantType');
+  const { searchParams } = new URL(request.url);
+  const search = searchParams.get('search') || '';
+  const limit = parseInt(searchParams.get('limit') || '18');
+  const offset = parseInt(searchParams.get('offset') || '0');
 
-    const where: any = {};
-    if (merchantType) {
-      where.merchants = {
-        some: {
-          merchant: {
-            merchantType: merchantType as any
-          }
-        }
-      };
+  try {
+    const whereClause: Prisma.CategoryWhereInput = {};
+    if (search) {
+      whereClause.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
     }
 
     const categories = await prisma.category.findMany({
-      where,
+      where: whereClause,
       orderBy: { name: 'asc' },
       include: {
         image: {
@@ -31,8 +29,12 @@ export async function GET(request: NextRequest) {
             products: true
           }
         }
-      }
+      },
+      take: limit,
+      skip: offset,
     });
+
+    const totalCount = await prisma.category.count({ where: whereClause });
 
     // Transform the data to include product count and add default categories
     const transformedCategories = [
@@ -58,6 +60,12 @@ export async function GET(request: NextRequest) {
       success: true,
       data: {
         categories: transformedCategories,
+        pagination: {
+          total: totalCount,
+          limit,
+          offset,
+          hasMore: offset + limit < totalCount,
+        }
       }
     });
 
