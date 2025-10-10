@@ -19,7 +19,8 @@ model Media {
     url         String
     blurDataUrl String?
     creatorId   String
-    Product     Product[]
+    Product     Product?   @relation(fields: [productId], references: [id])
+    productId   String?    @db.ObjectId
 }
 
 // --------------------------------categories model------------------------------------
@@ -126,8 +127,7 @@ model Product {
     title          String
     slug           String                 @unique(map: "slug_1")
     description    String
-    mediaId        String                 @db.ObjectId
-    media          Media                  @relation(fields: [mediaId], references: [id])
+    images         Media[]
     categories     CategoriesOnProducts[]
     price          Float
     compareAtPrice Float?
@@ -141,7 +141,6 @@ model Product {
     rating         Float?                 @default(0)
     reviewCount    Int?                   @default(0)
     stock          Int?                   @default(0)
-    images         String[]               @default([])
     badges         ProductBadge[]         @default([])
     weight         Float?
     weightUnit     String?                @default("lb")
@@ -249,6 +248,7 @@ type MerchantAddress {
 model Merchant {
     id           String                @id @default(auto()) @map("_id") @db.ObjectId
     businessName String
+    slug         String                @unique(map: "slug_1")
     phone        String
     logoUrl      String?
     categories   CategoryOnMerchant[]
@@ -262,8 +262,8 @@ model Merchant {
     managers     UserMerchantManager[]
     deliveryTime String?
     rating       Float?
-    Category     Category[]
-    Order        Order[]
+    category     Category[]
+    order        Order[]
 }
 
 // --------------------------------merchant manager relation------------------------------------

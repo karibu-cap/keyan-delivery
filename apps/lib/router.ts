@@ -1,15 +1,49 @@
+// apps/app/lib/router.ts
 export const ROUTES = {
-  signIn: "/sign-in",
-  dashboard: "/",
-  signUp: "/sign-up",
-  forgotPassword: "/forgot-password",
-  newPassword: "/new-password",
-  stores: "/stores",
-  merchant: "/merchant",
-  driver: "/driver",
-  orders: "/orders",
-  profile: "/profile",
-  logout: "/logout",
-  newMerchant: "/new-merchant",
-  newDriver: "/new-driver",
-};
+  // Public routes
+  home: '/',
+  products: '/products',
+  product: (id: string) => `/product/${id}`,
+  merchant: (id: string) => `/merchant/${id}`,
+  cart: '/cart',
+  checkout: '/checkout',
+  search: '/search',
+  stores: '/stores',
+  newDriver: '/new-driver',
+  newMerchant: '/new-merchant',
+
+
+  // Auth routes
+  signIn: '/login',
+  signup: '/signup',
+  profile: '/profile',
+
+  // Customer routes
+  orders: '/orders',
+  order: (id: string) => `/orders/${id}`,
+  wishlist: '/wishlist',
+
+  // Merchant routes
+  merchantDashboard: (id: string) => `/merchant/${id}`,
+  merchantProducts: '/merchant/products',
+  merchantProductNew: '/merchant/products/new',
+  merchantProductEdit: (id: string) => `/merchant/products/${id}/edit`,
+  merchantOrders: '/merchant/orders',
+  merchantStats: '/merchant/stats',
+  merchantSettings: '/merchant/settings',
+
+  // Driver routes
+  driverDashboard: '/driver',
+  driverOrders: '/driver/orders',
+  driverEarnings: '/driver/earnings',
+
+
+  // Admin routes
+  adminDashboard: '/admin',
+  adminMerchants: '/admin/merchants',
+  adminProducts: '/admin/products',
+  adminOrders: '/admin/orders',
+  adminUsers: '/admin/users',
+} as const;
+
+export type RouteKey = keyof typeof ROUTES;

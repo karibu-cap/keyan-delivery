@@ -33,8 +33,8 @@ interface AuthState {
   loading: boolean
   error: string | null
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (data:  SignUpData) => Promise<void>
-  signInWithGoogle: (data:  SignUpData) => Promise<void>
+  signUp: (data: SignUpData) => Promise<void>
+  signInWithGoogle: (data: SignUpData) => Promise<void>
   resetPassword: (email: string) => Promise<void>
   logout: () => Promise<void>
   setUser: (user: User | null) => void
@@ -115,7 +115,7 @@ const useAuthStore = create(
           }
 
           await sendEmailVerification(userCredential.user)
-          set({ user: userCredential.user, error: null, loading: false })
+          set({ error: null, loading: false })
         } catch (error) {
           const authError = error as AuthError
           set({ error: getAuthErrorMessage(authError.code), loading: false })
@@ -123,7 +123,7 @@ const useAuthStore = create(
         }
       },
 
-      signInWithGoogle: async (data:  SignUpData) => {
+      signInWithGoogle: async (data: SignUpData) => {
         try {
           set({ loading: true, error: null })
           const provider = new GoogleAuthProvider()
@@ -140,7 +140,7 @@ const useAuthStore = create(
             driverDocument: data.driverDocument || null,
           }
 
-          const response = await setUser(userData) 
+          const response = await setUser(userData)
 
           if (!response) {
             set({
@@ -156,7 +156,7 @@ const useAuthStore = create(
               Authorization: `Bearer ${idToken}`,
             },
           })
-          set({ user: userCredential.user, loading: false })
+          set({ loading: false })
         } catch (error) {
           const authError = error as AuthError
           set({ error: getAuthErrorMessage(authError.code), loading: false })

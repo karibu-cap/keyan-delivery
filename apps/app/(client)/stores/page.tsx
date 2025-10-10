@@ -32,7 +32,10 @@ const Stores = () => {
   useEffect(() => {
     const loadStores = async () => {
       try {
-        const response = await fetchMerchants();
+        const response = await fetchMerchants({
+          limit: 20,
+          offset: 0,
+        });
         let filteredStores = response.merchants;
 
         if (selectedMerchantType !== 'all') {

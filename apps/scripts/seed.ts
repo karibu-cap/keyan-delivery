@@ -93,7 +93,7 @@ async function seedDatabase() {
     // Handle self-referential relationship in Category
     // First set all parentId to null
     await prisma.category.updateMany({
-      data: { },
+      data: {},
     })
     // Then delete all categories
     await prisma.category.deleteMany()
@@ -132,12 +132,9 @@ async function seedDatabase() {
 
     // Seed Media first with real Unsplash images
     const mediaRecords = await Promise.all(
-      Array(20)
+      Array(30)
         .fill(null)
         .map(async (_, index) => {
-          // Use a curated list of reliable Unsplash images
-         
-
           const imageUrl = unsplashImages[index % unsplashImages.length];
 
           return prisma.media.create({
@@ -174,37 +171,40 @@ async function seedDatabase() {
     )
 
     const categoryNames = [
-        'Produce',
-        'Meat & Seafood',
-        'Deli',
-        'Bakery',
-        'Frozen',
-        'Dairy & Eggs',
-        'Pantry',
-        'Beverages',
-        'Health & Beauty',
-        'Household',
-        'Pet Care',
-        'Baby',
-      ]
+      'Produce',
+      'Meat & Seafood',
+      'Deli',
+      'Bakery',
+      'Frozen',
+      'Dairy & Eggs',
+      'Pantry',
+      'Beverages',
+      'Health & Beauty',
+      'Household',
+      'Pet Care',
+      'Baby',
+    ]
     const categoryRecords: Array<{ id: string; name: string; slug: string }> = []
 
-    // Seed Categories with sequential creation
-    
+    // Seed Categories with sequential creation and proper image relationships
+
     for (let i = 0; i < categoryNames.length; i++) {
+      // Create a dedicated media record for each category
+      let categoryImageId = null
+      if (mediaRecords.length > 0) {
+        const imageIndex = i % mediaRecords.length
+        categoryImageId = mediaRecords[imageIndex].id
+      }
+
       const category = await prisma.category.create({
         data: {
           name: categoryNames[i],
-          slug: categoryNames[i].toLocaleLowerCase(),
+          slug: categoryNames[i].toLowerCase().replace(/\s+/g, '-'),
           description: faker.commerce.productDescription(),
-          ...(mediaRecords.length > 0
+          ...(categoryImageId
             ? {
-                image: {
-                  connect: {
-                    id: mediaRecords[faker.number.int({ min: 0, max: mediaRecords.length - 1 })].id,
-                  },
-                },
-              }
+              imageId: categoryImageId,
+            }
             : {}),
           seoMetadata: {
             seoTitle: faker.lorem.words(3),
@@ -279,6 +279,7 @@ async function seedDatabase() {
         prisma.merchant.create({
           data: {
             businessName: merchant.name,
+            slug: faker.helpers.slugify(merchant.name),
             phone: merchant.phone,
             logoUrl: merchant.logoUrl,
             bannerUrl: merchant.bannerUrl,
@@ -400,13 +401,30 @@ async function seedDatabase() {
         const basePrice = template.price
         const savings = template.compareAtPrice ? template.compareAtPrice - basePrice : 0
 
+        // Create additional media records for product images
+        const productImageCount = faker.number.int({ min: 2, max: 5 })
+        const productImages = await Promise.all(
+          Array(productImageCount)
+            .fill(null)
+            .map(async (_, i) => {
+              const imageUrl = unsplashImages[(index + i) % unsplashImages.length]
+              return prisma.media.create({
+                data: {
+                  fileName: `${faker.helpers.slugify(template.name)}_img_${i + 1}.jpg`,
+                  creatorId: creatorId,
+                  url: imageUrl,
+                  blurDataUrl: await getBlurDataUrl(imageUrl),
+                },
+              })
+            })
+        )
+
         return prisma.product.create({
           data: {
             creatorId: creatorId,
             title: template.name,
             slug: faker.helpers.slugify(template.name),
             description: `${template.name} - Premium quality ${template.category.toLowerCase()} product`,
-            mediaId: productMedia.id,
             price: basePrice,
             compareAtPrice: template.compareAtPrice,
             inventory: {
@@ -420,9 +438,6 @@ async function seedDatabase() {
             rating: faker.number.float({ min: 3.5, max: 5.0 }),
             reviewCount: faker.number.int({ min: 50, max: 500 }),
             stock: faker.number.int({ min: 20, max: 200 }),
-            images: Array(faker.number.int({ min: 2, max: 5 })).fill(null).map((_, i) =>
-              unsplashImages[(index + i) % unsplashImages.length]
-            ),
             badges: template.badges as ('BEST_SELLER' | 'ORGANIC' | 'NO_PRESERVATIVES' | 'LOW_FAT' | 'LOW_SUGAR' | 'NON_GMO' | 'NEW' | 'SALE')[],
             weight: template.unit === 'lb' ? faker.number.float({ min: 0.5, max: 5.0 }) : undefined,
             weightUnit: template.unit === 'lb' ? 'lb' : undefined,
@@ -436,6 +451,13 @@ async function seedDatabase() {
               (template.category === 'Food' && m.merchantType === 'FOOD') ||
               (m.merchantType === 'GROCERY')
             )).id,
+            // Connect to main product image and additional images
+            images: {
+              connect: [
+                { id: productMedia.id }, // Main product image
+                ...productImages.map(img => ({ id: img.id })) // Additional images
+              ]
+            },
             categories: {
               create: productCategories.slice(0, 2).map(category => ({
                 categoryId: category.id,
@@ -505,6 +527,7 @@ async function seedDatabase() {
 
           return prisma.order.create({
             data: {
+              merchantId: faker.helpers.arrayElement(merchantRecords).id,
               deliveryInfo: {
                 address: faker.location.streetAddress(),
                 additionalNotes: Math.random() > 0.5 ? faker.lorem.sentence() : null,

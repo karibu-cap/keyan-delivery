@@ -1,6 +1,5 @@
 import cloudinary from '@/lib/cloudinary'
 import { normalizeFileName } from '@/lib/utils'
-import { Media } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -39,7 +38,7 @@ export async function POST(request: NextRequest) {
             )
             .end(buffer)
         })
-        const cloudinaryResponse = uploadResponse as any
+        const cloudinaryResponse = uploadResponse as Record<string, unknown>
         const mediaUrl = cloudinaryResponse.secure_url
 
         // Generate blur data URL for images
@@ -48,14 +47,14 @@ export async function POST(request: NextRequest) {
           ? { base64: null }
           : await getPlaiceholder(buffer)
 
-        const media: Media = {
-            fileName: fileName,
-            url: mediaUrl,
-            blurDataUrl: base64,
-            creatorId: 'guest',
-            id: uuidv4(),
-            createdAt: new Date(),
-            updatedAt: new Date()
+        const media = {
+          fileName: fileName,
+          url: mediaUrl,
+          blurDataUrl: base64,
+          creatorId: 'guest',
+          id: uuidv4(),
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
         return media
       }),

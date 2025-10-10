@@ -42,7 +42,7 @@ export const useSearch = (): UseSearchReturn => {
                 id: product.id,
                 title: product.title,
                 type: 'product' as const,
-                image: product.media.url,
+                image: product.images[0].url,
                 price: product.price,
                 merchant: product.merchant.businessName,
             }));
@@ -54,7 +54,11 @@ export const useSearch = (): UseSearchReturn => {
 
     const searchMerchants = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
         try {
-            const response = await fetchMerchants(searchQuery);
+            const response = await fetchMerchants({
+                search: searchQuery,
+                limit: 5,
+                offset: 0
+            });
             if (!response.merchants.length) return [];
 
             return response.merchants.map((merchant: IMerchant) => ({
@@ -72,7 +76,11 @@ export const useSearch = (): UseSearchReturn => {
 
     const searchCategories = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
         try {
-            const response = await fetchCategories(searchQuery);
+            const response = await fetchCategories({
+                search: searchQuery,
+                limit: 5,
+                offset: 0
+            });
             if (!response.categories.length) return [];
 
             return response.categories.map((category: Category) => ({

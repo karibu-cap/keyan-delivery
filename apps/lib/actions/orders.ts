@@ -1,7 +1,7 @@
 
 
 export async function createOrders(orderData: unknown): Promise<boolean> {
-    const response = await fetch('/api/client/orders', {
+    const response = await fetch('/api/v1/client/orders', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

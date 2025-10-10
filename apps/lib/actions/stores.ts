@@ -8,7 +8,7 @@ export type IProduct = Prisma.ProductGetPayload<{
         category: true
       }
     }
-    media: true
+    images: true
     merchant: true
   }
 }>
@@ -21,7 +21,7 @@ export type IMerchant = Prisma.MerchantGetPayload<{
             category: true
           }
         }
-        media: true
+        images: true
         merchant: true
       }
     };
@@ -54,12 +54,51 @@ export interface Category {
   seoMetadata?: SeoMetadata | null;
 }
 
-export async function fetchMerchants(
-  search?: string,
-  category?: string,
-  limit: number = 20,
-  offset: number = 0
-): Promise<{ merchants: IMerchant[]; pagination: PaginationInfo }> {
+
+interface Aisle {
+  id: string;
+  name: string;
+  count: number;
+}
+
+export async function fetchStoreDataById(id: string): Promise<{
+  merchant: IMerchant;
+  aisles: Aisle[];
+} | null> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/v1/client/merchants/${id}`, {
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      return null;
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error('Error fetching store data:', error);
+    return null;
+  }
+}
+
+export async function fetchMerchants({
+  search,
+  category,
+  limit = 20,
+  offset = 0
+}: {
+  search?: string;
+  category?: string;
+  limit: number;
+  offset: number;
+}): Promise<{ merchants: IMerchant[]; pagination: PaginationInfo }> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const params = new URLSearchParams();
@@ -69,7 +108,7 @@ export async function fetchMerchants(
     params.append('offset', offset.toString());
 
     const response = await fetch(
-      `${baseUrl}/api/v1/merchants?${params.toString()}`,
+      `${baseUrl}/api/v1/client/merchants?${params.toString()}`,
       {
         cache: 'no-store',
       }
@@ -92,10 +131,17 @@ export async function fetchMerchants(
   }
 }
 
-export async function fetchCategories(search?: string,
-  category?: string,
-  limit: number = 20,
-  offset: number = 0): Promise<{ categories: Category[] }> {
+export async function fetchCategories({
+  search,
+  category,
+  limit = 20,
+  offset = 0
+}: {
+  search?: string;
+  category?: string;
+  limit: number;
+  offset: number;
+}): Promise<{ categories: Category[] }> {
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const params = new URLSearchParams();
@@ -105,7 +151,7 @@ export async function fetchCategories(search?: string,
   params.append('offset', offset.toString());
   try {
     const response = await fetch(
-      `${baseUrl}/api/v1/categories`,
+      `${baseUrl}/api/v1/client/categories?${params.toString()}`,
       {
         cache: 'no-store',
       }
@@ -132,7 +178,7 @@ export async function searchStores(searchQuery: string): Promise<IMerchant[]> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const response = await fetch(
-      `${baseUrl}/api/v1/merchants?search=${encodeURIComponent(searchQuery)}`,
+      `${baseUrl}/api/v1/client/merchants?search=${encodeURIComponent(searchQuery)}`,
       {
         cache: 'no-store',
       }
@@ -159,7 +205,7 @@ export async function filterStoresByCategory(categoryId: string): Promise<IMerch
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const response = await fetch(
-      `${baseUrl}/api/v1/merchants?category=${encodeURIComponent(categoryId)}`,
+      `${baseUrl}/api/v1/client/merchants?category=${encodeURIComponent(categoryId)}`,
       {
         cache: 'no-store',
       }
