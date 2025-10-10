@@ -34,7 +34,7 @@ interface AuthState {
   error: string | null
   signIn: (email: string, password: string) => Promise<void>
   signUp: (data: SignUpData) => Promise<void>
-  signInWithGoogle: (data: SignUpData) => Promise<void>
+  signInWithGoogle: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
   logout: () => Promise<void>
   setUser: (user: User | null) => void
@@ -123,7 +123,7 @@ const useAuthStore = create(
         }
       },
 
-      signInWithGoogle: async (data: SignUpData) => {
+      signInWithGoogle: async () => {
         try {
           set({ loading: true, error: null })
           const provider = new GoogleAuthProvider()
@@ -132,12 +132,10 @@ const useAuthStore = create(
           // Create or update user in database using Prisma API (default to customer role for Google sign-in)
           const userData = {
             email: userCredential.user.email || '',
-            userId: userCredential.user.uid,
+            authId: userCredential.user.uid,
             fullName: userCredential.user.displayName,
             avatar: userCredential.user.photoURL,
-            roles: data.role ? [data.role] : [UserRole.customer],
-            cni: data.cni || null,
-            driverDocument: data.driverDocument || null,
+            roles: [UserRole.customer],
           }
 
           const response = await setUser(userData)
@@ -156,7 +154,8 @@ const useAuthStore = create(
               Authorization: `Bearer ${idToken}`,
             },
           })
-          set({ loading: false })
+          console.log(response)
+          set({ loading: false, user: response })
         } catch (error) {
           const authError = error as AuthError
           set({ error: getAuthErrorMessage(authError.code), loading: false })

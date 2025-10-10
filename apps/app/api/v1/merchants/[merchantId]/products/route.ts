@@ -1,8 +1,15 @@
 import { getUserTokens } from '@/lib/firebase-client/firebase-utils';
 import { prisma } from '@/lib/prisma';
 import { generateSlug } from '@/lib/utils';
-import { Media, ProductStatus } from '@prisma/client';
+import { ProductStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+
+interface ProductImageInput {
+    url: string;
+    fileName?: string;
+    blurDataUrl?: string;
+    categoryIds?: string[];
+}
 
 export async function GET(request: NextRequest, props: { params: Promise<{ merchantId: string }> }) {
     try {
@@ -175,9 +182,9 @@ export async function POST(request: NextRequest, props: { params: Promise<{ merc
                 stock: parseInt(stock),
                 unit: unit || 'unit',
                 status: status || ProductStatus.DRAFT,
-                visibility: status === ProductStatus.VERIFIED,
+                visibility: status === ProductStatus.WAITING_FOR_REVIEW,
                 merchantId: params.merchantId,
-                creatorId: user?.authId,
+                creatorId: user.id,
                 weight: weight ? parseFloat(weight) : null,
                 weightUnit: weightUnit || 'lb',
                 badges: badges || [],
@@ -191,9 +198,16 @@ export async function POST(request: NextRequest, props: { params: Promise<{ merc
                     seoDescription: description.substring(0, 160),
                     keywords: title.split(' ').filter((w: string) => w.length > 3)
                 },
-                images: {
-                    connect: images.map((media: Media) => ({ id: media.id }))
-                },
+                images: images && images.length > 0 ? {
+                    create: images
+                        .filter((image: ProductImageInput) => image && image.url)
+                        .map((image: ProductImageInput) => ({
+                            url: image.url,
+                            fileName: image.fileName || `product-image-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                            blurDataUrl: image.blurDataUrl,
+                            creatorId: user.authId,
+                        }))
+                } : undefined,
                 categories: categoryIds && categoryIds.length > 0 ? {
                     create: categoryIds.map((categoryId: string) => ({
                         category: {

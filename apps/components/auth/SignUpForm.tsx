@@ -1,4 +1,3 @@
-// apps/components/auth/SignUpForm.tsx
 'use client'
 
 import { useForm } from 'react-hook-form'
@@ -22,6 +21,8 @@ import { useAuthStore } from '@/hooks/auth-store'
 import { signUpSchema, SignUpSchemaType } from '@/lib/validation/user'
 import { UserRole } from '@prisma/client'
 import { useState } from 'react'
+import { ROUTES } from '@/lib/router'
+import { useRouter } from 'next/navigation'
 
 interface SignUpFormProps {
   onToggleForm(): void
@@ -38,6 +39,7 @@ const roleOptions = [
 
 export function SignUpForm({ onToggleForm }: SignUpFormProps) {
   const { toast } = useToast()
+  const router = useRouter()
   const { signUp, signInWithGoogle, loading, error } = useAuthStore()
   const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.customer)
 
@@ -64,7 +66,7 @@ export function SignUpForm({ onToggleForm }: SignUpFormProps) {
         title: 'Account created',
         description: 'Welcome! Your account has been created successfully.',
       })
-      onToggleForm()
+      router.replace(ROUTES.home)
     } catch (err) {
       console.error(err)
       form.setError('root', {
@@ -74,19 +76,14 @@ export function SignUpForm({ onToggleForm }: SignUpFormProps) {
     }
   }
 
-  const handleGoogleSignIn = async (data: SignUpSchemaType) => {
+  const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle({
-        fullName: data.fullName,
-        email: data.email,
-        password: data.password,
-        role: selectedRole,
-      })
+      await signInWithGoogle()
       toast({
         title: 'Welcome!',
         description: 'You have successfully signed in with Google',
       })
-      onToggleForm()
+      router.replace(ROUTES.home)
     } catch (err) {
       form.setError('root', {
         type: 'manual',
@@ -202,7 +199,7 @@ export function SignUpForm({ onToggleForm }: SignUpFormProps) {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={form.handleSubmit(handleGoogleSignIn)}
+              onClick={handleGoogleSignIn}
               disabled={loading}
             >
               <GoogleIcon className="mr-2 h-4 w-4" />
