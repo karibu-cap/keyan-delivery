@@ -26,6 +26,7 @@ import { useRouter } from 'next/navigation'
 
 interface SignUpFormProps {
   onToggleForm(): void
+  redirectTo?: string
 }
 
 const roleOptions = [
@@ -37,7 +38,7 @@ const roleOptions = [
   },
 ]
 
-export function SignUpForm({ onToggleForm }: SignUpFormProps) {
+export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
   const { toast } = useToast()
   const router = useRouter()
   const { signUp, signInWithGoogle, loading, error } = useAuthStore()
@@ -66,7 +67,7 @@ export function SignUpForm({ onToggleForm }: SignUpFormProps) {
         title: 'Account created',
         description: 'Welcome! Your account has been created successfully.',
       })
-      router.replace(ROUTES.home)
+      router.replace(redirectTo || ROUTES.home)
     } catch (err) {
       console.error(err)
       form.setError('root', {
@@ -82,7 +83,7 @@ export function SignUpForm({ onToggleForm }: SignUpFormProps) {
       title: 'Welcome!',
       description: 'You have successfully signed in with Google',
     })
-    router.replace(ROUTES.home)
+    router.replace(redirectTo || ROUTES.home)
   }
 
   return (

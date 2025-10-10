@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     Dialog,
     DialogContent,
@@ -8,25 +8,36 @@ import {
 } from '@/components/ui/dialog'
 import { SignInForm } from './SignInForm'
 import { SignUpForm } from './SignUpForm'
+import { useAuthStore } from '@/hooks/auth-store'
+import { useRouter } from 'next/navigation'
+import { ROUTES } from '@/lib/router'
 
 interface AuthModalProps {
     children: React.ReactNode
     open?: boolean
     onOpenChange?: (open: boolean) => void
+    redirectTo?: string
 }
 
-export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
+export function AuthModal({ children, open, onOpenChange, redirectTo }: AuthModalProps) {
     const [isSignIn, setIsSignIn] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
+    const { user } = useAuthStore();
+    const route = useRouter()
+    const redirectPath = redirectTo ?? ROUTES.home
 
     const handleToggleForm = () => {
         setIsSignIn(!isSignIn)
     }
 
     const handleOpenChange = (newOpen: boolean) => {
+        if (user && redirectTo) {
+            route.push(redirectTo)
+            return
+        }
         setIsOpen(newOpen)
         if (!newOpen) {
-            setIsSignIn(true) // Reset to sign in form when closing
+            setIsSignIn(true)
         }
         onOpenChange?.(newOpen)
     }
@@ -40,9 +51,10 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
                 {isSignIn ? (
                     <SignInForm
                         onToggleForm={handleToggleForm}
+                        redirectTo={redirectPath}
                     />
                 ) : (
-                    <SignUpForm onToggleForm={handleToggleForm} />
+                    <SignUpForm onToggleForm={handleToggleForm} redirectTo={redirectPath} />
                 )}
             </DialogContent>
         </Dialog>
