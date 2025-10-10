@@ -31,7 +31,7 @@ export const getMediaById = async (mediaId: string, token: string): Promise<stri
 }
 
 export const getUserById = async (id: string): Promise<User | null> => {
-  const user = await fetch(`/api/users/${id}`, {
+  const user = await fetch(`/api/v1/users/${id}`, {
     method: 'GET',
   })
   if (!user.ok) {
@@ -53,7 +53,7 @@ export const setUser = async (data: unknown) => {
 }
 
 export const getUserMerchants = async (userId: string): Promise<Merchant[]> => {
-  const user = await fetch(`/api/users/${userId}`)
+  const user = await fetch(`/api/v1/users/${userId}`)
   if (!user.ok) {
     return []
   }

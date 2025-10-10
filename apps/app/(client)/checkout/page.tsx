@@ -17,7 +17,6 @@ import {
   CreditCard,
   Shield,
 } from "lucide-react";
-import { toast } from "sonner";
 import { useCart } from "@/hooks/use-cart";
 import { ROUTES } from "@/lib/router";
 import Image from "next/image";
@@ -329,7 +328,7 @@ const EnhancedCheckout = () => {
                   {cartItems.map((item) => (
                     <div key={item.product.id} className="flex gap-3">
                       <Image
-                        src={item.product.media?.url || "/placeholder.svg"}
+                        src={item.product.images[0].url || "/placeholder.svg"}
                         alt={item.product.title}
                         className="w-16 h-16 rounded-2xl object-cover"
                         width={64}

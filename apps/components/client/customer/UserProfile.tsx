@@ -10,9 +10,8 @@ import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { ArrowLeftIcon, UserIcon, MapPinIcon, CreditCardIcon, BellIcon, ShieldIcon, HelpCircleIcon, StoreIcon, CheckCircleIcon, ClockIcon, Store } from "lucide-react"
-import { useState, useEffect } from "react";
-import { getUserMerchants } from "@/lib/actions/client";
-import { Merchant, Prisma, User } from "@prisma/client";
+import { useState } from "react";
+import { Prisma, User } from "@prisma/client";
 
 type IUser = Prisma.UserGetPayload<{
     include: {

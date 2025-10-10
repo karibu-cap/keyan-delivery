@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import urlSlug from 'url-slug'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -19,4 +20,9 @@ export function normalizeFileName(fileName: string): string {
     .replace(/\((\d+)\)/g, '') // Remove parenthetical numbers
     .toLowerCase()
     .trim()
+}
+
+
+export function generateSlug(title: string): string {
+  return urlSlug(title)
 }

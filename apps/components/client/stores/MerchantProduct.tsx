@@ -15,7 +15,6 @@ interface MerchantProductProps {
         rating?: number | null;
         reviewCount?: number | null;
         badges?: string[];
-        images?: string[];
         weight?: number | null;
         weightUnit?: string | null;
         promotions?: Array<{
@@ -46,12 +45,12 @@ export const MerchantProduct = ({ product, index }: MerchantProductProps) => {
             <div className="relative">
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                     <Image
-                        src={product.media.url}
+                        src={product.images[0].url}
                         alt={product.title}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         onLoad={() => setImageLoaded(true)}
-                        blurDataURL={product.media.blurDataUrl ?? ''}
+                        blurDataURL={product.images[0].blurDataUrl ?? ''}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                 </div>

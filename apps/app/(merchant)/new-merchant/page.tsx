@@ -110,7 +110,6 @@ export default function NewMerchantPage() {
             })
             return;
         }
-
         if (!logoFile) {
             toast({
                 title: 'Please upload a business logo',
@@ -141,7 +140,13 @@ export default function NewMerchantPage() {
 
 
         if (!result) {
-            throw new Error("Failed to upload logo");
+            setIsSubmitting(false);
+            toast({
+                title: 'Failed to upload logo',
+                description: 'Please try again later',
+                variant: 'destructive',
+            })
+            return;
         }
 
         const logoUrl = result[0].url;
@@ -179,7 +184,6 @@ export default function NewMerchantPage() {
 
 
     };
-
     return (
         <div className="min-h-screen bg-background">
             <Navbar />

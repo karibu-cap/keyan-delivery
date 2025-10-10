@@ -62,7 +62,7 @@ export default async function OrdersPage() {
                 include: {
                     product: {
                         include: {
-                            media: true,
+                            images: true,
                         },
                     },
                 },
@@ -121,7 +121,7 @@ export default async function OrdersPage() {
                                             <div key={item.product.id} className="flex items-center gap-4">
                                                 <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
                                                     <Image
-                                                        src={item.product.media.blurDataUrl || item.product.media.url}
+                                                        src={item.product.images[0].blurDataUrl || item.product.images[0].url}
                                                         alt={item.product.title}
                                                         fill
                                                         className="object-cover"

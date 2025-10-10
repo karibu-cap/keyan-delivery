@@ -49,7 +49,7 @@ export function SignInForm({ onToggleForm, onForgotPassword }: SignInFormProps) 
         title: 'Welcome back!',
         description: 'You have successfully logged in',
       })
-      router.replace(ROUTES.dashboard)
+      router.replace(ROUTES.home)
     } catch (err) {
       console.error(err)
       form.setError('root', {
@@ -71,7 +71,7 @@ export function SignInForm({ onToggleForm, onForgotPassword }: SignInFormProps) 
         title: 'Welcome!',
         description: 'You have successfully signed in with Google',
       })
-      router.replace(ROUTES.dashboard)
+      router.replace(ROUTES.home)
     } catch (err) {
       console.error(err)
     }

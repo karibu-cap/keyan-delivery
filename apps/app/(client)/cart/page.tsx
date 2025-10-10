@@ -73,7 +73,7 @@ export default function CartPage() {
                                         <div key={item.product.id} className="flex gap-4 border-b pb-4 last:border-b-0 last:pb-0">
                                             <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
                                                 <Image
-                                                    src={item.product.media?.url || "/placeholder.svg"}
+                                                    src={item.product.images[0].url || "/placeholder.svg"}
                                                     alt={item.product.title}
                                                     fill
                                                     className="object-cover"
