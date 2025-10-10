@@ -77,19 +77,12 @@ export function SignUpForm({ onToggleForm }: SignUpFormProps) {
   }
 
   const handleGoogleSignIn = async () => {
-    try {
-      await signInWithGoogle()
-      toast({
-        title: 'Welcome!',
-        description: 'You have successfully signed in with Google',
-      })
-      router.replace(ROUTES.home)
-    } catch (err) {
-      form.setError('root', {
-        type: 'manual',
-        message: error || 'An unexpected error occurred',
-      })
-    }
+    await signInWithGoogle()
+    toast({
+      title: 'Welcome!',
+      description: 'You have successfully signed in with Google',
+    })
+    router.replace(ROUTES.home)
   }
 
   return (
