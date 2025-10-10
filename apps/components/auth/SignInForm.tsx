@@ -25,10 +25,9 @@ import { signInSchema, SignInSchemaType } from '@/lib/validation/user'
 
 interface SignInFormProps {
   onToggleForm(): void
-  onForgotPassword(): void
 }
 
-export function SignInForm({ onToggleForm, onForgotPassword }: SignInFormProps) {
+export function SignInForm({ onToggleForm }: SignInFormProps) {
   const router = useRouter()
   const { toast } = useToast()
   const { signIn, signInWithGoogle, loading, error } = useAuthStore()
@@ -127,11 +126,6 @@ export function SignInForm({ onToggleForm, onForgotPassword }: SignInFormProps) 
         <motion.div whileHover={{ scale: 1.05 }}>
           <Button variant="link" onClick={onToggleForm}>
             {"Don't have an account? Sign Up"}
-          </Button>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.05 }}>
-          <Button variant="link" onClick={onForgotPassword}>
-            Forgot password?
           </Button>
         </motion.div>
       </div>

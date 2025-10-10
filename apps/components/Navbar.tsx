@@ -11,6 +11,7 @@ import { ROUTES } from "@/lib/router";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useCart } from "@/hooks/use-cart";
 import { useDebounce } from "@/hooks/use-debounce";
+import { AuthModal } from "@/components/auth/AuthModal";
 import Image from "next/image";
 
 interface SearchResult {
@@ -263,12 +264,12 @@ const Navbar = () => {
 
             {/* User Menu */}
             {!user ? (
-              <Button variant="ghost" className="hidden sm:flex" asChild>
-                <Link href={ROUTES.signIn}>
+              <AuthModal>
+                <Button variant="ghost" className="hidden sm:flex">
                   <User className="w-5 h-5 mr-2" />
                   Sign In
-                </Link>
-              </Button>
+                </Button>
+              </AuthModal>
             ) : (
               <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                 <PopoverTrigger asChild>
@@ -410,12 +411,12 @@ const Navbar = () => {
                 </Link>
               </Button>
               {!user ? (
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href={ROUTES.signIn}>
+                <AuthModal>
+                  <Button variant="outline" className="w-full">
                     <User className="w-5 h-5 mr-2" />
                     Sign In
-                  </Link>
-                </Button>
+                  </Button>
+                </AuthModal>
               ) : (
                 <Button variant="outline" className="w-full" asChild>
                   <Link href={ROUTES.profile}>
