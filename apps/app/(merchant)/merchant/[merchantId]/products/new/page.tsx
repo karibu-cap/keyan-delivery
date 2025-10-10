@@ -158,20 +158,17 @@ export default function NewProductPage() {
                 images: uploadedMedia
             }, params.merchantId)
 
-
-            const data = await res.json();
-
-            if (data.success) {
+            if (res.success) {
                 toast({
                     title: 'Success!',
-                    description: data.message,
+                    description: res.message,
                     variant: 'default'
                 });
                 router.push(`/merchant/${params.merchantId}/products`);
             } else {
                 toast({
                     title: 'Error',
-                    description: data.error,
+                    description: res.error,
                     variant: 'destructive'
                 });
             }
@@ -492,7 +489,7 @@ export default function NewProductPage() {
                         <Button
                             type="button"
                             className="flex-1 bg-[#0aad0a] hover:bg-[#089808]"
-                            onClick={() => handleSubmit(ProductStatus.VERIFIED)}
+                            onClick={() => handleSubmit(ProductStatus.WAITING_FOR_REVIEW)}
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (

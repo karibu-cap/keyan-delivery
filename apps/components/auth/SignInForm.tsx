@@ -59,14 +59,9 @@ export function SignInForm({ onToggleForm, onForgotPassword }: SignInFormProps) 
     }
   }
 
-  const handleGoogleSignIn = async (data: SignInSchemaType) => {
+  const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle({
-        fullName: '',
-        email: data.email,
-        password: data.password,
-        role: 'customer',
-      })
+      await signInWithGoogle()
       toast({
         title: 'Welcome!',
         description: 'You have successfully signed in with Google',
@@ -118,7 +113,7 @@ export function SignInForm({ onToggleForm, onForgotPassword }: SignInFormProps) 
               type="button"
               variant="outline"
               className="w-full"
-              onClick={form.handleSubmit(handleGoogleSignIn)}
+              onClick={handleGoogleSignIn}
               disabled={loading}
             >
               <GoogleIcon className="mr-2 h-4 w-4" />

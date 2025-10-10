@@ -184,7 +184,6 @@ const Index = () => {
             <Button
               asChild
               size="lg"
-              variant="outline"
               className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
             >
               <Link href={ROUTES.newMerchant}>

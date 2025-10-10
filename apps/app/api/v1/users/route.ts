@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const POST = async (request: NextRequest) => {
   const data = await request.json()
-
   if (!data.email || !data.authId) {
     return NextResponse.json('Invalid data: email and authId are required', { status: 400 })
   }
@@ -47,10 +46,14 @@ export const POST = async (request: NextRequest) => {
       },
     })
 
-    return NextResponse.json(user, { status: 200 })
+    return NextResponse.json({
+      success: true,
+      data: user,
+      message: 'User created successfully'
+    }, { status: 200 })
   } catch (e) {
     console.error('Error creating/updating user:', e)
-    return NextResponse.json(`Internal error: ${e}`, { status: 500 })
+    return NextResponse.json({ success: false, error: `Internal error: ${e}` }, { status: 500 })
   }
 }
 

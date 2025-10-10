@@ -38,6 +38,8 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { deleteProduct, getMerchantProducts } from "@/lib/actions/merchants";
+import Image from "next/image";
+import { IProduct } from "@/lib/actions/stores";
 
 interface Product {
     id: string;
@@ -65,8 +67,8 @@ export default function MerchantProductsPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
-    const [products, setProducts] = useState<Product[]>([]);
-    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<IProduct[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -84,14 +86,13 @@ export default function MerchantProductsPage() {
         try {
             setLoading(true);
             const res = await getMerchantProducts(params.merchantId, { limit: 100 });
-            const data = await res.json();
 
-            if (data.success) {
-                setProducts(data.products);
+            if (res.success) {
+                setProducts(res.products);
             } else {
                 toast({
                     title: 'Error',
-                    description: data.error,
+                    description: res.error,
                     variant: 'destructive'
                 });
             }
@@ -163,6 +164,8 @@ export default function MerchantProductsPage() {
                 return 'bg-muted text-muted-foreground';
             case 'REJECTED':
                 return 'bg-destructive text-destructive-foreground';
+            case 'WAITING_FOR_REVIEW':
+                return 'bg-warning text-warning-foreground';
             default:
                 return 'bg-muted text-muted-foreground';
         }
@@ -176,6 +179,8 @@ export default function MerchantProductsPage() {
                 return Edit;
             case 'REJECTED':
                 return XCircle;
+            case 'WAITING_FOR_REVIEW':
+                return AlertCircle;
             default:
                 return Clock;
         }
@@ -237,6 +242,7 @@ export default function MerchantProductsPage() {
                                 <SelectItem value="VERIFIED">Verified</SelectItem>
                                 <SelectItem value="DRAFT">Draft</SelectItem>
                                 <SelectItem value="REJECTED">Rejected</SelectItem>
+                                <SelectItem value="WAITING_FOR_REVIEW">Waiting for Review</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -253,7 +259,13 @@ export default function MerchantProductsPage() {
                                 {products.filter(p => p.status === 'DRAFT').length} Draft
                             </Badge>
                             <Badge variant="outline">
-                                {products.filter(p => p.stock <= 5).length} Low Stock
+                                {products.filter(p => p.status === 'REJECTED').length} Rejected
+                            </Badge>
+                            <Badge variant="outline">
+                                {products.filter(p => p.status === 'WAITING_FOR_REVIEW').length} Waiting for Review
+                            </Badge>
+                            <Badge variant="outline">
+                                {products.filter(p => (p.inventory?.quantity ?? 0) <= (p.inventory?.lowStockThreshold ?? 0)).length} Low Stock
                             </Badge>
                         </div>
                     </div>
@@ -280,16 +292,18 @@ export default function MerchantProductsPage() {
                         <div className="space-y-3">
                             {filteredProducts.map((product) => {
                                 const StatusIcon = getStatusIcon(product.status);
-                                const isLowStock = product.stock <= 5;
+                                const isLowStock = (product.inventory?.quantity ?? 0) <= (product.inventory?.lowStockThreshold ?? 0);
 
                                 return (
                                     <div
                                         key={product.id}
                                         className="flex items-center gap-4 p-4 rounded-2xl border border-border hover:shadow-card transition-all"
                                     >
-                                        <img
-                                            src={product.media.url}
+                                        <Image
+                                            src={product.images?.[0].url}
                                             alt={product.title}
+                                            width={80}
+                                            height={80}
                                             className="w-20 h-20 rounded-2xl object-cover"
                                         />
 
@@ -322,20 +336,10 @@ export default function MerchantProductsPage() {
                                                 </span>
                                                 <span>•</span>
                                                 <span>{product._count.OrderItem} orders</span>
-                                                <span>•</span>
-                                                <span>{product._count.cartItems} in carts</span>
                                             </div>
                                         </div>
 
                                         <div className="flex gap-2">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="rounded-2xl"
-                                                onClick={() => router.push(`/product/${product.id}`)}
-                                            >
-                                                <Eye className="w-4 h-4" />
-                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"

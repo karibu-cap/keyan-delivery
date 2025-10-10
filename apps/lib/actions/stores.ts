@@ -10,7 +10,14 @@ export type IProduct = Prisma.ProductGetPayload<{
     }
     images: true
     merchant: true
+    _count: {
+      select: {
+        OrderItem: true,
+        cartItems: true,
+      },
+    },
   }
+
 }>
 export type IMerchant = Prisma.MerchantGetPayload<{
   include: {

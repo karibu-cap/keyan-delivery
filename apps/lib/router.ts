@@ -14,8 +14,8 @@ export const ROUTES = {
 
 
   // Auth routes
-  signIn: '/login',
-  signup: '/signup',
+  signIn: '/sign-in',
+  signup: '/sign-up',
   profile: '/profile',
 
   // Customer routes

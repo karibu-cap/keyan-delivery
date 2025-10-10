@@ -57,6 +57,7 @@ enum ProductStatus {
     DRAFT
     VERIFIED
     REJECTED
+    WAITING_FOR_REVIEW
 }
 
 enum UserRole {

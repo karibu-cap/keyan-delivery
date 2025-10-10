@@ -46,10 +46,12 @@ export const setUser = async (data: unknown) => {
     method: 'POST',
     body: JSON.stringify(data),
   })
-  if (user.ok) {
-    return true
+  const res = await user.json()
+
+  if (res.success) {
+    return res.data
   }
-  return false
+  return null
 }
 
 export const getUserMerchants = async (userId: string): Promise<Merchant[]> => {
