@@ -1,8 +1,7 @@
-"use server";
-
 import Navbar from "@/components/Navbar";
 import MerchantProductList from "@/components/client/stores/MerchantProductList";
-import { fetchStoreDataById } from "@/lib/actions/stores";
+import { fetchStoreDataById, IMerchant } from "@/lib/actions/stores";
+
 
 export default async function StoreDetail(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -31,7 +30,7 @@ export default async function StoreDetail(props: { params: Promise<{ id: string 
     <>
       <Navbar />
       <MerchantProductList
-        initialStore={merchant}
+        initialStore={merchant as unknown as IMerchant}
         initialAisles={aisles}
       />
     </>

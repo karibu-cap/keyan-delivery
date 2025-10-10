@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingBag, Clock, Star, Truck, Store, Pill, UtensilsCrossed } from "lucide-react";
-import { fetchMerchants, IMerchant } from "@/lib/actions/stores";
+import { IMerchant } from "@/lib/actions/stores";
 import { MerchantType } from "@prisma/client";
 import {
   Select,
@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fetchMerchants } from "@/lib/actions/client/stores";
 
 const merchantTypeFilters = [
   { id: "all", name: "All stores", count: 0 },

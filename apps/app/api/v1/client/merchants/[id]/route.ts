@@ -64,6 +64,8 @@ export async function GET(req: Request, props: { params: Promise<{ id: string }>
     })
     const aisles = Object.values(categories)
 
+    console.log(merchant)
+
     return NextResponse.json({
       success: true,
       data: {
