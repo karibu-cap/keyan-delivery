@@ -271,13 +271,13 @@ const MerchantProductList = ({ initialStore, initialAisles }: StoreDetailClientP
                 {/* Desktop Layout */}
                 <div className="lg:flex">
                     {/* Left Sidebar */}
-                    <div className="hidden lg:flex">
+                    {initialAisles && initialAisles.length > 1 && <div className="hidden lg:flex">
                         <CategorySidebar
                             aisles={initialAisles}
                             selectedCategory={selectedCategory}
                             onCategorySelect={setSelectedCategory}
                         />
-                    </div>
+                    </div>}
 
                     {/* Main Content Area */}
                     <div className="flex-2 p-6">

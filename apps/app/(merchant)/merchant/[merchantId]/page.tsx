@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { getMerchantOrders, getMerchantProducts, updateOrderStatus } from "@/lib/actions/merchants";
 import { OrderStatus } from "@prisma/client";
+import { IProduct } from "@/lib/actions/stores";
 
 interface Order {
     id: string;
@@ -78,7 +79,7 @@ export default function MerchantDashboardPage() {
     const [loading, setLoading] = useState(true);
     const [activeOrders, setActiveOrders] = useState<Order[]>([]);
     const [historyOrders, setHistoryOrders] = useState<Order[]>([]);
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<IProduct[]>([]);
     const [pendingCount, setPendingCount] = useState(0);
     const [stats, setStats] = useState({
         totalProducts: 0,
@@ -530,7 +531,7 @@ export default function MerchantDashboardPage() {
                                 onClick={() => router.push(`/merchant/${params.merchantId}/products/${product.id}`)}
                             >
                                 <img
-                                    src={product.media.url}
+                                    src={product.images[0].url}
                                     alt={product.title}
                                     className="w-16 h-16 rounded-2xl object-cover"
                                 />

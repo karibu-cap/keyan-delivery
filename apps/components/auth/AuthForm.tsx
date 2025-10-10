@@ -53,7 +53,6 @@ export function AuthForm(props: AuthFormProps) {
         ) : isLogin ? (
           <SignInForm
             onToggleForm={() => { toggleForm(false); setError(null); setLoading(false); }}
-            onForgotPassword={toggleResetPassword}
           />
         ) : (
           <SignUpForm onToggleForm={() => { toggleForm(true); setError(null); setLoading(false); }} />

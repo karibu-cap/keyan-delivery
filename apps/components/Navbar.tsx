@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ShoppingCart, Menu, X, User, Store, Search, MapPin, Zap, ChevronDown, LogOut, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,16 +12,12 @@ import { useAuthStore } from "@/hooks/auth-store";
 import { useCart } from "@/hooks/use-cart";
 import { useDebounce } from "@/hooks/use-debounce";
 import { AuthModal } from "@/components/auth/AuthModal";
+import { ProductModal } from "@/components/ui/product-modal";
 import Image from "next/image";
+import { search, SearchResult } from "@/lib/actions/client";
+import { IProduct } from "@/lib/actions/stores";
 
-interface SearchResult {
-  id: string;
-  title: string;
-  type: 'product' | 'merchant' | 'category';
-  image?: string;
-  price?: number;
-  category?: string;
-}
+
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,15 +27,15 @@ const Navbar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
 
-  const pathname = usePathname();
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null);
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  const isActive = (path: string) => pathname === path;
   const { user, logout } = useAuthStore()
-  const { cartItems, totalItems } = useCart()
+  const { cartItems } = useCart()
   const quantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSignOut = async () => {
@@ -61,11 +57,8 @@ const Navbar = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      if (response.ok) {
-        const data = await response.json();
-        setSearchResults(data.results || []);
-      }
+      const response = await search(query);
+      setSearchResults(response);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
@@ -87,65 +80,31 @@ const Navbar = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsSearchOpen(false);
-        setSelectedIndex(-1);
+        // Only close if we're not clicking on a search result button
+        const target = event.target as Element;
+        if (!target.closest('[data-search-result]')) {
+          setIsSearchOpen(false);
+          setSelectedIndex(-1);
+        }
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setIsSearchOpen(false);
-    }
-  };
-
-  const handleResultClick = (result: SearchResult) => {
+  const handleResultClick = async (result: SearchResult) => {
     setIsSearchOpen(false);
     setSearchQuery("");
 
     switch (result.type) {
       case 'product':
-        router.push(`/product/${result.id}`);
+        if (result.product) {
+          setSelectedProduct(result.product);
+          setIsProductModalOpen(true);
+        }
         break;
       case 'merchant':
         router.push(`/stores/${result.id}`);
-        break;
-      case 'category':
-        router.push(`/category/${result.id}`);
-        break;
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!isSearchOpen || searchResults.length === 0) return;
-
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setSelectedIndex(prev =>
-          prev < searchResults.length - 1 ? prev + 1 : prev
-        );
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (selectedIndex >= 0) {
-          handleResultClick(searchResults[selectedIndex]);
-        } else {
-          handleSearchSubmit(e);
-        }
-        break;
-      case 'Escape':
-        setIsSearchOpen(false);
-        setSelectedIndex(-1);
         break;
     }
   };
@@ -167,17 +126,14 @@ const Navbar = () => {
           {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-lg mx-8" ref={searchRef}>
             <div className="relative w-full">
-              <form onSubmit={handleSearchSubmit}>
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search products, stores, and recipes"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </form>
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search products, stores, and recipes"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
 
               {/* Search Results Dropdown */}
               {isSearchOpen && (
@@ -193,6 +149,7 @@ const Navbar = () => {
                         <button
                           key={`${result.type}-${result.id}`}
                           onClick={() => handleResultClick(result)}
+                          data-search-result
                           className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 ${index === selectedIndex ? 'bg-gray-50' : ''
                             }`}
                         >
@@ -327,17 +284,14 @@ const Navbar = () => {
         {/* Mobile Search Bar */}
         <div className="md:hidden pb-4">
           <div className="relative" ref={searchRef}>
-            <form onSubmit={handleSearchSubmit}>
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search products, stores, and recipes"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </form>
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search products, stores, and recipes"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
 
             {/* Mobile Search Results Dropdown */}
             {isSearchOpen && (
@@ -353,6 +307,8 @@ const Navbar = () => {
                       <button
                         key={`${result.type}-${result.id}`}
                         onClick={() => handleResultClick(result)}
+                        type="button"
+                        data-search-result
                         className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 ${index === selectedIndex ? 'bg-gray-50' : ''
                           }`}
                       >
@@ -429,6 +385,16 @@ const Navbar = () => {
           </div>
         )}
       </div>
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isProductModalOpen}
+        onClose={() => {
+          setIsProductModalOpen(false);
+          setSelectedProduct(null);
+        }}
+      />
     </nav>
   );
 };

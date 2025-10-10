@@ -62,7 +62,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                         {/* Main Image */}
                         <div className="relative aspect-square overflow-hidden">
                             <Image
-                                src={product.media.url}
+                                src={product.images[0].url}
                                 alt={product.title}
                                 fill
                                 className="object-cover"
@@ -107,7 +107,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                                 }`}
                                         >
                                             <Image
-                                                src={image}
+                                                src={image.url}
                                                 alt={`${product.title} ${index + 1}`}
                                                 width={64}
                                                 height={64}

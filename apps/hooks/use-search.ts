@@ -1,4 +1,5 @@
-import { Category, fetchCategories, fetchMerchants, IMerchant, IProduct } from '@/lib/actions/stores';
+import { fetchMerchants } from '@/lib/actions/client/stores';
+import { Category, fetchCategories, IMerchant, IProduct } from '@/lib/actions/stores';
 import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from './use-debounce';
 
@@ -32,7 +33,7 @@ export const useSearch = (): UseSearchReturn => {
 
     const searchProducts = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
         try {
-            const response = await fetch(`/api/client/products?search=${encodeURIComponent(searchQuery)}&limit=5`);
+            const response = await fetch(`/api/v1/client/products?search=${encodeURIComponent(searchQuery)}&limit=5`);
             if (!response.ok) throw new Error('Search failed');
 
             const data = await response.json();

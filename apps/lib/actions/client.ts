@@ -1,4 +1,16 @@
-import { Media, Merchant, User } from "@prisma/client"
+import { Media, Merchant, User } from "@prisma/client";
+import { IMerchant, IProduct } from "./stores";
+
+export interface SearchResult {
+  id: string;
+  title: string;
+  type: 'product' | 'merchant';
+  image?: string;
+  price?: number;
+  category?: string;
+  product?: IProduct;
+  merchant?: IMerchant;
+}
 
 export const uploadImages = async (files: File[]): Promise<Media[] | null> => {
   const formData = new FormData()
@@ -62,5 +74,14 @@ export const getUserMerchants = async (userId: string): Promise<Merchant[]> => {
   const res = await user.json()
   return res.data.merchants
 
+}
+
+export const search = async (query: string): Promise<SearchResult[]> => {
+  const search = await fetch(`/api/v1/client/search?q=${encodeURIComponent(query)}`)
+  if (!search.ok) {
+    return []
+  }
+  const res = await search.json()
+  return res.results
 }
 

@@ -1,6 +1,8 @@
 "use server";
 
+import { prisma } from '@/lib/prisma';
 import { Prisma } from "@prisma/client";
+
 export type IProduct = Prisma.ProductGetPayload<{
   include: {
     categories: {
@@ -30,6 +32,12 @@ export type IMerchant = Prisma.MerchantGetPayload<{
         }
         images: true
         merchant: true
+        _count: {
+          select: {
+            OrderItem: true,
+            cartItems: true,
+          },
+        },
       }
     };
     managers: true;
@@ -43,14 +51,6 @@ interface SeoMetadata {
   keywords: string[];
 }
 
-interface PaginationInfo {
-  total: number;
-  limit: number;
-  offset: number;
-  hasMore: boolean;
-}
-
-
 export interface Category {
   id: string;
   name: string;
@@ -62,81 +62,14 @@ export interface Category {
 }
 
 
-interface Aisle {
+export interface Aisle {
   id: string;
   name: string;
   count: number;
 }
 
-export async function fetchStoreDataById(id: string): Promise<{
-  merchant: IMerchant;
-  aisles: Aisle[];
-} | null> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/v1/client/merchants/${id}`, {
-      cache: 'no-store',
-    });
 
-    if (!response.ok) {
-      return null;
-    }
 
-    const result = await response.json();
-
-    if (!result.success) {
-      return null;
-    }
-
-    return result.data;
-  } catch (error) {
-    console.error('Error fetching store data:', error);
-    return null;
-  }
-}
-
-export async function fetchMerchants({
-  search,
-  category,
-  limit = 20,
-  offset = 0
-}: {
-  search?: string;
-  category?: string;
-  limit: number;
-  offset: number;
-}): Promise<{ merchants: IMerchant[]; pagination: PaginationInfo }> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    if (category) params.append('category', category);
-    params.append('limit', limit.toString());
-    params.append('offset', offset.toString());
-
-    const response = await fetch(
-      `${baseUrl}/api/v1/client/merchants?${params.toString()}`,
-      {
-        cache: 'no-store',
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch merchants');
-    }
-
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch merchants');
-    }
-
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching merchants:', error);
-    throw new Error('Failed to fetch merchants');
-  }
-}
 
 export async function fetchCategories({
   search,
@@ -234,3 +167,92 @@ export async function filterStoresByCategory(categoryId: string): Promise<IMerch
     throw new Error('Failed to filter stores');
   }
 }
+
+export async function fetchProduct(productId: string): Promise<IProduct | null> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const response = await fetch(
+      `${baseUrl}/api/v1/client/products/${productId}`,
+      {
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      return null;
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    throw new Error('Failed to fetch product');
+  }
+}
+
+
+export async function fetchStoreDataById(id: string): Promise<{
+  merchant: Record<string, unknown>;
+  aisles: Aisle[];
+} | null> {
+  try {
+    const merchant = await prisma.merchant.findUnique({
+      where: {
+        id: id,
+        isVerified: true,
+      },
+      include: {
+        products: {
+          where: {
+            status: 'VERIFIED',
+            visibility: true,
+          },
+          include: {
+            images: true,
+            categories: {
+              include: {
+                category: true,
+              },
+            },
+          },
+        },
+        categories: {
+          select: {
+            category: true,
+          },
+        },
+      },
+    });
+
+    if (!merchant) {
+      return null;
+    }
+
+    // Generate aisles from categories
+    const categories: Record<string, Aisle> = {}
+    merchant.products.flatMap((product) => product.categories).forEach((category) => {
+      categories[category.category.id] = {
+        id: category.category.id,
+        name: category.category.name,
+        count: merchant.products.filter((product) =>
+          product.categories.some((c) => c.categoryId === category.category.id)
+        ).length,
+      }
+    })
+    const aisles = Object.values(categories)
+
+    return {
+      merchant: merchant,
+      aisles,
+    };
+  } catch (error) {
+    console.error('Error fetching store data:', error);
+    return null;
+  }
+}
+

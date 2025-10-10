@@ -9,10 +9,6 @@ const PUBLIC_PATHS = [
   '/stores',
   new RegExp('^/stores/.*$'),
   new RegExp('^/(api|trpc)/.*$'),
-  '/blogs',
-  '/blogs-ads',
-  new RegExp('^/blogs/.*$'),
-  new RegExp('^/blogs-ads/.*$'),
   '/cart',
   '/checkout',
   '/sign-in',
@@ -44,7 +40,8 @@ export async function middleware(request: NextRequest) {
     checkRevoked: true,
     authorizationHeaderName: 'Authorization',
     handleValidToken: async ({ token, decodedToken }, headers) => {
-      if (!decodedToken.email_verified) {
+      // get the expired time and see if the time pass the actual time
+      if (decodedToken.exp < Date.now() / 1000) {
         return redirectToLogin(request, {
           path: '/sign-in',
           publicPaths: PUBLIC_PATHS,
