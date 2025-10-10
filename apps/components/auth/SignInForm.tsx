@@ -25,9 +25,10 @@ import { signInSchema, SignInSchemaType } from '@/lib/validation/user'
 
 interface SignInFormProps {
   onToggleForm(): void
+  redirectTo?: string
 }
 
-export function SignInForm({ onToggleForm }: SignInFormProps) {
+export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
   const router = useRouter()
   const { toast } = useToast()
   const { signIn, signInWithGoogle, loading, error } = useAuthStore()
@@ -48,7 +49,7 @@ export function SignInForm({ onToggleForm }: SignInFormProps) {
         title: 'Welcome back!',
         description: 'You have successfully logged in',
       })
-      router.replace(ROUTES.home)
+      router.replace(redirectTo || ROUTES.home)
     } catch (err) {
       console.error(err)
       form.setError('root', {
@@ -65,7 +66,7 @@ export function SignInForm({ onToggleForm }: SignInFormProps) {
         title: 'Welcome!',
         description: 'You have successfully signed in with Google',
       })
-      router.replace(ROUTES.home)
+      router.replace(redirectTo || ROUTES.home)
     } catch (err) {
       console.error(err)
     }

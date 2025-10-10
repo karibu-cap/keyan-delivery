@@ -1,4 +1,3 @@
-// apps/app/page.tsx
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
@@ -6,6 +5,7 @@ import { ShoppingBag, Clock, Shield, Zap, Store, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/lib/router";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 const Index = () => {
   const features = [
@@ -77,15 +77,15 @@ const Index = () => {
                     <span>Analytics & insights</span>
                   </li>
                 </ul>
-                <Button
-                  asChild
-                  size="lg"
-                  className="w-full bg-primary hover:bg-primary/90 shadow-primary"
-                >
-                  <Link href={ROUTES.newMerchant}>
+                <AuthModal redirectTo={ROUTES.newMerchant}>
+                  <Button
+                    size="lg"
+                    className="w-full bg-primary hover:bg-primary/90 shadow-primary"
+                  >
                     Apply as Merchant
-                  </Link>
-                </Button>
+                  </Button>
+                </AuthModal>
+
               </div>
             </Card>
 
@@ -181,15 +181,14 @@ const Index = () => {
                 Browse Stores
               </Link>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
-            >
-              <Link href={ROUTES.newMerchant}>
+            <AuthModal redirectTo={ROUTES.newMerchant}>
+              <Button
+                size="lg"
+                className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
+              >
                 Partner With Us
-              </Link>
-            </Button>
+              </Button>
+            </AuthModal>
           </div>
         </div>
       </section>

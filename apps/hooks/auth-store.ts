@@ -154,7 +154,6 @@ const useAuthStore = create(
               Authorization: `Bearer ${idToken}`,
             },
           })
-          console.log(response)
           set({ loading: false, user: response })
         } catch (error) {
           const authError = error as AuthError

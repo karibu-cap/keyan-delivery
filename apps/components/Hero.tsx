@@ -2,6 +2,7 @@ import { ShoppingBag, Store, Pill } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ROUTES } from "@/lib/router";
+import { AuthModal } from "./auth/AuthModal";
 
 const Hero = () => {
   return (
@@ -39,17 +40,15 @@ const Hero = () => {
                   Start Shopping
                 </Link>
               </Button>
+              <AuthModal redirectTo={ROUTES.newMerchant}>
+                <Button
+                  size="lg"
+                  className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
 
-              <Button
-                asChild
-                size="lg"
-                className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
-
-              >
-                <Link href={ROUTES.newMerchant}>
+                >
                   Become a Merchant
-                </Link>
-              </Button>
+                </Button>
+              </AuthModal>
             </div>
 
             {/* Stats */}
