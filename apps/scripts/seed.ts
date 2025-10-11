@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { env } from '../envConfig.js'
 import { prisma } from '../lib/prisma.js'
+import { DriverStatus, UserRole } from '@prisma/client'
 
 // Verify env is loaded
 console.log('Database URL exists:', !!env.DATABASE_URL)
@@ -149,26 +150,55 @@ async function seedDatabase() {
     )
 
     // Seed Users first
-    const userRecords = await Promise.all(
-      Array(5)
-        .fill(null)
-        .map(() =>
-          prisma.user.create({
-            data: {
-              authId: faker.string.alphanumeric(28).toLowerCase(),
-              email: faker.internet.email(),
-              fullName: faker.person.fullName(),
-              phone: faker.phone.number(),
-              roles: faker.helpers.arrayElements(['customer', 'merchant', 'driver'] as const, {
-                min: 1,
-                max: 2
-              }),
-              cni: Math.random() > 0.7 ? faker.string.alphanumeric(10) : null,
-              driverDocument: Math.random() > 0.8 ? faker.string.alphanumeric(10) : null,
-            },
-          }),
-        ),
-    )
+    const userRecords = await Promise.all(Array(20)
+      .fill(null)
+      .map(async (_, index) => {
+        const roles = index < 5
+          ? ['customer']
+          : index < 10
+            ? ['customer', 'merchant']
+            : index < 15
+              ? ['customer', 'driver']  // Drivers
+              : ['super_admin'];
+
+        const isDriver = roles.includes('driver');
+        const driverStatus = isDriver
+          ? faker.helpers.arrayElement(['PENDING', 'APPROVED', 'REJECTED'])
+          : null;
+
+        const email = faker.internet.email().toLowerCase();
+
+        // Create auth user first
+
+        return prisma.user.create({
+          data: {
+            authId: 'authId',
+            email,
+            fullName: faker.person.fullName(),
+            phone: faker.phone.number(),
+            roles: roles as UserRole[],
+            cni: isDriver ? faker.string.alphanumeric(12).toUpperCase() : null,
+            driverDocument: isDriver ? faker.string.alphanumeric(12).toUpperCase() : null,
+            driverStatus: driverStatus as DriverStatus,
+          },
+        });
+      })
+    );
+
+    console.log(`✅ Created ${userRecords.length} users with different roles`);
+
+    // Create wallets for all users including drivers
+    await Promise.all(
+      userRecords.map((user) =>
+        prisma.wallet.create({
+          data: {
+            userId: user.id,
+            balance: faker.number.float({ min: 0, max: 1000000, fractionDigits: 2 }),
+            currency: 'USD',
+          },
+        })
+      )
+    );
 
     const categoryNames = [
       'Produce',

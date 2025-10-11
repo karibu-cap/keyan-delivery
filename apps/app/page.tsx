@@ -122,7 +122,7 @@ const Index = () => {
                   size="lg"
                   className="w-full bg-primary hover:bg-primary/90 shadow-primary"
                 >
-                  <Link href={ROUTES.newDriver}>
+                  <Link href={ROUTES.driverApply}>
                     Apply as Driver
                   </Link>
                 </Button>

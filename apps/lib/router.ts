@@ -9,7 +9,6 @@ export const ROUTES = {
   checkout: '/checkout',
   search: '/search',
   stores: '/stores',
-  newDriver: '/new-driver',
   newMerchant: '/new-merchant',
 
 
@@ -33,7 +32,8 @@ export const ROUTES = {
   merchantSettings: '/merchant/settings',
 
   // Driver routes
-  driverDashboard: '/driver',
+  driverApply: '/driver/apply',
+  driverDashboard: '/driver/dashboard',
   driverOrders: '/driver/orders',
   driverEarnings: '/driver/earnings',
 

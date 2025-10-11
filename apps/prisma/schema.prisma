@@ -68,6 +68,13 @@ enum UserRole {
     driver
 }
 
+enum DriverStatus {
+    PENDING
+    APPROVED
+    REJECTED
+    BANNED
+}
+
 enum TransactionType {
     credit
     debit
@@ -232,11 +239,14 @@ model User {
     driverDocument   String?
     wallet           Wallet?
     productWishlist  Wishlist[]
+    driverStatus     DriverStatus          @default(PENDING)
     orders           Order[]
     merchantManagers UserMerchantManager[]
     payments         Payment[]
     CartItem         CartItem[]
     SavedList        SavedList[]
+    createdAt        DateTime?              @default(now())
+    updatedAt        DateTime?              @updatedAt
 }
 
 // --------------------------------merchant model------------------------------------

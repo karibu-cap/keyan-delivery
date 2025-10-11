@@ -1,6 +1,6 @@
 import { getUserTokens } from '@/lib/firebase-client/firebase-utils'
 import { prisma } from '@/lib/prisma'
-import { UserRole } from '@prisma/client'
+import { DriverStatus, User, UserRole } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const POST = async (request: NextRequest) => {
@@ -10,6 +10,7 @@ export const POST = async (request: NextRequest) => {
   }
 
   try {
+    // Validate driver requirements
     if (data.roles && data.roles.includes(UserRole.driver)) {
       if (!data.cni || !data.driverDocument) {
         return NextResponse.json(
@@ -20,40 +21,45 @@ export const POST = async (request: NextRequest) => {
     }
 
     const userRoles = data.roles && data.roles.length > 0
-      ? data.roles.map((role: string) => role as UserRole)
+      ? data.roles
       : [UserRole.customer]
 
-    const user = await prisma.user.upsert({
-      where: {
-        authId: data.authId,
-      },
-      update: {
-        email: data.email,
-        fullName: data.fullName || null,
-        phone: data.phone || null,
-        roles: userRoles,
-        cni: data.cni || null,
-        driverDocument: data.driverDocument || null,
-      },
-      create: {
-        authId: data.authId,
-        email: data.email,
-        fullName: data.fullName || null,
-        phone: data.phone || null,
-        roles: userRoles,
-        cni: data.cni || null,
-        driverDocument: data.driverDocument || null,
+    // Prepare user data
+    const userData: Partial<User> = {
+      email: data.email,
+      authId: data.authId,
+      fullName: data.fullName || null,
+      phone: data.phone || null,
+      roles: userRoles,
+    }
+
+    // Add driver-specific fields if user is a driver
+    if (userRoles.includes(UserRole.driver)) {
+      userData.cni = data.cni
+      userData.driverDocument = data.driverDocument
+      userData.driverStatus = DriverStatus.PENDING
+    }
+
+    const user = await prisma.user.create({
+      data: userData as User,
+    })
+
+    // Create wallet for the user
+    await prisma.wallet.create({
+      data: {
+        userId: user.id,
+        balance: 0,
+        currency: 'USD',
       },
     })
 
-    return NextResponse.json({
-      success: true,
-      data: user,
-      message: 'User created successfully'
-    }, { status: 200 })
-  } catch (e) {
-    console.error('Error creating/updating user:', e)
-    return NextResponse.json({ success: false, error: `Internal error: ${e}` }, { status: 500 })
+    return NextResponse.json(user, { status: 201 })
+  } catch (error) {
+    console.error('Error creating user:', error)
+    return NextResponse.json(
+      { error: 'Failed to create user', details: error },
+      { status: 500 }
+    )
   }
 }
 
@@ -70,6 +76,7 @@ export const GET = async (request: NextRequest) => {
         authId: token.decodedToken.uid,
       },
       include: {
+        wallet: true,
         merchantManagers: {
           include: {
             merchant: {
