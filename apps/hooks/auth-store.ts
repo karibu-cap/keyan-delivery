@@ -1,7 +1,7 @@
 import { getUserById, setUser } from '@/lib/actions/client'
 import { getAuthErrorMessage } from '@/lib/firebase-client/auth-error'
 import { auth } from '@/lib/firebase-client/firebase'
-import { User, UserRole } from '@prisma/client'
+import { DriverStatus, User, UserRole } from '@prisma/client'
 import {
   AuthError,
   GoogleAuthProvider,
@@ -26,6 +26,7 @@ interface SignUpData {
   phone?: string
   cni?: string
   driverDocument?: string
+  driverStatus?: DriverStatus
 }
 
 interface AuthState {
@@ -100,8 +101,13 @@ const useAuthStore = create(
             fullName: data.fullName,
             phone: data.phone || null,
             roles: data.role ? [data.role] : [UserRole.customer],
-            cni: data.cni || null,
-            driverDocument: data.driverDocument || null,
+          }
+
+          // Add driver-specific fields
+          if (data.role === UserRole.driver) {
+            userData.cni = data.cni
+            userData.driverDocument = data.driverDocument
+            userData.driverStatus = DriverStatus.PENDING
           }
 
           const response = await setUser(userData)
