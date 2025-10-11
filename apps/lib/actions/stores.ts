@@ -1,7 +1,52 @@
-"use server";
-
 import { prisma } from '@/lib/prisma';
-import { Prisma } from "@prisma/client";
+import { Prisma, ProductStatus } from "@prisma/client";
+import { cache } from 'react';
+
+
+export const MerchantIncludes = {
+  // For store listings (minimal data)
+  list: {
+    _count: {
+      select: { products: true }
+    }
+  },
+
+  storeDataById: {
+    products: {
+      where: {
+        status: ProductStatus.VERIFIED,
+        visibility: true,
+      },
+      include: {
+        images: true,
+        categories: {
+          include: {
+            category: true,
+          },
+        },
+        merchant: true,
+        _count: {
+          select: {
+            OrderItem: true,
+            cartItems: true,
+          },
+        }
+      },
+    },
+  }
+
+} as const;
+
+// 2. Generate types
+export type IMerchantList = Prisma.MerchantGetPayload<{
+  include: typeof MerchantIncludes.list;
+}>;
+
+export type IMerchantDetail = Prisma.MerchantGetPayload<{
+  include: typeof MerchantIncludes.storeDataById;
+}>;
+
+
 
 export type IProduct = Prisma.ProductGetPayload<{
   include: {
@@ -41,7 +86,6 @@ export type IMerchant = Prisma.MerchantGetPayload<{
       }
     };
     managers: true;
-    categories: true;
   };
 }>;
 
@@ -93,7 +137,7 @@ export async function fetchCategories({
     const response = await fetch(
       `${baseUrl}/api/v1/client/categories?${params.toString()}`,
       {
-        cache: 'no-store',
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
       }
     );
 
@@ -120,7 +164,7 @@ export async function searchStores(searchQuery: string): Promise<IMerchant[]> {
     const response = await fetch(
       `${baseUrl}/api/v1/client/merchants?search=${encodeURIComponent(searchQuery)}`,
       {
-        cache: 'no-store',
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
       }
     );
 
@@ -147,7 +191,7 @@ export async function filterStoresByCategory(categoryId: string): Promise<IMerch
     const response = await fetch(
       `${baseUrl}/api/v1/client/merchants?category=${encodeURIComponent(categoryId)}`,
       {
-        cache: 'no-store',
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
       }
     );
 
@@ -195,38 +239,17 @@ export async function fetchProduct(productId: string): Promise<IProduct | null> 
   }
 }
 
-
-export async function fetchStoreDataById(id: string): Promise<{
-  merchant: Record<string, unknown>;
+export const fetchStoreDataById = cache(async (id: string): Promise<{
+  merchant: IMerchantDetail;
   aisles: Aisle[];
-} | null> {
+} | null> => {
   try {
     const merchant = await prisma.merchant.findUnique({
       where: {
         id: id,
         isVerified: true,
       },
-      include: {
-        products: {
-          where: {
-            status: 'VERIFIED',
-            visibility: true,
-          },
-          include: {
-            images: true,
-            categories: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-        categories: {
-          select: {
-            category: true,
-          },
-        },
-      },
+      include: MerchantIncludes.storeDataById,
     });
 
     if (!merchant) {
@@ -254,7 +277,7 @@ export async function fetchStoreDataById(id: string): Promise<{
     console.error('Error fetching store data:', error);
     return null;
   }
-}
+})
 
 
 interface PaginationInfo {
@@ -287,7 +310,7 @@ export async function fetchMerchants({
     const response = await fetch(
       `${baseUrl}/api/v1/client/merchants?${params.toString()}`,
       {
-        cache: 'no-store',
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
       }
     );
 

@@ -115,7 +115,7 @@ const useAuthStore = create(
           }
 
           await sendEmailVerification(userCredential.user)
-          set({ error: null, loading: false })
+          set({ error: null, loading: false, user: response })
         } catch (error) {
           const authError = error as AuthError
           set({ error: getAuthErrorMessage(authError.code), loading: false })
