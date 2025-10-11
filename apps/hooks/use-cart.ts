@@ -30,8 +30,6 @@ interface CartStore {
     totalItems: number
     addItem: (item: CartItem) => void
     removeItem: (idToRemove: string) => void
-    increaseQuantity: (idToIncrease: string) => void
-    decreaseQuantity: (idToDecrease: string) => void
     updateQuantity: (id: string, quantity: number) => void
     clearCart: () => void
 }
@@ -125,55 +123,6 @@ const useCart = create(
 
                 if (newCartItems.length === 0) {
                     useCartDeliveryInfo.getState().clearDeliveryInfo()
-                }
-            },
-            increaseQuantity: (idToIncrease: string) => {
-                const currentItems = get().cartItems
-                const item = currentItems.find(cartItem => cartItem.product.id === idToIncrease)
-
-                if (!item) return
-
-                const availableStock = item.product.inventory?.stockQuantity || 0
-                if (item.quantity >= availableStock) {
-                    toast({
-                        title: '❌ Insufficient stock',
-                        description: `Only ${availableStock} items available`,
-                        variant: 'destructive'
-                    })
-                    return
-                }
-
-                const newCartItems = currentItems.map(cartItem =>
-                    cartItem.product.id === idToIncrease
-                        ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                        : cartItem,
-                )
-                set({ cartItems: newCartItems })
-            },
-            decreaseQuantity: (idToDecrease: string) => {
-                const currentItems = get().cartItems
-                const item = currentItems.find(cartItem => cartItem.product.id === idToDecrease)
-
-                if (!item) return
-
-                if (item.quantity <= 1) {
-                    // Remove item when quantity reaches 0
-                    const newCartItems = currentItems.filter(
-                        cartItem => cartItem.product.id !== idToDecrease
-                    )
-                    set({ cartItems: newCartItems })
-
-                    if (currentItems.length === 1) {
-                        useCartDeliveryInfo.getState().clearDeliveryInfo()
-                    }
-                } else {
-                    // Decrease quantity
-                    const newCartItems = currentItems.map(cartItem =>
-                        cartItem.product.id === idToDecrease
-                            ? { ...cartItem, quantity: cartItem.quantity - 1 }
-                            : cartItem
-                    )
-                    set({ cartItems: newCartItems })
                 }
             },
             updateQuantity: (id: string, quantity: number) => {
