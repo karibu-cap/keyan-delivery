@@ -12,6 +12,8 @@ import Link from "next/link"
 import { ArrowLeftIcon, UserIcon, MapPinIcon, CreditCardIcon, BellIcon, ShieldIcon, HelpCircleIcon, StoreIcon, CheckCircleIcon, ClockIcon, Store } from "lucide-react"
 import { useState } from "react";
 import { Prisma, User } from "@prisma/client";
+import { useToast } from '@/hooks/use-toast'
+import { useT } from '@/hooks/use-inline-translation'
 
 type IUser = Prisma.UserGetPayload<{
     include: {
@@ -24,6 +26,8 @@ type IUser = Prisma.UserGetPayload<{
 }>;
 
 export function UserProfile({ user }: { user: IUser }) {
+    const t = useT()
+    const { toast } = useToast()
     const [currentUser, setCurrentUser] = useState<User>(user);
     const [isEditing, setIsEditing] = useState(false);
     const [notifications, setNotifications] = useState({
@@ -41,13 +45,23 @@ export function UserProfile({ user }: { user: IUser }) {
             // Here you would typically make an API call to update the user
             // For now, we'll just exit edit mode
             setIsEditing(false);
+            toast({
+                title: t("Profile Updated"),
+                description: t("Your profile has been successfully updated"),
+            })
         } catch (error) {
             console.error('Failed to save profile:', error);
+            toast({
+                title: t("Error"),
+                description: t("Failed to update profile. Please try again."),
+                variant: "destructive"
+            })
         }
     };
 
     const handleCancelEdit = () => {
         // Reset user data to original state (you might want to fetch fresh data)
+        setCurrentUser(user);
         setIsEditing(false);
     };
 
@@ -59,20 +73,20 @@ export function UserProfile({ user }: { user: IUser }) {
                 <Link href="/">
                     <Button variant="ghost" className="mb-4 gap-2">
                         <ArrowLeftIcon className="h-4 w-4" />
-                        Back to Home
+                        {t("Back to Home")}
                     </Button>
                 </Link>
 
-                <h1 className="mb-6 text-3xl font-bold">Profile & Settings</h1>
+                <h1 className="mb-6 text-3xl font-bold">{t("Profile & Settings")}</h1>
 
                 <Tabs defaultValue="profile" className="space-y-6">
                     <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-6">
-                        <TabsTrigger value="profile">Profile</TabsTrigger>
-                        <TabsTrigger value="merchants">Merchants</TabsTrigger>
-                        <TabsTrigger value="addresses">Addresses</TabsTrigger>
-                        <TabsTrigger value="payment">Payment</TabsTrigger>
-                        <TabsTrigger value="notifications">Notifications</TabsTrigger>
-                        <TabsTrigger value="security">Security</TabsTrigger>
+                        <TabsTrigger value="profile">{t("Profile")}</TabsTrigger>
+                        <TabsTrigger value="merchants">{t("Merchants")}</TabsTrigger>
+                        <TabsTrigger value="addresses">{t("Addresses")}</TabsTrigger>
+                        <TabsTrigger value="payment">{t("Payment")}</TabsTrigger>
+                        <TabsTrigger value="notifications">{t("Notifications")}</TabsTrigger>
+                        <TabsTrigger value="security">{t("Security")}</TabsTrigger>
                     </TabsList>
 
                     {/* Profile Tab */}
@@ -80,20 +94,20 @@ export function UserProfile({ user }: { user: IUser }) {
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center justify-between">
-                                    <CardTitle>Personal Information</CardTitle>
+                                    <CardTitle>{t("Personal Information")}</CardTitle>
                                     <div className="flex gap-2">
                                         {isEditing ? (
                                             <>
                                                 <Button variant="outline" onClick={handleCancelEdit}>
-                                                    Cancel
+                                                    {t("Cancel")}
                                                 </Button>
                                                 <Button className="bg-[#0aad0a] hover:bg-[#089808]" onClick={handleSaveProfile}>
-                                                    Save Changes
+                                                    {t("Save Changes")}
                                                 </Button>
                                             </>
                                         ) : (
                                             <Button className="bg-[#0aad0a] hover:bg-[#089808]" onClick={() => setIsEditing(true)}>
-                                                Edit Profile
+                                                {t("Edit Profile")}
                                             </Button>
                                         )}
                                     </div>
@@ -108,7 +122,7 @@ export function UserProfile({ user }: { user: IUser }) {
 
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">Full Name</Label>
+                                        <Label htmlFor="name">{t("Full Name")}</Label>
                                         <Input
                                             id="name"
                                             value={currentUser?.fullName || ''}
@@ -117,7 +131,7 @@ export function UserProfile({ user }: { user: IUser }) {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="email">Email</Label>
+                                        <Label htmlFor="email">{t("Email")}</Label>
                                         <Input
                                             id="email"
                                             type="email"
@@ -129,7 +143,7 @@ export function UserProfile({ user }: { user: IUser }) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="phone">Phone Number</Label>
+                                    <Label htmlFor="phone">{t("Phone Number")}</Label>
                                     <Input
                                         id="phone"
                                         type="tel"
@@ -147,7 +161,7 @@ export function UserProfile({ user }: { user: IUser }) {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <StoreIcon className="h-5 w-5" />
-                                    My Merchants
+                                    {t("My Merchants")}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -167,12 +181,12 @@ export function UserProfile({ user }: { user: IUser }) {
                                                                     {merchant.isVerified ? (
                                                                         <>
                                                                             <CheckCircleIcon className="mr-1 h-3 w-3" />
-                                                                            Verified
+                                                                            {t("Verified")}
                                                                         </>
                                                                     ) : (
                                                                         <>
                                                                             <ClockIcon className="mr-1 h-3 w-3" />
-                                                                            Pending
+                                                                            {t("Pending")}
                                                                         </>
                                                                     )}
                                                                 </Badge>
@@ -182,7 +196,7 @@ export function UserProfile({ user }: { user: IUser }) {
                                                                 <Badge variant="outline">{merchant.merchantType}</Badge>
                                                             </div>
                                                             <div className="text-xs text-muted-foreground">
-                                                                Manager since: {new Date(merchant.createdAt).toLocaleDateString()}
+                                                                {t("Manager since")}: {new Date(merchant.createdAt).toLocaleDateString()}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -190,7 +204,7 @@ export function UserProfile({ user }: { user: IUser }) {
                                                         {merchant.isVerified && <Button variant="outline" size="sm" asChild>
                                                             <Link href={`/merchant/${merchant.id}`}>
                                                                 <Store className="w-4 h-4 mr-2" />
-                                                                Manage
+                                                                {t("Manage")}
                                                             </Link>
                                                         </Button>}
                                                     </div>
@@ -201,10 +215,10 @@ export function UserProfile({ user }: { user: IUser }) {
                                 ) : (
                                     <div className="text-center py-8 text-muted-foreground">
                                         <StoreIcon className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                                        <p className="mb-2">No merchants found</p>
-                                        <p className="text-sm">You are not managing any merchants yet</p>
+                                        <p className="mb-2">{t("No merchants found")}</p>
+                                        <p className="text-sm">{t("You are not managing any merchants yet")}</p>
                                         <div className="mt-4">
-                                            <p className="text-sm">Contact an administrator to get access to manage merchants</p>
+                                            <p className="text-sm">{t("Contact an administrator to get access to manage merchants")}</p>
                                         </div>
                                     </div>
                                 )}
@@ -217,10 +231,10 @@ export function UserProfile({ user }: { user: IUser }) {
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center justify-between">
-                                    <CardTitle>Delivery Addresses</CardTitle>
+                                    <CardTitle>{t("Delivery Addresses")}</CardTitle>
                                     <Button className="bg-[#0aad0a] hover:bg-[#089808]">
                                         <MapPinIcon className="mr-2 h-4 w-4" />
-                                        Add Address
+                                        {t("Add Address")}
                                     </Button>
                                 </div>
                             </CardHeader>
@@ -234,9 +248,9 @@ export function UserProfile({ user }: { user: IUser }) {
                                                 </div>
                                                 <div>
                                                     <div className="mb-1 flex items-center gap-2">
-                                                        <p className="font-semibold">Phone</p>
+                                                        <p className="font-semibold">{t("Phone")}</p>
                                                         <span className="rounded-full bg-[#0aad0a]/10 px-2 py-0.5 text-xs font-medium text-[#0aad0a]">
-                                                            Default
+                                                            {t("Default")}
                                                         </span>
                                                     </div>
                                                     <p className="text-sm text-muted-foreground">{currentUser.phone}</p>
@@ -244,18 +258,18 @@ export function UserProfile({ user }: { user: IUser }) {
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button variant="ghost" size="sm">
-                                                    Edit
+                                                    {t("Edit")}
                                                 </Button>
                                                 <Button variant="ghost" size="sm" className="text-destructive">
-                                                    Remove
+                                                    {t("Remove")}
                                                 </Button>
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="text-center py-8 text-muted-foreground">
                                             <MapPinIcon className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                                            <p>No contact information set</p>
-                                            <p className="text-sm">Add your phone number to get started</p>
+                                            <p>{t("No contact information set")}</p>
+                                            <p className="text-sm">{t("Add your phone number to get started")}</p>
                                         </div>
                                     )}
                                 </div>
@@ -268,10 +282,10 @@ export function UserProfile({ user }: { user: IUser }) {
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center justify-between">
-                                    <CardTitle>Payment Methods</CardTitle>
+                                    <CardTitle>{t("Payment Methods")}</CardTitle>
                                     <Button className="bg-[#0aad0a] hover:bg-[#089808]">
                                         <CreditCardIcon className="mr-2 h-4 w-4" />
-                                        Add Card
+                                        {t("Add Card")}
                                     </Button>
                                 </div>
                             </CardHeader>
@@ -279,8 +293,8 @@ export function UserProfile({ user }: { user: IUser }) {
                                 <div className="space-y-4">
                                     <div className="text-center py-8 text-muted-foreground">
                                         <CreditCardIcon className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                                        <p>No payment methods added yet</p>
-                                        <p className="text-sm">Add a payment method to place orders</p>
+                                        <p>{t("No payment methods added yet")}</p>
+                                        <p className="text-sm">{t("Add a payment method to place orders")}</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -291,15 +305,15 @@ export function UserProfile({ user }: { user: IUser }) {
                     <TabsContent value="notifications">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Notification Preferences</CardTitle>
+                                <CardTitle>{t("Notification Preferences")}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-start gap-3">
                                         <BellIcon className="mt-1 h-5 w-5 text-muted-foreground" />
                                         <div>
-                                            <p className="font-medium">Order Updates</p>
-                                            <p className="text-sm text-muted-foreground">Get notified about your order status and delivery</p>
+                                            <p className="font-medium">{t("Order Updates")}</p>
+                                            <p className="text-sm text-muted-foreground">{t("Get notified about your order status and delivery")}</p>
                                         </div>
                                     </div>
                                     <Switch
@@ -312,8 +326,8 @@ export function UserProfile({ user }: { user: IUser }) {
                                     <div className="flex items-start gap-3">
                                         <BellIcon className="mt-1 h-5 w-5 text-muted-foreground" />
                                         <div>
-                                            <p className="font-medium">Promotions & Deals</p>
-                                            <p className="text-sm text-muted-foreground">Receive exclusive offers and discounts</p>
+                                            <p className="font-medium">{t("Promotions & Deals")}</p>
+                                            <p className="text-sm text-muted-foreground">{t("Receive exclusive offers and discounts")}</p>
                                         </div>
                                     </div>
                                     <Switch
@@ -326,8 +340,8 @@ export function UserProfile({ user }: { user: IUser }) {
                                     <div className="flex items-start gap-3">
                                         <BellIcon className="mt-1 h-5 w-5 text-muted-foreground" />
                                         <div>
-                                            <p className="font-medium">Newsletter</p>
-                                            <p className="text-sm text-muted-foreground">Weekly tips, recipes, and product recommendations</p>
+                                            <p className="font-medium">{t("Newsletter")}</p>
+                                            <p className="text-sm text-muted-foreground">{t("Weekly tips, recipes, and product recommendations")}</p>
                                         </div>
                                     </div>
                                     <Switch
@@ -344,59 +358,59 @@ export function UserProfile({ user }: { user: IUser }) {
                         <div className="space-y-6">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Password & Security</CardTitle>
+                                    <CardTitle>{t("Password & Security")}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-start gap-3">
                                             <ShieldIcon className="mt-1 h-5 w-5 text-muted-foreground" />
                                             <div>
-                                                <p className="font-medium">Password</p>
-                                                <p className="text-sm text-muted-foreground">Last changed 3 months ago</p>
+                                                <p className="font-medium">{t("Password")}</p>
+                                                <p className="text-sm text-muted-foreground">{t("Last changed 3 months ago")}</p>
                                             </div>
                                         </div>
-                                        <Button variant="outline">Change Password</Button>
+                                        <Button variant="outline">{t("Change Password")}</Button>
                                     </div>
 
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-start gap-3">
                                             <ShieldIcon className="mt-1 h-5 w-5 text-muted-foreground" />
                                             <div>
-                                                <p className="font-medium">Two-Factor Authentication</p>
-                                                <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
+                                                <p className="font-medium">{t("Two-Factor Authentication")}</p>
+                                                <p className="text-sm text-muted-foreground">{t("Add an extra layer of security")}</p>
                                             </div>
                                         </div>
-                                        <Button variant="outline">Enable</Button>
+                                        <Button variant="outline">{t("Enable")}</Button>
                                     </div>
                                 </CardContent>
                             </Card>
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Account Actions</CardTitle>
+                                    <CardTitle>{t("Account Actions")}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-start gap-3">
                                             <HelpCircleIcon className="mt-1 h-5 w-5 text-muted-foreground" />
                                             <div>
-                                                <p className="font-medium">Help & Support</p>
-                                                <p className="text-sm text-muted-foreground">Get help with your account</p>
+                                                <p className="font-medium">{t("Help & Support")}</p>
+                                                <p className="text-sm text-muted-foreground">{t("Get help with your account")}</p>
                                             </div>
                                         </div>
-                                        <Button variant="outline">Contact Support</Button>
+                                        <Button variant="outline">{t("Contact Support")}</Button>
                                     </div>
 
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-start gap-3">
                                             <ShieldIcon className="mt-1 h-5 w-5 text-destructive" />
                                             <div>
-                                                <p className="font-medium text-destructive">Delete Account</p>
-                                                <p className="text-sm text-muted-foreground">Permanently delete your account</p>
+                                                <p className="font-medium text-destructive">{t("Delete Account")}</p>
+                                                <p className="text-sm text-muted-foreground">{t("Permanently delete your account")}</p>
                                             </div>
                                         </div>
                                         <Button variant="outline" className="bg-transparent text-destructive hover:text-destructive">
-                                            Delete
+                                            {t("Delete")}
                                         </Button>
                                     </div>
                                 </CardContent>

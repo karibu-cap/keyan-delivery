@@ -1,4 +1,9 @@
-export function StoresLoading() {
+import { getLocale } from "next-intl/server";
+import { getT } from "@/lib/server-translations";
+
+export async function StoresLoading() {
+    const locale = await getLocale();
+    const t = await getT(locale);
     return (
         <>
             <section className="bg-white py-8 px-4 border-b border-gray-200">
@@ -22,7 +27,7 @@ export function StoresLoading() {
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center py-20">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-                        <p className="text-gray-600">Loading stores...</p>
+                        <p className="text-gray-600">{t("Loading stores...")}</p>
                     </div>
                 </div>
             </section>

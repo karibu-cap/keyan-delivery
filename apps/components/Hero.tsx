@@ -3,8 +3,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ROUTES } from "@/lib/router";
 import { AuthModal } from "./auth/AuthModal";
+import { getLocale } from "next-intl/server";
+import { getT } from "@/lib/server-translations";
 
-const Hero = () => {
+const Hero = async () => {
+  const locale = await getLocale();
+  const t = await getT(locale);
   return (
     <section className="relative overflow-hidden gradient-hero py-24 px-4">
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE4YzAtOS45NC04LjA2LTE4LTE4LTE4UzAgOC4wNiAwIDE4YzAgOS45NCA4LjA2IDE4IDE4IDE4czE4LTguMDYgMTgtMTh6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
@@ -15,19 +19,18 @@ const Hero = () => {
           <div className="text-white space-y-8 animate-slide-up">
             <div className="inline-block">
               <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
-                🚀 Fast & Reliable Delivery
+                🚀 {t("Fast & Reliable Delivery")}
               </span>
             </div>
 
             <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-              Everything You Need,
+              {t("Everything You Need,")},
               <br />
-              <span className="text-primary-light">Delivered Fast</span>
+              <span className="text-primary-light">{t("Delivered Fast")}</span>
             </h1>
 
             <p className="text-xl text-white/90 leading-relaxed">
-              Groceries, pharmacy, and food delivery in minutes. Your neighborhood stores,
-              now at your fingertips.
+              {t("Groceries, pharmacy, and food delivery in minutes. Your neighborhood stores, now at your fingertips.")}
             </p>
 
             <div className="flex flex-wrap gap-4">
@@ -37,7 +40,7 @@ const Hero = () => {
                 className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all duration-200 text-lg px-8 rounded-2xl"
               >
                 <Link href="/stores">
-                  Start Shopping
+                  {t("Start Shopping")}
                 </Link>
               </Button>
               <AuthModal redirectTo={ROUTES.newMerchant}>
@@ -46,7 +49,7 @@ const Hero = () => {
                   className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
 
                 >
-                  Become a Merchant
+                  {t("Become a Merchant")}
                 </Button>
               </AuthModal>
             </div>
@@ -55,15 +58,15 @@ const Hero = () => {
             <div className="flex flex-wrap gap-8 pt-6">
               <div>
                 <div className="text-3xl font-bold">500+</div>
-                <div className="text-white/80">Partner Stores</div>
+                <div className="text-white/80">{t("Partner Stores")}</div>
               </div>
               <div>
                 <div className="text-3xl font-bold">10K+</div>
-                <div className="text-white/80">Happy Customers</div>
+                <div className="text-white/80">{t("Happy Customers")}</div>
               </div>
               <div>
                 <div className="text-3xl font-bold">30min</div>
-                <div className="text-white/80">Avg Delivery</div>
+                <div className="text-white/80">{t("Avg Delivery")}</div>
               </div>
             </div>
           </div>

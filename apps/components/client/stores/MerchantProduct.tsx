@@ -8,6 +8,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { IProduct } from "@/lib/actions/stores";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface MerchantProductProps {
     product: IProduct & {
@@ -28,6 +29,7 @@ interface MerchantProductProps {
 }
 
 export function MerchantProduct({ product, index }: MerchantProductProps) {
+    const t = useT()
     const { cartItems, addItem, updateQuantity } = useCart();
     const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -89,12 +91,12 @@ export function MerchantProduct({ product, index }: MerchantProductProps) {
                     <div className="absolute top-2 left-2 space-y-1">
                         {product.badges.includes("BEST_SELLER") && (
                             <Badge variant="bestSeller" className="text-xs px-2 py-1 shadow-md">
-                                🏆 Best seller
+                                🏆 {t("Best Seller")}
                             </Badge>
                         )}
                         {product.badges.includes("ORGANIC") && (
                             <Badge variant="organic" className="text-xs px-2 py-1 shadow-md">
-                                🌿 Organic
+                                🌿 {t("Organic")}
                             </Badge>
                         )}
                     </div>
@@ -140,7 +142,7 @@ export function MerchantProduct({ product, index }: MerchantProductProps) {
                 {/* Promotional Banner */}
                 {promotion?.type === "SPEND_X_SAVE_Y" && (
                     <div className="bg-amber-100 text-amber-900 text-xs px-2 py-1 rounded-md mb-2 text-center font-medium">
-                        Spend ${promotion.spendAmount}, save ${promotion.saveAmount}
+                        {t("Spend")} ${promotion.spendAmount}, {t("save")} ${promotion.saveAmount}
                     </div>
                 )}
 
@@ -172,7 +174,7 @@ export function MerchantProduct({ product, index }: MerchantProductProps) {
                                         product.compareAtPrice) *
                                     100
                                 )}
-                                % off
+                                % {t("off")}
                             </Badge>
                         </>
                     )}
@@ -185,10 +187,10 @@ export function MerchantProduct({ product, index }: MerchantProductProps) {
                     />
                     <span className="text-xs text-gray-600">
                         {stockQuantity > 10
-                            ? "Many in stock"
+                            ? t("Many in stock")
                             : stockQuantity > 0
-                                ? "In stock"
-                                : "Out of stock"}
+                                ? t("In stock")
+                                : t("Out of stock")}
                     </span>
                 </div>
 

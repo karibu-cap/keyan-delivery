@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useT } from "@/hooks/use-inline-translation";
 import { X } from "lucide-react";
 import { useEffect } from "react";
 
@@ -25,6 +26,8 @@ export function MobileCategoryDrawer({
     isOpen,
     onClose,
 }: MobileCategoryDrawerProps) {
+    const t = useT()
+
     // Prevent body scroll when drawer is open
     useEffect(() => {
         if (isOpen) {
@@ -49,7 +52,7 @@ export function MobileCategoryDrawer({
                 <div className="flex flex-col h-full">
                     <div className="p-4 border-b border-gray-200">
                         <div className="flex items-center justify-between">
-                            <h3 className="font-semibold text-gray-900">Browse aisles</h3>
+                            <h3 className="font-semibold text-gray-900">{t("Browse aisles")}</h3>
                             <Button variant="ghost" size="icon" onClick={onClose}>
                                 <X className="w-5 h-5" />
                             </Button>
@@ -63,11 +66,11 @@ export function MobileCategoryDrawer({
                                     onClose();
                                 }}
                                 className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selectedCategory === ""
-                                        ? "bg-gray-900 text-white"
-                                        : "text-gray-700 hover:bg-gray-100"
+                                    ? "bg-gray-900 text-white"
+                                    : "text-gray-700 hover:bg-gray-100"
                                     }`}
                             >
-                                All Products
+                                {t("All Products")}
                             </button>
                             {aisles.map((aisle) => (
                                 <button
@@ -77,8 +80,8 @@ export function MobileCategoryDrawer({
                                         onClose();
                                     }}
                                     className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selectedCategory === aisle.name
-                                            ? "bg-gray-900 text-white"
-                                            : "text-gray-700 hover:bg-gray-100"
+                                        ? "bg-gray-900 text-white"
+                                        : "text-gray-700 hover:bg-gray-100"
                                         }`}
                                 >
                                     {aisle.name}

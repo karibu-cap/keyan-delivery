@@ -8,8 +8,10 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/hooks/use-cart"
 import Navbar from "@/components/Navbar"
+import { useT } from "@/hooks/use-inline-translation"
 
 export default function CartPage() {
+    const t = useT()
     const { cartItems, updateQuantity, removeItem } = useCart()
     const router = useRouter()
 
@@ -38,10 +40,10 @@ export default function CartPage() {
                                 </svg>
                             </div>
                         </div>
-                        <h1 className="mb-2 text-2xl font-bold">Your cart is empty</h1>
-                        <p className="mb-6 text-muted-foreground">Add items from a store to start shopping</p>
+                        <h1 className="mb-2 text-2xl font-bold">{t("Your cart is empty")}</h1>
+                        <p className="mb-6 text-muted-foreground">{t("Add items from a store to start shopping")}</p>
                         <Link href="/stores">
-                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">Start Shopping</Button>
+                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Start Shopping")}</Button>
                         </Link>
                     </div>
                 </div>
@@ -57,11 +59,11 @@ export default function CartPage() {
                 <Link href="/stores">
                     <Button variant="ghost" className="mb-4 gap-2">
                         <ArrowLeftIcon className="h-4 w-4" />
-                        Continue Shopping
+                        {t("Continue Shopping")}
                     </Button>
                 </Link>
 
-                <h1 className="mb-6 text-3xl font-bold">Your Cart</h1>
+                <h1 className="mb-6 text-3xl font-bold">{t("Your Cart")}</h1>
 
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Cart Items */}
@@ -86,7 +88,7 @@ export default function CartPage() {
                                                     <p className="text-sm text-muted-foreground">{item.product.unit}</p>
                                                     {item.product.inventory?.stockQuantity && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            {item.product.inventory.stockQuantity} in stock
+                                                            {item.product.inventory.stockQuantity} {t("in stock")}
                                                         </p>
                                                     )}
                                                 </div>
@@ -139,25 +141,25 @@ export default function CartPage() {
                     <div className="lg:col-span-1">
                         <Card className="sticky top-20">
                             <CardContent className="p-6">
-                                <h2 className="mb-4 text-xl font-bold">Order Summary</h2>
+                                <h2 className="mb-4 text-xl font-bold">{t("Order Summary")}</h2>
 
                                 <div className="space-y-3 border-b pb-4">
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Subtotal ({totalItems} items)</span>
+                                        <span className="text-muted-foreground">{t("Subtotal", { count: totalItems })} {t("items")}</span>
                                         <span className="font-medium">${total.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Delivery Fee</span>
+                                        <span className="text-muted-foreground">{t("Delivery Fee")}</span>
                                         <span className="font-medium">${deliveryFee.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Service Fee</span>
+                                        <span className="text-muted-foreground">{t("Service Fee")}</span>
                                         <span className="font-medium">${serviceFee.toFixed(2)}</span>
                                     </div>
                                 </div>
 
                                 <div className="flex justify-between py-4 text-lg font-bold">
-                                    <span>Total</span>
+                                    <span>{t("Total")}</span>
                                     <span className="text-[#0aad0a]">${finalTotal.toFixed(2)}</span>
                                 </div>
 
@@ -166,7 +168,7 @@ export default function CartPage() {
                                     size="lg"
                                     onClick={() => router.push("/checkout")}
                                 >
-                                    Proceed to Checkout
+                                    {t("Proceed to Checkout")}
                                 </Button>
                             </CardContent>
                         </Card>

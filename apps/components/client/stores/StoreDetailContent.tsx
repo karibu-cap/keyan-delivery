@@ -19,6 +19,7 @@ import { IMerchantDetail } from "@/lib/actions/stores";
 import { CategorySidebar } from "./CategorySidebar";
 import { MobileCategoryDrawer } from "./MobileCategoryDrawer";
 import { ProductGrid } from "./ProductGrid";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface Aisle {
   id: string;
@@ -35,6 +36,8 @@ export function StoreDetailContent({
   initialStore,
   initialAisles,
 }: StoreDetailContentProps) {
+  const t = useT()
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -175,7 +178,7 @@ export function StoreDetailContent({
                         <span>•</span>
                       </>
                     )}
-                    <span>In-store prices</span>
+                    <span>{t("In-store prices")}</span>
                   </div>
                 </div>
               </div>
@@ -184,7 +187,7 @@ export function StoreDetailContent({
             <div className="flex items-center space-x-4">
               <Button variant="ghost" className="text-sm text-gray-600">
                 <Shield className="w-4 h-4 mr-2" />
-                100% satisfaction guarantee
+                {t("100% satisfaction guarantee")}
               </Button>
             </div>
           </div>
@@ -195,10 +198,10 @@ export function StoreDetailContent({
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex space-x-8">
               <button className="py-4 border-b-2 border-gray-900 text-gray-900 font-medium">
-                Products
+                {t("Products")}
               </button>
               <button className="py-4 border-b-2 border-transparent text-gray-600 hover:text-gray-900">
-                About
+                {t("About")}
               </button>
             </div>
           </div>
@@ -226,10 +229,10 @@ export function StoreDetailContent({
               <div className="mb-8">
                 <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-4 py-2 rounded-lg mb-4 inline-flex items-center font-bold">
                   <span className="text-lg mr-2">🔥</span>
-                  On Sale Now
+                  {t("On Sale")}
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Special Offers
+                  {t("Special Offers")}
                 </h2>
                 <ProductGrid products={onSaleProducts} />
               </div>
@@ -239,7 +242,7 @@ export function StoreDetailContent({
             <div className="relative max-w-md mb-6">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
-                placeholder="Search products..."
+                placeholder={t("Search products...")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 rounded-full"
@@ -249,11 +252,11 @@ export function StoreDetailContent({
 
             {/* All Products */}
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              All Products
+              {t("All Products")}
             </h2>
             {filteredProducts.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-600">No products found</p>
+                <p className="text-gray-600">{t("No products found")}</p>
               </div>
             ) : (
               <ProductGrid products={filteredProducts} />
