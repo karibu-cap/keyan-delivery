@@ -1,9 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Menu, X, User, Store, Search, MapPin, Zap, ChevronDown, LogOut, Package } from "lucide-react";
+import {
+  ShoppingCart,
+  Menu,
+  X,
+  User,
+  Store,
+  Search,
+  MapPin,
+  ChevronDown,
+  LogOut,
+  Package
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -17,7 +28,11 @@ import Image from "next/image";
 import { search, SearchResult } from "@/lib/actions/client";
 import { IProduct } from "@/lib/actions/stores";
 
-
+interface LocationState {
+  address: string;
+  loading: boolean;
+  error: string | null;
+}
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,27 +44,115 @@ const Navbar = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
+  const [location, setLocation] = useState<LocationState>({
+    address: "Getting location...",
+    loading: true,
+    error: null,
+  });
 
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null);
   const debouncedQuery = useDebounce(searchQuery, 300);
 
-  const { user, logout } = useAuthStore()
-  const { cartItems } = useCart()
-  const quantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const { user, logout } = useAuthStore();
+  const { cartItems } = useCart();
 
-  const handleSignOut = async () => {
+  const quantity = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems]
+  );
+
+  // Geolocation: Get user's current location
+  const getUserLocation = useCallback(async () => {
+    if (!navigator.geolocation) {
+      setLocation({
+        address: "Location unavailable",
+        loading: false,
+        error: "Geolocation not supported",
+      });
+      return;
+    }
+
     try {
-      await logout();
-      setIsPopoverOpen(false);
-      router.push('/');
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 10000,
+            maximumAge: 300000,
+            enableHighAccuracy: false,
+          });
+        }
+      );
+
+      const { latitude, longitude } = position.coords;
+      await reverseGeocode(latitude, longitude);
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error("Geolocation error:", error);
+      setLocation({
+        address: "Location unavailable",
+        loading: false,
+        error: "Unable to get location",
+      });
+    }
+  }, []);
+
+  // Reverse geocoding to get address from coordinates
+  const reverseGeocode = async (lat: number, lon: number) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`,
+        {
+          headers: {
+            "Accept-Language": "en-US,en;q=0.9",
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("Geocoding failed");
+
+      const data = await response.json();
+      const address = data.address;
+
+      // Format address: City, State/Region
+      const city = address.city || address.town || address.village || address.county;
+      const state = address.state || address.region;
+
+      const formattedAddress = [city, state]
+        .filter(Boolean)
+        .join(", ") || "Location found";
+
+      setLocation({
+        address: formattedAddress,
+        loading: false,
+        error: null,
+      });
+    } catch (error) {
+      console.error("Reverse geocoding error:", error);
+      setLocation({
+        address: "Location unavailable",
+        loading: false,
+        error: "Unable to fetch address",
+      });
     }
   };
 
+  // Initialize geolocation on mount
+  useEffect(() => {
+    getUserLocation();
+  }, [getUserLocation]);
+
+  const handleSignOut = useCallback(async () => {
+    try {
+      await logout();
+      setIsPopoverOpen(false);
+      router.push("/");
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
+  }, [logout, router]);
+
   // Search API call
-  const searchItems = async (query: string) => {
+  const searchItems = useCallback(async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
@@ -60,11 +163,12 @@ const Navbar = () => {
       const response = await search(query);
       setSearchResults(response);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error("Search error:", error);
+      setSearchResults([]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (debouncedQuery) {
@@ -74,52 +178,62 @@ const Navbar = () => {
       setSearchResults([]);
       setIsSearchOpen(false);
     }
-  }, [debouncedQuery]);
+  }, [debouncedQuery, searchItems]);
 
   // Close search dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        // Only close if we're not clicking on a search result button
         const target = event.target as Element;
-        if (!target.closest('[data-search-result]')) {
+        if (!target.closest("[data-search-result]")) {
           setIsSearchOpen(false);
           setSelectedIndex(-1);
         }
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  const handleResultClick = async (result: SearchResult) => {
-    setIsSearchOpen(false);
-    setSearchQuery("");
 
-    switch (result.type) {
-      case 'product':
-        if (result.product) {
-          setSelectedProduct(result.product);
-          setIsProductModalOpen(true);
-        }
-        break;
-      case 'merchant':
-        router.push(`/stores/${result.id}`);
-        break;
-    }
-  };
+  const handleResultClick = useCallback(
+    (result: SearchResult) => {
+      setIsSearchOpen(false);
+      setSearchQuery("");
+
+      switch (result.type) {
+        case "product":
+          if (result.product) {
+            setSelectedProduct(result.product);
+            setIsProductModalOpen(true);
+          }
+          break;
+        case "merchant":
+          router.push(`/stores/${result.id}`);
+          break;
+      }
+    },
+    [router]
+  );
+
+  const handleProductModalClose = useCallback(() => {
+    setIsProductModalOpen(false);
+    setSelectedProduct(null);
+  }, []);
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16 gap-4">
-          {/* Logo and Store Selector */}
+          {/* Logo */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2 group">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <ShoppingCart className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-primary hidden sm:block">Keyan</span>
+              <span className="text-xl font-bold text-primary hidden sm:block">
+                Keyan
+              </span>
             </Link>
           </div>
 
@@ -133,14 +247,21 @@ const Navbar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                aria-label="Search"
+                aria-expanded={isSearchOpen}
+                aria-controls="search-results"
               />
 
               {/* Search Results Dropdown */}
               {isSearchOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                <div
+                  id="search-results"
+                  role="listbox"
+                  className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
+                >
                   {isLoading ? (
                     <div className="p-4 text-center text-gray-500">
-                      <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                      <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
                       Searching...
                     </div>
                   ) : searchResults.length > 0 ? (
@@ -150,7 +271,9 @@ const Navbar = () => {
                           key={`${result.type}-${result.id}`}
                           onClick={() => handleResultClick(result)}
                           data-search-result
-                          className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 ${index === selectedIndex ? 'bg-gray-50' : ''
+                          role="option"
+                          aria-selected={index === selectedIndex}
+                          className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 transition-colors ${index === selectedIndex ? "bg-gray-50" : ""
                             }`}
                         >
                           {result.image && (
@@ -168,8 +291,12 @@ const Navbar = () => {
                             </div>
                             <div className="text-sm text-gray-500 flex items-center space-x-2">
                               <span className="capitalize">{result.type}</span>
-                              {result.category && <span>•</span>}
-                              {result.category && <span>{result.category}</span>}
+                              {result.category && (
+                                <>
+                                  <span>•</span>
+                                  <span>{result.category}</span>
+                                </>
+                              )}
                             </div>
                           </div>
                           {result.price && (
@@ -190,26 +317,26 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Delivery/Pickup Toggle and Location */}
+          {/* Right Section */}
           <div className="flex items-center space-x-4">
-            {/* Delivery/Pickup Toggle */}
-
             {/* Location Selector */}
-            <Button variant="ghost" className="hidden md:flex items-center space-x-1 text-sm">
+            <Button
+              variant="ghost"
+              className="hidden md:flex items-center space-x-1 text-sm"
+              onClick={getUserLocation}
+              disabled={location.loading}
+              aria-label="Current location"
+            >
               <MapPin className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-700">New York, NY</span>
+              <span className="text-gray-700 max-w-[150px] truncate">
+                {location.address}
+              </span>
               <ChevronDown className="w-4 h-4 text-gray-500" />
             </Button>
 
-            {/* Delivery Time Badge */}
-            <div className="hidden lg:flex items-center space-x-1 bg-primary text-white px-3 py-1 rounded-full text-xs font-medium">
-              <Zap className="w-3 h-3" />
-              <span>By 10:30am</span>
-            </div>
-
             {/* Cart Button */}
             <Button variant="ghost" size="icon" className="relative" asChild>
-              <Link href="/cart">
+              <Link href="/cart" aria-label={`Shopping cart with ${quantity} items`}>
                 <ShoppingCart className="w-5 h-5 text-gray-700" />
                 {quantity > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-primary text-xs text-white rounded-full">
@@ -243,7 +370,10 @@ const Navbar = () => {
                       className="w-full justify-start"
                       asChild
                     >
-                      <Link href={ROUTES.profile} onClick={() => setIsPopoverOpen(false)}>
+                      <Link
+                        href={ROUTES.profile}
+                        onClick={() => setIsPopoverOpen(false)}
+                      >
                         <User className="w-4 h-4 mr-2" />
                         Profile
                       </Link>
@@ -253,7 +383,10 @@ const Navbar = () => {
                       className="w-full justify-start"
                       asChild
                     >
-                      <Link href={ROUTES.orders}>
+                      <Link
+                        href={ROUTES.orders}
+                        onClick={() => setIsPopoverOpen(false)}
+                      >
                         <Package className="w-4 h-4 mr-2" />
                         Orders
                       </Link>
@@ -275,8 +408,14 @@ const Navbar = () => {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={isMenuOpen}
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -291,6 +430,7 @@ const Navbar = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              aria-label="Search"
             />
 
             {/* Mobile Search Results Dropdown */}
@@ -298,7 +438,7 @@ const Navbar = () => {
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
                 {isLoading ? (
                   <div className="p-4 text-center text-gray-500">
-                    <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                    <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
                     Searching...
                   </div>
                 ) : searchResults.length > 0 ? (
@@ -309,7 +449,7 @@ const Navbar = () => {
                         onClick={() => handleResultClick(result)}
                         type="button"
                         data-search-result
-                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 ${index === selectedIndex ? 'bg-gray-50' : ''
+                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 transition-colors ${index === selectedIndex ? "bg-gray-50" : ""
                           }`}
                       >
                         {result.image && (
@@ -327,8 +467,12 @@ const Navbar = () => {
                           </div>
                           <div className="text-sm text-gray-500 flex items-center space-x-2">
                             <span className="capitalize">{result.type}</span>
-                            {result.category && <span>•</span>}
-                            {result.category && <span>{result.category}</span>}
+                            {result.category && (
+                              <>
+                                <span>•</span>
+                                <span>{result.category}</span>
+                              </>
+                            )}
                           </div>
                         </div>
                         {result.price && (
@@ -352,36 +496,44 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-4 border-t border-gray-200 animate-slide-up">
-            {/* Mobile Delivery/Pickup Toggle */}
-            <div className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start" asChild>
-                <Link href={ROUTES.stores}>
-                  <Store className="w-5 h-5 mr-3" />
-                  Stores
-                </Link>
-              </Button>
-              <Button variant="ghost" className="w-full justify-start" asChild>
-                <Link href={ROUTES.orders}>
-                  <ShoppingCart className="w-5 h-5 mr-3" />
-                  Orders
-                </Link>
-              </Button>
-              {!user ? (
-                <AuthModal>
-                  <Button variant="outline" className="w-full">
-                    <User className="w-5 h-5 mr-2" />
-                    Sign In
-                  </Button>
-                </AuthModal>
-              ) : (
-                <Button variant="outline" className="w-full" asChild>
-                  <Link href={ROUTES.profile}>
-                    <User className="w-5 h-5 mr-2" />
-                    Profile
-                  </Link>
+            {/* Mobile Location */}
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={getUserLocation}
+              disabled={location.loading}
+            >
+              <MapPin className="w-5 h-5 mr-3" />
+              <span className="truncate">{location.address}</span>
+            </Button>
+
+            <Button variant="ghost" className="w-full justify-start" asChild>
+              <Link href={ROUTES.stores}>
+                <Store className="w-5 h-5 mr-3" />
+                Stores
+              </Link>
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" asChild>
+              <Link href={ROUTES.orders}>
+                <ShoppingCart className="w-5 h-5 mr-3" />
+                Orders
+              </Link>
+            </Button>
+            {!user ? (
+              <AuthModal>
+                <Button variant="outline" className="w-full">
+                  <User className="w-5 h-5 mr-2" />
+                  Sign In
                 </Button>
-              )}
-            </div>
+              </AuthModal>
+            ) : (
+              <Button variant="outline" className="w-full" asChild>
+                <Link href={ROUTES.profile}>
+                  <User className="w-5 h-5 mr-2" />
+                  Profile
+                </Link>
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -390,10 +542,7 @@ const Navbar = () => {
       <ProductModal
         product={selectedProduct}
         isOpen={isProductModalOpen}
-        onClose={() => {
-          setIsProductModalOpen(false);
-          setSelectedProduct(null);
-        }}
+        onClose={handleProductModalClose}
       />
     </nav>
   );

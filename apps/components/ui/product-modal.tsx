@@ -1,9 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { X, Plus, Minus, Heart, Bookmark, ZoomIn, Star, CheckCircle, ChevronRight } from "lucide-react";
+import { useState, useCallback, useMemo } from "react";
+import {
+    X,
+    Plus,
+    Minus,
+    Heart,
+    ZoomIn,
+    Star,
+    CheckCircle,
+    ChevronRight,
+    Truck,
+    Shield,
+    Package
+} from "lucide-react";
 import { Button } from "./button";
-import { Dialog, DialogContent, DialogOverlay } from "./dialog";
+import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "./dialog";
 import Image from "next/image";
 import { useCart } from "@/hooks/use-cart";
 import { Badge } from "./badge";
@@ -15,46 +27,115 @@ interface ProductModalProps {
     onClose: () => void;
 }
 
+interface WeightOption {
+    value: number;
+    label: string;
+}
+
 export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [selectedWeight, setSelectedWeight] = useState<number | null>(null);
+    const [isWishlisted, setIsWishlisted] = useState(false);
     const { addItem } = useCart();
 
-    if (!product) return <div></div>;
+    const handleOpenChange = useCallback((open: boolean) => {
+        if (!open) {
+            setSelectedImageIndex(0);
+            setQuantity(1);
+            setSelectedWeight(null);
+            onClose();
+        }
+    }, [onClose]);
 
-    const weightOptions = product.weight ? [
-        { value: product.weight * 0.75, label: `${(product.weight * 0.75).toFixed(2)} ${product.weightUnit}` },
-        { value: product.weight, label: `${product.weight} ${product.weightUnit}` },
-        { value: product.weight * 1.25, label: `${(product.weight * 1.25).toFixed(2)} ${product.weightUnit}` },
-        { value: product.weight * 1.5, label: `${(product.weight * 1.5).toFixed(2)} ${product.weightUnit}` },
-    ] : [];
+    // Memoize weight options
+    const weightOptions = useMemo<WeightOption[]>(() => {
+        if (!product?.weight) return [];
 
-    const currentPrice = selectedWeight && product.weight
-        ? (product.price / product.weight) * selectedWeight
-        : product.price;
+        return [
+            {
+                value: product.weight * 0.75,
+                label: `${(product.weight * 0.75).toFixed(2)} ${product.weightUnit}`
+            },
+            {
+                value: product.weight,
+                label: `${product.weight} ${product.weightUnit}`
+            },
+            {
+                value: product.weight * 1.25,
+                label: `${(product.weight * 1.25).toFixed(2)} ${product.weightUnit}`
+            },
+            {
+                value: product.weight * 1.5,
+                label: `${(product.weight * 1.5).toFixed(2)} ${product.weightUnit}`
+            },
+        ];
+    }, [product?.weight, product?.weightUnit]);
 
-    const handleAddToCart = () => {
+    // Calculate current price
+    const currentPrice = useMemo(() => {
+        if (!product) return 0;
+        if (selectedWeight && product.weight) {
+            return (product.price / product.weight) * selectedWeight;
+        }
+        return product.price;
+    }, [product, selectedWeight]);
+
+    // Calculate savings
+    const savings = useMemo(() => {
+        if (!product?.compareAtPrice) return null;
+        const amount = product.compareAtPrice - currentPrice;
+        const percentage = ((amount / product.compareAtPrice) * 100).toFixed(0);
+        return { amount, percentage };
+    }, [product?.compareAtPrice, currentPrice]);
+
+    const handleImageSelect = useCallback((index: number) => {
+        setSelectedImageIndex(index);
+    }, []);
+
+    const handleQuantityChange = useCallback((delta: number) => {
+        setQuantity(prev => Math.max(1, prev + delta));
+    }, []);
+
+    const handleWeightSelect = useCallback((value: number) => {
+        setSelectedWeight(value);
+    }, []);
+
+    const handleAddToCart = useCallback(() => {
+        if (!product) return;
+
         addItem({
-            product: product,
+            product,
             quantity,
             price: currentPrice,
         });
         onClose();
-    };
+    }, [product, quantity, currentPrice, addItem, onClose]);
+
+    const toggleWishlist = useCallback(() => {
+        setIsWishlisted(prev => !prev);
+    }, []);
+
+    if (!product) return null;
+
+    const totalPrice = currentPrice * quantity;
+    const currentImage = product.images[selectedImageIndex]?.url || product.images[0]?.url;
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogOverlay className="bg-black/50" />
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
-                <div className="grid md:grid-cols-2 gap-0">
-                    {/* Image Section */}
-                    <div className="relative bg-gray-50">
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+            <DialogTitle className="sr-only">{product.title}</DialogTitle>
+            <DialogOverlay className="bg-black/60 backdrop-blur-sm" />
+            <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden p-0 gap-0">
+                <div className="grid md:grid-cols-[55%_45%] gap-0 h-full">
+                    {/* Left: Image Section */}
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100">
+                        {/* Close Button */}
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute top-4 right-4 z-10 bg-white/80 hover:bg-white"
-                            onClick={onClose}
+                            className="absolute top-4 left-4 z-10 bg-white/90 hover:bg-white shadow-md"
+                            onClick={() => handleOpenChange(false)}
+                            aria-label="Close modal"
                         >
                             <X className="w-5 h-5" />
                         </Button>
@@ -62,55 +143,63 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                         {/* Main Image */}
                         <div className="relative aspect-square overflow-hidden">
                             <Image
-                                src={product.images[0].url}
-                                alt={product.title}
+                                src={currentImage}
+                                alt={`${product.title} - Image ${selectedImageIndex + 1}`}
                                 fill
-                                className="object-cover"
-                                sizes="(max-width: 768px) 100vw, 50vw"
+                                className="object-cover transition-opacity duration-300"
+                                sizes="(max-width: 768px) 100vw, 55vw"
+                                priority
                             />
 
                             {/* Zoom Icon */}
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="absolute bottom-4 right-4 bg-white/80 hover:bg-white"
+                                className="absolute bottom-4 right-4 bg-white/90 hover:bg-white shadow-md"
+                                aria-label="Zoom image"
                             >
                                 <ZoomIn className="w-5 h-5" />
                             </Button>
 
                             {/* Badges Overlay */}
-                            {product.badges && product.badges.length > 0 && (
-                                <div className="absolute top-4 left-4 space-y-2">
-                                    {product.badges.includes('BEST_SELLER') && (
-                                        <Badge variant="bestSeller" className="text-xs">
-                                            Best seller
-                                        </Badge>
-                                    )}
-                                    {product.badges.includes('ORGANIC') && (
-                                        <Badge variant="organic" className="text-xs block">
-                                            Organic
-                                        </Badge>
-                                    )}
-                                </div>
-                            )}
+                            <div className="absolute top-4 right-4 space-y-2">
+                                {product.badges?.includes('BEST_SELLER') && (
+                                    <Badge variant="bestSeller" className="text-xs shadow-md">
+                                        🏆 Best Seller
+                                    </Badge>
+                                )}
+                                {product.badges?.includes('ORGANIC') && (
+                                    <Badge variant="organic" className="text-xs shadow-md block">
+                                        🌿 Organic
+                                    </Badge>
+                                )}
+                                {savings && (
+                                    <Badge className="bg-red-500 text-white text-xs shadow-md block">
+                                        Save {savings.percentage}%
+                                    </Badge>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Thumbnail Images */}
+                        {/* Thumbnail Gallery */}
                         {product.images && product.images.length > 1 && (
-                            <div className="absolute bottom-4 left-4 right-4">
-                                <div className="flex space-x-2 overflow-x-auto">
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/20 to-transparent p-4">
+                                <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide">
                                     {product.images.map((image, index) => (
                                         <button
                                             key={index}
-                                            onClick={() => setSelectedImageIndex(index)}
-                                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImageIndex === index ? 'border-primary' : 'border-gray-200'
+                                            onClick={() => handleImageSelect(index)}
+                                            className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-3 transition-all duration-200 hover:scale-105 ${selectedImageIndex === index
+                                                ? 'border-primary ring-2 ring-primary/50 shadow-lg'
+                                                : 'border-white/50 hover:border-white shadow-md'
                                                 }`}
+                                            aria-label={`View image ${index + 1}`}
                                         >
                                             <Image
                                                 src={image.url}
-                                                alt={`${product.title} ${index + 1}`}
-                                                width={64}
-                                                height={64}
+                                                alt={`${product.title} thumbnail ${index + 1}`}
+                                                width={80}
+                                                height={80}
                                                 className="w-full h-full object-cover"
                                             />
                                         </button>
@@ -120,78 +209,97 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                         )}
                     </div>
 
-                    {/* Content Section */}
-                    <div className="p-6 overflow-y-auto max-h-[90vh]">
-                        {/* Header */}
-                        <div className="mb-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <Badge variant="inStock" className="text-xs">
-                                    <CheckCircle className="w-3 h-3 mr-1" />
-                                    In stock
-                                </Badge>
-                                <div className="flex items-center space-x-2">
-                                    <Button variant="ghost" size="icon">
-                                        <Heart className="w-5 h-5" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon">
-                                        <Bookmark className="w-5 h-5" />
-                                    </Button>
-                                </div>
-                            </div>
-
-                            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                                {product.title}
-                            </h1>
-
-                            <Button variant="link" className="text-sm p-0 h-auto text-primary">
-                                Shop all {product.merchant.businessName}
-                                <ChevronRight className="w-4 h-4 ml-1" />
-                            </Button>
-                        </div>
-
-                        {/* Rating */}
-                        {product.rating && product.reviewCount && (
-                            <div className="flex items-center space-x-2 mb-4">
-                                <div className="flex items-center">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star
-                                            key={i}
-                                            className={`w-4 h-4 ${i < Math.floor(product.rating!)
-                                                ? 'text-yellow-400 fill-current'
-                                                : 'text-gray-300'
+                    {/* Right: Content Section */}
+                    <div className="flex flex-col overflow-y-auto max-h-[95vh]">
+                        <div className="p-6 space-y-5">
+                            {/* Header */}
+                            <div>
+                                <div className="flex items-start justify-between mb-3">
+                                    <Badge variant="inStock" className="text-xs">
+                                        <CheckCircle className="w-3 h-3 mr-1" />
+                                        In Stock
+                                    </Badge>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={toggleWishlist}
+                                        className="hover:bg-red-50"
+                                        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                                    >
+                                        <Heart
+                                            className={`w-5 h-5 transition-colors ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'
                                                 }`}
                                         />
-                                    ))}
+                                    </Button>
                                 </div>
-                                <span className="text-sm text-gray-600">
-                                    {product.rating.toFixed(1)} ({product.reviewCount} reviews)
-                                </span>
-                            </div>
-                        )}
 
-                        {/* Price and Weight Selector */}
-                        <div className="mb-6">
-                            <div className="flex items-center space-x-3 mb-4">
-                                <span className="text-3xl font-bold text-gray-900">
-                                    ${currentPrice.toFixed(2)}
-                                </span>
-                                {product.compareAtPrice && (
-                                    <span className="text-lg text-gray-500 line-through">
-                                        ${product.compareAtPrice.toFixed(2)}
+                                <h1 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
+                                    {product.title}
+                                </h1>
+
+                                <Button
+                                    variant="link"
+                                    className="text-sm p-0 h-auto text-primary hover:text-primary/80"
+                                >
+                                    Visit {product.merchant.businessName}
+                                    <ChevronRight className="w-4 h-4 ml-1" />
+                                </Button>
+                            </div>
+
+                            {/* Rating */}
+                            {product.rating && product.reviewCount && (
+                                <div className="flex items-center space-x-2 pb-4 border-b border-gray-200">
+                                    <div className="flex items-center">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className={`w-4 h-4 ${i < Math.floor(product.rating!)
+                                                    ? 'text-yellow-400 fill-yellow-400'
+                                                    : 'text-gray-300'
+                                                    }`}
+                                            />
+                                        ))}
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-900">
+                                        {product.rating.toFixed(1)}
                                     </span>
-                                )}
+                                    <span className="text-sm text-gray-500">
+                                        ({product.reviewCount} reviews)
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Pricing */}
+                            <div className="space-y-3">
+                                <div className="flex items-baseline space-x-3">
+                                    <span className="text-4xl font-bold text-gray-900">
+                                        ${currentPrice.toFixed(2)}
+                                    </span>
+                                    {product.compareAtPrice && (
+                                        <>
+                                            <span className="text-xl text-gray-400 line-through">
+                                                ${product.compareAtPrice.toFixed(2)}
+                                            </span>
+                                            {savings && (
+                                                <Badge variant="destructive" className="text-xs">
+                                                    Save ${savings.amount.toFixed(2)}
+                                                </Badge>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
                                 {product.weightUnit && (
-                                    <span className="text-sm text-gray-600">
-                                        / {product.weightUnit}
-                                    </span>
+                                    <p className="text-sm text-gray-600">
+                                        Price per {product.weightUnit}
+                                    </p>
                                 )}
                             </div>
 
                             {/* Weight Selector */}
                             {weightOptions.length > 0 && (
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700">
-                                        Choose size:
+                                <div className="space-y-3">
+                                    <label className="text-sm font-semibold text-gray-900 block">
+                                        Choose Size:
                                     </label>
                                     <div className="grid grid-cols-2 gap-2">
                                         {weightOptions.map((option) => (
@@ -199,8 +307,11 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                                 key={option.value}
                                                 variant={selectedWeight === option.value ? "default" : "outline"}
                                                 size="sm"
-                                                onClick={() => setSelectedWeight(option.value)}
-                                                className="justify-start"
+                                                onClick={() => handleWeightSelect(option.value)}
+                                                className={`justify-center font-medium transition-all ${selectedWeight === option.value
+                                                    ? 'ring-2 ring-primary/50'
+                                                    : 'hover:border-primary'
+                                                    }`}
                                             >
                                                 {option.label}
                                             </Button>
@@ -208,74 +319,78 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                     </div>
                                 </div>
                             )}
-                        </div>
 
-                        {/* Quantity Selector */}
-                        <div className="mb-6">
-                            <label className="text-sm font-medium text-gray-700 mb-2 block">
-                                Quantity:
-                            </label>
-                            <div className="flex items-center space-x-3">
-                                <div className="flex items-center border border-gray-300 rounded-lg">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="w-12 h-12 rounded-l-lg"
-                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    >
-                                        <Minus className="w-4 h-4" />
-                                    </Button>
-                                    <span className="px-4 py-3 text-lg font-medium min-w-[60px] text-center">
-                                        {quantity}
+                            {/* Quantity Selector */}
+                            <div className="space-y-3">
+                                <label className="text-sm font-semibold text-gray-900 block">
+                                    Quantity:
+                                </label>
+                                <div className="flex items-center space-x-4">
+                                    <div className="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="w-12 h-12 hover:bg-gray-50 rounded-none"
+                                            onClick={() => handleQuantityChange(-1)}
+                                            disabled={quantity <= 1}
+                                            aria-label="Decrease quantity"
+                                        >
+                                            <Minus className="w-4 h-4" />
+                                        </Button>
+                                        <span className="px-6 py-3 text-lg font-semibold min-w-[80px] text-center border-x-2 border-gray-200">
+                                            {quantity}
+                                        </span>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="w-12 h-12 hover:bg-gray-50 rounded-none"
+                                            onClick={() => handleQuantityChange(1)}
+                                            aria-label="Increase quantity"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                    <span className="text-sm text-gray-600">
+                                        Total: <span className="font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
                                     </span>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="w-12 h-12 rounded-r-lg"
-                                        onClick={() => setQuantity(quantity + 1)}
-                                    >
-                                        <Plus className="w-4 h-4" />
-                                    </Button>
                                 </div>
                             </div>
-                        </div>
 
-
-                        {/* Action Buttons */}
-                        <div className="space-y-3 mb-6">
-                            <Button
-                                className="w-full bg-primary hover:bg-primary-dark text-white py-4 text-lg"
-                                onClick={handleAddToCart}
-                            >
-                                Add to cart • ${(currentPrice * quantity).toFixed(2)}
-                            </Button>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <Button variant="outline" className="flex items-center justify-center">
-                                    <Heart className="w-4 h-4 mr-2" />
-                                    Save
-                                </Button>
-                                <Button variant="outline" className="flex items-center justify-center">
-                                    <Bookmark className="w-4 h-4 mr-2" />
-                                    Add to Saved List
+                            {/* Action Buttons */}
+                            <div className="space-y-3 pt-2">
+                                <Button
+                                    className="w-full bg-primary hover:bg-primary/90 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+                                    onClick={handleAddToCart}
+                                >
+                                    Add to Cart • ${totalPrice.toFixed(2)}
                                 </Button>
                             </div>
-                        </div>
 
-                        {/* Satisfaction Guarantee */}
-                        <div className="flex items-center space-x-2 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
-                            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">✓</span>
+                            {/* Trust Badges */}
+                            <div className="grid grid-cols-3 gap-3 pt-4">
+                                <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
+                                    <Truck className="w-5 h-5 text-primary mb-2" />
+                                    <span className="text-xs font-medium text-gray-700">Free Delivery</span>
+                                </div>
+                                <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
+                                    <Shield className="w-5 h-5 text-primary mb-2" />
+                                    <span className="text-xs font-medium text-gray-700">100% Guarantee</span>
+                                </div>
+                                <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
+                                    <Package className="w-5 h-5 text-primary mb-2" />
+                                    <span className="text-xs font-medium text-gray-700">Secure Packaging</span>
+                                </div>
                             </div>
-                            <span>100% satisfaction guarantee</span>
-                        </div>
 
-                        {/* Customers Also Considered */}
-                        <div className="mt-6 pt-6 border-t border-gray-200">
-                            <h3 className="font-semibold text-gray-900 mb-4">Customers also considered</h3>
-                            <div className="text-center text-gray-500 py-8">
-                                <p>Related products carousel would go here</p>
-                            </div>
+                            {/* Product Description */}
+                            {product.description && (
+                                <div className="pt-4 border-t border-gray-200">
+                                    <h3 className="font-semibold text-gray-900 mb-2">About this product</h3>
+                                    <p className="text-sm text-gray-600 leading-relaxed">
+                                        {product.description}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

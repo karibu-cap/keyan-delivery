@@ -24,7 +24,5 @@ export async function GET(req: Request, props: { params: Promise<{ id: string }>
     } catch (error) {
         console.error('Error fetching user:', error)
         return NextResponse.json({ success: false, error: 'Failed to fetch user' }, { status: 500 })
-    } finally {
-        await prisma.$disconnect()
     }
 }

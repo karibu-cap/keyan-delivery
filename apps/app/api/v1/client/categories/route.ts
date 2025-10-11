@@ -91,7 +91,5 @@ export async function GET(request: NextRequest) {
       { success: false, error: 'Failed to fetch categories' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

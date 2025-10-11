@@ -119,7 +119,5 @@ export async function GET(request: NextRequest) {
             { success: false, error: 'Failed to perform search' },
             { status: 500 }
         );
-    } finally {
-        await prisma.$disconnect();
     }
 }

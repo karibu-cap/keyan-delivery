@@ -80,7 +80,5 @@ export async function GET(req: Request, props: { params: Promise<{ id: string }>
       { success: false, error: 'Failed to fetch store' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
