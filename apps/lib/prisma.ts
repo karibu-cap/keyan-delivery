@@ -12,6 +12,7 @@ const prismaClientSingleton = () => {
     datasourceUrl: process.env.DATABASE_URL,
   })
 
+
   return client
 }
 

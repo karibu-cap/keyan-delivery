@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
     const category = searchParams.get('category') || '';
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     const totalCount = await prisma.merchant.count({ where: whereClause });
 
-  
+
 
     return NextResponse.json({
       success: true,
@@ -76,7 +77,5 @@ export async function GET(request: NextRequest) {
       { success: false, error: 'Failed to fetch merchants' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

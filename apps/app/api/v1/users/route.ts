@@ -122,7 +122,5 @@ export const GET = async (request: NextRequest) => {
       { success: false, error: 'Failed to fetch user merchants' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

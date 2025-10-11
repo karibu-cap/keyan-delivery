@@ -1,58 +1,162 @@
-import Link from "next/link";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Clock } from "lucide-react";
-import Image from "next/image";
-import { format } from 'date-fns'
+import {
+    ShoppingBag,
+    Clock,
+    Star,
+    Truck,
+    UtensilsCrossed,
+    Pill,
+} from "lucide-react";
 import { IMerchant } from "@/lib/actions/stores";
+import { MerchantType } from "@prisma/client";
+import { useCallback } from "react";
 
+interface StoreCardProps {
+    store: IMerchant;
+    index: number;
+}
 
-const StoreCard = ({ store, index = 0 }: { store: IMerchant, index?: number }) => {
-    const badge = store.isVerified ? "Verified" : "New"
+export function StoreCard({ store, index }: StoreCardProps) {
+    const router = useRouter();
+    const merchantType =
+        (store as IMerchant & { merchantType: string }).merchantType ||
+        MerchantType.GROCERY;
+
+    const getMerchantTypeIcon = useCallback((type: string) => {
+        switch (type) {
+            case MerchantType.FOOD:
+                return <UtensilsCrossed className="w-5 h-5 text-orange-600" />;
+            case MerchantType.PHARMACY:
+                return <Pill className="w-5 h-5 text-blue-600" />;
+            default:
+                return <ShoppingBag className="w-5 h-5 text-green-600" />;
+        }
+    }, []);
+
+    const handleStoreClick = useCallback(() => {
+        router.push(`/stores/${store.id}`);
+    }, [router, store.id]);
+
+    const handleShopNowClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            router.push(`/stores/${store.id}`);
+        },
+        [router, store.id]
+    );
+
+    const handleDeliveryClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        // Handle delivery options
+    }, []);
 
     return (
-        <Link
-            href={`/stores/${store.id}`}
-            className="group animate-slide-up"
+        <div
+            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer animate-slide-up group"
             style={{ animationDelay: `${index * 50}ms` }}
+            onClick={handleStoreClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    handleStoreClick();
+                }
+            }}
+            aria-label={`View ${store.businessName} store`}
         >
-            <div className="bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
-                <div className="relative h-48 overflow-hidden">
-                    {store.bannerUrl && <Image
-                        src={store.bannerUrl}
-                        alt={store.businessName}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
-                    />}
-                    {badge && (
-                        <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground">
-                            {badge}
-                        </Badge>
-                    )}
-                </div>
-
-                <div className="p-5">
-                    <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
-                        {store.businessName}
-                    </h3>
-
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                        <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 fill-warning text-warning" />
-                            <span className="font-medium text-foreground">{store.rating?.toFixed(1) || '0.0'}/5</span>
+            {/* Header */}
+            <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                    <div className="w-14 h-14 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border border-gray-200 group-hover:border-primary/30 transition-colors">
+                        {getMerchantTypeIcon(merchantType)}
+                    </div>
+                    <div>
+                        <h3 className="font-semibold text-gray-900 text-lg group-hover:text-primary transition-colors">
+                            {store.businessName}
+                        </h3>
+                        <div className="flex items-center space-x-1 text-sm text-gray-600">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-medium">
+                                {store.rating?.toFixed(1) || "4.5"}
+                            </span>
+                            <span className="text-gray-400">• 500+ ratings</span>
                         </div>
-                        {store.deliveryTime && <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            <span>{format(new Date(store.deliveryTime), 'HH:mm')}</span>
-                        </div>}
-                    </div>
-
-                    <div className="text-sm text-muted-foreground">
-                        {store.products.length} products available
                     </div>
                 </div>
+                {merchantType === MerchantType.PHARMACY && (
+                    <Badge variant="outline" className="text-xs whitespace-nowrap">
+                        In-store prices
+                    </Badge>
+                )}
             </div>
-        </Link>
-    );
-};
 
-export default StoreCard;
+            {/* Delivery Time */}
+            <div className="flex items-center space-x-2 mb-4 bg-green-50 rounded-lg px-3 py-2">
+                <Clock className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-medium text-green-700">
+                    Delivery by {store.deliveryTime || "10:30am"}
+                </span>
+            </div>
+
+            {/* Promotional Tags */}
+            <div className="flex flex-wrap gap-2 mb-4">
+                {merchantType === MerchantType.GROCERY && (
+                    <>
+                        <Badge variant="promotional" className="text-xs">
+                            💰 $5 off first order
+                        </Badge>
+                        <Badge
+                            variant="outline"
+                            className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                        >
+                            🚚 Free delivery
+                        </Badge>
+                    </>
+                )}
+                {merchantType === MerchantType.FOOD && (
+                    <Badge variant="promotional" className="text-xs">
+                        🔥 10% off orders $25+
+                    </Badge>
+                )}
+                {merchantType === MerchantType.PHARMACY && (
+                    <Badge
+                        variant="outline"
+                        className="text-xs bg-purple-50 text-purple-700 border-purple-200"
+                    >
+                        ⚡ Same-day delivery
+                    </Badge>
+                )}
+            </div>
+
+            {/* Delivery Fee */}
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                <span className="text-sm text-gray-600">Delivery fee</span>
+                <span className="text-sm font-semibold text-green-600">
+                    FREE ($0.00)
+                </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-2">
+                <Button
+                    className="flex-1 bg-primary hover:bg-primary/90 text-white shadow-sm hover:shadow-md transition-all"
+                    onClick={handleShopNowClick}
+                >
+                    Shop now
+                </Button>
+                <Button
+                    variant="outline"
+                    className="px-4 hover:bg-gray-50 hover:border-primary/30 transition-all"
+                    onClick={handleDeliveryClick}
+                    aria-label="Delivery options"
+                >
+                    <Truck className="w-4 h-4" />
+                </Button>
+            </div>
+        </div>
+    );
+}
