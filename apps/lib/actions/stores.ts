@@ -299,32 +299,76 @@ export async function fetchMerchants({
   offset: number;
 }): Promise<{ merchants: IMerchant[]; pagination: PaginationInfo }> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const whereClause: Prisma.MerchantWhereInput = {
+      isVerified: true,
+    };
 
-    const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    if (category) params.append('category', category);
-    params.append('limit', limit.toString());
-    params.append('offset', offset.toString());
+    if (search) {
+      whereClause.OR = [
+        { businessName: { contains: search, mode: 'insensitive' } },
+        { categories: { some: { category: { name: { contains: search, mode: 'insensitive' } } } } },
+      ];
+    }
 
-    const response = await fetch(
-      `${baseUrl}/api/v1/client/merchants?${params.toString()}`,
-      {
-        next: { revalidate: 300 }, // Revalidate every 5 minutes
+    if (category && category !== 'all') {
+      whereClause.categories = {
+        some: {
+          categoryId: category
+        }
+      };
+    }
+
+    const merchants = await prisma.merchant.findMany({
+      where: whereClause,
+      take: limit,
+      skip: offset,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        products: {
+          where: {
+            status: ProductStatus.VERIFIED,
+            visibility: true,
+          },
+          include: {
+            categories: {
+              include: {
+                category: true
+              }
+            },
+            images: true,
+            merchant: true,
+            _count: {
+              select: {
+                OrderItem: true,
+                cartItems: true,
+              },
+            },
+          },
+        },
+        categories: {
+          select: { category: true }
+        },
+        managers: {
+          include: {
+            user: {
+              select: { fullName: true, phone: true }
+            }
+          }
+        }
       }
-    );
+    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch merchants');
-    }
+    const totalCount = await prisma.merchant.count({ where: whereClause });
 
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch merchants');
-    }
-
-    return data.data;
+    return {
+      merchants: merchants,
+      pagination: {
+        total: totalCount,
+        limit,
+        offset,
+        hasMore: offset + limit < totalCount,
+      }
+    };
   } catch (error) {
     console.error('Error fetching merchants:', error);
     throw new Error('Failed to fetch merchants');
