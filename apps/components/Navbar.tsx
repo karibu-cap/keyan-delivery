@@ -27,6 +27,7 @@ import { ProductModal } from "@/components/ui/product-modal";
 import Image from "next/image";
 import { search, SearchResult } from "@/lib/actions/client";
 import { IProduct } from "@/lib/actions/stores";
+import { DriverBadge } from "@/components/driver/DriverBadge";
 
 interface LocationState {
   address: string;
@@ -345,6 +346,9 @@ const Navbar = () => {
                 )}
               </Link>
             </Button>
+
+            {/* Driver Badge */}
+            <DriverBadge />
 
             {/* User Menu */}
             {!user ? (

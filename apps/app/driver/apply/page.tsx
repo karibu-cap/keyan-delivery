@@ -11,6 +11,7 @@ import { Upload, FileText, CheckCircle, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { uploadDriverDocuments } from "@/lib/actions/driver";
+import { fileToBase64 } from "@/lib/utils/base_64";
 
 export default function DriverApplicationPage() {
    const router = useRouter();
@@ -67,9 +68,12 @@ export default function DriverApplicationPage() {
       }
 
       setIsSubmitting(true);
+      
+      const cniBase64 = await fileToBase64(cniFile);
+      const licenseBase64 = await fileToBase64(licenseFile);
 
       try {
-         const result = await uploadDriverDocuments(cniFile, licenseFile);
+         const result = await uploadDriverDocuments(cniBase64, licenseBase64);
 
          if (result.success) {
             toast({

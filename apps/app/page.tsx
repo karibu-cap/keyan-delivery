@@ -117,15 +117,14 @@ const Index = () => {
                     <span>24/7 support team</span>
                   </li>
                 </ul>
-                <Button
-                  asChild
-                  size="lg"
-                  className="w-full bg-primary hover:bg-primary/90 shadow-primary"
-                >
-                  <Link href={ROUTES.driverApply}>
+                <AuthModal redirectTo={ROUTES.driverApply}>
+                  <Button
+                    size="lg"
+                    className="w-full bg-primary hover:bg-primary/90 shadow-primary"
+                  >
                     Apply as Driver
-                  </Link>
-                </Button>
+                  </Button>
+                </AuthModal>
               </div>
             </Card>
           </div>
