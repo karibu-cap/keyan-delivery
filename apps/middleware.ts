@@ -1,9 +1,10 @@
-// middleware.ts
 import { authMiddleware, redirectToHome, redirectToLogin } from 'next-firebase-auth-edge';
 import createIntlMiddleware from 'next-intl/middleware';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { clientConfig, serverConfig } from './auth_config';
 import { routing } from './i18n/routing';
+
+const intlMiddleware = createIntlMiddleware(routing);
 
 const UN_AUTH_PUBLIC_PATHS = ['/reset-password', '/sign-in', '/sign-up'];
 const PUBLIC_PATHS = [
@@ -20,19 +21,7 @@ const PUBLIC_PATHS = [
   '/not-found',
 ];
 
-const intlMiddleware = createIntlMiddleware(routing);
-
-
 export async function middleware(request: NextRequest) {
-  // First, apply i18n middleware to handle locale routing
-  const response = intlMiddleware(request);
-
-  // If intlMiddleware already handled the request (e.g., redirect), return it
-  if (response.status !== 200 || response.headers.has('x-middleware-rewrite')) {
-    return response;
-  }
-
-  // Apply auth middleware to the response from intlMiddleware
   return authMiddleware(request, {
     loginPath: '/api/login',
     logoutPath: '/api/logout',
@@ -58,26 +47,12 @@ export async function middleware(request: NextRequest) {
 
       // Assume locales are optional 2-letter prefixes like /en/, /fr/, etc. (case-insensitive)
       const localeRegex = /^\/[a-z]{2}\/?/i;
-
       const basePath = localeRegex.test(pathname) ? pathname.replace(localeRegex, '/') : pathname;
 
-      // Check if token is expired
+      // Check if token is expired (though authMiddleware typically invalidates expired tokens; this is redundant but preserved)
       if (decodedToken.exp < Date.now() / 1000) {
-        if (PUBLIC_PATHS.some((path) => {
-          if (typeof path === 'string') {
-            return basePath === path;
-          } else {
-            return path.test(basePath);
-          }
-        })) {
-          // For public paths, apply intlMiddleware
-          const intlResponse = intlMiddleware(request);
-          intlResponse.headers.forEach((value, key) => {
-            if (!response.headers.has(key)) {
-              response.headers.set(key, value);
-            }
-          });
-          return intlResponse;
+        if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? basePath === path : path.test(basePath))) {
+          return applyIntl(request); // Apply i18n for public paths
         }
         return redirectToLogin(request, {
           path: '/sign-in',
@@ -85,49 +60,23 @@ export async function middleware(request: NextRequest) {
         });
       }
 
-      // Check if user is trying to access unauthorized public paths
-      if (UN_AUTH_PUBLIC_PATHS.includes(request.nextUrl.pathname)) {
+      // Redirect authenticated users from unauth public paths
+      if (UN_AUTH_PUBLIC_PATHS.includes(basePath)) {
         return redirectToHome(request);
       }
 
-      // Token is valid, return the intlMiddleware response
-      // Preserve any headers set by intlMiddleware
-      const intlResponse = intlMiddleware(request);
-
-      // Clone headers from intlResponse to preserve locale information
-      intlResponse.headers.forEach((value, key) => {
-        if (!response.headers.has(key)) {
-          response.headers.set(key, value);
-        }
-      });
-
-      return response;
+      // For valid tokens on protected paths, apply i18n and propagate auth headers for token caching
+      return applyIntl(request, headers);
     },
     handleInvalidToken: async (reason) => {
       console.info('Missing or malformed credentials', { reason });
 
-      // Handle network-related token issues
       const pathname = request.nextUrl.pathname;
-
-      // Assume locales are optional 2-letter prefixes like /en/, /fr/, etc. (case-insensitive)
       const localeRegex = /^\/[a-z]{2}\/?/i;
-
       const basePath = localeRegex.test(pathname) ? pathname.replace(localeRegex, '/') : pathname;
-      if (PUBLIC_PATHS.some((path) => {
-        if (typeof path === 'string') {
-          return basePath === path;
-        } else {
-          return path.test(basePath);
-        }
-      })) {
-        // For public paths, apply intlMiddleware
-        const intlResponse = intlMiddleware(request);
-        intlResponse.headers.forEach((value, key) => {
-          if (!response.headers.has(key)) {
-            response.headers.set(key, value);
-          }
-        });
-        return intlResponse;
+
+      if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? basePath === path : path.test(basePath))) {
+        return applyIntl(request); // Apply i18n for public paths
       }
 
       return redirectToLogin(request, {
@@ -146,20 +95,8 @@ export async function middleware(request: NextRequest) {
       if (isFetchError) {
         console.warn('Network error detected, allowing access to public paths');
 
-        if (PUBLIC_PATHS.some((path) => {
-          if (typeof path === 'string') {
-            return request.nextUrl.pathname === path;
-          } else {
-            return path.test(request.nextUrl.pathname);
-          }
-        })) {
-          const intlResponse = intlMiddleware(request);
-          intlResponse.headers.forEach((value, key) => {
-            if (!response.headers.has(key)) {
-              response.headers.set(key, value);
-            }
-          });
-          return intlResponse;
+        if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? request.nextUrl.pathname === path : path.test(request.nextUrl.pathname))) {
+          return applyIntl(request); // Apply i18n for public paths
         }
       }
 
@@ -171,12 +108,52 @@ export async function middleware(request: NextRequest) {
   });
 }
 
-// Updated matcher to ensure locale paths are handled
+// Helper to apply intlMiddleware and merge with auth headers where needed
+function applyIntl(request: NextRequest, authHeaders?: Headers, authResponse?: NextResponse) {
+  // If auth middleware wants to redirect (e.g., to login), apply intl to that redirect
+  if (authResponse) {
+    // Extract the redirect path from auth response
+    const redirectUrl = new URL(authResponse.headers.get('location') || authResponse.url);
+
+    // Create a new request with the redirect path to let intl middleware handle locale
+    const redirectRequest = new NextRequest(redirectUrl, request);
+    const intlResponse = intlMiddleware(redirectRequest);
+
+    // Return the intl response which will add locale to the redirect path
+    return intlResponse;
+  }
+
+  // Normal flow: apply intl middleware
+  const intlResponse = intlMiddleware(request);
+
+  // If i18n redirects (e.g., adding locale to URL like /stores -> /en/stores)
+  if (intlResponse.status === 307 || intlResponse.status === 308 || intlResponse.redirected) {
+    return intlResponse;
+  }
+
+  // If i18n rewrites the URL
+  if (intlResponse.headers.has('x-middleware-rewrite')) {
+    const rewriteUrl = new URL(intlResponse.headers.get('x-middleware-rewrite')!);
+    return NextResponse.rewrite(rewriteUrl, {
+      request: { headers: authHeaders },
+      headers: intlResponse.headers,
+    });
+  }
+
+  // For normal processing, propagate auth headers
+  return NextResponse.next({
+    request: { headers: authHeaders },
+    headers: intlResponse.headers,
+  });
+}
+
+
+// Keep your matcher (it already excludes general API/trpc but includes specific auth APIs)
 export const config = {
   matcher: [
     '/api/refresh-token',
     '/api/login',
     '/api/logout',
-    '/((?!_next|favicon.ico|api|.*\\.).*)',
+    '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
   ],
 };
