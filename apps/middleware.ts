@@ -22,6 +22,7 @@ const PUBLIC_PATHS = [
 
 const intlMiddleware = createIntlMiddleware(routing);
 
+
 export async function middleware(request: NextRequest) {
   // First, apply i18n middleware to handle locale routing
   const response = intlMiddleware(request);
@@ -53,8 +54,15 @@ export async function middleware(request: NextRequest) {
     checkRevoked: true,
     authorizationHeaderName: 'Authorization',
     handleValidToken: async ({ token, decodedToken }, headers) => {
+      const pathname = request.nextUrl.pathname;
+
+      // Assume locales are optional 2-letter prefixes like /en/, /fr/, etc. (case-insensitive)
+      const localeRegex = /^\/[a-z]{2}\/?/i;
+
+      const basePath = localeRegex.test(pathname) ? pathname.replace(localeRegex, '/') : pathname;
+
       // Check if token is expired
-      if (decodedToken.exp < Date.now() / 1000) {
+      if (decodedToken.exp < Date.now() / 1000 && !PUBLIC_PATHS.includes(basePath)) {
         return redirectToLogin(request, {
           path: '/sign-in',
           publicPaths: PUBLIC_PATHS,
@@ -83,25 +91,28 @@ export async function middleware(request: NextRequest) {
       console.info('Missing or malformed credentials', { reason });
 
       // Handle network-related token issues
-      if (reason?.includes('fetch') || reason?.includes('network')) {
-        console.warn('Network-related token issue, checking if path is public');
+      const pathname = request.nextUrl.pathname;
 
-        if (PUBLIC_PATHS.some((path) => {
-          if (typeof path === 'string') {
-            return request.nextUrl.pathname === path;
-          } else {
-            return path.test(request.nextUrl.pathname);
-          }
-        })) {
-          // For public paths, apply intlMiddleware
-          const intlResponse = intlMiddleware(request);
-          intlResponse.headers.forEach((value, key) => {
-            if (!response.headers.has(key)) {
-              response.headers.set(key, value);
-            }
-          });
-          return intlResponse;
+      // Assume locales are optional 2-letter prefixes like /en/, /fr/, etc. (case-insensitive)
+      const localeRegex = /^\/[a-z]{2}\/?/i;
+
+      const basePath = localeRegex.test(pathname) ? pathname.replace(localeRegex, '/') : pathname;
+
+      if (PUBLIC_PATHS.some((path) => {
+        if (typeof path === 'string') {
+          return basePath === path;
+        } else {
+          return path.test(request.nextUrl.pathname);
         }
+      })) {
+        // For public paths, apply intlMiddleware
+        const intlResponse = intlMiddleware(request);
+        intlResponse.headers.forEach((value, key) => {
+          if (!response.headers.has(key)) {
+            response.headers.set(key, value);
+          }
+        });
+        return intlResponse;
       }
 
       return redirectToLogin(request, {
