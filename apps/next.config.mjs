@@ -27,7 +27,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'keyan-delivery.com',
+                hostname: 'keyan-delivery-final-version.com',
                 port: '3000',
                 pathname: '/tmp/**',
             },
