@@ -24,11 +24,11 @@ export default function DynamicHeroCarousel() {
       title: t("Fresh Groceries"),
       subtitle: t("Delivered to Your Door"),
       description: t("Farm-fresh produce, pantry essentials, and daily necessities delivered in minutes."),
-      gradient: 'from-emerald-500 via-green-600 to-teal-700',
-      accentColor: 'bg-emerald-400',
-      textColor: 'text-emerald-100',
-      buttonBg: 'bg-white',
-      buttonText: 'text-emerald-600',
+      gradient: 'from-white-500 via-green-100 to-green-300',
+      accentColor: 'bg-green-300',
+      textColor: 'text-gray-800',
+      buttonBg: 'bg-green-300',
+      buttonText: 'text-gray-800',
       buttonHover: 'hover:bg-emerald-50',
       stats: { stores: '200+', avgTime: t("{min} min", { min: 25 }), items: '5K+' },
       image: '/hero_1.jpeg'
@@ -40,11 +40,11 @@ export default function DynamicHeroCarousel() {
       title: t("Delicious Food"),
       subtitle: t("Hot & Fresh Always"),
       description: t("Your favorite restaurants and local eateries, delivering happiness one meal at a time."),
-      gradient: 'from-orange-500 via-red-500 to-pink-600',
-      accentColor: 'bg-orange-400',
-      textColor: 'text-orange-100',
-      buttonBg: 'bg-white',
-      buttonText: 'text-orange-600',
+      gradient: 'from-white-500 via-orange-100 to-orange-300',
+      accentColor: 'bg-orange-200',
+      textColor: 'text-gray-800',
+      buttonBg: 'bg-orange-200',
+      buttonText: 'text-gray-800',
       buttonHover: 'hover:bg-orange-50',
       stats: { stores: '150+', avgTime: t("{min} min", { min: 30 }), items: '3K+' },
       image: '/hero_2.jpeg'
@@ -56,11 +56,11 @@ export default function DynamicHeroCarousel() {
       title: t("Healthcare Essentials"),
       subtitle: t("Trusted & Reliable"),
       description: t("Prescription medications, health products, and wellness items delivered with care."),
-      gradient: 'from-blue-500 via-cyan-500 to-teal-500',
-      accentColor: 'bg-cyan-400',
-      textColor: 'text-cyan-100',
+      gradient: 'from-white-500 via-cyan-100 to-white-500',
+      accentColor: 'bg-white',
+      textColor: 'text-gray-800',
       buttonBg: 'bg-white',
-      buttonText: 'text-cyan-600',
+      buttonText: 'text-gray-800',
       buttonHover: 'hover:bg-cyan-50',
       stats: { stores: '150+', avgTime: t("{min} min", { min: 20 }), items: '2K+' },
       image: '/hero_3.jpeg'
@@ -82,6 +82,8 @@ export default function DynamicHeroCarousel() {
   const next = merchantTypes[nextIndex];
   const IconComponent = current.icon;
 
+  console.log(currentIndex);
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Animated Background Gradient with Color Transition */}
@@ -101,7 +103,7 @@ export default function DynamicHeroCarousel() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className={`absolute inset-0 bg-gradient-to-br ${next.gradient}`}
+          className={`absolute inset-0 bg-gradient-to-br ${current.gradient}`}
         />
       </div>
 
@@ -123,7 +125,7 @@ export default function DynamicHeroCarousel() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 50 }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
-              className="text-white space-y-6 sm:space-y-8 order-2 lg:order-1"
+              className={`${current.textColor} space-y-6 sm:space-y-8 order-2 lg:order-1`}
             >
 
               {/* Badge */}
@@ -146,14 +148,14 @@ export default function DynamicHeroCarousel() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.6 }}
               >
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight">
+                <h1 className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight ${current.textColor}`}>
                   {current.title}
                   <br />
-                  <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                  <span className={`bg-clip-text ${current.textColor}`}>
                     {current.subtitle}
                   </span>
                 </h1>
-                <p className="text-base sm:text-lg lg:text-xl xl:text-2xl text-white/90 leading-relaxed max-w-xl">
+                <p className={`text-base sm:text-lg lg:text-xl xl:text-2xl leading-relaxed max-w-xl ${current.textColor}`}>
                   {current.description}
                 </p>
               </motion.div>
@@ -166,19 +168,18 @@ export default function DynamicHeroCarousel() {
                 transition={{ delay: 0.4, duration: 0.6 }}
               >
                 <motion.button
-                  className={`${next.buttonBg} ${next.buttonText} ${next.buttonHover} px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center justify-center gap-2 w-full sm:w-auto`}
+                  className={`${current.buttonBg} ${current.buttonText} ${current.buttonHover} px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center justify-center gap-2 w-full sm:w-auto`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Link href="/stores">
                     {t("Start Shopping")}
                   </Link>
-
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </motion.button>
                 <AuthModal redirectTo={ROUTES.newMerchant}>
                   <motion.button
-                    className="border-2 border-white text-white hover:bg-white/10 backdrop-blur-sm px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg transition-all duration-300 w-full sm:w-auto"
+                    className={`border-2 border-white ${current.buttonText} bg-white/40 hover:bg-white/10 backdrop-blur-sm px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg transition-all duration-300 w-full sm:w-auto`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -206,8 +207,8 @@ export default function DynamicHeroCarousel() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 + (i * 0.1), duration: 0.5 }}
                   >
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">{stat.value}</div>
-                    <div className="text-white/80 text-xs sm:text-sm font-medium">{stat.label}</div>
+                    <div className={`${current.textColor} text-2xl sm:text-3xl lg:text-4xl font-bold`}>{stat.value}</div>
+                    <div className={`${current.textColor} text-xs sm:text-sm font-medium`}>{stat.label}</div>
                   </motion.div>
                 ))}
               </motion.div>
@@ -225,7 +226,7 @@ export default function DynamicHeroCarousel() {
                     <motion.button
                       key={index}
                       onClick={() => setCurrentIndex(index)}
-                      className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-10 sm:w-12 bg-white' : 'w-6 sm:w-8 bg-white/40'
+                      className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-10 sm:w-12 bg-white' : 'w-6 sm:w-8 bg-black/40'
                         }`}
                       whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
                     />
@@ -235,7 +236,7 @@ export default function DynamicHeroCarousel() {
                 {/* Pause/Play Button */}
                 <motion.button
                   onClick={() => setIsPaused(!isPaused)}
-                  className="bg-white/20 backdrop-blur-md border border-white/30 rounded-full p-2 sm:p-2.5 text-white hover:bg-white/30 transition-all duration-300"
+                  className={`${current.textColor} bg-black/20 backdrop-blur-md border border-white/30 rounded-full p-2 sm:p-2.5 hover:bg-white/30 transition-all duration-300`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   title={isPaused ? t("Play slideshow") : t("Pause slideshow")}
@@ -304,20 +305,20 @@ export default function DynamicHeroCarousel() {
 
                   {/* Icon Badge */}
                   <motion.div
-                    className={`${next.accentColor} w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-2xl mx-auto`}
+                    className={`${current.accentColor} w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-2xl mx-auto`}
                     whileHover={{ scale: 1.1, rotate: 6 }}
                     transition={{ duration: 0.3 }}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                   >
-                    <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-white" />
+                    <IconComponent className={`${current.textColor} w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12`} />
                   </motion.div>
 
                   {/* Features */}
                   <div className="space-y-3 sm:space-y-4">
                     <motion.h3
-                      className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-4 sm:mb-6 text-center lg:text-left"
+                      className={`${current.textColor} text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6 text-center lg:text-left`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3, duration: 0.5 }}
@@ -332,14 +333,14 @@ export default function DynamicHeroCarousel() {
                     ].map((feature, i) => (
                       <motion.div
                         key={i}
-                        className="flex items-center gap-3 sm:gap-4 text-white/90"
+                        className={`flex items-center gap-3 sm:gap-4 ${current.textColor}`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.4 + (i * 0.1), duration: 0.5 }}
                         whileHover={{ x: 8 }}
                       >
-                        <div className={`${next.accentColor} w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
-                          <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <div className={`${current.accentColor} w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
+                          <feature.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${current.textColor}`} />
                         </div>
                         <span className="text-sm sm:text-base lg:text-lg font-medium">{feature.text}</span>
                       </motion.div>
@@ -355,8 +356,8 @@ export default function DynamicHeroCarousel() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                 >
-                  <div className="text-white/90 text-xs font-medium mb-1">{t("Active Orders")}</div>
-                  <div className="text-xl xl:text-2xl font-bold text-white">1,247</div>
+                  <div className={`${current.textColor} text-xs font-medium mb-1`}>{t("Active Orders")}</div>
+                  <div className={`text-xl xl:text-2xl font-bold ${current.textColor}`}>1,247</div>
                 </motion.div>
 
                 <motion.div
@@ -366,8 +367,8 @@ export default function DynamicHeroCarousel() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                 >
-                  <div className="text-white/90 text-xs font-medium mb-1">{t("Online Stores")}</div>
-                  <div className="text-xl xl:text-2xl font-bold text-white">500+</div>
+                  <div className={`${current.textColor} text-xs font-medium mb-1`}>{t("Online Stores")}</div>
+                  <div className={`text-xl xl:text-2xl font-bold ${current.textColor}`}>500+</div>
                 </motion.div>
               </motion.div>
             </AnimatePresence>
