@@ -41,7 +41,7 @@ const Index = async () => {
       <Hero />
 
       {/* Partner CTA Section */}
-      <section className="py-16 px-4 bg-accent/30">
+      <section className="py-16 px-4 bg-white">
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">

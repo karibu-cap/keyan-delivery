@@ -34,7 +34,6 @@ export function LanguageSwitcher() {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" disabled={isPending} className='p-4'>
                     <span>{localeFlags[locale as Locale]}</span>
-                    <Globe className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
