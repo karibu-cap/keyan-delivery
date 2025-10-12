@@ -4,9 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
    request: NextRequest,
-   { params }: { params: { orderId: string } }
+   props: { params: Promise<{ orderId: string }> }
 ) {
    try {
+      const params = await props.params
       const token = await getUserTokens();
 
       if (!token?.decodedToken?.uid) {

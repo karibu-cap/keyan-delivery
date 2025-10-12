@@ -1,7 +1,52 @@
-"use server";
-
 import { prisma } from '@/lib/prisma';
-import { Prisma } from "@prisma/client";
+import { Prisma, ProductStatus } from "@prisma/client";
+import { cache } from 'react';
+
+
+export const MerchantIncludes = {
+  // For store listings (minimal data)
+  list: {
+    _count: {
+      select: { products: true }
+    }
+  },
+
+  storeDataById: {
+    products: {
+      where: {
+        status: ProductStatus.VERIFIED,
+        visibility: true,
+      },
+      include: {
+        images: true,
+        categories: {
+          include: {
+            category: true,
+          },
+        },
+        merchant: true,
+        _count: {
+          select: {
+            OrderItem: true,
+            cartItems: true,
+          },
+        }
+      },
+    },
+  }
+
+} as const;
+
+// 2. Generate types
+export type IMerchantList = Prisma.MerchantGetPayload<{
+  include: typeof MerchantIncludes.list;
+}>;
+
+export type IMerchantDetail = Prisma.MerchantGetPayload<{
+  include: typeof MerchantIncludes.storeDataById;
+}>;
+
+
 
 export type IProduct = Prisma.ProductGetPayload<{
   include: {
@@ -41,7 +86,6 @@ export type IMerchant = Prisma.MerchantGetPayload<{
       }
     };
     managers: true;
-    categories: true;
   };
 }>;
 
@@ -93,7 +137,7 @@ export async function fetchCategories({
     const response = await fetch(
       `${baseUrl}/api/v1/client/categories?${params.toString()}`,
       {
-        cache: 'no-store',
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
       }
     );
 
@@ -120,7 +164,7 @@ export async function searchStores(searchQuery: string): Promise<IMerchant[]> {
     const response = await fetch(
       `${baseUrl}/api/v1/client/merchants?search=${encodeURIComponent(searchQuery)}`,
       {
-        cache: 'no-store',
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
       }
     );
 
@@ -147,7 +191,7 @@ export async function filterStoresByCategory(categoryId: string): Promise<IMerch
     const response = await fetch(
       `${baseUrl}/api/v1/client/merchants?category=${encodeURIComponent(categoryId)}`,
       {
-        cache: 'no-store',
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
       }
     );
 
@@ -195,38 +239,17 @@ export async function fetchProduct(productId: string): Promise<IProduct | null> 
   }
 }
 
-
-export async function fetchStoreDataById(id: string): Promise<{
-  merchant: Record<string, unknown>;
+export const fetchStoreDataById = cache(async (id: string): Promise<{
+  merchant: IMerchantDetail;
   aisles: Aisle[];
-} | null> {
+} | null> => {
   try {
     const merchant = await prisma.merchant.findUnique({
       where: {
         id: id,
         isVerified: true,
       },
-      include: {
-        products: {
-          where: {
-            status: 'VERIFIED',
-            visibility: true,
-          },
-          include: {
-            images: true,
-            categories: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-        categories: {
-          select: {
-            category: true,
-          },
-        },
-      },
+      include: MerchantIncludes.storeDataById,
     });
 
     if (!merchant) {
@@ -254,7 +277,7 @@ export async function fetchStoreDataById(id: string): Promise<{
     console.error('Error fetching store data:', error);
     return null;
   }
-}
+})
 
 
 interface PaginationInfo {
@@ -276,32 +299,76 @@ export async function fetchMerchants({
   offset: number;
 }): Promise<{ merchants: IMerchant[]; pagination: PaginationInfo }> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const whereClause: Prisma.MerchantWhereInput = {
+      isVerified: true,
+    };
 
-    const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    if (category) params.append('category', category);
-    params.append('limit', limit.toString());
-    params.append('offset', offset.toString());
+    if (search) {
+      whereClause.OR = [
+        { businessName: { contains: search, mode: 'insensitive' } },
+        { categories: { some: { category: { name: { contains: search, mode: 'insensitive' } } } } },
+      ];
+    }
 
-    const response = await fetch(
-      `${baseUrl}/api/v1/client/merchants?${params.toString()}`,
-      {
-        cache: 'no-store',
+    if (category && category !== 'all') {
+      whereClause.categories = {
+        some: {
+          categoryId: category
+        }
+      };
+    }
+
+    const merchants = await prisma.merchant.findMany({
+      where: whereClause,
+      take: limit,
+      skip: offset,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        products: {
+          where: {
+            status: ProductStatus.VERIFIED,
+            visibility: true,
+          },
+          include: {
+            categories: {
+              include: {
+                category: true
+              }
+            },
+            images: true,
+            merchant: true,
+            _count: {
+              select: {
+                OrderItem: true,
+                cartItems: true,
+              },
+            },
+          },
+        },
+        categories: {
+          select: { category: true }
+        },
+        managers: {
+          include: {
+            user: {
+              select: { fullName: true, phone: true }
+            }
+          }
+        }
       }
-    );
+    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch merchants');
-    }
+    const totalCount = await prisma.merchant.count({ where: whereClause });
 
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch merchants');
-    }
-
-    return data.data;
+    return {
+      merchants: merchants,
+      pagination: {
+        total: totalCount,
+        limit,
+        offset,
+        hasMore: offset + limit < totalCount,
+      }
+    };
   } catch (error) {
     console.error('Error fetching merchants:', error);
     throw new Error('Failed to fetch merchants');

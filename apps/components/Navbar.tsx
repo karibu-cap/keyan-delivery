@@ -28,6 +28,8 @@ import Image from "next/image";
 import { search, SearchResult } from "@/lib/actions/client";
 import { IProduct } from "@/lib/actions/stores";
 import { DriverBadge } from "@/components/driver/DriverBadge";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface LocationState {
   address: string;
@@ -36,6 +38,7 @@ interface LocationState {
 }
 
 const Navbar = () => {
+  const t = useT();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -46,7 +49,7 @@ const Navbar = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [location, setLocation] = useState<LocationState>({
-    address: "Getting location...",
+    address: t("Getting location..."),
     loading: true,
     error: null,
   });
@@ -67,9 +70,9 @@ const Navbar = () => {
   const getUserLocation = useCallback(async () => {
     if (!navigator.geolocation) {
       setLocation({
-        address: "Location unavailable",
+        address: t("Location unavailable"),
         loading: false,
-        error: "Geolocation not supported",
+        error: t("Geolocation not supported"),
       });
       return;
     }
@@ -88,11 +91,11 @@ const Navbar = () => {
       const { latitude, longitude } = position.coords;
       await reverseGeocode(latitude, longitude);
     } catch (error) {
-      console.error("Geolocation error:", error);
+      console.error(t("Geolocation error:"), error);
       setLocation({
-        address: "Location unavailable",
+        address: t("Location unavailable"),
         loading: false,
-        error: "Unable to get location",
+        error: t("Unable to get location"),
       });
     }
   }, []);
@@ -109,7 +112,7 @@ const Navbar = () => {
         }
       );
 
-      if (!response.ok) throw new Error("Geocoding failed");
+      if (!response.ok) throw new Error(t("Geocoding failed"));
 
       const data = await response.json();
       const address = data.address;
@@ -120,7 +123,7 @@ const Navbar = () => {
 
       const formattedAddress = [city, state]
         .filter(Boolean)
-        .join(", ") || "Location found";
+        .join(", ") || t("Location found");
 
       setLocation({
         address: formattedAddress,
@@ -128,11 +131,11 @@ const Navbar = () => {
         error: null,
       });
     } catch (error) {
-      console.error("Reverse geocoding error:", error);
+      console.error(t("Reverse geocoding error:"), error);
       setLocation({
-        address: "Location unavailable",
+        address: t("Location unavailable"),
         loading: false,
-        error: "Unable to fetch address",
+        error: t("Unable to fetch address"),
       });
     }
   };
@@ -148,7 +151,7 @@ const Navbar = () => {
       setIsPopoverOpen(false);
       router.push("/");
     } catch (error) {
-      console.error("Sign out error:", error);
+      console.error(t("Sign out error:"), error);
     }
   }, [logout, router]);
 
@@ -164,7 +167,7 @@ const Navbar = () => {
       const response = await search(query);
       setSearchResults(response);
     } catch (error) {
-      console.error("Search error:", error);
+      console.error(t("Search error:"), error);
       setSearchResults([]);
     } finally {
       setIsLoading(false);
@@ -244,7 +247,7 @@ const Navbar = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search products, stores, and recipes"
+                placeholder={t("Search products, stores, and recipes")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -263,7 +266,7 @@ const Navbar = () => {
                   {isLoading ? (
                     <div className="p-4 text-center text-gray-500">
                       <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
-                      Searching...
+                      {t("Searching...")}
                     </div>
                   ) : searchResults.length > 0 ? (
                     <div className="py-2">
@@ -310,7 +313,7 @@ const Navbar = () => {
                     </div>
                   ) : searchQuery && !isLoading ? (
                     <div className="p-4 text-center text-gray-500">
-                      No results found for &ldquo;{searchQuery}&rdquo;
+                      {t("No results found for")} &ldquo;{searchQuery}&rdquo;
                     </div>
                   ) : null}
                 </div>
@@ -334,6 +337,8 @@ const Navbar = () => {
               </span>
               <ChevronDown className="w-4 h-4 text-gray-500" />
             </Button>
+            {/* the language switcher */}
+            <LanguageSwitcher />
 
             {/* Cart Button */}
             <Button variant="ghost" size="icon" className="relative" asChild>
@@ -355,7 +360,7 @@ const Navbar = () => {
               <AuthModal>
                 <Button variant="ghost" className="hidden sm:flex">
                   <User className="w-5 h-5 mr-2" />
-                  Sign In
+                  {t("Sign In")}
                 </Button>
               </AuthModal>
             ) : (
@@ -363,7 +368,7 @@ const Navbar = () => {
                 <PopoverTrigger asChild>
                   <Button variant="ghost" className="hidden sm:flex">
                     <User className="w-5 h-5 mr-2" />
-                    Profile
+                    {t("Profile")}
                     <ChevronDown className="w-4 h-4 ml-1" />
                   </Button>
                 </PopoverTrigger>
@@ -379,7 +384,7 @@ const Navbar = () => {
                         onClick={() => setIsPopoverOpen(false)}
                       >
                         <User className="w-4 h-4 mr-2" />
-                        Profile
+                        {t("Profile")}
                       </Link>
                     </Button>
                     <Button
@@ -392,7 +397,7 @@ const Navbar = () => {
                         onClick={() => setIsPopoverOpen(false)}
                       >
                         <Package className="w-4 h-4 mr-2" />
-                        Orders
+                        {t("Orders")}
                       </Link>
                     </Button>
                     <Button
@@ -401,7 +406,7 @@ const Navbar = () => {
                       onClick={handleSignOut}
                     >
                       <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
+                      {t("Sign Out")}
                     </Button>
                   </div>
                 </PopoverContent>
@@ -430,7 +435,7 @@ const Navbar = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search products, stores, and recipes"
+              placeholder={t("Search products, stores, and recipes")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -443,7 +448,7 @@ const Navbar = () => {
                 {isLoading ? (
                   <div className="p-4 text-center text-gray-500">
                     <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
-                    Searching...
+                    {t("Searching...")}
                   </div>
                 ) : searchResults.length > 0 ? (
                   <div className="py-2">
@@ -489,7 +494,7 @@ const Navbar = () => {
                   </div>
                 ) : searchQuery && !isLoading ? (
                   <div className="p-4 text-center text-gray-500">
-                    No results found for &ldquo;{searchQuery}&rdquo;
+                    {t("No results found for")} &ldquo;{searchQuery}&rdquo;
                   </div>
                 ) : null}
               </div>
@@ -514,27 +519,27 @@ const Navbar = () => {
             <Button variant="ghost" className="w-full justify-start" asChild>
               <Link href={ROUTES.stores}>
                 <Store className="w-5 h-5 mr-3" />
-                Stores
+                {t("Stores")}
               </Link>
             </Button>
             <Button variant="ghost" className="w-full justify-start" asChild>
               <Link href={ROUTES.orders}>
                 <ShoppingCart className="w-5 h-5 mr-3" />
-                Orders
+                {t("Orders")}
               </Link>
             </Button>
             {!user ? (
               <AuthModal>
                 <Button variant="outline" className="w-full">
                   <User className="w-5 h-5 mr-2" />
-                  Sign In
+                  {t("Sign In")}
                 </Button>
               </AuthModal>
             ) : (
               <Button variant="outline" className="w-full" asChild>
                 <Link href={ROUTES.profile}>
                   <User className="w-5 h-5 mr-2" />
-                  Profile
+                  {t("Profile")}
                 </Link>
               </Button>
             )}

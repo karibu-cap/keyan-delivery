@@ -5,9 +5,13 @@ import { getUserTokens } from "@/lib/firebase-client/firebase-utils"
 
 import { prisma } from "@/lib/prisma"
 import { UserProfile } from "@/components/client/customer/UserProfile"
+import { getLocale } from "next-intl/server"
+import { getT } from "@/lib/server-translations"
 
 export default async function ProfilePage() {
   const token = await getUserTokens();
+  const locale = await getLocale();
+  const t = await getT(locale);
 
   if (!token?.decodedToken?.uid) {
     return (
@@ -15,10 +19,10 @@ export default async function ProfilePage() {
         <Navbar />
         <main className="container mx-auto px-4 py-6">
           <div className="py-16 text-center">
-            <h2 className="mb-2 text-2xl font-bold">Authentication Required</h2>
-            <p className="mb-6 text-muted-foreground">Please sign in to view your orders</p>
+            <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
+            <p className="mb-6 text-muted-foreground">{t("Please sign in to view your orders")}</p>
             <Link href="/sign-in">
-              <Button className="bg-[#0aad0a] hover:bg-[#089808]">Sign In</Button>
+              <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Sign In")}</Button>
             </Link>
           </div>
         </main>
@@ -31,10 +35,10 @@ export default async function ProfilePage() {
         <Navbar />
         <main className="container mx-auto px-4 py-6">
           <div className="py-16 text-center">
-            <h2 className="mb-2 text-2xl font-bold">Authentication Required</h2>
-            <p className="mb-6 text-muted-foreground">Please sign in to view your orders</p>
+            <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
+            <p className="mb-6 text-muted-foreground">{t("Please sign in to view your orders")}</p>
             <Link href="/sign-in">
-              <Button className="bg-[#0aad0a] hover:bg-[#089808]">Sign In</Button>
+              <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Sign In")}</Button>
             </Link>
           </div>
         </main>
@@ -62,10 +66,10 @@ export default async function ProfilePage() {
         <Navbar />
         <main className="container mx-auto px-4 py-6">
           <div className="py-16 text-center">
-            <h2 className="mb-2 text-2xl font-bold">User Not Found</h2>
-            <p className="mb-6 text-muted-foreground">Please contact support if this issue persists</p>
+            <h2 className="mb-2 text-2xl font-bold">{t("User Not Found")}</h2>
+            <p className="mb-6 text-muted-foreground">{t("Please contact support if this issue persists")}</p>
             <Link href="/">
-              <Button className="bg-[#0aad0a] hover:bg-[#089808]">Go Home</Button>
+              <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Go Home")}</Button>
             </Link>
           </div>
         </main>

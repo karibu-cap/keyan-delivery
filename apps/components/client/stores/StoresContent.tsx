@@ -14,6 +14,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { StoreCard } from "./StoreCard";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface StoresContentProps {
     initialStores: IMerchant[];
@@ -26,7 +27,9 @@ interface MerchantTypeFilter {
 }
 
 export function StoresContent({ initialStores }: StoresContentProps) {
-    const [selectedMerchantType, setSelectedMerchantType] = useState("all");
+    const t = useT()
+
+    const [selectedMerchantType, setSelectedMerchantType] = useState(t("all"));
 
     // Calculate filter counts and filtered stores using useMemo
     const { merchantTypeFilters, filteredStores } = useMemo(() => {
@@ -49,14 +52,14 @@ export function StoresContent({ initialStores }: StoresContentProps) {
         ).length;
 
         const filters: MerchantTypeFilter[] = [
-            { id: "all", name: "All stores", count: initialStores.length },
-            { id: MerchantType.GROCERY, name: "Grocery", count: groceryCount },
-            { id: MerchantType.FOOD, name: "Food", count: foodCount },
-            { id: MerchantType.PHARMACY, name: "Pharmacy", count: pharmacyCount },
+            { id: t("all"), name: t("All stores"), count: initialStores.length },
+            { id: MerchantType.GROCERY, name: t("Grocery"), count: groceryCount },
+            { id: MerchantType.FOOD, name: t("Food"), count: foodCount },
+            { id: MerchantType.PHARMACY, name: t("Pharmacy"), count: pharmacyCount },
         ];
 
         const filtered =
-            selectedMerchantType === "all"
+            selectedMerchantType === t("all")
                 ? initialStores
                 : initialStores.filter(
                     (store) =>
@@ -78,11 +81,11 @@ export function StoresContent({ initialStores }: StoresContentProps) {
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-6">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            Your stores
+                            {t("Your stores")}
                         </h1>
                         <p className="text-gray-600">
-                            Shop from {filteredStores.length} store
-                            {filteredStores.length !== 1 ? "s" : ""} near you
+                            {t("Shop from {count} stores", { count: filteredStores.length })}
+                            {filteredStores.length !== 1 ? "s" : ""} {t("near you")}
                         </p>
                     </div>
 
@@ -95,8 +98,8 @@ export function StoresContent({ initialStores }: StoresContentProps) {
                                     selectedMerchantType === filter.id ? "secondary" : "outline"
                                 }
                                 className={`rounded-full px-6 py-3 h-auto text-sm font-medium transition-all ${selectedMerchantType === filter.id
-                                        ? "bg-gray-900 text-white hover:bg-gray-800"
-                                        : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                                    ? "bg-gray-900 text-white hover:bg-gray-800"
+                                    : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
                                     }`}
                                 onClick={() => handleFilterChange(filter.id)}
                             >
@@ -104,8 +107,8 @@ export function StoresContent({ initialStores }: StoresContentProps) {
                                 <Badge
                                     variant="secondary"
                                     className={`ml-2 ${selectedMerchantType === filter.id
-                                            ? "bg-white text-gray-900"
-                                            : "bg-gray-100 text-gray-600"
+                                        ? "bg-white text-gray-900"
+                                        : "bg-gray-100 text-gray-600"
                                         }`}
                                 >
                                     {filter.count}
@@ -141,9 +144,9 @@ export function StoresContent({ initialStores }: StoresContentProps) {
                     {filteredStores.length === 0 ? (
                         <div className="text-center py-20">
                             <Store className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <p className="text-gray-600 text-lg mb-2">No stores found</p>
+                            <p className="text-gray-600 text-lg mb-2">{t("No stores found")}</p>
                             <p className="text-gray-500">
-                                Try selecting a different store type
+                                {t("Try selecting a different store type")}
                             </p>
                         </div>
                     ) : (

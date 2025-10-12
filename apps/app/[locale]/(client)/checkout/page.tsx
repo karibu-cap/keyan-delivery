@@ -22,6 +22,7 @@ import { ROUTES } from "@/lib/router";
 import Image from "next/image";
 import { createOrders } from "@/lib/actions/orders";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface DeliveryInfo {
   address: string;
@@ -32,6 +33,7 @@ interface DeliveryInfo {
 }
 
 const EnhancedCheckout = () => {
+  const t = useT()
   const router = useRouter();
   const { cartItems, total: cartTotal, clearCart } = useCart();
   const { toast } = useToast()
@@ -55,23 +57,23 @@ const EnhancedCheckout = () => {
             longitude: position.coords.longitude,
           }));
           toast({
-            title: 'Location captured successfully',
-            description: 'Please try again later',
+            title: t("Location captured successfully"),
+            description: t("Please try again later"),
             variant: 'default',
           })
         },
         (error) => {
           toast({
-            title: 'Failed to get location',
-            description: 'Please enter manually',
+            title: t("Failed to get location"),
+            description: t("Please enter manually"),
             variant: 'destructive',
           })
         }
       );
     } else {
       toast({
-        title: 'Geolocation not supported',
-        description: 'Please enter manually',
+        title: t("Geolocation not supported"),
+        description: t("Please enter manually"),
         variant: 'destructive',
       })
     }
@@ -95,10 +97,10 @@ const EnhancedCheckout = () => {
                 </svg>
               </div>
             </div>
-            <h1 className="mb-2 text-2xl font-bold">Your cart is empty</h1>
-            <p className="mb-6 text-muted-foreground">Add items to your cart to proceed with checkout</p>
+            <h1 className="mb-2 text-2xl font-bold">{t("Your cart is empty")}</h1>
+            <p className="mb-6 text-muted-foreground">{t("Add items to your cart to proceed with checkout")}</p>
             <Link href="/stores">
-              <Button className="bg-[#0aad0a] hover:bg-[#089808]">Start Shopping</Button>
+              <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Start Shopping")}</Button>
             </Link>
           </div>
         </div>
@@ -115,8 +117,8 @@ const EnhancedCheckout = () => {
     // Validate delivery information
     if (!deliveryInfo.address || !deliveryInfo.contact) {
       toast({
-        title: 'Please fill in all required delivery information',
-        description: 'Please try again later',
+        title: t("Please fill in all required delivery information"),
+        description: t("Please try again later"),
         variant: 'destructive',
       })
       return;
@@ -124,8 +126,8 @@ const EnhancedCheckout = () => {
 
     if (!deliveryInfo.latitude || !deliveryInfo.longitude) {
       toast({
-        title: 'Please capture your delivery location',
-        description: 'Please try again later',
+        title: t("Please capture your delivery location"),
+        description: t("Please try again later"),
         variant: 'destructive',
       })
       return;
@@ -164,16 +166,16 @@ const EnhancedCheckout = () => {
 
     if (!response) {
       toast({
-        title: 'Failed to place order',
-        description: 'Please try again or contact support if the issue persists.',
+        title: t("Failed to place order"),
+        description: t("Please try again or contact support if the issue persists."),
         variant: 'destructive',
       })
       return;
     }
 
     toast({
-      title: 'Order placed successfully!',
-      description: `Your delivery code is: ${deliveryCode}`,
+      title: t("Order placed successfully!"),
+      description: t("Your delivery code is: {deliveryCode}", { deliveryCode: deliveryCode }),
       variant: 'default',
     })
 
@@ -194,10 +196,10 @@ const EnhancedCheckout = () => {
           className="inline-flex items-center text-foreground mb-6 hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Continue shopping
+          {t("Continue shopping")}
         </Link>
 
-        <h1 className="text-4xl font-bold mb-8">Checkout</h1>
+        <h1 className="text-4xl font-bold mb-8">{t("Checkout")}</h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -210,8 +212,8 @@ const EnhancedCheckout = () => {
                     <MapPin className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold">Delivery Location</h2>
-                    <p className="text-sm text-muted-foreground">Where should we deliver?</p>
+                    <h2 className="text-xl font-semibold">{t("Delivery Location")}</h2>
+                    <p className="text-sm text-muted-foreground">{t("Where should we deliver?")}</p>
                   </div>
                 </div>
                 <Button
@@ -219,16 +221,16 @@ const EnhancedCheckout = () => {
                   size="sm"
                   onClick={getCurrentLocation}
                 >
-                  Use Current Location
+                  {t("Use Current Location")}
                 </Button>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="address">Delivery Address *</Label>
+                  <Label htmlFor="address">{t("Delivery Address")} *</Label>
                   <Textarea
                     id="address"
-                    placeholder="Enter your full delivery address"
+                    placeholder={t("Enter your full delivery address")}
                     value={deliveryInfo.address}
                     onChange={(e) => setDeliveryInfo(prev => ({ ...prev, address: e.target.value }))}
                     className="mt-2"
@@ -239,7 +241,7 @@ const EnhancedCheckout = () => {
                 {deliveryInfo.latitude !== 0 && deliveryInfo.longitude !== 0 && (
                   <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
                     <p className="text-sm text-success-foreground">
-                      ✓ Location captured: {deliveryInfo.latitude.toFixed(6)}, {deliveryInfo.longitude.toFixed(6)}
+                      ✓ {t("Location captured:")}: {deliveryInfo.latitude.toFixed(6)}, {deliveryInfo.longitude.toFixed(6)}
                     </p>
                   </div>
                 )}
@@ -253,14 +255,14 @@ const EnhancedCheckout = () => {
                   <Phone className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">Contact Information</h2>
-                  <p className="text-sm text-muted-foreground">For delivery updates</p>
+                  <h2 className="text-xl font-semibold">{t("Contact Information")}</h2>
+                  <p className="text-sm text-muted-foreground">{t("For delivery updates")}</p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="contact">Phone Number *</Label>
+                  <Label htmlFor="contact">{t("Phone Number")} *</Label>
                   <Input
                     id="contact"
                     type="tel"
@@ -272,10 +274,10 @@ const EnhancedCheckout = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="notes">Additional Notes (Optional)</Label>
+                  <Label htmlFor="notes">{t("Additional Notes (Optional)")}</Label>
                   <Textarea
                     id="notes"
-                    placeholder="Any special instructions for delivery?"
+                    placeholder={t("Any special instructions for delivery?")}
                     value={deliveryInfo.notes}
                     onChange={(e) => setDeliveryInfo(prev => ({ ...prev, notes: e.target.value }))}
                     className="mt-2"
@@ -292,8 +294,8 @@ const EnhancedCheckout = () => {
                   <CreditCard className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">Payment Method</h2>
-                  <p className="text-sm text-muted-foreground">Select payment option</p>
+                  <h2 className="text-xl font-semibold">{t("Payment Method")}</h2>
+                  <p className="text-sm text-muted-foreground">{t("Select payment option")}</p>
                 </div>
               </div>
 
@@ -301,16 +303,16 @@ const EnhancedCheckout = () => {
                 <Button variant="outline" className="w-full justify-start rounded-2xl h-auto p-4">
                   <CreditCard className="w-5 h-5 mr-3" />
                   <div className="text-left">
-                    <div className="font-medium">Cash on Delivery</div>
-                    <div className="text-sm text-muted-foreground">Pay when you receive</div>
+                    <div className="font-medium">{t("Cash on Delivery")}</div>
+                    <div className="text-sm text-muted-foreground">{t("Pay when you receive")}</div>
                   </div>
                 </Button>
 
                 <Button variant="outline" className="w-full justify-start rounded-2xl h-auto p-4">
                   <div className="w-5 h-5 mr-3 font-bold text-primary">M</div>
                   <div className="text-left">
-                    <div className="font-medium">MTN Mobile Money</div>
-                    <div className="text-sm text-muted-foreground">Pay with MTN Momo</div>
+                    <div className="font-medium">{t("MTN Mobile Money")}</div>
+                    <div className="text-sm text-muted-foreground">{t("Pay with MTN Momo")}</div>
                   </div>
                 </Button>
               </div>
@@ -321,7 +323,7 @@ const EnhancedCheckout = () => {
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-24">
               <Card className="p-6 rounded-2xl shadow-card">
-                <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+                <h2 className="text-2xl font-bold mb-6">{t("Order Summary")}</h2>
 
                 {/* Cart Items */}
                 <div className="space-y-4 mb-6">
@@ -350,22 +352,22 @@ const EnhancedCheckout = () => {
                 {/* Price Breakdown */}
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">{t("Subtotal")}</span>
                     <span className="font-medium">${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Delivery Fee</span>
+                    <span className="text-muted-foreground">{t("Delivery Fee")}</span>
                     <span className="font-medium">${deliveryFee.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Service Fee</span>
+                    <span className="text-muted-foreground">{t("Service Fee")}</span>
                     <span className="font-medium">${serviceFee.toFixed(2)}</span>
                   </div>
 
                   <Separator />
 
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
+                    <span>{t("Total")}</span>
                     <span className="text-primary">${total.toFixed(2)}</span>
                   </div>
                 </div>
@@ -374,7 +376,7 @@ const EnhancedCheckout = () => {
                 <div className="flex items-center gap-2 p-3 bg-accent rounded-2xl mb-6">
                   <Shield className="w-5 h-5 text-success" />
                   <p className="text-sm text-muted-foreground">
-                    Secure delivery with confirmation code
+                    {t("Secure delivery with confirmation code")}
                   </p>
                 </div>
 
@@ -385,11 +387,11 @@ const EnhancedCheckout = () => {
                   onClick={handlePlaceOrder}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Placing Order..." : "Place Order"}
+                  {isSubmitting ? t("Placing Order...") : t("Place Order")}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground mt-4">
-                  By placing an order, you agree to our Terms of Service
+                  {t("By placing an order, you agree to our Terms of Service")}
                 </p>
               </Card>
             </div>

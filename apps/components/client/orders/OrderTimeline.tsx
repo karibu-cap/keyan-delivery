@@ -1,16 +1,21 @@
 import { OrderStatus } from "@prisma/client"
 import { CheckIcon, PackageIcon, TruckIcon, HomeIcon } from "lucide-react"
+import { getLocale } from "next-intl/server";
+import { getT } from "@/lib/server-translations";
 
 interface OrderTimelineProps {
     status: OrderStatus
 }
 
-export function OrderTimeline({ status }: OrderTimelineProps) {
+export async function OrderTimeline({ status }: OrderTimelineProps) {
+    const locale = await getLocale();
+    const t = await getT(locale);
+
     const steps = [
-        { id: OrderStatus.ACCEPTED_BY_MERCHANT, label: "Order Confirmed", icon: CheckIcon },
-        { id: OrderStatus.IN_PREPARATION, label: "Preparing Order", icon: PackageIcon },
-        { id: OrderStatus.ON_THE_WAY, label: "Out for Delivery", icon: TruckIcon },
-        { id: OrderStatus.COMPLETED, label: "Delivered", icon: HomeIcon },
+        { id: OrderStatus.ACCEPTED_BY_MERCHANT, label: t("Order Confirmed"), icon: CheckIcon },
+        { id: OrderStatus.IN_PREPARATION, label: t("Preparing Order"), icon: PackageIcon },
+        { id: OrderStatus.ON_THE_WAY, label: t("Out for Delivery"), icon: TruckIcon },
+        { id: OrderStatus.COMPLETED, label: t("Delivered"), icon: HomeIcon },
     ]
 
     const statusOrder = [OrderStatus.ACCEPTED_BY_MERCHANT, OrderStatus.IN_PREPARATION, OrderStatus.ON_THE_WAY, OrderStatus.COMPLETED] as OrderStatus[]
