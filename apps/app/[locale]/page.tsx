@@ -6,28 +6,32 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/lib/router";
 import { AuthModal } from "@/components/auth/AuthModal";
+import { getT } from "@/lib/server-translations";
+import { getLocale } from "next-intl/server";
 
-const Index = () => {
+const Index = async () => {
+  const locale = await getLocale();
+  const t = await getT(locale);
   const features = [
     {
       icon: Zap,
-      title: "Lightning Fast",
-      description: "30-minute average delivery time for all your essentials",
+      title: t("Lightning Fast"),
+      description: t("30-minute average delivery time for all your essentials"),
     },
     {
       icon: Shield,
-      title: "Safe & Secure",
-      description: "End-to-end encrypted with verified pickup and delivery codes",
+      title: t("Safe & Secure"),
+      description: t("End-to-end encrypted with verified pickup and delivery codes"),
     },
     {
       icon: Clock,
-      title: "24/7 Available",
-      description: "Order anytime, anywhere from our network of local stores",
+      title: t("24/7 Available"),
+      description: t("Order anytime, anywhere from our network of local stores"),
     },
     {
       icon: ShoppingBag,
-      title: "Wide Selection",
-      description: "Groceries, pharmacy, and food from 500+ partner stores",
+      title: t("Wide Selection"),
+      description: t("Groceries, pharmacy, and food from 500+ partner stores"),
     },
   ];
 
@@ -41,10 +45,10 @@ const Index = () => {
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              Grow Your Business With Us
+              {t("Grow Your Business With Us")}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of merchants and drivers earning with our platform
+              {t("Join thousands of merchants and drivers earning with our platform")}
             </p>
           </div>
 
@@ -55,26 +59,26 @@ const Index = () => {
                 <div className="w-16 h-16 rounded-2xl gradient-hero flex items-center justify-center mb-4">
                   <Store className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3">Become a Merchant</h3>
+                <h3 className="text-2xl font-bold mb-3">{t("Become a Merchant")}</h3>
                 <p className="text-muted-foreground mb-6">
-                  List your products and reach thousands of customers in your area
+                  {t("List your products and reach thousands of customers in your area")}
                 </p>
                 <ul className="text-sm text-muted-foreground mb-6 space-y-2 text-left w-full">
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">✓</span>
-                    <span>Zero upfront costs</span>
+                    <span>{t("Zero upfront costs")}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">✓</span>
-                    <span>Easy product management</span>
+                    <span>{t("Easy product management")}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">✓</span>
-                    <span>Get paid weekly</span>
+                    <span>{t("Get paid weekly")}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">✓</span>
-                    <span>Analytics & insights</span>
+                    <span>{t("Analytics & insights")}</span>
                   </li>
                 </ul>
                 <AuthModal redirectTo={ROUTES.newMerchant}>
@@ -82,7 +86,7 @@ const Index = () => {
                     size="lg"
                     className="w-full bg-primary hover:bg-primary/90 shadow-primary"
                   >
-                    Apply as Merchant
+                    {t("Apply as Merchant")}
                   </Button>
                 </AuthModal>
 
@@ -95,26 +99,26 @@ const Index = () => {
                 <div className="w-16 h-16 rounded-2xl gradient-hero flex items-center justify-center mb-4">
                   <Car className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3">Become a Driver</h3>
+                <h3 className="text-2xl font-bold mb-3">{t("Become a Driver")}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Earn money on your schedule by delivering orders in your area
+                  {t("Earn money on your schedule by delivering orders in your area")}
                 </p>
                 <ul className="text-sm text-muted-foreground mb-6 space-y-2 text-left w-full">
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">✓</span>
-                    <span>Flexible working hours</span>
+                    <span>{t("Flexible working hours")}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">✓</span>
-                    <span>Competitive earnings</span>
+                    <span>{t("Competitive earnings")}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">✓</span>
-                    <span>Weekly payouts</span>
+                    <span>{t("Weekly payouts")}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">✓</span>
-                    <span>24/7 support team</span>
+                    <span>{t("24/7 support team")}</span>
                   </li>
                 </ul>
                 <Button
@@ -123,7 +127,7 @@ const Index = () => {
                   className="w-full bg-primary hover:bg-primary/90 shadow-primary"
                 >
                   <Link href={ROUTES.driverApply}>
-                    Apply as Driver
+                    {t("Apply as Driver")}
                   </Link>
                 </Button>
               </div>
@@ -137,10 +141,10 @@ const Index = () => {
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-foreground mb-4">
-              Why Choose Keyan?
+              {t("Why Choose Keyan?")}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We've built the most reliable last-mile delivery platform with your convenience in mind
+              {t("We've built the most reliable last-mile delivery platform with your convenience in mind")}
             </p>
           </div>
 
@@ -166,10 +170,10 @@ const Index = () => {
       <section className="py-20 px-4 gradient-hero">
         <div className="container mx-auto max-w-4xl text-center text-white">
           <h2 className="text-4xl font-bold mb-6">
-            Ready to Get Started?
+            {t("Ready to Get Started?")}
           </h2>
           <p className="text-xl mb-8 text-white/90">
-            Join thousands of happy customers enjoying fast, reliable delivery
+            {t("Join thousands of happy customers enjoying fast, reliable delivery")}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Button
@@ -178,7 +182,7 @@ const Index = () => {
               className="bg-white text-primary hover:bg-white/90 shadow-lg text-lg px-8 rounded-2xl"
             >
               <Link href={ROUTES.stores}>
-                Browse Stores
+                {t("Browse Stores")}
               </Link>
             </Button>
             <AuthModal redirectTo={ROUTES.newMerchant}>
@@ -186,7 +190,7 @@ const Index = () => {
                 size="lg"
                 className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
               >
-                Partner With Us
+                {t("Partner With Us")}
               </Button>
             </AuthModal>
           </div>
@@ -205,39 +209,39 @@ const Index = () => {
                 <span className="text-xl font-bold text-primary">Keyan</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Your trusted last-mile delivery partner
+                {t("Your trusted last-mile delivery partner")}
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4">{t("Company")}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
-                <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
-                <li><Link href="/careers" className="hover:text-primary transition-colors">Careers</Link></li>
+                <li><Link href="/about" className="hover:text-primary transition-colors">{t("About Us")}</Link></li>
+                <li><Link href="/contact" className="hover:text-primary transition-colors">{t("Contact")}</Link></li>
+                <li><Link href="/careers" className="hover:text-primary transition-colors">{t("Careers")}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">For Partners</h4>
+              <h4 className="font-semibold mb-4">{t("For Partners")}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/merchant/new-merchant" className="hover:text-primary transition-colors">Become a Merchant</Link></li>
-                <li><Link href="/driver/new-driver" className="hover:text-primary transition-colors">Become a Driver</Link></li>
+                <li><Link href="/merchant/new-merchant" className="hover:text-primary transition-colors">{t("Become a Merchant")}</Link></li>
+                <li><Link href="/driver/new-driver" className="hover:text-primary transition-colors">{t("Become a Driver")}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
+              <h4 className="font-semibold mb-4">{t("Support")}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/help" className="hover:text-primary transition-colors">Help Center</Link></li>
-                <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-                <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/help" className="hover:text-primary transition-colors">{t("Help Center")}</Link></li>
+                <li><Link href="/terms" className="hover:text-primary transition-colors">{t("Terms of Service")}</Link></li>
+                <li><Link href="/privacy" className="hover:text-primary transition-colors">{t("Privacy Policy")}</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            <p>&copy; 2025 Keyan. All rights reserved.</p>
+            <p>&copy; 2025 Keyan. {t("All rights reserved.")}</p>
           </div>
         </div>
       </footer>

@@ -14,6 +14,7 @@ import {
 import { IMerchant } from "@/lib/actions/stores";
 import { MerchantType } from "@prisma/client";
 import { useCallback } from "react";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface StoreCardProps {
     store: IMerchant;
@@ -21,6 +22,8 @@ interface StoreCardProps {
 }
 
 export function StoreCard({ store, index }: StoreCardProps) {
+    const t = useT()
+
     const router = useRouter();
     const merchantType =
         (store as IMerchant & { merchantType: string }).merchantType ||
@@ -89,7 +92,7 @@ export function StoreCard({ store, index }: StoreCardProps) {
                 </div>
                 {merchantType === MerchantType.PHARMACY && (
                     <Badge variant="outline" className="text-xs whitespace-nowrap">
-                        In-store prices
+                        {t("In-store prices")}
                     </Badge>
                 )}
             </div>
@@ -98,7 +101,7 @@ export function StoreCard({ store, index }: StoreCardProps) {
             <div className="flex items-center space-x-2 mb-4 bg-green-50 rounded-lg px-3 py-2">
                 <Clock className="w-4 h-4 text-green-600" />
                 <span className="text-sm font-medium text-green-700">
-                    Delivery by {store.deliveryTime || "10:30am"}
+                    {t("Delivery by")} {store.deliveryTime || "10:30am"}
                 </span>
             </div>
 
@@ -107,19 +110,19 @@ export function StoreCard({ store, index }: StoreCardProps) {
                 {merchantType === MerchantType.GROCERY && (
                     <>
                         <Badge variant="promotional" className="text-xs">
-                            💰 $5 off first order
+                            {t("$5 off first order")}
                         </Badge>
                         <Badge
                             variant="outline"
                             className="text-xs bg-blue-50 text-blue-700 border-blue-200"
                         >
-                            🚚 Free delivery
+                            🚚 {t("Free delivery")}
                         </Badge>
                     </>
                 )}
                 {merchantType === MerchantType.FOOD && (
                     <Badge variant="promotional" className="text-xs">
-                        🔥 10% off orders $25+
+                        🔥 {t("10% off orders $25+")}
                     </Badge>
                 )}
                 {merchantType === MerchantType.PHARMACY && (
@@ -127,16 +130,16 @@ export function StoreCard({ store, index }: StoreCardProps) {
                         variant="outline"
                         className="text-xs bg-purple-50 text-purple-700 border-purple-200"
                     >
-                        ⚡ Same-day delivery
+                        ⚡ {t("Same-day delivery")}
                     </Badge>
                 )}
             </div>
 
             {/* Delivery Fee */}
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-                <span className="text-sm text-gray-600">Delivery fee</span>
+                <span className="text-sm text-gray-600">{t("Delivery fee")}</span>
                 <span className="text-sm font-semibold text-green-600">
-                    FREE ($0.00)
+                    {t("FREE ($0.00)")}
                 </span>
             </div>
 
@@ -146,7 +149,7 @@ export function StoreCard({ store, index }: StoreCardProps) {
                     className="flex-1 bg-primary hover:bg-primary/90 text-white shadow-sm hover:shadow-md transition-all"
                     onClick={handleShopNowClick}
                 >
-                    Shop now
+                    {t("Shop now")}
                 </Button>
                 <Button
                     variant="outline"

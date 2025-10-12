@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface Notification {
     id: string;
@@ -26,6 +27,7 @@ interface Notification {
 }
 
 export default function MerchantNotifications() {
+    const t = useT()
     const router = useRouter();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -104,7 +106,7 @@ export default function MerchantNotifications() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
                 <DropdownMenuLabel className="flex items-center justify-between">
-                    <span>Notifications</span>
+                    <span>{t("Notifications")}</span>
                     {unreadCount > 0 && (
                         <Badge variant="secondary">{unreadCount} new</Badge>
                     )}
@@ -113,11 +115,11 @@ export default function MerchantNotifications() {
 
                 {loading ? (
                     <div className="p-4 text-center text-sm text-muted-foreground">
-                        Loading...
+                        {t("Loading...")}
                     </div>
                 ) : notifications.length === 0 ? (
                     <div className="p-4 text-center text-sm text-muted-foreground">
-                        No notifications
+                        {t("No notifications")}
                     </div>
                 ) : (
                     <div className="max-h-[400px] overflow-y-auto">
@@ -163,7 +165,7 @@ export default function MerchantNotifications() {
                             className="text-center justify-center cursor-pointer"
                             onClick={() => router.push('/merchant/notifications')}
                         >
-                            View all notifications
+                            {t("View all notifications")}
                         </DropdownMenuItem>
                     </>
                 )}

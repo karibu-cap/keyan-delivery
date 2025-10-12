@@ -21,6 +21,7 @@ import { AuthCard } from './AuthCard'
 import { useAuthStore } from '@/hooks/auth-store'
 import { ROUTES } from '@/lib/router'
 import { signInSchema, SignInSchemaType } from '@/lib/validation/user'
+import { useT } from '@/hooks/use-inline-translation'
 
 
 interface SignInFormProps {
@@ -29,6 +30,8 @@ interface SignInFormProps {
 }
 
 export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
+  const t = useT()
+
   const router = useRouter()
   const { toast } = useToast()
   const { signIn, signInWithGoogle, loading, error } = useAuthStore()
@@ -46,15 +49,15 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
     try {
       await signIn(data.email, data.password)
       toast({
-        title: 'Welcome back!',
-        description: 'You have successfully logged in',
+        title: t("Welcome back!"),
+        description: t("You have successfully logged in"),
       })
       router.replace(redirectTo || ROUTES.home)
     } catch (err) {
       console.error(err)
       form.setError('root', {
         type: 'manual',
-        message: error || 'An unexpected error occurred',
+        message: error || t("An unexpected error occurred"),
       })
     }
   }
@@ -63,8 +66,8 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
     try {
       await signInWithGoogle()
       toast({
-        title: 'Welcome!',
-        description: 'You have successfully signed in with Google',
+        title: t("Welcome!"),
+        description: t("You have successfully signed in with Google"),
       })
       router.replace(redirectTo || ROUTES.home)
     } catch (err) {
@@ -73,7 +76,7 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
   }
 
   return (
-    <AuthCard title="Welcome Back" description="Sign in to your account">
+    <AuthCard title={t("Welcome Back")} description={t("Sign in to your account")}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -81,9 +84,9 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("Email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="Enter your email" {...field} />
+                  <Input type="email" placeholder={t("Enter your email")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,9 +98,9 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{t("Password")}</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="Enter your password" {...field} />
+                  <Input type="password" placeholder={t("Enter your password")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -106,7 +109,7 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
 
           <div className="space-y-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Sign In'}
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t("Sign In")}
             </Button>
 
             <Button
@@ -117,7 +120,7 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
               disabled={loading}
             >
               <GoogleIcon className="mr-2 h-4 w-4" />
-              Continue with Google
+              {t("Continue with Google")}
             </Button>
           </div>
         </form>
@@ -126,7 +129,7 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
       <div className="text-center space-y-2">
         <motion.div whileHover={{ scale: 1.05 }}>
           <Button variant="link" onClick={onToggleForm}>
-            {"Don't have an account? Sign Up"}
+            {t("Don't have an account? Sign Up")}
           </Button>
         </motion.div>
       </div>

@@ -23,6 +23,7 @@ import { UserRole } from '@prisma/client'
 import { useState } from 'react'
 import { ROUTES } from '@/lib/router'
 import { useRouter } from 'next/navigation'
+import { useT } from '@/hooks/use-inline-translation'
 
 interface SignUpFormProps {
   onToggleForm(): void
@@ -39,6 +40,8 @@ const roleOptions = [
 ]
 
 export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
+  const t = useT()
+
   const { toast } = useToast()
   const router = useRouter()
   const { signUp, signInWithGoogle, loading, error } = useAuthStore()
@@ -64,15 +67,15 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
         driverDocument: '',
       })
       toast({
-        title: 'Account created',
-        description: 'Welcome! Your account has been created successfully.',
+        title: t("Account created"),
+        description: t("Welcome! Your account has been created successfully."),
       })
       router.replace(redirectTo || ROUTES.home)
     } catch (err) {
       console.error(err)
       form.setError('root', {
         type: 'manual',
-        message: error || 'An unexpected error occurred',
+        message: error || t("An unexpected error occurred"),
       })
     }
   }
@@ -80,14 +83,14 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
   const handleGoogleSignIn = async () => {
     await signInWithGoogle()
     toast({
-      title: 'Welcome!',
-      description: 'You have successfully signed in with Google',
+      title: t("Welcome!"),
+      description: t("You have successfully signed in with Google"),
     })
     router.replace(redirectTo || ROUTES.home)
   }
 
   return (
-    <AuthCard title="Create Account" description="Join our platform today">
+    <AuthCard title={t("Create Account")} description={t("Join our platform today")}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-3">
@@ -119,7 +122,7 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
               })}
             </div>
             <p className="text-xs text-muted-foreground">
-              Want to become a merchant or driver? You can apply after creating your account.
+              {t("Want to become a merchant or driver? You can apply after creating your account.")}
             </p>
           </div>
 
@@ -128,9 +131,9 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name *</FormLabel>
+                <FormLabel>{t("Full Name *")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your name" {...field} />
+                  <Input placeholder={t("Enter your name")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -142,7 +145,7 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number *</FormLabel>
+                <FormLabel>{t("Phone Number")}</FormLabel>
                 <FormControl>
                   <Input placeholder="+1 234 567 8900" {...field} />
                 </FormControl>
@@ -156,7 +159,7 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email *</FormLabel>
+                <FormLabel>{t("Email *")}</FormLabel>
                 <FormControl>
                   <Input placeholder="you@example.com" {...field} type="email" />
                 </FormControl>
@@ -170,10 +173,10 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password *</FormLabel>
+                <FormLabel>{t("Password *")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter your password"
+                    placeholder={t("Enter your password")}
                     {...field}
                     type="password"
                     required
@@ -186,7 +189,7 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
 
           <div className="space-y-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Sign Up'}
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t("Sign Up")}
             </Button>
 
             <Button
@@ -197,7 +200,7 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
               disabled={loading}
             >
               <GoogleIcon className="mr-2 h-4 w-4" />
-              Continue with Google
+              {t("Continue with Google")}
             </Button>
           </div>
         </form>
@@ -206,7 +209,7 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
       <div className="text-center">
         <motion.div whileHover={{ scale: 1.05 }}>
           <Button variant="link" onClick={onToggleForm}>
-            Already have an account? Sign In
+            {t("Already have an account? Sign In")}
           </Button>
         </motion.div>
       </div>

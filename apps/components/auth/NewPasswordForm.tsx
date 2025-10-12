@@ -10,11 +10,13 @@ import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/lib/router'
 import { confirmPasswordReset, verifyPasswordResetCode } from 'firebase/auth'
 import { auth } from '@/lib/firebase-client/firebase'
+import { useT } from '@/hooks/use-inline-translation'
 interface NewPasswordFormProps {
   token: string
 }
 
 export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
+  const t = useT()
   const router = useRouter()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -26,8 +28,8 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
     if (password !== confirmPassword) {
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Passwords do not match',
+        title: t("Error"),
+        description: t("Passwords do not match"),
       })
       return
     }
@@ -38,15 +40,15 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
       await confirmPasswordReset(auth, token, password)
 
       toast({
-        title: 'Success',
-        description: 'Password successfully reset! You can now login.',
+        title: t("Success"),
+        description: t("Password successfully reset! You can now login."),
       })
       router.push(ROUTES.signIn)
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to reset password. The link may be expired or invalid.',
+        title: t("Error"),
+        description: t("Failed to reset password. The link may be expired or invalid."),
       })
     } finally {
       setLoading(false)
@@ -54,12 +56,12 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
   }
 
   return (
-    <AuthCard title="Set New Password">
+    <AuthCard title={t("Set New Password")}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Input
             type="password"
-            placeholder="New Password"
+            placeholder={t("New Password")}
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
@@ -67,7 +69,7 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
           />
           <Input
             type="password"
-            placeholder="Confirm New Password"
+            placeholder={t("Confirm New Password")}
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
             required
@@ -75,7 +77,7 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
           />
         </div>
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Resetting...' : 'Reset Password'}
+          {loading ? t("Resetting...") : t("Reset Password")}
         </Button>
         <div className="text-center">
           <motion.button
@@ -84,7 +86,7 @@ export const NewPasswordForm = ({ token }: NewPasswordFormProps) => {
             onClick={() => router.push(ROUTES.signIn)}
             className="text-sm text-muted-foreground/80 hover:text-muted-foreground"
           >
-            Back to Login
+            {t("Back to Login")}
           </motion.button>
         </div>
       </form>

@@ -9,19 +9,24 @@ import { OrderTimeline } from "@/components/client/orders/OrderTimeline"
 import { OrderStatus } from "@prisma/client"
 import { getUserTokens } from "@/lib/firebase-client/firebase-utils"
 import { prisma } from "@/lib/prisma"
+import { getLocale } from "next-intl/server";
+import { getT } from "@/lib/server-translations";
 
 export default async function OrdersPage() {
     const token = await getUserTokens();
+    const locale = await getLocale();
+    const t = await getT(locale);
+
     if (!token?.decodedToken?.uid) {
         return (
             <div className="min-h-screen bg-background">
                 <Navbar />
                 <main className="container mx-auto px-4 py-6">
                     <div className="py-16 text-center">
-                        <h2 className="mb-2 text-2xl font-bold">Authentication Required</h2>
-                        <p className="mb-6 text-muted-foreground">Please sign in to view your orders</p>
+                        <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
+                        <p className="mb-6 text-muted-foreground">{t("Please sign in to view your orders")}</p>
                         <Link href="/sign-in">
-                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">Sign In</Button>
+                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Sign In")}</Button>
                         </Link>
                     </div>
                 </main>
@@ -42,10 +47,10 @@ export default async function OrdersPage() {
                 <Navbar />
                 <main className="container mx-auto px-4 py-6">
                     <div className="py-16 text-center">
-                        <h2 className="mb-2 text-2xl font-bold">User Not Found</h2>
-                        <p className="mb-6 text-muted-foreground">Please contact support if this issue persists</p>
+                        <h2 className="mb-2 text-2xl font-bold">{t("User Not Found")}</h2>
+                        <p className="mb-6 text-muted-foreground">{t("Please contact support if this issue persists")}</p>
                         <Link href="/">
-                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">Go Home</Button>
+                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Go Home")}</Button>
                         </Link>
                     </div>
                 </main>
@@ -79,11 +84,11 @@ export default async function OrdersPage() {
                 <Link href="/">
                     <Button variant="ghost" className="mb-4 gap-2">
                         <ArrowLeftIcon className="h-4 w-4" />
-                        Back to Home
+                        {t("Back to Home")}
                     </Button>
                 </Link>
 
-                <h1 className="mb-6 text-3xl font-bold">Your Orders</h1>
+                <h1 className="mb-6 text-3xl font-bold">{t("Your Orders")}</h1>
 
                 <div className="space-y-6">
                     {orders?.map((order) => (
@@ -91,7 +96,7 @@ export default async function OrdersPage() {
                             <CardHeader>
                                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
-                                        <CardTitle className="mb-2">Order {order.id}</CardTitle>
+                                        <CardTitle className="mb-2">{t("Order")} {order.id}</CardTitle>
                                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                                             <div className="flex items-center gap-1">
                                                 <ClockIcon className="h-4 w-4" />
@@ -115,7 +120,7 @@ export default async function OrdersPage() {
                                 )}
 
                                 <div>
-                                    <h3 className="mb-3 font-semibold">Items ({order.items.length})</h3>
+                                    <h3 className="mb-3 font-semibold">{t("Items")} ({order.items.length})</h3>
                                     <div className="space-y-3">
                                         {order.items.map((item) => (
                                             <div key={item.product.id} className="flex items-center gap-4">
@@ -142,20 +147,20 @@ export default async function OrdersPage() {
                                 </div>
 
                                 <div className="flex items-center justify-between border-t pt-4">
-                                    <span className="text-lg font-semibold">Total</span>
+                                    <span className="text-lg font-semibold">{t("Total")}</span>
                                     <span className="text-xl font-bold text-[#0aad0a]">${order.orderPrices.total.toFixed(2)}</span>
                                 </div>
 
                                 {/* Actions */}
                                 <div className="flex gap-3">
                                     <Button variant="outline" className="flex-1 bg-transparent">
-                                        View Receipt
+                                        {t("View Receipt")}
                                     </Button>
                                     {order.status === OrderStatus.COMPLETED && (
-                                        <Button className="flex-1 bg-[#0aad0a] hover:bg-[#089808]">Reorder</Button>
+                                        <Button className="flex-1 bg-[#0aad0a] hover:bg-[#089808]">{t("Reorder")}</Button>
                                     )}
                                     {order.status === OrderStatus.ON_THE_WAY && (
-                                        <Button className="flex-1 bg-[#0aad0a] hover:bg-[#089808]">Track Driver</Button>
+                                        <Button className="flex-1 bg-[#0aad0a] hover:bg-[#089808]">{t("Track Driver")}</Button>
                                     )}
                                 </div>
                             </CardContent>
@@ -177,10 +182,10 @@ export default async function OrdersPage() {
                                 </svg>
                             </div>
                         </div>
-                        <h2 className="mb-2 text-2xl font-bold">No orders yet</h2>
-                        <p className="mb-6 text-muted-foreground">Start shopping to place your first order</p>
+                        <h2 className="mb-2 text-2xl font-bold">{t("No orders yet")}</h2>
+                        <p className="mb-6 text-muted-foreground">{t("Start shopping to place your first order")}</p>
                         <Link href="/">
-                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">Start Shopping</Button>
+                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Start Shopping")}</Button>
                         </Link>
                     </div>
                 )}
