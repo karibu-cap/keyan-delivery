@@ -27,7 +27,6 @@ export const createNewMerchant = async (formData: Record<string, unknown>) => {
 }
 
 export async function createMerchantProduct(formData: Record<string, unknown>, merchantId: string) {
-    console.log(formData);
     try {
         const response = await fetch(`/api/v1/merchants/${merchantId}/products`, {
             method: 'POST',

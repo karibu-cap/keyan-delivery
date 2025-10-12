@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
-    const category = searchParams.get('category') || '';
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -19,17 +18,9 @@ export async function GET(request: NextRequest) {
     if (search) {
       whereClause.OR = [
         { businessName: { contains: search, mode: 'insensitive' } },
-        { categories: { some: { category: { name: { contains: search, mode: 'insensitive' } } } } },
       ];
     }
 
-    if (category && category !== 'all') {
-      whereClause.categories = {
-        some: {
-          categoryId: category
-        }
-      };
-    }
 
     const merchants = await prisma.merchant.findMany({
       where: whereClause,
@@ -40,9 +31,6 @@ export async function GET(request: NextRequest) {
         products: {
           where: { status: 'VERIFIED', visibility: true },
           select: { id: true }
-        },
-        categories: {
-          select: { category: true }
         },
         managers: {
           include: {

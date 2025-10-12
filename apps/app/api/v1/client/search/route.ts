@@ -23,7 +23,6 @@ export async function GET(request: NextRequest) {
                     isVerified: true,
                     OR: [
                         { businessName: { contains: searchTerm, mode: 'insensitive' } },
-                        { categories: { some: { category: { name: { contains: searchTerm, mode: 'insensitive' } } } } }
                     ]
                 },
                 take: 5,
@@ -46,7 +45,6 @@ export async function GET(request: NextRequest) {
                         }
                     },
                     managers: true,
-                    categories: true
                 }
 
             }),
