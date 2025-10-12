@@ -6,8 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useT } from '@/hooks/use-inline-translation';
 import Link from "next/link";
-import { ROUTES } from '@/lib/router';
-import { AuthModal } from './auth/AuthModal';
 
 
 

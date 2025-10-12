@@ -89,21 +89,6 @@ export type IMerchant = Prisma.MerchantGetPayload<{
   };
 }>;
 
-interface SeoMetadata {
-  seoTitle?: string;
-  seoDescription?: string;
-  keywords: string[];
-}
-
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string | null;
-  productCount: number;
-  image?: string | null;
-  seoMetadata?: SeoMetadata | null;
-}
 
 
 export interface Aisle {
@@ -115,48 +100,6 @@ export interface Aisle {
 
 
 
-export async function fetchCategories({
-  search,
-  category,
-  limit = 20,
-  offset = 0
-}: {
-  search?: string;
-  category?: string;
-  limit: number;
-  offset: number;
-}): Promise<{ categories: Category[] }> {
-
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  const params = new URLSearchParams();
-  if (search) params.append('search', search);
-  if (category) params.append('category', category);
-  params.append('limit', limit.toString());
-  params.append('offset', offset.toString());
-  try {
-    const response = await fetch(
-      `${baseUrl}/api/v1/client/categories?${params.toString()}`,
-      {
-        next: { revalidate: 300 }, // Revalidate every 5 minutes
-      }
-    );
-
-    if (!response.ok) {
-      return { categories: [] };
-    }
-
-    const data = await response.json();
-
-    if (!data.success) {
-      return { categories: [] };
-    }
-
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return { categories: [] };
-  }
-}
 
 export async function searchStores(searchQuery: string): Promise<IMerchant[]> {
   try {
@@ -289,12 +232,10 @@ interface PaginationInfo {
 
 export async function fetchMerchants({
   search,
-  category,
   limit = 20,
   offset = 0
 }: {
   search?: string;
-  category?: string;
   limit: number;
   offset: number;
 }): Promise<{ merchants: IMerchant[]; pagination: PaginationInfo }> {
@@ -306,16 +247,7 @@ export async function fetchMerchants({
     if (search) {
       whereClause.OR = [
         { businessName: { contains: search, mode: 'insensitive' } },
-        { categories: { some: { category: { name: { contains: search, mode: 'insensitive' } } } } },
       ];
-    }
-
-    if (category && category !== 'all') {
-      whereClause.categories = {
-        some: {
-          categoryId: category
-        }
-      };
     }
 
     const merchants = await prisma.merchant.findMany({
@@ -344,9 +276,6 @@ export async function fetchMerchants({
               },
             },
           },
-        },
-        categories: {
-          select: { category: true }
         },
         managers: {
           include: {

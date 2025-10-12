@@ -2,6 +2,7 @@ import { authMiddleware, redirectToHome, redirectToLogin } from 'next-firebase-a
 import createIntlMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { clientConfig, serverConfig } from './auth_config';
+import { locales } from './i18n/config';
 import { routing } from './i18n/routing';
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -20,6 +21,19 @@ const PUBLIC_PATHS = [
   '/robots.txt',
   '/not-found',
 ];
+
+function hasLocale(path: string) {
+  const localePattern = locales.join('|');
+  return (new RegExp(`^/(${localePattern})(/|$)`).test(path));
+}
+
+function removeLocaleFromPath(path: string) {
+  const localePattern = locales.join('|');
+  const regex = new RegExp(`^/(${localePattern})(/|$)`);
+  return path.replace(regex, '/');
+}
+
+
 
 export async function middleware(request: NextRequest) {
   return authMiddleware(request, {
@@ -46,8 +60,7 @@ export async function middleware(request: NextRequest) {
       const pathname = request.nextUrl.pathname;
 
       // Assume locales are optional 2-letter prefixes like /en/, /fr/, etc. (case-insensitive)
-      const localeRegex = /^\/[a-z]{2}\/?/i;
-      const basePath = localeRegex.test(pathname) ? pathname.replace(localeRegex, '/') : pathname;
+      const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
 
       // Check if token is expired (though authMiddleware typically invalidates expired tokens; this is redundant but preserved)
       if (decodedToken.exp < Date.now() / 1000) {
@@ -72,9 +85,7 @@ export async function middleware(request: NextRequest) {
       console.info('Missing or malformed credentials', { reason });
 
       const pathname = request.nextUrl.pathname;
-      const localeRegex = /^\/[a-z]{2}\/?/i;
-      const basePath = localeRegex.test(pathname) ? pathname.replace(localeRegex, '/') : pathname;
-
+      const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
       if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? basePath === path : path.test(basePath))) {
         return applyIntl(request); // Apply i18n for public paths
       }
@@ -95,7 +106,9 @@ export async function middleware(request: NextRequest) {
       if (isFetchError) {
         console.warn('Network error detected, allowing access to public paths');
 
-        if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? request.nextUrl.pathname === path : path.test(request.nextUrl.pathname))) {
+        const pathname = request.nextUrl.pathname;
+        const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
+        if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? basePath === path : path.test(basePath))) {
           return applyIntl(request); // Apply i18n for public paths
         }
       }
@@ -111,10 +124,10 @@ export async function middleware(request: NextRequest) {
 // Helper to apply intlMiddleware and merge with auth headers where needed
 function applyIntl(request: NextRequest, authHeaders?: Headers, authResponse?: NextResponse) {
   // If auth middleware wants to redirect (e.g., to login), apply intl to that redirect
+
   if (authResponse) {
     // Extract the redirect path from auth response
     const redirectUrl = new URL(authResponse.headers.get('location') || authResponse.url);
-
     // Create a new request with the redirect path to let intl middleware handle locale
     const redirectRequest = new NextRequest(redirectUrl, request);
     const intlResponse = intlMiddleware(redirectRequest);
@@ -133,6 +146,7 @@ function applyIntl(request: NextRequest, authHeaders?: Headers, authResponse?: N
 
   // If i18n rewrites the URL
   if (intlResponse.headers.has('x-middleware-rewrite')) {
+
     const rewriteUrl = new URL(intlResponse.headers.get('x-middleware-rewrite')!);
     return NextResponse.rewrite(rewriteUrl, {
       request: { headers: authHeaders },

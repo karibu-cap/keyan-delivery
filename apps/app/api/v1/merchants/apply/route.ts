@@ -34,16 +34,14 @@ export async function POST(request: NextRequest) {
             businessName,
             phone,
             merchantType,
-            address,
             latitude,
             longitude,
             logoUrl,
             bannerUrl,
-            categories,
         } = body;
 
         // Validate required fields
-        if (!businessName || !phone || !merchantType || !address || !latitude || !longitude || !logoUrl) {
+        if (!businessName || !phone || !merchantType || !latitude || !longitude || !logoUrl) {
             return NextResponse.json(
                 { success: false, error: 'Missing required fields' },
                 { status: 400 }

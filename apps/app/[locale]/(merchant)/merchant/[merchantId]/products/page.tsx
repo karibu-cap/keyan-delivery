@@ -40,27 +40,7 @@ import {
 import { deleteProduct, getMerchantProducts } from "@/lib/actions/merchants";
 import Image from "next/image";
 import { IProduct } from "@/lib/actions/stores";
-
-interface Product {
-    id: string;
-    title: string;
-    price: number;
-    stock: number;
-    status: string;
-    visibility: boolean;
-    media: {
-        url: string;
-    };
-    categories: Array<{
-        category: {
-            name: string;
-        };
-    }>;
-    _count: {
-        OrderItem: number;
-        cartItems: number;
-    };
-}
+import { ProductStatus } from "@prisma/client";
 
 export default function MerchantProductsPage() {
     const params = useParams<{ merchantId: string }>();
@@ -158,13 +138,13 @@ export default function MerchantProductsPage() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'VERIFIED':
+            case ProductStatus.VERIFIED:
                 return 'bg-success text-success-foreground';
-            case 'DRAFT':
+            case ProductStatus.DRAFT:
                 return 'bg-muted text-muted-foreground';
-            case 'REJECTED':
+            case ProductStatus.REJECTED:
                 return 'bg-destructive text-destructive-foreground';
-            case 'WAITING_FOR_REVIEW':
+            case ProductStatus.WAITING_FOR_REVIEW:
                 return 'bg-warning text-warning-foreground';
             default:
                 return 'bg-muted text-muted-foreground';
@@ -173,16 +153,31 @@ export default function MerchantProductsPage() {
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case 'VERIFIED':
+            case ProductStatus.VERIFIED:
                 return CheckCircle;
-            case 'DRAFT':
+            case ProductStatus.DRAFT:
                 return Edit;
-            case 'REJECTED':
+            case ProductStatus.REJECTED:
                 return XCircle;
-            case 'WAITING_FOR_REVIEW':
+            case ProductStatus.WAITING_FOR_REVIEW:
                 return AlertCircle;
             default:
                 return Clock;
+        }
+    };
+
+    const getStatusName = (status: string) => {
+        switch (status) {
+            case ProductStatus.VERIFIED:
+                return 'Verified';
+            case ProductStatus.DRAFT:
+                return 'Draft';
+            case ProductStatus.REJECTED:
+                return 'Rejected';
+            case ProductStatus.WAITING_FOR_REVIEW:
+                return 'Waiting for review';
+            default:
+                return 'Unknown';
         }
     };
 
@@ -314,7 +309,7 @@ export default function MerchantProductsPage() {
                                                 </h3>
                                                 <Badge className={getStatusColor(product.status)}>
                                                     <StatusIcon className="w-3 h-3 mr-1" />
-                                                    {product.status}
+                                                    {getStatusName(product.status)}
                                                 </Badge>
                                                 {isLowStock && (
                                                     <Badge variant="destructive">

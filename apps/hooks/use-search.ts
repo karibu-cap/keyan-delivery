@@ -1,5 +1,5 @@
-import { fetchMerchants } from '@/lib/actions/client/stores';
-import { Category, fetchCategories, IMerchant, IProduct } from '@/lib/actions/stores';
+import { ICategory, fetchCategories, fetchMerchants } from '@/lib/actions/client/stores';
+import { IMerchant, IProduct } from '@/lib/actions/stores';
 import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from './use-debounce';
 
@@ -84,7 +84,7 @@ export const useSearch = (): UseSearchReturn => {
             });
             if (!response.categories.length) return [];
 
-            return response.categories.map((category: Category) => ({
+            return response.categories.map((category: ICategory) => ({
                 id: category.id,
                 title: category.name,
                 type: 'category' as const,

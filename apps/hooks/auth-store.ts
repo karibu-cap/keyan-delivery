@@ -155,13 +155,11 @@ const useAuthStore = create(
           }
           const idToken = await userCredential.user.getIdToken()
 
-          const result = await fetch('/api/login', {
+          await fetch('/api/login', {
             headers: {
               Authorization: `Bearer ${idToken}`,
             },
           })
-          const data = await result.json()
-          console.log("=======", data)
           set({ loading: false, user: response })
         } catch (error) {
           const authError = error as AuthError

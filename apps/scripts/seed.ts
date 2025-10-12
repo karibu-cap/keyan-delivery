@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
+import { DriverStatus, UserRole } from '@prisma/client'
 import { env } from '../envConfig.js'
 import { prisma } from '../lib/prisma.js'
-import { DriverStatus, UserRole } from '@prisma/client'
 
 // Verify env is loaded
 console.log('Database URL exists:', !!env.DATABASE_URL)
@@ -89,7 +89,6 @@ async function seedDatabase() {
     // Delete junction tables first
     await prisma.categoriesOnProducts.deleteMany()
     await prisma.userMerchantManager.deleteMany()
-    await prisma.categoryOnMerchant.deleteMany()
 
     // Handle self-referential relationship in Category
     // First set all parentId to null
@@ -321,33 +320,10 @@ async function seedDatabase() {
               latitude: faker.location.latitude(),
               longitude: faker.location.longitude(),
             },
-            categories: {
-              create: merchantCategories.map(category => ({
-                categoryId: category.id,
-                assignedAt: new Date(),
-              })),
-            },
+
           },
         }),
       ),
-    )
-
-    // Connect categories to merchants using the junction table
-    await Promise.all(
-      merchantRecords.flatMap(merchant => {
-        // Assign 2-4 random categories to each merchant
-        const merchantCategories = randomArrayElements(categoryRecords, { min: 2, max: 4 })
-
-        return merchantCategories.map(async (category) => {
-          // Create the relationship in the junction table
-          return prisma.categoryOnMerchant.create({
-            data: {
-              merchantId: merchant.id,
-              categoryId: category.id,
-            },
-          })
-        })
-      }),
     )
 
     // Seed UserMerchantManager relationships

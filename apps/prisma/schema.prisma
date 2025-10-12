@@ -39,16 +39,13 @@ model Category {
     image            Media?                 @relation(fields: [imageId], references: [id])
     imageId          String?                @db.ObjectId
     products         CategoriesOnProducts[]
-    merchants        CategoryOnMerchant[]
     seoMetadata      SeoMetadata?
     parentCategoryId String?                @db.ObjectId
     parentCategory   Category?              @relation("CategoryParent", fields: [parentCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     subcategories    Category[]             @relation("CategoryParent")
 
-    createdAt  DateTime  @default(now())
-    updatedAt  DateTime  @updatedAt
-    merchantId String?   @db.ObjectId
-    Merchant   Merchant? @relation(fields: [merchantId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 // --------------------------------product model------------------------------------
@@ -245,8 +242,8 @@ model User {
     payments         Payment[]
     CartItem         CartItem[]
     SavedList        SavedList[]
-    createdAt        DateTime?              @default(now())
-    updatedAt        DateTime?              @updatedAt
+    createdAt        DateTime?             @default(now())
+    updatedAt        DateTime?             @updatedAt
 }
 
 // --------------------------------merchant model------------------------------------
@@ -262,7 +259,6 @@ model Merchant {
     slug         String                @unique(map: "slug_1")
     phone        String
     logoUrl      String?
-    categories   CategoryOnMerchant[]
     bannerUrl    String?
     isVerified   Boolean               @default(false)
     merchantType MerchantType          @default(GROCERY)
@@ -273,7 +269,6 @@ model Merchant {
     managers     UserMerchantManager[]
     deliveryTime String?
     rating       Float?
-    category     Category[]
     order        Order[]
 }
 
@@ -346,17 +341,6 @@ model CategoriesOnProducts {
     assignedAt DateTime @default(now())
 
     @@unique([productId, categoryId])
-}
-
-model CategoryOnMerchant {
-    id         String   @id @default(cuid()) @map("_id")
-    merchant   Merchant @relation(fields: [merchantId], references: [id])
-    merchantId String   @db.ObjectId
-    category   Category @relation(fields: [categoryId], references: [id])
-    categoryId String   @db.ObjectId
-    assignedAt DateTime @default(now())
-
-    @@unique([merchantId, categoryId])
 }
 
 model ProductPromotion {

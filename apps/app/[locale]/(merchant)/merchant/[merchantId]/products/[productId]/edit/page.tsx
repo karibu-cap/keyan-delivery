@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,10 +19,10 @@ import { ArrowLeft, Loader2, Camera, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { uploadImages } from "@/lib/actions/client";
-import { ProductStatus, ProductBadge } from "@prisma/client";
+import { ProductBadge } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox";
-import { fetchCategories } from "@/lib/actions/stores";
 import { getMerchantProducts, updateMerchantProduct } from "@/lib/actions/merchants";
+import { fetchCategories } from "@/lib/actions/client/stores";
 
 interface Category {
     id: string;

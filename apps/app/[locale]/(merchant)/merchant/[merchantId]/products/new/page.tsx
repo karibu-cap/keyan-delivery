@@ -15,19 +15,24 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Upload, X, Loader2, Camera } from "lucide-react";
+import { ArrowLeft, X, Loader2, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { uploadImages } from "@/lib/actions/client";
 import { createMerchantProduct } from "@/lib/actions/merchants";
 import { ProductStatus, ProductBadge } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox";
-import { fetchCategories } from "@/lib/actions/stores";
-import { ROUTES } from "@/lib/router";
+import { fetchCategories } from "@/lib/actions/client/stores";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 interface Category {
     id: string;
     name: string;
+}
+
+interface SelectValue {
+    value: string;
+    label: string;
 }
 
 export default function NewProductPage() {
@@ -38,6 +43,8 @@ export default function NewProductPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+    const [selectedCategories, setSelectedCategories] = useState<SelectValue[]>([]);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -65,6 +72,21 @@ export default function NewProductPage() {
         } catch (error) {
             console.error('Error fetching categories:', error);
         }
+    };
+
+    // Transform categories to SelectValue format for MultiSelect component
+    const categoryOptions: SelectValue[] = categories.map(cat => ({
+        value: cat.id,
+        label: cat.name,
+    }));
+
+    // Handle MultiSelect category changes
+    const handleCategoryChange = (selectedValues: SelectValue[]) => {
+        setSelectedCategories(selectedValues);
+        setFormData(prev => ({
+            ...prev,
+            categoryIds: selectedValues.map(sv => sv.value)
+        }));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -248,23 +270,15 @@ export default function NewProductPage() {
                                     <Label htmlFor="categories">
                                         Categories <span className="text-destructive">*</span>
                                     </Label>
-                                    <Select
-                                        value={formData.categoryIds[0] || ""}
-                                        onValueChange={(value) =>
-                                            setFormData({ ...formData, categoryIds: [value] })
-                                        }
-                                    >
-                                        <SelectTrigger className="mt-2">
-                                            <SelectValue placeholder="Select category" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {categories.map(cat => (
-                                                <SelectItem key={cat.id} value={cat.id}>
-                                                    {cat.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+
+                                    <div className="mt-2">
+                                        <MultiSelect
+                                            placeholder="Select categories"
+                                            values={categoryOptions}
+                                            selectedValues={selectedCategories}
+                                            onChange={handleCategoryChange}
+                                        />
+                                    </div>
                                 </div>
 
                                 <div>

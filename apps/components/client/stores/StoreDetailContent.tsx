@@ -20,6 +20,8 @@ import { CategorySidebar } from "./CategorySidebar";
 import { MobileCategoryDrawer } from "./MobileCategoryDrawer";
 import { ProductGrid } from "./ProductGrid";
 import { useT } from "@/hooks/use-inline-translation";
+import { ROUTES } from "@/lib/router";
+import { useRouter } from "next/navigation";
 
 interface Aisle {
   id: string;
@@ -42,6 +44,7 @@ export function StoreDetailContent({
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { cartItems } = useCart();
+  const router = useRouter();
 
   const totalItems = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -84,11 +87,15 @@ export function StoreDetailContent({
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 flex-1 min-w-0">
-              <Link href="/stores">
-                <Button variant="ghost" size="icon" aria-label="Back to stores">
-                  <ArrowLeft className="w-5 h-5" />
-                </Button>
-              </Link>
+              <Button variant="ghost" size="icon" aria-label="Back to stores" onClick={() => {
+                if (window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  router.push(ROUTES.stores);
+                }
+              }}>
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
               <div className="flex items-center space-x-2 flex-1 min-w-0">
                 <Image
                   src={initialStore.logoUrl || "/placeholder.svg"}
@@ -149,11 +156,15 @@ export function StoreDetailContent({
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/stores">
-                <Button variant="ghost" size="icon" aria-label="Back to stores">
-                  <ArrowLeft className="w-5 h-5" />
-                </Button>
-              </Link>
+              <Button variant="ghost" size="icon" aria-label="Back to stores" onClick={() => {
+                if (window.history.length > 1) {
+                  window.history.back();
+                } else {
+                  router.push(ROUTES.stores);
+                }
+              }}>
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
               <div className="flex items-center space-x-3">
                 <Image
                   src={initialStore.logoUrl || "/placeholder.svg"}

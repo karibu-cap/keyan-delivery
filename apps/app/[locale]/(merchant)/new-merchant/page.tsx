@@ -17,13 +17,15 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Upload, Camera, MapPin, Loader2 } from "lucide-react";
 import { Media, MerchantType } from "@prisma/client";
-import Link from "next/link";
 import { uploadImages } from "@/lib/actions/client";
 import { ROUTES } from "@/lib/router";
 import { createNewMerchant } from "@/lib/actions/merchants";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/hooks/use-inline-translation";
+import Image from "next/image";
 
 export default function NewMerchantPage() {
+    const t = useT();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -39,7 +41,6 @@ export default function NewMerchantPage() {
         address: "",
         latitude: 0,
         longitude: 0,
-        categories: [] as string[],
     });
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,23 +77,23 @@ export default function NewMerchantPage() {
                         longitude: position.coords.longitude,
                     }));
                     toast({
-                        title: 'Location captured successfully',
-                        description: 'Please try again later',
+                        title: t('Location captured successfully'),
+                        description: t('Please try again later'),
                         variant: 'default',
                     })
                 },
                 (error) => {
                     toast({
-                        title: 'Failed to get location',
-                        description: 'Please enter manually',
+                        title: t('Failed to get location'),
+                        description: t('Please enter manually'),
                         variant: 'destructive',
                     })
                 }
             );
         } else {
             toast({
-                title: 'Geolocation not supported',
-                description: 'Please enter manually',
+                title: t('Geolocation not supported'),
+                description: t('Please enter manually'),
                 variant: 'destructive',
             })
         }
@@ -104,16 +105,16 @@ export default function NewMerchantPage() {
         // Validation
         if (!formData.businessName || !formData.phone || !formData.merchantType) {
             toast({
-                title: 'Please fill in all required fields',
-                description: 'Please try again later',
+                title: t('Please fill in all required fields'),
+                description: t('Please try again later'),
                 variant: 'destructive',
             })
             return;
         }
         if (!logoFile) {
             toast({
-                title: 'Please upload a business logo',
-                description: 'Please try again later',
+                title: t('Please upload a business logo'),
+                description: t('Please try again later'),
                 variant: 'destructive',
             })
             return;
@@ -121,8 +122,8 @@ export default function NewMerchantPage() {
 
         if (!formData.latitude || !formData.longitude) {
             toast({
-                title: 'Please capture your business location',
-                description: 'Please try again later',
+                title: t('Please capture your business location'),
+                description: t('Please try again later'),
                 variant: 'destructive',
             })
             return;
@@ -142,8 +143,8 @@ export default function NewMerchantPage() {
         if (!result) {
             setIsSubmitting(false);
             toast({
-                title: 'Failed to upload logo',
-                description: 'Please try again later',
+                title: t('Failed to upload logo'),
+                description: t('Please try again later'),
                 variant: 'destructive',
             })
             return;
@@ -162,21 +163,20 @@ export default function NewMerchantPage() {
             longitude: formData.longitude,
             logoUrl,
             bannerUrl,
-            categories: formData.categories,
         });
 
         if (!success) {
             toast({
-                title: 'Failed to submit application',
-                description: 'Please try again later',
+                title: t('Failed to submit application'),
+                description: t('Please try again later'),
                 variant: 'destructive',
             })
             return;
         }
 
         toast({
-            title: 'Application submitted successfully!',
-            description: 'Your merchant application is pending approval.',
+            title: t('Application submitted successfully!'),
+            description: t('Your merchant application is pending approval.'),
             variant: 'default',
         })
         setIsSubmitting(false);
@@ -189,34 +189,42 @@ export default function NewMerchantPage() {
             <Navbar />
 
             <div className="container mx-auto max-w-4xl px-4 py-8">
-                <Link
-                    href="/profile"
+                <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                        if (window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            router.push('/');
+                        }
+                    }}
                     className="inline-flex items-center text-foreground mb-6 hover:text-primary transition-colors"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Profile
-                </Link>
+                    {t('Back')}
+                </Button>
 
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold mb-2">Become a Merchant</h1>
+                    <h1 className="text-4xl font-bold mb-2">{t('Become a Merchant')}</h1>
                     <p className="text-muted-foreground">
-                        Join our platform and start selling your products
-                    </p>
+                        {t('Join our platform and start selling your products')}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Business Information */}
                     <Card className="p-6 rounded-2xl shadow-card">
-                        <h2 className="text-xl font-semibold mb-4">Business Information</h2>
+                        <h2 className="text-xl font-semibold mb-4">{t('Business Information')}</h2>
 
                         <div className="space-y-4">
                             <div>
                                 <Label htmlFor="businessName">
-                                    Business Name <span className="text-destructive">*</span>
+                                    {t('Business Name')} <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="businessName"
-                                    placeholder="Enter your business name"
+                                    placeholder={t('Enter your business name')}
                                     value={formData.businessName}
                                     onChange={(e) =>
                                         setFormData({ ...formData, businessName: e.target.value })
@@ -228,7 +236,7 @@ export default function NewMerchantPage() {
 
                             <div>
                                 <Label htmlFor="phone">
-                                    Phone Number <span className="text-destructive">*</span>
+                                    {t('Phone Number')} <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="phone"
@@ -245,7 +253,7 @@ export default function NewMerchantPage() {
 
                             <div>
                                 <Label htmlFor="merchantType">
-                                    Business Type <span className="text-destructive">*</span>
+                                    {t('Business Type')} <span className="text-destructive">*</span>
                                 </Label>
                                 <Select
                                     value={formData.merchantType}
@@ -257,17 +265,17 @@ export default function NewMerchantPage() {
                                     }
                                 >
                                     <SelectTrigger className="mt-2">
-                                        <SelectValue placeholder="Select business type" />
+                                        <SelectValue placeholder={t('Select business type')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value={MerchantType.GROCERY}>
-                                            Grocery Store
+                                            {t('Grocery Store')}
                                         </SelectItem>
                                         <SelectItem value={MerchantType.FOOD}>
-                                            Restaurant / Food
+                                            {t('Restaurant / Food')}
                                         </SelectItem>
                                         <SelectItem value={MerchantType.PHARMACY}>
-                                            Pharmacy
+                                            {t('Pharmacy')}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -277,20 +285,21 @@ export default function NewMerchantPage() {
 
                     {/* Business Images */}
                     <Card className="p-6 rounded-2xl shadow-card">
-                        <h2 className="text-xl font-semibold mb-4">Business Images</h2>
+                        <h2 className="text-xl font-semibold mb-4">{t('Business Images')}</h2>
 
                         <div className="grid md:grid-cols-2 gap-6">
                             {/* Logo Upload */}
                             <div>
                                 <Label htmlFor="logo">
-                                    Business Logo <span className="text-destructive">*</span>
+                                    {t('Business Logo')} <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="mt-2">
                                     {logoPreview ? (
                                         <div className="relative w-full h-48 rounded-lg border-2 border-dashed border-border overflow-hidden">
-                                            <img
+                                            <Image
                                                 src={logoPreview}
                                                 alt="Logo preview"
+                                                fill
                                                 className="w-full h-full object-cover"
                                             />
                                             <Button
@@ -303,7 +312,7 @@ export default function NewMerchantPage() {
                                                     setLogoPreview("");
                                                 }}
                                             >
-                                                Change
+                                                {t('Change')}
                                             </Button>
                                         </div>
                                     ) : (
@@ -313,7 +322,7 @@ export default function NewMerchantPage() {
                                         >
                                             <Camera className="w-12 h-12 text-muted-foreground mb-2" />
                                             <span className="text-sm text-muted-foreground">
-                                                Click to upload logo
+                                                {t('Click to upload logo')}
                                             </span>
                                             <input
                                                 id="logo"
@@ -329,13 +338,14 @@ export default function NewMerchantPage() {
 
                             {/* Banner Upload */}
                             <div>
-                                <Label htmlFor="banner">Business Banner (Optional)</Label>
+                                <Label htmlFor="banner">{t('Business Banner (Optional)')}</Label>
                                 <div className="mt-2">
                                     {bannerPreview ? (
                                         <div className="relative w-full h-48 rounded-lg border-2 border-dashed border-border overflow-hidden">
-                                            <img
+                                            <Image
                                                 src={bannerPreview}
                                                 alt="Banner preview"
+                                                fill
                                                 className="w-full h-full object-cover"
                                             />
                                             <Button
@@ -348,7 +358,7 @@ export default function NewMerchantPage() {
                                                     setBannerPreview("");
                                                 }}
                                             >
-                                                Change
+                                                {t('Change')}
                                             </Button>
                                         </div>
                                     ) : (
@@ -358,7 +368,7 @@ export default function NewMerchantPage() {
                                         >
                                             <Upload className="w-12 h-12 text-muted-foreground mb-2" />
                                             <span className="text-sm text-muted-foreground">
-                                                Click to upload banner
+                                                {t('Click to upload banner')}
                                             </span>
                                             <input
                                                 id="banner"
@@ -378,10 +388,9 @@ export default function NewMerchantPage() {
                     <Card className="p-6 rounded-2xl shadow-card">
                         <div className="flex items-start justify-between mb-4">
                             <div>
-                                <h2 className="text-xl font-semibold">Business Location</h2>
+                                <h2 className="text-xl font-semibold">{t('Business Location')}</h2>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                    We need your exact location to show your business to nearby
-                                    customers
+                                    {t('We need your exact location to show your business to nearby customers')}
                                 </p>
                             </div>
                             <Button
@@ -391,33 +400,56 @@ export default function NewMerchantPage() {
                                 onClick={getCurrentLocation}
                             >
                                 <MapPin className="w-4 h-4 mr-2" />
-                                Use Current Location
+                                {t('Use Current Location')}
                             </Button>
                         </div>
 
                         <div className="space-y-4">
-                            <div>
-                                <Label htmlFor="address">
-                                    Business Address <span className="text-destructive">*</span>
-                                </Label>
-                                <Textarea
-                                    id="address"
-                                    placeholder="Enter your complete business address"
-                                    value={formData.address}
-                                    onChange={(e) =>
-                                        setFormData({ ...formData, address: e.target.value })
-                                    }
-                                    required
-                                    className="mt-2"
-                                    rows={3}
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="latitude">
+                                        {t('Latitude')} <span className="text-destructive">*</span>
+                                    </Label>
+                                    <Input
+                                        id="latitude"
+                                        type="number"
+                                        step="any"
+                                        placeholder="e.g. 40.7128"
+                                        value={formData.latitude || ''}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })
+                                        }
+                                        required
+                                        className="mt-2"
+                                    />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="longitude">
+                                        {t('Longitude')} <span className="text-destructive">*</span>
+                                    </Label>
+                                    <Input
+                                        id="longitude"
+                                        type="number"
+                                        step="any"
+                                        placeholder="e.g. -74.0060"
+                                        value={formData.longitude || ''}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })
+                                        }
+                                        required
+                                        className="mt-2"
+                                    />
+                                </div>
                             </div>
 
                             {formData.latitude !== 0 && formData.longitude !== 0 && (
                                 <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
                                     <p className="text-sm text-success-foreground">
-                                        ✓ Location captured: {formData.latitude.toFixed(6)},{" "}
-                                        {formData.longitude.toFixed(6)}
+                                        ✓ {t('Location captured: {latitude}, {longitude}', {
+                                            latitude: formData.latitude.toFixed(6),
+                                            longitude: formData.longitude.toFixed(6),
+                                        })}
                                     </p>
                                 </div>
                             )}
@@ -433,7 +465,7 @@ export default function NewMerchantPage() {
                             onClick={() => router.back()}
                             disabled={isSubmitting}
                         >
-                            Cancel
+                            {t('Cancel')}
                         </Button>
                         <Button
                             type="submit"
@@ -443,10 +475,10 @@ export default function NewMerchantPage() {
                             {isSubmitting ? (
                                 <>
                                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Submitting...
+                                    {t('Submitting...')}
                                 </>
                             ) : (
-                                "Submit Application"
+                                t('Submit Application')
                             )}
                         </Button>
                     </div>
@@ -454,15 +486,14 @@ export default function NewMerchantPage() {
 
                 {/* Information Box */}
                 <Card className="p-6 rounded-2xl shadow-card mt-6 bg-accent">
-                    <h3 className="font-semibold mb-2">What happens next?</h3>
+                    <h3 className="font-semibold mb-2">{t('What happens next?')}</h3>
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li>• Your application will be reviewed by our team</li>
-                        <li>• You'll receive a confirmation email within 24-48 hours</li>
+                        <li>{t('• Your application will be reviewed by our team')}</li>
+                        <li>{t('• You&apos;ll receive a confirmation email within 24-48 hours')}</li>
                         <li>
-                            • Once approved, you'll need to add at least 5 products before
-                            your store goes live
+                            {t('• Once approved, you&apos;ll need to add at least 5 products before your store goes live')}
                         </li>
-                        <li>• You'll be able to manage your products and orders from the merchant dashboard</li>
+                        <li>{t('• You&apos;ll be able to manage your products and orders from the merchant dashboard')}</li>
                     </ul>
                 </Card>
             </div>
