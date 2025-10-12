@@ -136,7 +136,7 @@
   "please-try-again-or-contact-support-if-the-issue-persists": "Please try again or contact support if the issue persists.",
   "order-placed-successfully": "Order placed successfully!",
   "your-delivery-code-is-deliverycode": "Your delivery code is: {deliveryCode}",
-  "continue-shopping": "Continue shopping",
+  "continue-shopping": "Continue Shopping",
   "checkout": "Checkout",
   "delivery-location": "Delivery Location",
   "where-should-we-deliver": "Where should we deliver?",
@@ -156,7 +156,7 @@
   "pay-with-mtn-momo": "Pay with MTN Momo",
   "order-summary": "Order Summary",
   "subtotal": "Subtotal",
-  "delivery-fee": "Delivery Fee",
+  "delivery-fee": "Delivery fee",
   "service-fee": "Service Fee",
   "secure-delivery-with-confirmation-code": "Secure delivery with confirmation code",
   "placing-order": "Placing Order...",
@@ -164,7 +164,7 @@
   "by-placing-an-order-you-agree-to-our-terms-of-service": "By placing an order, you agree to our Terms of Service",
   "add-items-from-a-store-to-start-shopping": "Add items from a store to start shopping",
   "your-cart": "Your Cart",
-  "in-stock": "in stock",
+  "in-stock": "In stock",
   "proceed-to-checkout": "Proceed to Checkout",
   "store-not-found": "Store Not Found",
   "the-store-you-apos-re-looking-for-doesn-apos-t-exist-or-is-currently-unavailable": "The store you&apos;re looking for doesn&apos;t exist or is currently unavailable.",
@@ -288,5 +288,6 @@
   "track-your-order-in-real-time": "Track your order in real-time",
   "contactless-delivery-available": "Contactless delivery available",
   "active-orders": "Active Orders",
-  "online-stores": "Online Stores"
+  "online-stores": "Online Stores",
+  "min-min": "{min} min"
 }

@@ -59,7 +59,6 @@ export const setUser = async (data: unknown) => {
     body: JSON.stringify(data),
   })
   const res = await user.json()
-
   if (res.success) {
     return res.data
   }
