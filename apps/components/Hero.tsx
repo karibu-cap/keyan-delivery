@@ -1,7 +1,7 @@
 
 'use client'
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Store, Pill, ChevronRight, Truck, Clock, MapPin } from 'lucide-react';
+import { ShoppingBag, Store, Pill, ChevronRight, Truck, Clock, MapPin, Pause, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useT } from '@/hooks/use-inline-translation';
@@ -13,6 +13,7 @@ import { AuthModal } from './auth/AuthModal';
 
 export default function DynamicHeroCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const t = useT()
 
   const merchantTypes = [
@@ -67,29 +68,42 @@ export default function DynamicHeroCarousel() {
   ];
 
   useEffect(() => {
+    if (isPaused) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % merchantTypes.length);
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isPaused]);
 
   const current = merchantTypes[currentIndex];
+  const nextIndex = (currentIndex + 1) % merchantTypes.length;
+  const next = merchantTypes[nextIndex];
   const IconComponent = current.icon;
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Animated Background Gradient */}
-      <AnimatePresence mode="wait">
+      {/* Animated Background Gradient with Color Transition */}
+      <div className="absolute inset-0">
+        {/* Current Background - Fading Out */}
         <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
+          key={`current-${currentIndex}`}
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
           className={`absolute inset-0 bg-gradient-to-br ${current.gradient}`}
         />
-      </AnimatePresence>
+
+        {/* Next Background - Fading In */}
+        <motion.div
+          key={`next-${nextIndex}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className={`absolute inset-0 bg-gradient-to-br ${next.gradient}`}
+        />
+      </div>
 
       {/* Animated background pattern */}
       <div className="absolute inset-0 opacity-10">
@@ -152,7 +166,7 @@ export default function DynamicHeroCarousel() {
                 transition={{ delay: 0.4, duration: 0.6 }}
               >
                 <motion.button
-                  className={`${current.buttonBg} ${current.buttonText} ${current.buttonHover} px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center justify-center gap-2 w-full sm:w-auto`}
+                  className={`${next.buttonBg} ${next.buttonText} ${next.buttonHover} px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center justify-center gap-2 w-full sm:w-auto`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -198,22 +212,40 @@ export default function DynamicHeroCarousel() {
                 ))}
               </motion.div>
 
-              {/* Slide Indicators */}
+              {/* Slide Indicators and Controls */}
               <motion.div
-                className="flex gap-2 sm:gap-3 pt-4"
+                className="flex items-center gap-3 sm:gap-4 pt-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7, duration: 0.6 }}
               >
-                {merchantTypes.map((_, index) => (
-                  <motion.button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-10 sm:w-12 bg-white' : 'w-6 sm:w-8 bg-white/40'
-                      }`}
-                    whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
-                  />
-                ))}
+                {/* Slide Indicators */}
+                <div className="flex gap-2 sm:gap-3">
+                  {merchantTypes.map((_, index) => (
+                    <motion.button
+                      key={index}
+                      onClick={() => setCurrentIndex(index)}
+                      className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-10 sm:w-12 bg-white' : 'w-6 sm:w-8 bg-white/40'
+                        }`}
+                      whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
+                    />
+                  ))}
+                </div>
+
+                {/* Pause/Play Button */}
+                <motion.button
+                  onClick={() => setIsPaused(!isPaused)}
+                  className="bg-white/20 backdrop-blur-md border border-white/30 rounded-full p-2 sm:p-2.5 text-white hover:bg-white/30 transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title={isPaused ? t("Play slideshow") : t("Pause slideshow")}
+                >
+                  {isPaused ? (
+                    <Play className="w-3 h-3 sm:w-4 sm:h-4" />
+                  ) : (
+                    <Pause className="w-3 h-3 sm:w-4 sm:h-4" />
+                  )}
+                </motion.button>
               </motion.div>
             </motion.div>
           </AnimatePresence>
@@ -272,7 +304,7 @@ export default function DynamicHeroCarousel() {
 
                   {/* Icon Badge */}
                   <motion.div
-                    className={`${current.accentColor} w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-2xl mx-auto`}
+                    className={`${next.accentColor} w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-2xl mx-auto`}
                     whileHover={{ scale: 1.1, rotate: 6 }}
                     transition={{ duration: 0.3 }}
                     initial={{ opacity: 0, y: 20 }}
@@ -306,7 +338,7 @@ export default function DynamicHeroCarousel() {
                         transition={{ delay: 0.4 + (i * 0.1), duration: 0.5 }}
                         whileHover={{ x: 8 }}
                       >
-                        <div className={`${current.accentColor} w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
+                        <div className={`${next.accentColor} w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
                           <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <span className="text-sm sm:text-base lg:text-lg font-medium">{feature.text}</span>
@@ -344,8 +376,8 @@ export default function DynamicHeroCarousel() {
       </div>
 
       {/* Wave Divider */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" className="w-full h-auto" preserveAspectRatio="none">
+      <div className="absolute -bottom-4 left-0 right-0">
+        <svg viewBox="0 0 1440 130" className="w-full h-auto" preserveAspectRatio="none">
           <path
             fill="white"
             d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"

@@ -32,9 +32,9 @@ export function LanguageSwitcher() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" disabled={isPending}>
-                    <Globe className="h-5 w-5" />
-                    <span className="sr-only">Change language</span>
+                <Button variant="ghost" size="icon" disabled={isPending} className='p-4'>
+                    <span>{localeFlags[locale as Locale]}</span>
+                    <Globe className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
