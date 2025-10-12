@@ -1,10 +1,14 @@
 import { Suspense } from "react";
+import { unstable_noStore as noStore } from "next/cache";
 import Navbar from "@/components/Navbar";
 import { fetchMerchants, IMerchant } from "@/lib/actions/stores";
 import { StoresContent } from "@/components/client/stores/StoresContent";
 import { StoresLoading } from "@/components/client/stores/StoresLoading";
 import { getLocale } from "next-intl/server";
 import { getT } from "@/lib/server-translations";
+
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: "Your Stores | Keyan",
