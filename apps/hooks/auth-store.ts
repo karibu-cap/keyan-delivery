@@ -66,7 +66,6 @@ const useAuthStore = create(
 
           /// get user from db 
           const user = await getUserById(userCredential.user.uid)
-          console.log(user);
           set({ user: user })
         } catch (error) {
           const authError = error as AuthError

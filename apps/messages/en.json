@@ -136,7 +136,7 @@
   "please-try-again-or-contact-support-if-the-issue-persists": "Please try again or contact support if the issue persists.",
   "order-placed-successfully": "Order placed successfully!",
   "your-delivery-code-is-deliverycode": "Your delivery code is: {deliveryCode}",
-  "continue-shopping": "Continue Shopping",
+  "continue-shopping": "Continue shopping",
   "checkout": "Checkout",
   "delivery-location": "Delivery Location",
   "where-should-we-deliver": "Where should we deliver?",
@@ -289,5 +289,7 @@
   "contactless-delivery-available": "Contactless delivery available",
   "active-orders": "Active Orders",
   "online-stores": "Online Stores",
-  "min-min": "{min} min"
+  "min-min": "{min} min",
+  "play-slideshow": "Play slideshow",
+  "pause-slideshow": "Pause slideshow"
 }

@@ -1,7 +1,7 @@
 {
   "welcome-to-keyan": "Karibu kwenye Keyan",
-  "hello-name": "Hello {jina}",
-  "total-amount": "Jumla: {kiasi}",
+  "hello-name": "Hello {name}",
+  "total-amount": "Jumla: {amount}",
   "click-linkhere-link": "Bonyeza <Nambo> Hapa </ink>",
   "grow-your-business-with-us": "Kukua biashara yako na sisi",
   "join-thousands-of-merchants-and-drivers-earning-with-our-platform": "Jiunge na maelfu ya wafanyabiashara na madereva wanaopata na jukwaa letu",
@@ -135,7 +135,7 @@
   "failed-to-place-order": "Imeshindwa kuweka utaratibu",
   "please-try-again-or-contact-support-if-the-issue-persists": "Tafadhali jaribu tena au wasiliana na msaada ikiwa suala linaendelea.",
   "order-placed-successfully": "Agizo lililowekwa kwa mafanikio!",
-  "your-delivery-code-is-deliverycode": "Nambari yako ya uwasilishaji ni: {utoajiCode}",
+  "your-delivery-code-is-deliverycode": "Nambari yako ya uwasilishaji ni: {deliveryCode}",
   "continue-shopping": "Endelea kununua",
   "checkout": "Checkout",
   "delivery-location": "Eneo la utoaji",
@@ -289,5 +289,7 @@
   "contactless-delivery-available": "Uwasilishaji usio na mawasiliano unapatikana",
   "active-orders": "Maagizo ya kazi",
   "online-stores": "Maduka ya mkondoni",
-  "min-min": "{min} min"
+  "min-min": "{min} min",
+  "play-slideshow": "Cheza slaidi",
+  "pause-slideshow": "Sitisha slideshow"
 }

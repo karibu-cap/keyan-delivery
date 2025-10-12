@@ -22,7 +22,7 @@ interface AuthModalProps {
 export function AuthModal({ children, open, onOpenChange, redirectTo }: AuthModalProps) {
     const [isSignIn, setIsSignIn] = useState(true)
     const [isOpen, setIsOpen] = useState(false)
-    const { user } = useAuthStore();
+    const { user, setError, setLoading } = useAuthStore();
     const route = useRouter()
     const redirectPath = redirectTo ?? ROUTES.home
 
@@ -35,11 +35,14 @@ export function AuthModal({ children, open, onOpenChange, redirectTo }: AuthModa
             route.push(redirectTo)
             return
         }
+
         setIsOpen(newOpen)
         if (!newOpen) {
             setIsSignIn(true)
         }
         onOpenChange?.(newOpen)
+        setLoading(false)
+        setError(null)
     }
 
     return (
