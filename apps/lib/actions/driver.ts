@@ -2,6 +2,7 @@
 
 import { getUserTokens } from "@/lib/firebase-client/firebase-utils";
 import { prisma } from "@/lib/prisma";
+import { uploadBase64DriverToCloudinary } from "@/lib/utils/server/base_64";
 import { DriverStatus, UserRole } from "@prisma/client";
 
 export async function uploadDriverDocuments(cniBase64: string, licenseBase64: string) {
@@ -11,12 +12,19 @@ export async function uploadDriverDocuments(cniBase64: string, licenseBase64: st
       if (!token?.decodedToken?.uid) {
          return { success: false, error: "Unauthorized" };
       }
-      // Update user with driver documents and status
+
+      if (!cniBase64 || !licenseBase64) {
+         return { success: false, error: "CNI and driver document are required" };
+      }
+
+      const cniUrl = await uploadBase64DriverToCloudinary(cniBase64);
+      const licenseUrl = await uploadBase64DriverToCloudinary(licenseBase64);
+
       const user = await prisma.user.update({
          where: { authId: token.decodedToken.uid },
          data: {
-            cni: cniBase64,
-            driverDocument: licenseBase64,
+            cni: cniUrl,
+            driverDocument: licenseUrl,
             driverStatus: DriverStatus.PENDING,
             roles: {
                push: UserRole.driver,

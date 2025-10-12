@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Truck, AlertCircle, CheckCircle, XCircle } from "lucide-react";
-import { DriverStatus } from "@prisma/client";
+import { DriverStatus, UserRole } from "@prisma/client";
 import { useAuthStore } from "@/hooks/auth-store";
+import { fetchDriverPendingOrders } from "@/lib/actions/client/driver";
+import { ROUTES } from "@/lib/router";
 
 interface DriverBadgeProps {
    onClick?: () => void;
@@ -28,8 +30,7 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
 
    const fetchPendingOrders = async () => {
       try {
-         const response = await fetch("/api/v1/driver/orders/available");
-         const data = await response.json();
+         const data = await fetchDriverPendingOrders();
          setPendingOrdersCount(data?.length || 0);
       } catch (error) {
          console.error("Error fetching pending orders:", error);
@@ -38,7 +39,7 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
       }
    };
 
-   if (!user?.roles?.includes("driver")) {
+   if (!user?.roles?.includes(UserRole.driver)) {
       return null;
    }
 
@@ -46,7 +47,7 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
       if (onClick) {
          onClick();
       } else {
-         router.push("/driver/dashboard");
+         router.push(ROUTES.driverDashboard);
       }
    };
 

@@ -1,4 +1,4 @@
-import { getUserById, setUser } from '@/lib/actions/client'
+import { getCurrentUser, getUserById, setUser } from '@/lib/actions/client'
 import { getAuthErrorMessage } from '@/lib/firebase-client/auth-error'
 import { auth } from '@/lib/firebase-client/firebase'
 import { DriverStatus, User, UserRole } from '@prisma/client'
@@ -38,6 +38,7 @@ interface AuthState {
   signInWithGoogle: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
   logout: () => Promise<void>
+  reloadCurrentUser: () => Promise<boolean>
   setUser: (user: User | null) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
@@ -195,6 +196,14 @@ const useAuthStore = create(
         } finally {
           set({ loading: false })
         }
+      },
+      reloadCurrentUser: async () => {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) {
+          return false;
+        }
+        set({ user: currentUser });
+        return true;
       },
     }),
     {
