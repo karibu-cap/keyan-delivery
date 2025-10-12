@@ -7,18 +7,26 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Upload, FileText, CheckCircle, ArrowLeft } from "lucide-react";
+import { Upload, FileText, CheckCircle, ArrowLeft, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { uploadDriverDocuments } from "@/lib/actions/driver";
-import { fileToBase64 } from "@/lib/utils/base_64";
+import { uploadDriverDocuments } from "@/lib/actions/client/driver";
+import { fileToBase64 } from "@/lib/utils/client/base_64";
+import { renderPDFPreview } from "@/lib/utils/client/pdf-preview";
+import { ROUTES } from "@/lib/router";
+import { useAuthStore } from "@/hooks/auth-store";
 
 export default function DriverApplicationPage() {
    const router = useRouter();
    const { toast } = useToast();
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [cniFile, setCniFile] = useState<File | null>(null);
+   const {reloadCurrentUser } = useAuthStore();
    const [licenseFile, setLicenseFile] = useState<File | null>(null);
+
+
+   const [licensePreview, setLicensePreview] = useState<string>("");
+   const [cniPreview, setCniPreview] = useState<string>("");
 
    const handleFileChange = (
       e: React.ChangeEvent<HTMLInputElement>,
@@ -47,10 +55,40 @@ export default function DriverApplicationPage() {
             return;
          }
 
-         if (type === "cni") {
-            setCniFile(file);
+         if (file.type === "application/pdf") {
+            // Handle PDF files with custom preview
+            if (type === "cni") {
+               setCniFile(file);
+               // Generate PDF preview
+               renderPDFPreview(file).then((preview) => {
+                  setCniPreview(preview || "");
+               }).catch((error) => {
+                  console.error("Error generating PDF preview:", error);
+                  setCniPreview("");
+               });
+            } else {
+               setLicenseFile(file);
+               // Generate PDF preview
+               renderPDFPreview(file).then((preview) => {
+                  setLicensePreview(preview || "");
+               }).catch((error) => {
+                  console.error("Error generating PDF preview:", error);
+                  setLicensePreview("");
+               });
+            }
          } else {
-            setLicenseFile(file);
+            // Handle image files with regular FileReader
+            const reader = new FileReader();
+            reader.onloadend = () => {
+               if (type === "cni") {
+                  setCniFile(file);
+                  setCniPreview(reader.result as string);
+               } else {
+                  setLicenseFile(file);
+                  setLicensePreview(reader.result as string);
+               }
+            };
+            reader.readAsDataURL(file);
          }
       }
    };
@@ -68,7 +106,7 @@ export default function DriverApplicationPage() {
       }
 
       setIsSubmitting(true);
-      
+
       const cniBase64 = await fileToBase64(cniFile);
       const licenseBase64 = await fileToBase64(licenseFile);
 
@@ -76,12 +114,14 @@ export default function DriverApplicationPage() {
          const result = await uploadDriverDocuments(cniBase64, licenseBase64);
 
          if (result.success) {
+            await reloadCurrentUser();
+
             toast({
                title: "Application submitted!",
                description: "Your driver application is under review. We'll notify you once it's approved.",
                variant: "default",
             });
-            router.push("/profile");
+            router.push(ROUTES.profile);
          } else {
             throw new Error(result.error || "Failed to submit application");
          }
@@ -144,96 +184,152 @@ export default function DriverApplicationPage() {
                      </ul>
                   </div>
 
-                  {/* CNI Upload */}
-                  <div className="space-y-3">
-                     <Label htmlFor="cni" className="text-base font-semibold">
-                        National ID Card (CNI) *
-                     </Label>
-                     <div className="border-2 border-dashed border-border rounded-2xl p-8 text-center hover:border-primary transition-colors cursor-pointer">
-                        <Input
-                           id="cni"
-                           type="file"
-                           accept="image/jpeg,image/jpg,image/png,application/pdf"
-                           onChange={(e) => handleFileChange(e, "cni")}
-                           className="hidden"
-                        />
-                        <label
-                           htmlFor="cni"
-                           className="cursor-pointer flex flex-col items-center gap-3"
-                        >
-                           {cniFile ? (
-                              <>
-                                 <FileText className="w-12 h-12 text-primary" />
-                                 <div>
-                                    <p className="font-medium text-foreground">{cniFile.name}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                       {(cniFile.size / 1024 / 1024).toFixed(2)} MB
-                                    </p>
-                                 </div>
-                                 <Button type="button" variant="outline" size="sm">
-                                    Change File
-                                 </Button>
-                              </>
-                           ) : (
-                              <>
-                                 <Upload className="w-12 h-12 text-muted-foreground" />
-                                 <div>
-                                    <p className="font-medium text-foreground">Click to upload CNI</p>
-                                    <p className="text-sm text-muted-foreground">
-                                       JPEG, PNG or PDF (max 5MB)
-                                    </p>
-                                 </div>
-                              </>
-                           )}
-                        </label>
-                     </div>
-                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
 
-                  {/* Driver License Upload */}
-                  <div className="space-y-3">
-                     <Label htmlFor="license" className="text-base font-semibold">
-                        Driver&apos;s License *
-                     </Label>
-                     <div className="border-2 border-dashed border-border rounded-2xl p-8 text-center hover:border-primary transition-colors cursor-pointer">
-                        <Input
-                           id="license"
-                           type="file"
-                           accept="image/jpeg,image/jpg,image/png,application/pdf"
-                           onChange={(e) => handleFileChange(e, "license")}
-                           className="hidden"
-                        />
-                        <label
-                           htmlFor="license"
-                           className="cursor-pointer flex flex-col items-center gap-3"
+                     {/* CNI Upload */}
+                     <div className="space-y-3">
+                        <Label htmlFor="cni" className="text-base font-semibold">
+                           National ID Card (CNI) *
+                        </Label>
+                        <div
+                           className={`
+      relative border-2 border-dashed border-border rounded-2xl p-8 
+      text-center hover:border-primary transition-colors cursor-pointer overflow-hidden h-60 w-full
+      ${cniPreview ? "text-white" : ""}
+    `}
+                           style={
+                              cniPreview
+                                 ? {
+                                    backgroundImage: `url(${cniPreview})`,
+                                    backgroundSize: "cover",
+                                    backgroundPosition: "center",
+                                    backgroundRepeat: "no-repeat",
+                                 }
+                                 : {}
+                           }
                         >
-                           {licenseFile ? (
-                              <>
-                                 <FileText className="w-12 h-12 text-primary" />
-                                 <div>
-                                    <p className="font-medium text-foreground">{licenseFile.name}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                       {(licenseFile.size / 1024 / 1024).toFixed(2)} MB
-                                    </p>
-                                 </div>
-                                 <Button type="button" variant="outline" size="sm">
-                                    Change File
-                                 </Button>
-                              </>
-                           ) : (
-                              <>
-                                 <Upload className="w-12 h-12 text-muted-foreground" />
-                                 <div>
-                                    <p className="font-medium text-foreground">
-                                       Click to upload Driver&apos;s License
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">
-                                       JPEG, PNG or PDF (max 5MB)
-                                    </p>
-                                 </div>
-                              </>
+                           {cniPreview && (
+                              <div className="absolute inset-0 bg-black/50"></div>
                            )}
-                        </label>
+
+                           <Input
+                              id="cni"
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,application/pdf"
+                              onChange={(e) => handleFileChange(e, "cni")}
+                              className="hidden"
+                           />
+
+                           <label
+                              htmlFor="cni"
+                              className="relative z-10 cursor-pointer flex flex-col items-center gap-3"
+                           >
+                              {cniFile ? (
+                                 <>
+                                    {cniFile.type === "application/pdf" ? (
+                                       <FileText className="w-12 h-12 text-primary" />
+                                    ) : (
+                                       <Camera className="w-12 h-12 text-primary" />
+                                    )}
+                                    <div>
+                                       <p className="font-medium">{cniFile.name}</p>
+                                       <p className="text-sm opacity-80">
+                                          {(cniFile.size / 1024 / 1024).toFixed(2)} MB
+                                       </p>
+                                    </div>
+                                    <Button type="button" variant="outline" size="sm" className="text-black" onClick={() => setCniPreview("")}>
+                                       Change File
+                                    </Button>
+                                 </>
+                              ) : (
+                                 <>
+                                    <Upload className="w-12 h-12 text-muted-foreground" />
+                                    <div>
+                                       <p className="font-medium text-foreground">
+                                          Click to upload CNI
+                                       </p>
+                                       <p className="text-sm text-muted-foreground">
+                                          JPEG, PNG or PDF (max 5MB)
+                                       </p>
+                                    </div>
+                                 </>
+                              )}
+                           </label>
+                        </div>
                      </div>
+
+                     {/* License Upload */}
+                     <div className="space-y-3">
+                        <Label htmlFor="license" className="text-base font-semibold">
+                           Driver&apos;s License *
+                        </Label>
+                        <div
+                           className={`
+      relative border-2 border-dashed border-border rounded-2xl p-8 
+      text-center hover:border-primary transition-colors cursor-pointer overflow-hidden h-60 w-full
+      ${licensePreview ? "text-white" : ""}
+    `}
+                           style={
+                              licensePreview
+                                 ? {
+                                    backgroundImage: `url(${licensePreview})`,
+                                    backgroundSize: "cover",
+                                    backgroundPosition: "center",
+                                    backgroundRepeat: "no-repeat",
+                                 }
+                                 : {}
+                           }
+                        >
+                           {licensePreview && (
+                              <div className="absolute inset-0 bg-black/50"></div>
+                           )}
+
+                           <Input
+                              id="license"
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,application/pdf"
+                              onChange={(e) => handleFileChange(e, "license")}
+                              className="hidden"
+                           />
+
+                           <label
+                              htmlFor="license"
+                              className="relative z-10 cursor-pointer flex flex-col items-center gap-3"
+                           >
+                              {licenseFile ? (
+                                 <>
+                                    {licenseFile.type === "application/pdf" ? (
+                                       <FileText className="w-12 h-12 text-primary" />
+                                    ) : (
+                                       <Camera className="w-12 h-12 text-primary" />
+                                    )}
+                                    <div>
+                                       <p className="font-medium">{licenseFile.name}</p>
+                                       <p className="text-sm opacity-80">
+                                          {(licenseFile.size / 1024 / 1024).toFixed(2)} MB
+                                       </p>
+                                    </div>
+                                    <Button type="button" variant="outline" size="sm" className="text-black" onClick={() => setLicensePreview("")}>
+                                       Change File
+                                    </Button>
+                                 </>
+                              ) : (
+                                 <>
+                                    <Upload className="w-12 h-12 text-muted-foreground" />
+                                    <div>
+                                       <p className="font-medium text-foreground">
+                                          Click to upload Driver&apos;s License
+                                       </p>
+                                       <p className="text-sm text-muted-foreground">
+                                          JPEG, PNG or PDF (max 5MB)
+                                       </p>
+                                    </div>
+                                 </>
+                              )}
+                           </label>
+                        </div>
+                     </div>
+
                   </div>
 
                   {/* Submit Button */}
