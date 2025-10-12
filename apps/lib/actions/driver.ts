@@ -9,9 +9,9 @@ export async function uploadDriverDocuments(cniBase64: string, licenseBase64: st
    try {
       const token = await getUserTokens();
 
-      // if (!token?.decodedToken?.uid) {
-      //    return { success: false, error: "Unauthorized" };
-      // }
+      if (!token?.decodedToken?.uid) {
+         return { success: false, error: "Unauthorized" };
+      }
 
       if (!cniBase64 || !licenseBase64) {
          return { success: false, error: "CNI and driver document are required" };
@@ -21,7 +21,7 @@ export async function uploadDriverDocuments(cniBase64: string, licenseBase64: st
       const licenseUrl = await uploadBase64DriverToCloudinary(licenseBase64);
 
       const user = await prisma.user.update({
-         where: { authId: 'DcPiMqu4YdV1sBknyVrFJ2jFhfo1' },
+         where: { authId: token.decodedToken.uid },
          data: {
             cni: cniUrl,
             driverDocument: licenseUrl,

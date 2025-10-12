@@ -121,7 +121,7 @@ export default function DriverApplicationPage() {
                description: "Your driver application is under review. We'll notify you once it's approved.",
                variant: "default",
             });
-            router.push(ROUTES.profile);
+            router.push(ROUTES.driverDashboard);
          } else {
             throw new Error(result.error || "Failed to submit application");
          }

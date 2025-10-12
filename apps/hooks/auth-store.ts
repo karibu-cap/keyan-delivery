@@ -1,7 +1,6 @@
-import { getUserById, setUser } from '@/lib/actions/client'
+import { getCurrentUser, getUserById, setUser } from '@/lib/actions/client'
 import { getAuthErrorMessage } from '@/lib/firebase-client/auth-error'
 import { auth } from '@/lib/firebase-client/firebase'
-import { getUserTokens } from '@/lib/firebase-client/firebase-utils'
 import { DriverStatus, User, UserRole } from '@prisma/client'
 import {
   AuthError,
@@ -156,11 +155,13 @@ const useAuthStore = create(
           }
           const idToken = await userCredential.user.getIdToken()
 
-          await fetch('/api/login', {
+          const result = await fetch('/api/login', {
             headers: {
               Authorization: `Bearer ${idToken}`,
             },
           })
+          const data = await result.json()
+          console.log("=======", data)
           set({ loading: false, user: response })
         } catch (error) {
           const authError = error as AuthError
@@ -197,11 +198,7 @@ const useAuthStore = create(
         }
       },
       reloadCurrentUser: async () => {
-        const token = await getUserTokens();
-        if (!token?.decodedToken?.uid) {
-          return false;
-        }
-        const currentUser = await getUserById(token.decodedToken.uid);
+        const currentUser = await getCurrentUser();
         if (!currentUser) {
           return false;
         }

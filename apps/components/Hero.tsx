@@ -79,10 +79,8 @@ export default function DynamicHeroCarousel() {
 
   const current = merchantTypes[currentIndex];
   const nextIndex = (currentIndex + 1) % merchantTypes.length;
-  const next = merchantTypes[nextIndex];
   const IconComponent = current.icon;
 
-  console.log(currentIndex);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -177,15 +175,6 @@ export default function DynamicHeroCarousel() {
                   </Link>
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </motion.button>
-                <AuthModal redirectTo={ROUTES.newMerchant}>
-                  <motion.button
-                    className={`border-2 border-white ${current.buttonText} bg-white/40 hover:bg-white/10 backdrop-blur-sm px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg transition-all duration-300 w-full sm:w-auto`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {t("Become a Merchant")}
-                  </motion.button>
-                </AuthModal>
               </motion.div>
 
               {/* Stats */}

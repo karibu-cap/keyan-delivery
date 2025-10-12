@@ -1,3 +1,4 @@
+import { getUserTokens } from '@/lib/firebase-client/firebase-utils'
 import { prisma } from '@/lib/prisma'
 import { DriverStatus, User, UserRole } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
@@ -59,5 +60,38 @@ export const POST = async (request: NextRequest) => {
       { error: 'Failed to create user', details: error },
       { status: 500 }
     )
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+    const token = await getUserTokens();
+
+    if (!token?.decodedToken?.uid) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    const user = await prisma.user.findUnique({
+      where: {
+        authId: token?.decodedToken?.uid,
+      },
+      include: {
+        merchantManagers: {
+          include: {
+            merchant: true,
+          },
+        },
+        wallet: true,
+      },
+    })
+    if (!user) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 403 })
+    }
+    return NextResponse.json({ success: true, data: { user: user } })
+  } catch (error) {
+    console.error('Error fetching user:', error)
+    return NextResponse.json({ success: false, error: 'Failed to fetch user' }, { status: 500 })
   }
 }

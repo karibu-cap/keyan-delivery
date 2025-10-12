@@ -53,6 +53,17 @@ export const getUserById = async (id: string): Promise<User | null> => {
   return res.data.user
 }
 
+export const getCurrentUser= async (): Promise<User | null> => {
+  const user = await fetch(`/api/v1/users`, {
+    method: 'GET',
+  })
+  if (!user.ok) {
+    return null
+  }
+  const res = await user.json()
+  return res.data.user
+}
+
 export const setUser = async (data: unknown) => {
   const user = await fetch(`/api/v1/users`, {
     method: 'POST',
