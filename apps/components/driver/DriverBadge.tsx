@@ -105,7 +105,8 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
          </div>
 
          <div className="flex flex-col items-start">
-            <span className="text-xs font-medium">{config.text}</span>
+            <span className="text-xs font-medium">Driver dashboard</span>
+            <span className="text-xs text-muted-foreground">{config.text}</span>
             {config.showCount && !loading && (
                <span className="text-xs text-muted-foreground">
                   {pendingOrdersCount} {pendingOrdersCount === 1 ? "order" : "orders"}

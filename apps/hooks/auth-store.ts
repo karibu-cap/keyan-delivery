@@ -39,6 +39,7 @@ interface AuthState {
   resetPassword: (email: string) => Promise<void>
   logout: () => Promise<void>
   reloadCurrentUser: () => Promise<boolean>
+  isDriver: () => boolean
   setUser: (user: User | null) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
@@ -204,6 +205,13 @@ const useAuthStore = create(
         }
         set({ user: currentUser });
         return true;
+      },
+      isDriver: () => {
+        const user = get()?.user;
+        if (!user?.roles){
+          return false;
+        }
+        return user.roles.includes(UserRole.driver);
       },
     }),
     {

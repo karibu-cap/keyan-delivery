@@ -1,3 +1,7 @@
+'use client';
+
+import { useAuthStore } from "@/hooks/auth-store";
+import { useEffect, useState } from 'react';
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
@@ -9,9 +13,28 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { getT } from "@/lib/server-translations";
 import { getLocale } from "next-intl/server";
 
-const Index = async () => {
-  const locale = await getLocale();
-  const t = await getT(locale);
+export default function Index() {
+  const { isDriver } = useAuthStore();
+  const [, setLocale] = useState('En');
+  const [t, setT] = useState(() => (key: string) => key);
+  const [, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const localeResult = await getLocale();
+        const tResult = await getT(localeResult);
+        setLocale(localeResult);
+        setT(() => tResult);
+      } catch (error) {
+        console.error('Error loading locale data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
   const features = [
     {
       icon: Zap,
@@ -121,12 +144,12 @@ const Index = async () => {
                     <span>{t("24/7 support team")}</span>
                   </li>
                 </ul>
-                <AuthModal redirectTo={ROUTES.driverApply}>
+                <AuthModal redirectTo={isDriver() ? ROUTES.driverDashboard : ROUTES.driverApply}>
                   <Button
                     size="lg"
                     className="w-full bg-primary hover:bg-primary/90 shadow-primary"
                   >
-                    Apply as Driver
+                    {isDriver() ? "Go to driver dashboard" : "Apply as Driver"}
                   </Button>
                 </AuthModal>
               </div>
@@ -247,5 +270,3 @@ const Index = async () => {
     </div>
   );
 };
-
-export default Index;
