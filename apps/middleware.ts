@@ -62,7 +62,23 @@ export async function middleware(request: NextRequest) {
       const basePath = localeRegex.test(pathname) ? pathname.replace(localeRegex, '/') : pathname;
 
       // Check if token is expired
-      if (decodedToken.exp < Date.now() / 1000 && !PUBLIC_PATHS.includes(basePath)) {
+      if (decodedToken.exp < Date.now() / 1000) {
+        if (PUBLIC_PATHS.some((path) => {
+          if (typeof path === 'string') {
+            return basePath === path;
+          } else {
+            return path.test(basePath);
+          }
+        })) {
+          // For public paths, apply intlMiddleware
+          const intlResponse = intlMiddleware(request);
+          intlResponse.headers.forEach((value, key) => {
+            if (!response.headers.has(key)) {
+              response.headers.set(key, value);
+            }
+          });
+          return intlResponse;
+        }
         return redirectToLogin(request, {
           path: '/sign-in',
           publicPaths: PUBLIC_PATHS,
@@ -97,12 +113,11 @@ export async function middleware(request: NextRequest) {
       const localeRegex = /^\/[a-z]{2}\/?/i;
 
       const basePath = localeRegex.test(pathname) ? pathname.replace(localeRegex, '/') : pathname;
-
       if (PUBLIC_PATHS.some((path) => {
         if (typeof path === 'string') {
           return basePath === path;
         } else {
-          return path.test(request.nextUrl.pathname);
+          return path.test(basePath);
         }
       })) {
         // For public paths, apply intlMiddleware
