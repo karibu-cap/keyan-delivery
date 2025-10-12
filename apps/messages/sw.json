@@ -273,5 +273,21 @@
   "cancelled-by-merchant": "Kufutwa na mfanyabiashara",
   "cancelled-by-driver": "Kufutwa na dereva",
   "ready-to-deliver": "Tayari kutoa",
-  "shop-from-count-stores": "Nunua kutoka kwa maduka ya {count}"
+  "shop-from-count-stores": "Nunua kutoka kwa maduka ya {count}",
+  "fresh-groceries": "Mboga safi",
+  "delivered-to-your-door": "Kutolewa kwa mlango wako",
+  "farm-fresh-produce-pantry-essentials-and-daily-necessities-delivered-in-minutes": "Mazao safi ya shamba, vitu muhimu vya pantry, na mahitaji ya kila siku yaliyotolewa kwa dakika.",
+  "delicious-food": "Chakula cha kupendeza",
+  "hot-fresh-always": "Moto na safi kila wakati",
+  "your-favorite-restaurants-and-local-eateries-delivering-happiness-one-meal-at-a-time": "Mikahawa yako unayopenda na eateries za ndani, kutoa furaha chakula kimoja kwa wakati mmoja.",
+  "healthcare-essentials": "Umuhimu wa huduma ya afya",
+  "trusted-reliable": "Kuaminika na kuaminika",
+  "prescription-medications-health-products-and-wellness-items-delivered-with-care": "Dawa za kuagiza, bidhaa za afya, na vitu vya ustawi vilivyotolewa kwa uangalifu.",
+  "why-choose-us": "Kwa nini Utuchague",
+  "express-delivery-in-minutes": "Eleza utoaji katika dakika",
+  "track-your-order-in-real-time": "Fuatilia agizo lako kwa wakati halisi",
+  "contactless-delivery-available": "Uwasilishaji usio na mawasiliano unapatikana",
+  "active-orders": "Maagizo ya kazi",
+  "online-stores": "Maduka ya mkondoni",
+  "min-min": "{min} min"
 }
