@@ -2,28 +2,24 @@
 
 import { getUserTokens } from "@/lib/firebase-client/firebase-utils";
 import { prisma } from "@/lib/prisma";
+import { DriverStatus, UserRole } from "@prisma/client";
 
-export async function uploadDriverDocuments(cniFile: File, licenseFile: File) {
+export async function uploadDriverDocuments(cniBase64: string, licenseBase64: string) {
    try {
       const token = await getUserTokens();
 
       if (!token?.decodedToken?.uid) {
          return { success: false, error: "Unauthorized" };
       }
-
-      // Convert files to base64 (in production, upload to cloud storage like S3)
-      const cniBase64 = await fileToBase64(cniFile);
-      const licenseBase64 = await fileToBase64(licenseFile);
-
       // Update user with driver documents and status
       const user = await prisma.user.update({
          where: { authId: token.decodedToken.uid },
          data: {
             cni: cniBase64,
             driverDocument: licenseBase64,
-            driverStatus: "PENDING",
+            driverStatus: DriverStatus.PENDING,
             roles: {
-               set: ["driver", "customer"], // Add driver role while keeping customer
+               push: UserRole.driver,
             },
          },
       });
@@ -255,14 +251,4 @@ export async function completeDelivery(orderId: string, deliveryCode: string) {
          error: error instanceof Error ? error.message : "Failed to complete delivery",
       };
    }
-}
-
-// Helper function to convert File to base64
-async function fileToBase64(file: File): Promise<string> {
-   return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-   });
 }

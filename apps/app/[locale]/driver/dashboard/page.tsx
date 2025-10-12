@@ -15,12 +15,17 @@ import {
    CheckCircle,
    Clock,
    AlertCircle,
+   XCircle,
+   Wallet,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAvailableOrders, acceptOrder, completeDelivery } from "@/lib/actions/driver";
 import OrderMap from "@/components/driver/OrderMap";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, DriverStatus } from "@prisma/client";
+import { useAuthStore } from "@/hooks/auth-store";
+import { TransactionHistory } from "@/components/driver/TransactionHistory";
+import { WithdrawalForm } from "@/components/driver/WithdrawalForm";
 
 interface Order {
    id: string;
@@ -58,6 +63,7 @@ interface Order {
 
 export default function DriverDashboard() {
    const { toast } = useToast();
+   const { user } = useAuthStore();
    const [availableOrders, setAvailableOrders] = useState<Order[]>([]);
    const [activeOrders, setActiveOrders] = useState<Order[]>([]);
    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -65,6 +71,7 @@ export default function DriverDashboard() {
    const [deliveryCode, setDeliveryCode] = useState("");
    const [loading, setLoading] = useState(true);
    const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
+   const [walletBalance, setWalletBalance] = useState(0);
 
 
    const loadOrders = useCallback(async () => {
@@ -168,9 +175,24 @@ export default function DriverDashboard() {
    };
 
 
+   const loadWallet = useCallback(async () => {
+      try {
+         const response = await fetch("/api/v1/driver/wallet");
+         const data = await response.json();
+         if (data.success) {
+            setWalletBalance(data.data.balance || 0);
+         }
+      } catch (error) {
+         console.error("Error loading wallet:", error);
+      }
+   }, []);
+
    useEffect(() => {
       loadOrders();
-   }, [loadOrders]);
+      if (user?.driverStatus === DriverStatus.APPROVED) {
+         loadWallet();
+      }
+   }, [loadOrders, loadWallet, user?.driverStatus]);
 
    const OrderCard = ({ order, isActive = false }: { order: Order; isActive?: boolean }) => (
       <Card className="p-6 rounded-2xl shadow-card hover:shadow-lg transition-all">
@@ -328,9 +350,63 @@ export default function DriverDashboard() {
                <div className="flex items-center justify-center h-64">
                   <div className="text-center">
                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                     <p className="text-muted-foreground">Loading orders...</p>
+                     <p className="text-muted-foreground">Loading...</p>
                   </div>
                </div>
+            </div>
+         </div>
+      );
+   }
+
+   // Affichage si le statut est PENDING
+   if (user?.driverStatus === DriverStatus.PENDING) {
+      return (
+         <div className="min-h-screen bg-background">
+            <Navbar />
+            <div className="container mx-auto px-4 py-8">
+               <Card className="p-12 rounded-2xl shadow-card max-w-2xl mx-auto text-center">
+                  <AlertCircle className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                  <h1 className="text-3xl font-bold mb-4">Application en attente</h1>
+                  <p className="text-lg text-muted-foreground mb-6">
+                     Votre demande pour devenir chauffeur est en cours de révision.
+                  </p>
+                  <div className="bg-accent/50 p-6 rounded-lg">
+                     <p className="text-sm text-muted-foreground">
+                        Veuillez patienter pendant que l&apos;administrateur examine votre demande.
+                        Vous recevrez une notification une fois que votre compte sera approuvé.
+                     </p>
+                  </div>
+               </Card>
+            </div>
+         </div>
+      );
+   }
+
+   // Affichage si le statut est REJECTED ou BANNED
+   if (user?.driverStatus === DriverStatus.REJECTED || user?.driverStatus === DriverStatus.BANNED) {
+      const isBanned = user?.driverStatus === DriverStatus.BANNED;
+      return (
+         <div className="min-h-screen bg-background">
+            <Navbar />
+            <div className="container mx-auto px-4 py-8">
+               <Card className="p-12 rounded-2xl shadow-card max-w-2xl mx-auto text-center border-red-500">
+                  <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                  <h1 className="text-3xl font-bold mb-4 text-red-600">
+                     {isBanned ? "Compte banni" : "Demande rejetée"}
+                  </h1>
+                  <p className="text-lg text-muted-foreground mb-6">
+                     {isBanned
+                        ? "Votre compte chauffeur a été banni."
+                        : "Votre demande pour devenir chauffeur a été rejetée."}
+                  </p>
+                  <div className="bg-red-50 p-6 rounded-lg">
+                     <p className="text-sm text-muted-foreground">
+                        {isBanned
+                           ? "Veuillez contacter l'administrateur pour plus d'informations."
+                           : "Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur."}
+                     </p>
+                  </div>
+               </Card>
             </div>
          </div>
       );
@@ -348,7 +424,7 @@ export default function DriverDashboard() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                <Card className="p-6 rounded-2xl shadow-card">
                   <div className="flex items-center gap-4">
                      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -389,16 +465,36 @@ export default function DriverDashboard() {
                      </div>
                   </div>
                </Card>
+
+               <Card className="p-6 rounded-2xl shadow-card bg-gradient-to-br from-primary/10 to-primary/5">
+                  <div className="flex items-center gap-4">
+                     <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
+                        <Wallet className="w-6 h-6 text-white" />
+                     </div>
+                     <div>
+                        <p className="text-sm text-muted-foreground">Wallet Balance</p>
+                        <p className="text-2xl font-bold text-primary">
+                           ${walletBalance.toFixed(2)}
+                        </p>
+                     </div>
+                  </div>
+               </Card>
             </div>
 
             {/* Orders Tabs */}
             <Tabs defaultValue="available" className="space-y-6">
-               <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-2 rounded-2xl">
+               <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-2 md:grid-cols-4 rounded-2xl">
                   <TabsTrigger value="available" className="rounded-2xl">
                      Available Orders ({availableOrders.length})
                   </TabsTrigger>
                   <TabsTrigger value="active" className="rounded-2xl">
                      Active Deliveries ({activeOrders.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="transactions" className="rounded-2xl">
+                     Transactions
+                  </TabsTrigger>
+                  <TabsTrigger value="withdraw" className="rounded-2xl">
+                     Withdraw
                   </TabsTrigger>
                </TabsList>
 
@@ -436,6 +532,41 @@ export default function DriverDashboard() {
                         ))}
                      </div>
                   )}
+               </TabsContent>
+
+               <TabsContent value="transactions" className="space-y-4">
+                  <TransactionHistory />
+               </TabsContent>
+
+               <TabsContent value="withdraw" className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                     <WithdrawalForm
+                        availableBalance={walletBalance}
+                        onSuccess={loadWallet}
+                     />
+                     <Card className="p-6 rounded-2xl shadow-card">
+                        <h3 className="text-lg font-semibold mb-4">Withdrawal Information</h3>
+                        <div className="space-y-4">
+                           <div className="bg-accent/50 p-4 rounded-lg">
+                              <p className="text-sm font-medium mb-2">How it works:</p>
+                              <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
+                                 <li>Enter the amount you want to withdraw</li>
+                                 <li>Provide your MTN Mobile Money number</li>
+                                 <li>Funds will be sent within 24 hours</li>
+                                 <li>You&apos;ll receive a confirmation SMS</li>
+                              </ul>
+                           </div>
+                           <div className="bg-primary/10 p-4 rounded-lg">
+                              <p className="text-sm font-medium mb-2 text-primary">Important:</p>
+                              <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
+                                 <li>Minimum withdrawal: $10.00</li>
+                                 <li>Maximum withdrawal: $1,000.00 per day</li>
+                                 <li>Ensure your phone number is correct</li>
+                              </ul>
+                           </div>
+                        </div>
+                     </Card>
+                  </div>
                </TabsContent>
             </Tabs>
          </div>

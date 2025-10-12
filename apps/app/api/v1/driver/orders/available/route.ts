@@ -1,5 +1,6 @@
 import { getUserTokens } from "@/lib/firebase-client/firebase-utils";
 import { prisma } from "@/lib/prisma";
+import { DriverStatus, OrderStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
          where: { authId: token.decodedToken.uid },
       });
 
-      if (!user || user.driverStatus !== "APPROVED") {
+      if (!user || user.driverStatus !== DriverStatus.APPROVED) {
          return NextResponse.json(
             { success: false, error: "You must be an approved driver to view orders" },
             { status: 403 }
@@ -29,9 +30,10 @@ export async function GET(request: NextRequest) {
       const orders = await prisma.order.findMany({
          where: {
             OR: [
-               { status: "READY_TO_DELIVER" },
+               { status: OrderStatus.READY_TO_DELIVER },
                {
-                  status: { in: ["ACCEPTED_BY_DRIVER", "ON_THE_WAY"] },
+                  status: {
+                     in: [OrderStatus.ACCEPTED_BY_DRIVER, OrderStatus.ON_THE_WAY] },
                   // In future, filter by driverId when that field is added
                },
             ],

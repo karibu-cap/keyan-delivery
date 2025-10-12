@@ -1,5 +1,6 @@
 import { getUserTokens } from "@/lib/firebase-client/firebase-utils";
 import { prisma } from "@/lib/prisma";
+import { DriverStatus, UserRole } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -29,9 +30,9 @@ export async function POST(request: NextRequest) {
          data: {
             cni,
             driverDocument,
-            driverStatus: "PENDING",
+            driverStatus: DriverStatus.PENDING,
             roles: {
-               set: ["driver", "customer"],
+               set: [UserRole.driver, UserRole.customer],
             },
          },
       });

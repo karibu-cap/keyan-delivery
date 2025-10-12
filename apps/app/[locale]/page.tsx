@@ -121,15 +121,14 @@ const Index = async () => {
                     <span>{t("24/7 support team")}</span>
                   </li>
                 </ul>
-                <Button
-                  asChild
-                  size="lg"
-                  className="w-full bg-primary hover:bg-primary/90 shadow-primary"
-                >
-                  <Link href={ROUTES.driverApply}>
-                    {t("Apply as Driver")}
-                  </Link>
-                </Button>
+                <AuthModal redirectTo={ROUTES.driverApply}>
+                  <Button
+                    size="lg"
+                    className="w-full bg-primary hover:bg-primary/90 shadow-primary"
+                  >
+                    Apply as Driver
+                  </Button>
+                </AuthModal>
               </div>
             </Card>
           </div>
