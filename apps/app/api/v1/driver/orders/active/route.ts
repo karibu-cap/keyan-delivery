@@ -24,11 +24,16 @@ export async function GET(request: NextRequest) {
             { success: false, error: "You must be an approved driver to view orders" },
             { status: 403 }
          );
-      }
+      } 
 
       // Get orders ready for delivery
       const orders = await prisma.order.findMany({
-         where: { status: OrderStatus.READY_TO_DELIVER },
+         where: {
+            status: {
+               in: [OrderStatus.ACCEPTED_BY_DRIVER, OrderStatus.ON_THE_WAY]   
+            },
+            driverId: token.decodedToken.uid,
+         },
          include: {
             items: {
                include: {

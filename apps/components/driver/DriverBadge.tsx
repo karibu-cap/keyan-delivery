@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Truck, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import { DriverStatus, UserRole } from "@prisma/client";
 import { useAuthStore } from "@/hooks/auth-store";
-import { fetchDriverPendingOrders } from "@/lib/actions/client/driver";
+import { fetchDriverAvailableOrders } from "@/lib/actions/client/driver";
 import { ROUTES } from "@/lib/router";
 
 interface DriverBadgeProps {
@@ -30,7 +30,7 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
 
    const fetchPendingOrders = async () => {
       try {
-         const data = await fetchDriverPendingOrders();
+         const {data} = await fetchDriverAvailableOrders();
          setPendingOrdersCount(data?.length || 0);
       } catch (error) {
          console.error("Error fetching pending orders:", error);
@@ -107,11 +107,11 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
          <div className="flex flex-col items-start">
             <span className="text-xs font-medium">Driver dashboard</span>
             <span className="text-xs text-muted-foreground">{config.text}</span>
-            {config.showCount && !loading && (
+            {/* {config.showCount && !loading && (
                <span className="text-xs text-muted-foreground">
                   {pendingOrdersCount} {pendingOrdersCount === 1 ? "order" : "orders"}
                </span>
-            )}
+            )} */}
          </div>
 
          {config.showCount && !loading && pendingOrdersCount > 0 && (

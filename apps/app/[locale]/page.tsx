@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuthStore } from "@/hooks/auth-store";
-import { useEffect, useState } from 'react';
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
@@ -10,31 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/lib/router";
 import { AuthModal } from "@/components/auth/AuthModal";
-import { getT } from "@/lib/server-translations";
-import { getLocale } from "next-intl/server";
+import { useT } from "@/hooks/use-inline-translation";
 
 export default function Index() {
   const { isDriver } = useAuthStore();
-  const [, setLocale] = useState('En');
-  const [t, setT] = useState(() => (key: string) => key);
-  const [, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const localeResult = await getLocale();
-        const tResult = await getT(localeResult);
-        setLocale(localeResult);
-        setT(() => tResult);
-      } catch (error) {
-        console.error('Error loading locale data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
+  const t = useT();
   const features = [
     {
       icon: Zap,

@@ -9,6 +9,11 @@ import Navbar from "@/components/Navbar";
 import { DocumentUpload } from "./DocumentUpload";
 import type { UploadedDocument } from "./DocumentUpload";
 import dynamic from "next/dynamic";
+import type { DocumentData } from "./DocumentGrid";
+import { useToast } from "@/hooks/use-toast";
+import { updateDriverDocuments } from "@/lib/actions/client/driver";
+import { useAuthStore } from "@/hooks/auth-store";
+import { buildExistingDocuments, DocumentInfo } from "@/lib/utils/documents";
 
 // Dynamically import DocumentGrid to avoid SSR issues
 const DocumentGrid = dynamic(() => import("./DocumentGrid").then(mod => ({ default: mod.DocumentGrid })), {
@@ -31,12 +36,6 @@ const DocumentGrid = dynamic(() => import("./DocumentGrid").then(mod => ({ defau
         </div>
     )
 });
-
-import type { DocumentData } from "./DocumentGrid";
-import { useToast } from "@/hooks/use-toast";
-import { updateDriverDocuments } from "@/lib/actions/client/driver";
-import { useAuthStore } from "@/hooks/auth-store";
-import { buildExistingDocuments, DocumentInfo } from "@/lib/utils/documents";
 
 export function DriverPendingStatus() {
     const { toast } = useToast();

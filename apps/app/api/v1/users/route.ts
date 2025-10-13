@@ -9,6 +9,17 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json('Invalid data: email and authId are required', { status: 400 })
   }
 
+  // Find user by Firebase UID
+  const user = await prisma.user.findUnique({
+    where: {
+      authId: data.authId,
+    },
+  });
+
+  if (user) {
+    return NextResponse.json({ success: true, data: user }, { status: 201 })
+  }
+
   try {
     // Validate driver requirements
     if (data.roles && data.roles.includes(UserRole.driver)) {

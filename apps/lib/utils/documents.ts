@@ -2,18 +2,8 @@
  * Utility functions for handling driver documents
  */
 
-export interface UserDocumentData {
-    _id?: { $oid: string };
-    authId?: string;
-    email?: string;
-    fullName?: string | null;
-    phone?: string | null;
-    roles?: string[];
-    cni?: string | null;
-    driverDocument?: string | null;
-    driverStatus?: string;
-    updatedAt?: { $date?: { $numberLong: string } } | string | number | Date | null;
-}
+import { User } from "@prisma/client";
+
 
 export interface DocumentInfo {
     id: string;
@@ -90,7 +80,7 @@ export function createDocumentInfo(
 /**
  * Builds existing documents array from user data
  */
-export function buildExistingDocuments(user: UserDocumentData): DocumentInfo[] {
+export function buildExistingDocuments(user: Partial<User>): DocumentInfo[] {
     const documents: DocumentInfo[] = [];
 
     // Handle CNI document

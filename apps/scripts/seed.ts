@@ -171,14 +171,16 @@ async function seedDatabase() {
 
         return prisma.user.create({
           data: {
-            authId: 'authId',
+            authId: faker.string.alphanumeric(28).toLowerCase(),
             email,
             fullName: faker.person.fullName(),
             phone: faker.phone.number(),
             roles: roles as UserRole[],
             cni: isDriver ? faker.string.alphanumeric(12).toUpperCase() : null,
             driverDocument: isDriver ? faker.string.alphanumeric(12).toUpperCase() : null,
-            driverStatus: driverStatus as DriverStatus,
+            ...(isDriver
+              ? { driverStatus: driverStatus as DriverStatus }
+              : {}),
           },
         });
       })
@@ -551,6 +553,8 @@ async function seedDatabase() {
                 'PENDING',
                 'ACCEPTED_BY_MERCHANT',
                 'ACCEPTED_BY_DRIVER',
+                'IN_PREPARATION',
+                'READY_TO_DELIVER',
                 'ON_THE_WAY',
                 'COMPLETED'
               ]),

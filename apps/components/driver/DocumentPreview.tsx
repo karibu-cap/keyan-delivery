@@ -1,27 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Eye, Calendar, File, Loader2, ExternalLink } from "lucide-react";
+import { FileText, Download, Eye, Calendar, File, ExternalLink } from "lucide-react";
+import PDFViewerComponent from "./PDFViewerComponent";
 
-// Dynamically import PDF Viewer with SSR disabled for react-pdf-viewer compatibility
-const PDFViewer = dynamic(
-    () => import("./PDFViewerComponent").then(mod => ({ default: mod.PDFViewerComponent })),
-    {
-        ssr: false,
-        loading: () => (
-            <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                    <p className="text-sm text-gray-500">Loading PDF...</p>
-                </div>
-            </div>
-        )
-    }
-);
 
 export interface DocumentData {
     id: string;
@@ -108,7 +93,7 @@ export function DocumentPreview({
                         />
                     ) : isPDF && document.url && isClient ? (
                         <div className="w-full h-full bg-white">
-                            <PDFViewer url={document.url} />
+                                <PDFViewerComponent url={document.url} />
                         </div>
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
