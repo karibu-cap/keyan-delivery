@@ -11,7 +11,7 @@ export async function uploadDriverDocuments(cniBase64: string, licenseBase64: st
       }),
    });
 
-   return response.json();
+   return await response.json();
 }
 
 export async function updateDriverDocuments(data: { cniBase64?: string | null, licenseBase64?: string | null }) {
@@ -26,11 +26,16 @@ export async function updateDriverDocuments(data: { cniBase64?: string | null, l
       }),
    });
 
-   return response.json();
+   return await response.json();
 }
 
-export async function fetchDriverPendingOrders() {
+export async function fetchDriverAvailableOrders() {
    const response = await fetch("/api/v1/driver/orders/available");
+   return await response.json();
+};
+
+export async function fetchDriverInProgressOrders() {
+   const response = await fetch("/api/v1/driver/orders/active");
    return await response.json();
 };
 

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { useToast } from "@/hooks/use-toast";
-import { getAvailableOrders, acceptOrder, completeDelivery } from "@/lib/actions/driver";
+import { acceptOrder, completeDelivery } from "@/lib/actions/driver";
 import OrderMap from "@/components/driver/OrderMap";
 import { OrderStatus, DriverStatus } from "@prisma/client";
 import { useAuthStore } from "@/hooks/auth-store";
@@ -12,6 +12,8 @@ import { DriverLoadingState } from "@/components/driver/DriverLoadingState";
 import { DriverPendingStatus } from "@/components/driver/DriverPendingStatus";
 import { DriverRejectedStatus } from "@/components/driver/DriverRejectedStatus";
 import { DriverOrderTabs } from "@/components/driver/DriverOrderTabs";
+import { fetchDriverInProgressOrders, fetchDriverAvailableOrders } from "@/lib/actions/client/driver";
+import { getUserWallet } from "@/lib/actions/client/user";
 
 interface Order {
    id: string;
@@ -51,7 +53,7 @@ export default function DriverDashboard() {
    const { toast } = useToast();
    const { user } = useAuthStore();
    const [availableOrders, setAvailableOrders] = useState<Order[]>([]);
-   const [activeOrders, setActiveOrders] = useState<Order[]>([]);
+   const [inProgressOrders, setInProgressOrders] = useState<Order[]>([]);
    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
    const [pickupCode, setPickupCode] = useState("");
    const [deliveryCode, setDeliveryCode] = useState("");
@@ -63,22 +65,16 @@ export default function DriverDashboard() {
    const loadOrders = useCallback(async () => {
       try {
          setLoading(true);
-         const orders = await getAvailableOrders();
+         const ordersAvailable = await fetchDriverAvailableOrders();
+         console.log(ordersAvailable);
 
-         // Séparer les commandes disponibles et actives
-         const available = orders.filter(
-            (order: Order) => order.status === OrderStatus.READY_TO_DELIVER
-         );
-         const active = orders.filter(
-            (order: Order) =>
-               order.status === OrderStatus.ACCEPTED_BY_DRIVER || order.status === OrderStatus.ON_THE_WAY
-         );
-
-         setAvailableOrders(available);
-         setActiveOrders(active);
+         const ordersInProgress = await fetchDriverInProgressOrders();
+         console.log(ordersInProgress);
+         setAvailableOrders(ordersAvailable.data);
+         setInProgressOrders(ordersInProgress.data);
       } catch (error) {
          toast({
-            title: "Error loading orders",
+            title: error instanceof Error ? error.message : "Error loading orders",
             description: "Failed to load available orders",
             variant: "destructive",
          });
@@ -163,15 +159,15 @@ export default function DriverDashboard() {
 
    const loadWallet = useCallback(async () => {
       try {
-         const response = await fetch("/api/v1/driver/wallet");
-         const data = await response.json();
+         const response = await getUserWallet(user?.authId || "");
+         const data = await response;
          if (data.success) {
             setWalletBalance(data.data.balance || 0);
          }
       } catch (error) {
          console.error("Error loading wallet:", error);
       }
-   }, []);
+   }, [user?.authId]);
 
    useEffect(() => {
       if (user?.driverStatus === DriverStatus.APPROVED) {
@@ -209,15 +205,14 @@ export default function DriverDashboard() {
             {/* Stats Cards */}
             <DriverStatsCards
                availableOrdersCount={availableOrders.length}
-               activeOrdersCount={activeOrders.length}
-               todayEarnings={activeOrders.reduce((sum, order) => sum + order.orderPrices.deliveryFee, 0)}
+               inProgressOrdersCount={inProgressOrders.length}
                walletBalance={walletBalance}
             />
 
             {/* Orders Tabs */}
             <DriverOrderTabs
                availableOrders={availableOrders}
-               activeOrders={activeOrders}
+               activeOrders={inProgressOrders}
                walletBalance={walletBalance}
                processingOrderId={processingOrderId}
                onAcceptOrder={handleAcceptOrder}

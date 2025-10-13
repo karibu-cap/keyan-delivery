@@ -221,6 +221,7 @@ model Order {
     merchant     Merchant     @relation(fields: [merchantId], references: [id])
     pickupCode   String?
     deliveryCode String?
+    driverId     String?
     payment      Payment?     @relation(fields: [paymentId], references: [id])
     paymentId    String?      @db.ObjectId
 }
@@ -236,7 +237,7 @@ model User {
     driverDocument   String?
     wallet           Wallet?
     productWishlist  Wishlist[]
-    driverStatus     DriverStatus          @default(PENDING)
+    driverStatus     DriverStatus?          @default(PENDING)
     orders           Order[]
     merchantManagers UserMerchantManager[]
     payments         Payment[]
