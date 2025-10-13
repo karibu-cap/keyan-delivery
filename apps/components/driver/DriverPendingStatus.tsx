@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,7 +8,31 @@ import { Clock, FileText, Upload } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { DocumentUpload } from "./DocumentUpload";
 import type { UploadedDocument } from "./DocumentUpload";
-import { DocumentGrid, DocumentData } from "./DocumentGrid";
+import dynamic from "next/dynamic";
+
+// Dynamically import DocumentGrid to avoid SSR issues
+const DocumentGrid = dynamic(() => import("./DocumentGrid").then(mod => ({ default: mod.DocumentGrid })), {
+    ssr: false,
+    loading: () => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {[1, 2].map((i) => (
+                <div key={i} className="p-4 rounded-2xl shadow-card bg-gray-50 animate-pulse">
+                    <div className="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
+                    <div className="space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div className="flex gap-2">
+                            <div className="h-8 bg-gray-200 rounded flex-1"></div>
+                            <div className="h-8 bg-gray-200 rounded flex-1"></div>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+});
+
+import type { DocumentData } from "./DocumentGrid";
 import { useToast } from "@/hooks/use-toast";
 import { updateDriverDocuments } from "@/lib/actions/client/driver";
 import { useAuthStore } from "@/hooks/auth-store";
@@ -19,10 +43,16 @@ export function DriverPendingStatus() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [cniDocument, setCniDocument] = useState<UploadedDocument | null>(null);
     const [licenseDocument, setLicenseDocument] = useState<UploadedDocument | null>(null);
-    const { user } = useAuthStore();
+    const [existingDocuments, setExistingDocuments] = useState<DocumentInfo[]>([]);
+    const [activeTab, setActiveTab] = useState("documents");
+    const { reloadCurrentUser, user } = useAuthStore();
 
-    // Build existing documents from user data using utility function
-    const existingDocuments: DocumentInfo[] = user ? buildExistingDocuments(user) : [];
+    // Rebuild existing documents when user data changes
+    useEffect(() => {
+        if (user) {
+            setExistingDocuments(buildExistingDocuments(user));
+        }
+    }, [user]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,9 +74,11 @@ export function DriverPendingStatus() {
             const licenseBase64 = licenseDocument?.base64;
 
             if (cniBase64 || licenseBase64) {
-                const result = await updateDriverDocuments({cniBase64, licenseBase64});
-
+                const result = await updateDriverDocuments({ cniBase64, licenseBase64 });
                 if (result.success) {
+                    await reloadCurrentUser();
+                    // Reset to first tab to show updated documents
+                    setActiveTab("documents");
                     toast({
                         title: "Documents updated!",
                         description: "Your updated documents have been submitted for review.",
@@ -109,7 +141,7 @@ export function DriverPendingStatus() {
                     </Card>
 
                     {/* Document Management Tabs */}
-                    <Tabs defaultValue="documents" className="space-y-6">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                         <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-2 rounded-2xl">
                             <TabsTrigger value="documents" className="rounded-2xl">
                                 <FileText className="w-4 h-4 mr-2" />
@@ -185,7 +217,7 @@ export function DriverPendingStatus() {
                                         <Button
                                             type="submit"
                                             className="w-full h-12 text-lg rounded-2xl"
-                                            disabled={isSubmitting || (!cniDocument && !licenseDocument)}
+                                            disabled={isSubmitting || (cniDocument === null && licenseDocument === null)}
                                         >
                                             {isSubmitting ? "Updating..." : "Update Documents"}
                                         </Button>
