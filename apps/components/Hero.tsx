@@ -1,376 +1,291 @@
-
 'use client'
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Store, Pill, ChevronRight, Truck, Clock, MapPin, Pause, Play } from 'lucide-react';
+import { ShoppingBag, Store, Pill, ChevronRight, Play, Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useT } from '@/hooks/use-inline-translation';
-import Link from "next/link";
-
-
+import { ROUTES } from '@/lib/router';
 
 export default function DynamicHeroCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const t = useT()
+  const t = useT();
 
   const merchantTypes = [
     {
       type: 'grocery',
       icon: ShoppingBag,
-      emoji: '🥬',
-      title: t("Fresh Groceries"),
-      subtitle: t("Delivered to Your Door"),
-      description: t("Farm-fresh produce, pantry essentials, and daily necessities delivered in minutes."),
-      gradient: 'from-white-500 via-green-100 to-green-300',
-      accentColor: 'bg-green-300',
-      textColor: 'text-gray-800',
-      buttonBg: 'bg-green-300',
-      buttonText: 'text-gray-800',
-      buttonHover: 'hover:bg-emerald-50',
-      stats: { stores: '200+', avgTime: t("{min} min", { min: 25 }), items: '5K+' },
-      image: '/hero_1.jpeg'
+      title: t('Shop from local groceries, restaurants, and pharmacies in your area. Get your items delivered instantly.'),
+      primaryButtonText: t('Start Shopping'),
+      secondaryButtonText: t('Become a Merchant'),
+      description: t('Fresh produce delivered to your door within minutes of your order.'),
+      gradient: 'from-green-100 via-green-200 to-green-500',
+      color: '#22c55e',
+      image: '/hero_1.jpeg',
+      buttonBuyText: t('Buy Groceries'),
+      stats: {
+        stores: { value: '200+', label: t('Partner Stores') },
+        items: { value: '5K+', label: t('Products') },
+        time: { value: '25 min', label: t('Avg Delivery') },
+      },
     },
     {
       type: 'food',
       icon: Store,
-      emoji: '🍕',
-      title: t("Delicious Food"),
-      subtitle: t("Hot & Fresh Always"),
-      description: t("Your favorite restaurants and local eateries, delivering happiness one meal at a time."),
-      gradient: 'from-white-500 via-orange-100 to-orange-300',
-      accentColor: 'bg-orange-200',
-      textColor: 'text-gray-800',
-      buttonBg: 'bg-orange-200',
-      buttonText: 'text-gray-800',
-      buttonHover: 'hover:bg-orange-50',
-      stats: { stores: '150+', avgTime: t("{min} min", { min: 30 }), items: '3K+' },
-      image: '/hero_2.jpeg'
+      title: t('Delicious Food Hot & Fresh Always'),
+      primaryButtonText: t('Start Shopping'),
+      secondaryButtonText: t('Become a Merchant'),
+      description: t('Your favorite restaurants and local eateries, delivery hapiness one meal at time.'),
+      gradient: 'from-orange-100 via-orange-200 to-orange-500',
+      color: '#f97316',
+      image: '/hero_2.jpeg',
+      buttonBuyText: t('Buy Meals'),
+      stats: {
+        stores: { value: '150+', label: t('Partner Restaurants') },
+        items: { value: '3K+', label: t('Menu Items') },
+        time: { value: '30 min', label: t('Avg Delivery') },
+      },
     },
     {
       type: 'pharmacy',
       icon: Pill,
-      emoji: '💊',
-      title: t("Healthcare Essentials"),
-      subtitle: t("Trusted & Reliable"),
-      description: t("Prescription medications, health products, and wellness items delivered with care."),
-      gradient: 'from-white-500 via-cyan-100 to-white-500',
-      accentColor: 'bg-white',
-      textColor: 'text-gray-800',
-      buttonBg: 'bg-white',
-      buttonText: 'text-gray-800',
-      buttonHover: 'hover:bg-cyan-50',
-      stats: { stores: '150+', avgTime: t("{min} min", { min: 20 }), items: '2K+' },
-      image: '/hero_3.jpeg'
-    }
+      title: t('Healthcare Essentials Trusted & Reliable'),
+      primaryButtonText: t('Start Shopping'),
+      secondaryButtonText: t('Become a Merchant'),
+      description: t('Prescrition medication, health products, and wellness items delivered with care.'),
+      gradient: 'from-cyan-100 via-cyan-200 to-cyan-500',
+      color: '#06b6d4',
+      image: '/hero_3.jpeg',
+      buttonBuyText: t('Buy Medications'),
+      stats: {
+        stores: { value: '120+', label: t('Partner Pharmacies') },
+        items: { value: '2K+', label: t('Health Products') },
+        time: { value: '20 min', label: t('Avg Delivery') },
+      },
+    },
   ];
 
   useEffect(() => {
     if (isPaused) return;
-
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % merchantTypes.length);
     }, 10000);
-
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, merchantTypes.length]);
 
   const current = merchantTypes[currentIndex];
-  const nextIndex = (currentIndex + 1) % merchantTypes.length;
-  const IconComponent = current.icon;
-
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Animated Background Gradient with Color Transition */}
-      <div className="absolute inset-0">
-        {/* Current Background - Fading Out */}
-        <motion.div
-          key={`current-${currentIndex}`}
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className={`absolute inset-0 bg-gradient-to-br ${current.gradient}`}
-        />
-
-        {/* Next Background - Fading In */}
-        <motion.div
-          key={`next-${nextIndex}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className={`absolute inset-0 bg-gradient-to-br ${current.gradient}`}
-        />
-      </div>
-
-      {/* Animated background pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
-      </div>
-
-      <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16 lg:py-20 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center min-h-[calc(100vh-6rem)] sm:min-h-[calc(100vh-8rem)]">
-
-          {/* Left Content */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`content-${currentIndex}`}
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 50 }}
-              transition={{ duration: 0.6, ease: "easeInOut" }}
-              className={`${current.textColor} space-y-6 sm:space-y-8 order-2 lg:order-1`}
-            >
-
-              {/* Badge */}
+    <div className="relative w-full overflow-hidden">
+      {/* DESKTOP */}
+      <div className="hidden lg:block">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`desktop-${currentIndex}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className={`relative min-h-[600px] bg-gradient-to-r ${current.gradient}`}
+          >
+            <div className="container mx-auto px-8 py-16 grid lg:grid-cols-2 gap-8 items-center">
+              {/* Texte à gauche */}
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="inline-block"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="space-y-6"
               >
-                <span className="bg-white/20 backdrop-blur-md px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold inline-flex items-center gap-2 border border-white/30">
-                  <Truck className="w-3 h-3 sm:w-4 sm:h-4" />
-                  {t("Fast & Reliable Delivery")}
-                </span>
-              </motion.div>
-
-              {/* Main Heading */}
-              <motion.div
-                className="space-y-3 sm:space-y-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-              >
-                <h1 className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight ${current.textColor}`}>
+                <h1 className="text-5xl font-bold leading-tight text-gray-900">
                   {current.title}
-                  <br />
-                  <span className={`bg-clip-text ${current.textColor}`}>
-                    {current.subtitle}
-                  </span>
                 </h1>
-                <p className={`text-base sm:text-lg lg:text-xl xl:text-2xl leading-relaxed max-w-xl ${current.textColor}`}>
-                  {current.description}
-                </p>
-              </motion.div>
+                <p className="text-gray-700 text-lg">{current.description}</p>
 
-              {/* CTA Buttons */}
-              <motion.div
-                className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-              >
-                <motion.button
-                  className={`${current.buttonBg} ${current.buttonText} ${current.buttonHover} px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-base sm:text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center justify-center gap-2 w-full sm:w-auto`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
+                <div className="flex flex-wrap gap-4">
                   <Link href="/stores">
-                    {t("Start Shopping")}
-                  </Link>
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </motion.button>
-              </motion.div>
-
-              {/* Stats */}
-              <motion.div
-                className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 sm:pt-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-              >
-                {[
-                  { value: current.stats.stores, label: t("Partner Stores") },
-                  { value: current.stats.items, label: t("Products") },
-                  { value: current.stats.avgTime, label: t("Avg Delivery") }
-                ].map((stat, i) => (
-                  <motion.div
-                    key={i}
-                    className="space-y-1"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 + (i * 0.1), duration: 0.5 }}
-                  >
-                    <div className={`${current.textColor} text-2xl sm:text-3xl lg:text-4xl font-bold`}>{stat.value}</div>
-                    <div className={`${current.textColor} text-xs sm:text-sm font-medium`}>{stat.label}</div>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {/* Slide Indicators and Controls */}
-              <motion.div
-                className="flex items-center gap-3 sm:gap-4 pt-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-              >
-                {/* Slide Indicators */}
-                <div className="flex gap-2 sm:gap-3">
-                  {merchantTypes.map((_, index) => (
                     <motion.button
-                      key={index}
-                      onClick={() => setCurrentIndex(index)}
-                      className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-10 sm:w-12 bg-white' : 'w-6 sm:w-8 bg-black/40'
-                        }`}
-                      whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
-                    />
+                      style={{ backgroundColor: current.color }}
+                      className="text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:opacity-90 transition-all duration-300 inline-flex items-center gap-2"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      {current.primaryButtonText}
+                      <ChevronRight className="w-5 h-5" />
+                    </motion.button>
+                  </Link>
+
+                  <Link href="/new-merchant">
+                    <motion.button
+                      className="bg-white text-gray-900 px-8 py-4 rounded-md font-semibold text-lg shadow-md hover:bg-gray-50 transition-all duration-300"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      {current.secondaryButtonText}
+                    </motion.button>
+                  </Link>
+                </div>
+
+                
+                <div className="grid grid-cols-3 gap-6 pt-4">
+                  {Object.values(current.stats).map((stat, i) => (
+                    <div key={i}>
+                      <div className="text-3xl font-bold text-gray-900">{stat.value}</div>
+                      <div className="text-sm text-gray-600">{stat.label}</div>
+                    </div>
                   ))}
                 </div>
 
-                {/* Pause/Play Button */}
-                <motion.button
-                  onClick={() => setIsPaused(!isPaused)}
-                  className={`${current.textColor} bg-black/20 backdrop-blur-md border border-white/30 rounded-full p-2 sm:p-2.5 hover:bg-white/30 transition-all duration-300`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  title={isPaused ? t("Play slideshow") : t("Pause slideshow")}
-                >
-                  {isPaused ? (
-                    <Play className="w-3 h-3 sm:w-4 sm:h-4" />
-                  ) : (
-                    <Pause className="w-3 h-3 sm:w-4 sm:h-4" />
-                  )}
-                </motion.button>
-              </motion.div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Right Visual - Image Section */}
-          <div className="relative order-1 lg:order-2">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`visual-${currentIndex}`}
-                initial={{ opacity: 0, scale: 0.9, rotate: 5 }}
-                animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                exit={{ opacity: 0, scale: 0.9, rotate: -5 }}
-                transition={{ duration: 0.7, ease: "easeInOut" }}
-                className="relative"
-              >
-                {/* Glow effect */}
-                <motion.div
-                  className="absolute inset-0 bg-white/20 blur-3xl rounded-full"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                />
-
-                {/* Main Image Card */}
-                <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-xl p-3 sm:p-4 lg:p-6 border border-white/20 shadow-2xl">
-
-                  {/* Product Image */}
-                  <motion.div
-                    className="relative w-full aspect-[4/3] rounded-xl sm:rounded-xl overflow-hidden mb-4 sm:mb-6 shadow-2xl"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Image
-                      src={current.image}
-                      alt={current.title}
-                      fill
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-
-                    {/* Floating emoji */}
-                    <motion.div
-                      className="absolute -top-3 -right-3 text-3xl sm:text-4xl lg:text-5xl"
-                      animate={{
-                        y: [0, -10, 0],
-                        rotate: [0, 5, 0, -5, 0]
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      {current.emoji}
-                    </motion.div>
-                  </motion.div>
-
-                  {/* Icon Badge */}
-                  <motion.div
-                    className={`${current.accentColor} w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 shadow-2xl mx-auto`}
-                    whileHover={{ scale: 1.1, rotate: 6 }}
-                    transition={{ duration: 0.3 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                  >
-                    <IconComponent className={`${current.textColor} w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12`} />
-                  </motion.div>
-
-                  {/* Features */}
-                  <div className="space-y-3 sm:space-y-4">
-                    <motion.h3
-                      className={`${current.textColor} text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6 text-center lg:text-left`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3, duration: 0.5 }}
-                    >
-                      {t("Why Choose Us")}
-                    </motion.h3>
-
-                    {[
-                      { icon: Clock, text: t("Express delivery in minutes") },
-                      { icon: MapPin, text: t("Track your order in real-time") },
-                      { icon: Truck, text: t("Contactless delivery available") }
-                    ].map((feature, i) => (
-                      <motion.div
+                
+                <div className="flex items-center gap-4 pt-6">
+                  <div className="flex gap-2">
+                    {merchantTypes.map((_, i) => (
+                      <button
                         key={i}
-                        className={`flex items-center gap-3 sm:gap-4 ${current.textColor}`}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.4 + (i * 0.1), duration: 0.5 }}
-                        whileHover={{ x: 8 }}
-                      >
-                        <div className={`${current.accentColor} w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
-                          <feature.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${current.textColor}`} />
-                        </div>
-                        <span className="text-sm sm:text-base lg:text-lg font-medium">{feature.text}</span>
-                      </motion.div>
+                        onClick={() => setCurrentIndex(i)}
+                        className={`h-2 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-10' : 'w-10 bg-gray-300'}`}
+                        style={{
+                          backgroundColor: i === currentIndex ? 'white' : '#ccc',
+                        }}
+                      />
                     ))}
                   </div>
+                  <motion.button
+                    onClick={() => setIsPaused(!isPaused)}
+                    className="bg-white border border-gray-300 rounded-full p-2 hover:bg-gray-100 transition"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    {isPaused ? <Play className="w-4 h-4 text-gray-500" /> : <Pause className="w-4 h-4 text-gray-500" />}
+                  </motion.button>
+                </div>
+              </motion.div>
+
+              
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl"
+              >
+                <Image src={current.image} alt={current.type} fill className="object-cover" priority />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+                
+                <div className="absolute inset-0 flex flex-col justify-center items-center text-white px-8">
+                  <p className="text-2xl font-semibold mb-4 drop-shadow-md max-w-lg">{current.description}</p>
                 </div>
 
-                {/* Decorative floating cards - Hidden on mobile */}
-                <motion.div
-                  className="hidden lg:block absolute -bottom-4 -left-4 xl:-bottom-6 xl:-left-6 bg-white/10 backdrop-blur-xl rounded-lg xl:rounded-xl p-3 xl:p-4 border border-white/20 shadow-xl"
-                  animate={{ y: [0, -15, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                >
-                  <div className={`${current.textColor} text-xs font-medium mb-1`}>{t("Active Orders")}</div>
-                  <div className={`text-xl xl:text-2xl font-bold ${current.textColor}`}>1,247</div>
-                </motion.div>
-
-                <motion.div
-                  className="hidden lg:block absolute -top-4 -right-4 xl:-top-6 xl:-right-6 bg-white/10 backdrop-blur-xl rounded-lg xl:rounded-xl p-3 xl:p-4 border border-white/20 shadow-xl"
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                >
-                  <div className={`${current.textColor} text-xs font-medium mb-1`}>{t("Online Stores")}</div>
-                  <div className={`text-xl xl:text-2xl font-bold ${current.textColor}`}>500+</div>
-                </motion.div>
+                
+                <div className="absolute bottom-0 left-0 px-8 pb-8">
+                  <Link href={ROUTES.stores.toString()}>
+                    <motion.button
+                      style={{ backgroundColor: current.color }}
+                      className="text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 shadow-lg hover:opacity-90 transition-all duration-300"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      {current.buttonBuyText}
+                      <ChevronRight className="w-5 h-5" />
+                    </motion.button>
+                  </Link>
+                </div>
               </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* Wave Divider */}
-      <div className="absolute -bottom-4 left-0 right-0">
-        <svg viewBox="0 0 1440 130" className="w-full h-auto" preserveAspectRatio="none">
-          <path
-            fill="white"
-            d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
-          />
-        </svg>
+      {/* MOBILE */}
+      <div className="lg:hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`mobile-${currentIndex}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className={`relative bg-gradient-to-r ${current.gradient}`}
+          >
+            <div className="px-4 py-8">
+              <h1 className="text-2xl font-bold mb-4 text-gray-900">{current.title}</h1>
+
+              <Link href={ROUTES.stores.toString()}>
+                <motion.button
+                  style={{ backgroundColor: current.color }}
+                  className="w-full text-white py-3 rounded-xl font-semibold text-base shadow-lg inline-flex items-center justify-center gap-2 mb-3"
+                  whileHover={{ scale: 1.02 }}
+                >
+                  {current.primaryButtonText}
+                  <ChevronRight className="w-5 h-5" />
+                </motion.button>
+              </Link>
+
+              <Link href={ROUTES.newMerchant.toString()}>
+                <motion.button
+                  className="bg-white text-gray-900 w-full py-3 rounded-md font-semibold text-base shadow-md border border-gray-200"
+                  whileHover={{ scale: 1.02 }}
+                >
+                  {current.secondaryButtonText}
+                </motion.button>
+              </Link>
+
+              {/* Stats sur mobile */}
+              <div className="grid grid-cols-3 gap-4 mt-6">
+                {Object.values(current.stats).map((stat, i) => (
+                  <div key={i} className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+                    <div className="text-xs text-gray-600">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative h-[420px]">
+              <Image src={current.image} alt={current.type} fill className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+              
+              <div className="absolute inset-0 flex flex-col justify-center items-start text-white  px-4">
+                <p className="text-2xl font-semibold mb-3 drop-shadow-lg">{current.description}</p>
+              </div>
+
+              
+              <div className="absolute bottom-0 left-0 px-6 pb-6">
+                <Link href={ROUTES.stores.toString()}>
+                  <motion.button
+                    style={{ backgroundColor: current.color }}
+                    className="text-white px-5 py-2.5 rounded-lg font-semibold inline-flex items-center gap-2 shadow-lg hover:opacity-90 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    {current.buttonBuyText}
+                    <ChevronRight className="w-4 h-4" />
+                  </motion.button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Indicateurs alignés à gauche */}
+            <div className={`px-4 py-6 bg-gradient-to-r ${current.gradient}`}>
+              <div className="flex justify-start items-center gap-3">
+                <div className="flex gap-2">
+                  {merchantTypes.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentIndex(i)}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-10' : 'w-10 bg-gray-400'}`}
+                      style={{
+                        backgroundColor: i === currentIndex ? 'white' : '#ccc',
+                      }}
+                    />
+                  ))}
+                </div>
+                <motion.button
+                  onClick={() => setIsPaused(!isPaused)}
+                  className="bg-white/40 backdrop-blur-md border border-white/40 text-gray-900 rounded-full p-2 hover:bg-white/60 transition-all duration-300"
+                >
+                  {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
