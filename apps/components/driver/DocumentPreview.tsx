@@ -1,9 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Camera, Download, Eye, Calendar, File } from "lucide-react";
+import { FileText, Download, Eye, Calendar, File, Loader2, ExternalLink } from "lucide-react";
+
+// Dynamically import PDF Viewer with SSR disabled for react-pdf-viewer compatibility
+const PDFViewer = dynamic(
+    () => import("./PDFViewerComponent").then(mod => ({ default: mod.PDFViewerComponent })),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                    <p className="text-sm text-gray-500">Loading PDF...</p>
+                </div>
+            </div>
+        )
+    }
+);
 
 export interface DocumentData {
     id: string;
@@ -27,8 +45,23 @@ export function DocumentPreview({
     onDownload,
     showActions = true,
 }: DocumentPreviewProps) {
+    const [isClient, setIsClient] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [numPages, setNumPages] = useState(1);
+    const [pdfLoaded, setPdfLoaded] = useState(false);
+
     const isImage = document.type.startsWith("image/");
     const isPDF = document.type === "application/pdf";
+
+    // Ensure we only render PDF components on client side
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    const handlePdfLoad = (event: React.SyntheticEvent<HTMLIFrameElement>) => {
+        setPdfLoaded(true);
+        console.log("PDF iframe loaded successfully");
+    };
 
     const handleView = () => {
         if (onView) {
@@ -62,17 +95,9 @@ export function DocumentPreview({
         }
     };
 
-    const formatFileSize = (bytes: number) => {
-        if (bytes === 0) return "0 Bytes";
-        const k = 1024;
-        const sizes = ["Bytes", "KB", "MB", "GB"];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-    };
-
     return (
-        <Card className="p-4 rounded-2xl shadow-card hover:shadow-lg transition-all">
-            <div className="space-y-3">
+        <Card className="p-2 sm:p-3 lg:p-4 rounded-2xl shadow-card hover:shadow-lg transition-all">
+            <div className="space-y-2 sm:space-y-3">
                 {/* Document Preview */}
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-50">
                     {isImage && document.url ? (
@@ -81,21 +106,18 @@ export function DocumentPreview({
                             alt={document.name}
                             className="w-full h-full object-cover"
                         />
-                    ) : isPDF ? (
-                        <div className="w-full h-full flex items-center justify-center bg-red-50">
-                            <div className="text-center">
-                                <FileText className="w-12 h-12 text-red-500 mx-auto mb-2" />
-                                <p className="text-sm text-red-700 font-medium">PDF Document</p>
-                            </div>
+                    ) : isPDF && document.url && isClient ? (
+                        <div className="w-full h-full bg-white">
+                            <PDFViewer url={document.url} />
                         </div>
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                            <File className="w-12 h-12 text-gray-400" />
+                            <File className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" />
                         </div>
                     )}
 
                     {/* Status Badge */}
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-2 right-2 z-10">
                         <Badge className={`text-xs ${getStatusColor(document.status)}`}>
                             {document.status}
                         </Badge>
@@ -104,35 +126,59 @@ export function DocumentPreview({
 
                 {/* Document Info */}
                 <div className="space-y-2">
-                    <div className="flex items-start justify-between">
-                        <h3 className="font-medium text-sm truncate" title={document.name}>
+                    <div className="flex items-start justify-between gap-2">
+                        <h3
+                            className="font-medium text-xs sm:text-sm truncate flex-1"
+                            title={document.name}
+                        >
                             {document.name}
                         </h3>
                         {isPDF && (
-                            <FileText className="w-4 h-4 text-red-500 flex-shrink-0 ml-2" />
+                            <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />
                         )}
                     </div>
 
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        <span>
+                        <Calendar className="w-3 h-3 flex-shrink-0" />
+                        <span className="truncate">
                             Uploaded {new Date(document.uploadedAt).toLocaleDateString()}
                         </span>
                     </div>
+
+                    {/* PDF Navigation */}
+                    {isPDF && pdfLoaded && (
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                <span>PDF Navigation Available</span>
+                                <span className="text-primary">Use PDF toolbar above</span>
+                            </div>
+                            <div className="flex gap-2 text-xs">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => window.open(document.url, "_blank")}
+                                    className="flex-1 h-8"
+                                >
+                                    <ExternalLink className="w-3 h-3 mr-1" />
+                                    Full View
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Actions */}
                 {showActions && (onView || onDownload || document.url) && (
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         {(onView || document.url) && (
                             <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={handleView}
-                                className="flex-1"
+                                className="flex-1 text-xs sm:text-sm"
                             >
                                 <Eye className="w-3 h-3 mr-1" />
-                                View
+                                <span>View</span>
                             </Button>
                         )}
                         {(onDownload || document.url) && (
@@ -140,10 +186,10 @@ export function DocumentPreview({
                                 variant="outline"
                                 size="sm"
                                 onClick={handleDownload}
-                                className="flex-1"
+                                className="flex-1 text-xs sm:text-sm"
                             >
                                 <Download className="w-3 h-3 mr-1" />
-                                Download
+                                <span>Download</span>
                             </Button>
                         )}
                     </div>
