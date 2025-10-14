@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Store, Pill, ChevronRight, Play, Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,7 +36,7 @@ export default function DynamicHeroCarousel() {
       title: t('Delicious Food Hot & Fresh Always'),
       primaryButtonText: t('Start Shopping'),
       secondaryButtonText: t('Become a Merchant'),
-      description: t('Your favorite restaurants and local eateries, delivery hapiness one meal at time.'),
+      description: t('Your favorite restaurants and local eateries, delivering happiness one meal at a time.'),
       gradient: 'from-orange-100 via-orange-200 to-orange-500',
       color: '#f97316',
       image: '/hero_2.jpeg',
@@ -53,7 +53,7 @@ export default function DynamicHeroCarousel() {
       title: t('Healthcare Essentials Trusted & Reliable'),
       primaryButtonText: t('Start Shopping'),
       secondaryButtonText: t('Become a Merchant'),
-      description: t('Prescrition medication, health products, and wellness items delivered with care.'),
+      description: t('Prescription medication, health products, and wellness items delivered with care.'),
       gradient: 'from-cyan-100 via-cyan-200 to-cyan-500',
       color: '#06b6d4',
       image: '/hero_3.jpeg',
@@ -66,6 +66,7 @@ export default function DynamicHeroCarousel() {
     },
   ];
 
+  // Auto-slide logic
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
@@ -77,7 +78,7 @@ export default function DynamicHeroCarousel() {
   const current = merchantTypes[currentIndex];
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full overflow-hidden bg-transparent">
       {/* DESKTOP */}
       <div className="hidden lg:block">
         <AnimatePresence mode="wait">
@@ -86,13 +87,13 @@ export default function DynamicHeroCarousel() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.7, ease: 'easeInOut' }}
             className={`relative min-h-[600px] bg-gradient-to-r ${current.gradient}`}
           >
             <div className="container mx-auto px-8 py-16 grid lg:grid-cols-2 gap-8 items-center">
-              {/* Texte à gauche */}
+              {/* Left side text */}
               <motion.div
-                initial={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, x: -40 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
                 className="space-y-6"
@@ -102,11 +103,12 @@ export default function DynamicHeroCarousel() {
                 </h1>
                 <p className="text-gray-700 text-lg">{current.description}</p>
 
-                <div className="flex flex-wrap gap-4">
-                  <Link href="/stores">
+                {/* Buttons */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-start gap-4">
+                  <Link href={ROUTES.stores.toString()}>
                     <motion.button
                       style={{ backgroundColor: current.color }}
-                      className="text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:opacity-90 transition-all duration-300 inline-flex items-center gap-2"
+                      className="text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:opacity-90 transition-all duration-300 inline-flex items-center justify-center gap-2 w-full sm:w-auto"
                       whileHover={{ scale: 1.05 }}
                     >
                       {current.primaryButtonText}
@@ -114,9 +116,9 @@ export default function DynamicHeroCarousel() {
                     </motion.button>
                   </Link>
 
-                  <Link href="/new-merchant">
+                  <Link href={ROUTES.newMerchant.toString()}>
                     <motion.button
-                      className="bg-white text-gray-900 px-8 py-4 rounded-md font-semibold text-lg shadow-md hover:bg-gray-50 transition-all duration-300"
+                      className="bg-white text-gray-900 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:bg-gray-50 transition-all duration-300 inline-flex items-center justify-center w-full sm:w-auto"
                       whileHover={{ scale: 1.05 }}
                     >
                       {current.secondaryButtonText}
@@ -124,7 +126,7 @@ export default function DynamicHeroCarousel() {
                   </Link>
                 </div>
 
-                
+                {/* Stats */}
                 <div className="grid grid-cols-3 gap-6 pt-4">
                   {Object.values(current.stats).map((stat, i) => (
                     <div key={i}>
@@ -134,14 +136,15 @@ export default function DynamicHeroCarousel() {
                   ))}
                 </div>
 
-                
+                {/* Indicators */}
                 <div className="flex items-center gap-4 pt-6">
                   <div className="flex gap-2">
                     {merchantTypes.map((_, i) => (
                       <button
                         key={i}
                         onClick={() => setCurrentIndex(i)}
-                        className={`h-2 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-10' : 'w-10 bg-gray-300'}`}
+                        className={`h-2 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-10' : 'w-10 bg-gray-300'
+                          }`}
                         style={{
                           backgroundColor: i === currentIndex ? 'white' : '#ccc',
                         }}
@@ -153,14 +156,18 @@ export default function DynamicHeroCarousel() {
                     className="bg-white border border-gray-300 rounded-full p-2 hover:bg-gray-100 transition"
                     whileHover={{ scale: 1.05 }}
                   >
-                    {isPaused ? <Play className="w-4 h-4 text-gray-500" /> : <Pause className="w-4 h-4 text-gray-500" />}
+                    {isPaused ? (
+                      <Play className="w-4 h-4 text-gray-500" />
+                    ) : (
+                      <Pause className="w-4 h-4 text-gray-500" />
+                    )}
                   </motion.button>
                 </div>
               </motion.div>
 
-              
+              {/* Right side image */}
               <motion.div
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: 40 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3, duration: 0.6 }}
                 className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl"
@@ -168,12 +175,14 @@ export default function DynamicHeroCarousel() {
                 <Image src={current.image} alt={current.type} fill className="object-cover" priority />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-                
+                {/* Center text on image */}
                 <div className="absolute inset-0 flex flex-col justify-center items-center text-white px-8">
-                  <p className="text-2xl font-semibold mb-4 drop-shadow-md max-w-lg">{current.description}</p>
+                  <p className="text-2xl font-semibold mb-4 drop-shadow-md max-w-lg">
+                    {current.description}
+                  </p>
                 </div>
 
-                
+                {/* Bottom-left button */}
                 <div className="absolute bottom-0 left-0 px-8 pb-8">
                   <Link href={ROUTES.stores.toString()}>
                     <motion.button
@@ -200,33 +209,36 @@ export default function DynamicHeroCarousel() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
             className={`relative bg-gradient-to-r ${current.gradient}`}
           >
             <div className="px-4 py-8">
               <h1 className="text-2xl font-bold mb-4 text-gray-900">{current.title}</h1>
 
-              <Link href={ROUTES.stores.toString()}>
-                <motion.button
-                  style={{ backgroundColor: current.color }}
-                  className="w-full text-white py-3 rounded-xl font-semibold text-base shadow-lg inline-flex items-center justify-center gap-2 mb-3"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  {current.primaryButtonText}
-                  <ChevronRight className="w-5 h-5" />
-                </motion.button>
-              </Link>
+              {/* Buttons */}
+              <div className="flex flex-col items-center gap-3">
+                <Link href={ROUTES.stores.toString()} className="w-full">
+                  <motion.button
+                    style={{ backgroundColor: current.color }}
+                    className="w-full text-white py-3 rounded-xl font-semibold text-base shadow-lg inline-flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {current.primaryButtonText}
+                    <ChevronRight className="w-5 h-5" />
+                  </motion.button>
+                </Link>
 
-              <Link href={ROUTES.newMerchant.toString()}>
-                <motion.button
-                  className="bg-white text-gray-900 w-full py-3 rounded-md font-semibold text-base shadow-md border border-gray-200"
-                  whileHover={{ scale: 1.02 }}
-                >
-                  {current.secondaryButtonText}
-                </motion.button>
-              </Link>
+                <Link href={ROUTES.newMerchant.toString()}>
+                  <motion.button
+                    className="bg-white text-gray-900 py-3 px-10 rounded-md font-semibold text-base shadow-md border border-gray-200 mx-auto"
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {current.secondaryButtonText}
+                  </motion.button>
+                </Link>
+              </div>
 
-              {/* Stats sur mobile */}
+              {/* Stats */}
               <div className="grid grid-cols-3 gap-4 mt-6">
                 {Object.values(current.stats).map((stat, i) => (
                   <div key={i} className="text-center">
@@ -237,16 +249,19 @@ export default function DynamicHeroCarousel() {
               </div>
             </div>
 
+            {/* Image */}
             <div className="relative h-[420px]">
               <Image src={current.image} alt={current.type} fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-              
-              <div className="absolute inset-0 flex flex-col justify-center items-start text-white  px-4">
-                <p className="text-2xl font-semibold mb-3 drop-shadow-lg">{current.description}</p>
+              {/* Center text */}
+              <div className="absolute inset-0 flex flex-col justify-center items-center text-white px-4">
+                <p className="text-lg font-semibold mb-3 drop-shadow-lg">
+                  {current.description}
+                </p>
               </div>
 
-              
+              {/* Bottom-left button */}
               <div className="absolute bottom-0 left-0 px-6 pb-6">
                 <Link href={ROUTES.stores.toString()}>
                   <motion.button
@@ -261,7 +276,7 @@ export default function DynamicHeroCarousel() {
               </div>
             </div>
 
-            {/* Indicateurs alignés à gauche */}
+            {/* Indicators */}
             <div className={`px-4 py-6 bg-gradient-to-r ${current.gradient}`}>
               <div className="flex justify-start items-center gap-3">
                 <div className="flex gap-2">
@@ -269,7 +284,8 @@ export default function DynamicHeroCarousel() {
                     <button
                       key={i}
                       onClick={() => setCurrentIndex(i)}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-10' : 'w-10 bg-gray-400'}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-10' : 'w-10 bg-gray-400'
+                        }`}
                       style={{
                         backgroundColor: i === currentIndex ? 'white' : '#ccc',
                       }}
