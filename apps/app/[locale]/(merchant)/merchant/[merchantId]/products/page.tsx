@@ -17,7 +17,6 @@ import {
 import {
     Plus,
     Edit,
-    Eye,
     Trash2,
     Search,
     CheckCircle,
@@ -117,14 +116,14 @@ export default function MerchantProductsPage() {
                     variant: 'default'
                 });
                 fetchProducts();
-            } else {
+            } else { 
                 toast({
                     title: 'Error',
                     description: res.error,
                     variant: 'destructive'
                 });
             }
-        } catch (error) {
+        } catch (_) {
             toast({
                 title: 'Error',
                 description: 'Failed to delete product',

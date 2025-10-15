@@ -6,14 +6,13 @@ import { join } from 'path';
 /**
  * OPTIMIZED PARALLEL TRANSLATOR
  * Translates 250 keys in ~2 minutes instead of 10+ minutes
- * 
+ *
  * Key optimizations:
  * 1. Parallel batch processing (10 at a time)
  * 2. Smart retry with exponential backoff
  * 3. Progress caching (resume on failure)
  * 4. Only translate missing keys
  */
-
 class OptimizedTranslator {
     constructor(sourceFile, targetFile, sourceLang = 'en', targetLang = 'sw') {
         this.sourceFile = sourceFile;
@@ -35,7 +34,7 @@ class OptimizedTranslator {
         const fullPath = join(process.cwd(), filePath);
         try {
             return JSON.parse(readFileSync(fullPath, 'utf-8'));
-        } catch (error) {
+        } catch (_) {
             return {};
         }
     }

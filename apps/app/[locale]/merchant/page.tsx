@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,7 +18,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Upload,
   Camera,
 } from "lucide-react";
 import {
@@ -37,11 +35,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
 import { useToast } from "@/hooks/use-toast";
 
 const Merchant = () => {
-  const [isOnboarded, setIsOnboarded] = useState(true); // Mock: true for demo
   const { toast } = useToast()
 
   const stats = [

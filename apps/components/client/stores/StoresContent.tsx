@@ -18,6 +18,7 @@ import { useT } from "@/hooks/use-inline-translation";
 
 interface StoresContentProps {
     initialStores: IMerchant[];
+    initialMerchantTypeFilters?: MerchantType;
 }
 
 interface MerchantTypeFilter {
@@ -26,10 +27,10 @@ interface MerchantTypeFilter {
     count: number;
 }
 
-export function StoresContent({ initialStores }: StoresContentProps) {
+export function StoresContent({ initialStores, initialMerchantTypeFilters }: StoresContentProps) {
     const t = useT()
 
-    const [selectedMerchantType, setSelectedMerchantType] = useState(t("all"));
+    const [selectedMerchantType, setSelectedMerchantType] = useState(initialMerchantTypeFilters ?? t("all"));
 
     // Calculate filter counts and filtered stores using useMemo
     const { merchantTypeFilters, filteredStores } = useMemo(() => {

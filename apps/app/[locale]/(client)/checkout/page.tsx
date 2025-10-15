@@ -62,7 +62,7 @@ const EnhancedCheckout = () => {
             variant: 'default',
           })
         },
-        (error) => {
+        (_) => {
           toast({
             title: t("Failed to get location"),
             description: t("Please enter manually"),
