@@ -9,7 +9,6 @@ export function cn(...inputs: ClassValue[]) {
 
 export function normalizeFileName(fileName: string): string {
   // random number.
-  const number = Math.floor(Math.random() * 1000)
   return fileName
     .normalize('NFD') // Normalize Unicode characters
     .replace(/[\u0300-\u036f]/g, '') // Remove accent marks

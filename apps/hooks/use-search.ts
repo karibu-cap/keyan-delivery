@@ -1,9 +1,10 @@
 import { ICategory, fetchCategories, fetchMerchants } from '@/lib/actions/client/stores';
 import { IMerchant, IProduct } from '@/lib/actions/stores';
 import { useCallback, useEffect, useState } from 'react';
-import { useDebounce } from './use-debounce';
+import { useDebounce } from "./use-debounce";
 
 interface SearchResult {
+
     id: string;
     title: string;
     type: 'product' | 'merchant' | 'category';
@@ -75,7 +76,7 @@ export const useSearch = (): UseSearchReturn => {
         }
     }, []);
 
-    const searchCategories = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
+    const searchCategories =    useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
         try {
             const response = await fetchCategories({
                 search: searchQuery,

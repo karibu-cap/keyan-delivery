@@ -9,7 +9,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Globe } from 'lucide-react';
 import { locales, localeNames, localeFlags, type Locale } from '@/i18n/config';
 import { useTransition } from 'react';
 

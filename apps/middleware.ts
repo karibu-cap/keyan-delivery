@@ -56,7 +56,7 @@ export async function middleware(request: NextRequest) {
     debug: true,
     checkRevoked: true,
     authorizationHeaderName: 'Authorization',
-    handleValidToken: async ({ token, decodedToken }, headers) => {
+    handleValidToken: async ({ decodedToken }, headers) => {
       const pathname = request.nextUrl.pathname;
 
       // Assume locales are optional 2-letter prefixes like /en/, /fr/, etc. (case-insensitive)
@@ -163,7 +163,7 @@ function applyIntl(request: NextRequest, authHeaders?: Headers, authResponse?: N
 
 
 // Keep your matcher (it already excludes general API/trpc but includes specific auth APIs)
-export const config = {
+export const config =  {
   matcher: [
     '/api/refresh-token',
     '/api/login',

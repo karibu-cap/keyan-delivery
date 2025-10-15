@@ -11,12 +11,10 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
-  updateProfile
+  updateProfile,
 } from 'firebase/auth'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-
-
 
 interface SignUpData {
   email: string
@@ -66,7 +64,7 @@ const useAuthStore = create(
             },
           })
 
-          /// get user from db 
+          /// get user from db
           const user = await getUserById(userCredential.user.uid)
           set({ user: user })
         } catch (error) {
@@ -89,7 +87,11 @@ const useAuthStore = create(
             return
           }
 
-          const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            data.email,
+            data.password,
+          )
 
           // Update Firebase profile
           await updateProfile(userCredential.user, {
@@ -153,7 +155,7 @@ const useAuthStore = create(
               loading: false,
             })
             return
-          }
+          } 
           const idToken = await userCredential.user.getIdToken()
 
           await fetch('/api/login', {
@@ -197,19 +199,19 @@ const useAuthStore = create(
         }
       },
       reloadCurrentUser: async () => {
-        const currentUser = await getCurrentUser();
+        const currentUser = await getCurrentUser()
         if (!currentUser) {
-          return false;
+          return false
         }
-        set({ user: currentUser });
-        return true;
+        set({ user: currentUser })
+        return true
       },
       isDriver: () => {
-        const user = get()?.user;
-        if (!user?.roles){
-          return false;
+        const user = get()?.user
+        if (!user?.roles) {
+          return false
         }
-        return user.roles.includes(UserRole.driver);
+        return user.roles.includes(UserRole.driver)
       },
     }),
     {
@@ -217,5 +219,5 @@ const useAuthStore = create(
       storage: createJSONStorage(() => localStorage),
     },
   ),
-)
+) 
 export { useAuthStore }

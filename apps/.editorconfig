@@ -1,0 +1,41 @@
+# Apps directory specific EditorConfig
+# Inherits from root .editorconfig
+
+[*]
+# Override root settings for apps directory if needed
+max_line_length = 100
+
+# Next.js specific files
+[next.config.mjs]
+indent_size = 2
+
+# API routes
+[*.ts]
+indent_size = 2
+max_line_length = 100
+
+# React components
+[*.{tsx,jsx}]
+indent_size = 5
+max_line_length = 100
+
+# TypeScript configuration
+[tsconfig*.json]
+indent_size = 2
+
+# Prisma schema
+[prisma/schema.prisma]
+indent_size = 2
+
+# Environment files
+[*.env*]
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Lock files
+[package-lock.json]
+indent_size = 2
+
+# Documentation
+[README.md]
+trim_trailing_whitespace = false

@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import { unstable_noStore as noStore } from "next/cache";
 import Navbar from "@/components/Navbar";
 import { fetchMerchants, IMerchant } from "@/lib/actions/stores";
 import { StoresContent } from "@/components/client/stores/StoresContent";
 import { StoresLoading } from "@/components/client/stores/StoresLoading";
 import { getLocale } from "next-intl/server";
 import { getT } from "@/lib/server-translations";
+import type { MerchantType } from "@prisma/client";
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
@@ -30,14 +30,15 @@ async function getStores(): Promise<IMerchant[]> {
   }
 }
 
-export default async function StoresPage() {
+export default async function StoresPage(  { searchParams }: { searchParams: Promise<{ merchantType: MerchantType }> }) {
   const stores = await getStores();
+  const _searchParams = await searchParams;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <Suspense fallback={<StoresLoading />}>
-        <StoresContent initialStores={stores} />
+        <StoresContent initialStores={stores} initialMerchantTypeFilters={_searchParams.merchantType} />
       </Suspense>
     </div>
   );

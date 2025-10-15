@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const uploadSource = request.headers.get('X-Upload-Source')
     const files = formData.getAll('files')
 
-    if (!files)
+    if (!files) 
       NextResponse.json({ error: 'Internal error. Files image are empty' }, { status: 500 })
 
     const responses = await Promise.all(
