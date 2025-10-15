@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useT } from "@/hooks/use-inline-translation"
 import Link from "next/link"
+import { formatOrderId } from "@/lib/orders-utils"
 
 interface OrderActionsProps {
     orderId: string
@@ -32,7 +33,7 @@ export function OrderActions({
             const url = window.URL.createObjectURL(blob)
             const a = document.createElement("a")
             a.href = url
-            a.download = `order-${orderid.slice(0, 7)}-receipt.pdf`
+            a.download = `order-${formatOrderId(orderId)}-receipt.pdf`
             document.body.appendChild(a)
             a.click()
             window.URL.revokeObjectURL(url)

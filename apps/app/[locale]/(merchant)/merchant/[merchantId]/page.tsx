@@ -17,9 +17,9 @@ export const revalidate = 60; // Revalidate every 60 seconds
 export const experimental_ppr = true;
 
 interface PageProps {
-     params: {
+     params: Promise<{
           merchantId: string;
-     };
+     }>;
 }
 
 // Generate metadata for SEO
