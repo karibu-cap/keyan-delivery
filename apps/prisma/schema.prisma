@@ -265,6 +265,7 @@ model Order {
     merchant       Merchant      @relation(fields: [merchantId], references: [id])
     pickupCode     String?
     deliveryCode   String?
+    driverId       String?
     payment        Payment?      @relation(fields: [paymentId], references: [id])
     paymentId      String?       @db.ObjectId
     // Delivery zone selected at order placement
