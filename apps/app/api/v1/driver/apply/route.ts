@@ -42,7 +42,6 @@ export async function POST(request: NextRequest) {
          },
       });
 
-      console.log('user', user);
       return NextResponse.json({ success: true, data: user });
    } catch (error) {
       console.error("Error uploading driver documents:", error);
