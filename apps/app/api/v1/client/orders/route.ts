@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     const token = await getUserTokens();
 
+
     if (!token?.decodedToken?.uid) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -29,7 +30,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { items, deliveryInfo, orderPrices, deliveryCode, pickupCode } = body;
+    const {
+      items,
+      deliveryInfo,
+      orderPrices,
+      deliveryCode,
+      deliveryZoneId // NEW: Delivery zone ID
+    } = body;
 
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -46,6 +53,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // NEW: Validate delivery zone
+    if (!deliveryZoneId) {
+      return NextResponse.json(
+        { success: false, error: 'Delivery zone is required' },
+        { status: 400 }
+      );
+    }
+
+    // NEW: Verify delivery zone exists and is active
+    const deliveryZone = await prisma.deliveryZone.findUnique({
+      where: { id: deliveryZoneId }
+    });
+
+    if (!deliveryZone) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid delivery zone' },
+        { status: 404 }
+      );
+    }
+
+    if (deliveryZone.status !== 'ACTIVE') {
+      return NextResponse.json(
+        { success: false, error: 'Selected delivery zone is not available' },
+        { status: 400 }
+      );
+    }
+
+    // NEW: Verify delivery fee matches the zone
+    if (orderPrices.deliveryFee !== deliveryZone.deliveryFee) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Delivery fee mismatch. Please refresh and try again.'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate products and stock
     for (const item of items) {
       const product = await prisma.product.findUnique({
         where: { id: item.productId },
@@ -71,22 +117,27 @@ export async function POST(request: NextRequest) {
 
     // Generate codes if not provided
     const finalDeliveryCode = deliveryCode || Math.random().toString(36).substring(2, 8).toUpperCase();
-    const finalPickupCode = pickupCode || Math.random().toString(36).substring(2, 8).toUpperCase();
 
-    // Create order with items
+    // NEW: Calculate estimated delivery time based on zone
+    const estimatedDelivery = deliveryZone.estimatedDeliveryMinutes
+      ? new Date(Date.now() + deliveryZone.estimatedDeliveryMinutes * 60 * 1000)
+      : null;
+
+    // Create order with items and delivery zone
     const order = await prisma.order.create({
       data: {
         userId: user.id,
         merchantId: items[0].merchantId,
+        deliveryZoneId: deliveryZoneId, // NEW: Link to delivery zone
         deliveryInfo: {
           address: deliveryInfo.address,
-          delivery_latitude: deliveryInfo.delivery_latitude || 0,
-          delivery_longitude: deliveryInfo.delivery_longitude || 0,
+          location: deliveryInfo.location ? {
+            type: "Point",
+            coordinates: deliveryInfo.location.coordinates
+          } : undefined,
           deliveryContact: deliveryInfo.deliveryContact,
           additionalNotes: deliveryInfo.additionalNotes || null,
-          estimatedDelivery: deliveryInfo.estimatedDelivery
-            ? new Date(deliveryInfo.estimatedDelivery)
-            : null,
+          estimatedDelivery: estimatedDelivery,
         },
         orderPrices: {
           subtotal: orderPrices.subtotal,
@@ -96,7 +147,6 @@ export async function POST(request: NextRequest) {
           deliveryFee: orderPrices.deliveryFee,
         },
         deliveryCode: finalDeliveryCode,
-        pickupCode: finalPickupCode,
         status: 'PENDING',
         items: {
           create: items.map((item: OrderItem) => ({
@@ -116,6 +166,13 @@ export async function POST(request: NextRequest) {
             },
           },
         },
+        deliveryZone: true, // NEW: Include delivery zone in response
+        merchant: {
+          select: {
+            businessName: true,
+            phone: true,
+          }
+        }
       },
     });
 

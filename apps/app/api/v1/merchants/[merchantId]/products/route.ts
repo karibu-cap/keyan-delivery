@@ -1,3 +1,4 @@
+import { getMerchantProducts } from '@/lib/actions/server/merchants';
 import { getUserTokens } from '@/lib/firebase-client/firebase-utils';
 import { prisma } from '@/lib/prisma';
 import { generateSlug } from '@/lib/utils';
@@ -12,96 +13,27 @@ interface ProductImageInput {
 }
 
 export async function GET(request: NextRequest, props: { params: Promise<{ merchantId: string }> }) {
-    try {
-        const params = await props.params
-        const token = await getUserTokens();
+    const params = await props.params
+    const merchantId = params.merchantId;
 
-        if (!token?.decodedToken?.uid) {
-            return NextResponse.json(
-                { success: false, error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+    // Parse query parameters
+    const { searchParams } = new URL(request.url);
+    const statusParam = searchParams.get('status');
+    const status = statusParam && Object.values(ProductStatus).includes(statusParam as ProductStatus)
+        ? statusParam as ProductStatus
+        : undefined;
+    const search = searchParams.get('search');
+    const limitParam = searchParams.get('limit') || '50';
+    const offsetParam = searchParams.get('offset') || '0';
+    const limit = Math.max(1, Math.min(100, parseInt(limitParam))); // Between 1 and 100
+    const offset = Math.max(0, parseInt(offsetParam));
 
-        // Find user by Firebase UID
-        const user = await prisma.user.findUnique({
-            where: {
-                authId: token.decodedToken.uid,
-            },
-        });
-
-        if (!user) {
-            return NextResponse.json(
-                { success: false, error: 'User not found' },
-                { status: 404 }
-            );
-        }
-
-        // Parse query parameters
-        const { searchParams } = new URL(request.url);
-        const statusParam = searchParams.get('status');
-        const status = statusParam && Object.values(ProductStatus).includes(statusParam as ProductStatus)
-            ? statusParam as ProductStatus
-            : undefined;
-        const search = searchParams.get('search');
-        const limitParam = searchParams.get('limit') || '50';
-        const offsetParam = searchParams.get('offset') || '0';
-        const limit = Math.max(1, Math.min(100, parseInt(limitParam))); // Between 1 and 100
-        const offset = Math.max(0, parseInt(offsetParam));
-
-        const where: Record<string, unknown> = {
-            merchantId: {
-                equals: params.merchantId,
-            },
-        };
-
-        if (status) {
-            where.status = status;
-        }
-
-        if (search) {
-            where.OR = [
-                { title: { contains: search, mode: 'insensitive' as const } },
-                { description: { contains: search, mode: 'insensitive' as const } },
-            ];
-        }
-
-        const products = await prisma.product.findMany({
-            where,
-            include: {
-                images: true,
-                categories: {
-                    include: {
-                        category: true,
-                    },
-                },
-                promotions: true,
-                _count: {
-                    select: {
-                        OrderItem: true,
-                        cartItems: true,
-                    },
-                },
-            },
-            orderBy: { createdAt: 'desc' },
-            take: limit,
-            skip: offset,
-        });
-
-        const total = await prisma.product.count({ where });
-
-        return NextResponse.json({
-            success: true,
-            products,
-            total,
-        });
-    } catch (error) {
-        console.error('Error fetching merchant products:', error);
-        return NextResponse.json(
-            { success: false, products: [], total: 0 },
-            { status: 500 }
-        );
-    }
+    return await getMerchantProducts(merchantId, {
+        status,
+        search: search || undefined,
+        limit,
+        offset,
+    });
 }
 
 export async function POST(request: NextRequest, props: { params: Promise<{ merchantId: string }> }) {

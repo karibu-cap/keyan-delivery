@@ -1,15 +1,14 @@
+'use client'
 import { Badge } from "@/components/ui/badge"
+import { useT } from "@/hooks/use-inline-translation";
 import { OrderStatus } from "@prisma/client"
-import { getLocale } from "next-intl/server";
-import { getT } from "@/lib/server-translations";
 
 interface OrderStatusBadgeProps {
     status: OrderStatus
 }
 
-export async function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
-    const locale = await getLocale();
-    const t = await getT(locale);
+export function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
+    const t = useT();
 
     const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
         "PENDING": { label: t("Pending"), className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100" },

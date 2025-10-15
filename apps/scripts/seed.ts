@@ -1,5 +1,6 @@
+
 import { faker } from '@faker-js/faker'
-import { DriverStatus, UserRole } from '@prisma/client'
+import { DriverStatus, UserRole, ZoneCode, ZoneStatus } from '@prisma/client'
 import { env } from '../envConfig.js'
 import { prisma } from '../lib/prisma.js'
 
@@ -7,6 +8,7 @@ import { prisma } from '../lib/prisma.js'
 console.log('Database URL exists:', !!env.DATABASE_URL)
 
 const creatorId = 'D6o7bZwXeQbrtNfDQIgTIeJv6v02'
+
 export async function getBlurDataUrl(imageUrl: string) {
   try {
     const res = await fetch(imageUrl)
@@ -43,14 +45,6 @@ function getFallbackBlurDataUrl(): string {
 
 /**
  * Main entry point for seeding the database with sample data.
- *
- * 1. Connects to the database using {@link connectToDB}.
- * 2. Runs the type-safe seeding function using {@link seedDatabase}.
- * 3. Closes the database connection and exits the process with a status code
- *    depending on whether the seeding was successful or not.
- *
- * @throws {Error} If the seeding fails, an error is thrown with a message
- * describing the failure.
  */
 async function runSeed() {
   try {
@@ -90,12 +84,13 @@ async function seedDatabase() {
     await prisma.categoriesOnProducts.deleteMany()
     await prisma.userMerchantManager.deleteMany()
 
+    // Delete delivery zones
+    await prisma.deliveryZone.deleteMany()
+
     // Handle self-referential relationship in Category
-    // First set all parentId to null
     await prisma.category.updateMany({
       data: {},
     })
-    // Then delete all categories
     await prisma.category.deleteMany()
 
     // Delete dependent records first (products reference media)
@@ -167,8 +162,6 @@ async function seedDatabase() {
 
         const email = faker.internet.email().toLowerCase();
 
-        // Create auth user first
-
         return prisma.user.create({
           data: {
             authId: faker.string.alphanumeric(28).toLowerCase(),
@@ -217,10 +210,8 @@ async function seedDatabase() {
     ]
     const categoryRecords: Array<{ id: string; name: string; slug: string }> = []
 
-    // Seed Categories with sequential creation and proper image relationships
-
+    // Seed Categories
     for (let i = 0; i < categoryNames.length; i++) {
-      // Create a dedicated media record for each category
       let categoryImageId = null
       if (mediaRecords.length > 0) {
         const imageIndex = i % mediaRecords.length
@@ -246,8 +237,8 @@ async function seedDatabase() {
       })
       categoryRecords.push(category)
     }
-    const merchantCategories = randomArrayElements(categoryRecords, { min: 1, max: 2 })
-    // Seed Merchants with specific types for Instacart-style stores
+
+    // Seed Merchants
     const merchantData = [
       {
         name: "Whole Foods Market",
@@ -319,14 +310,163 @@ async function seedDatabase() {
             deliveryTime: merchant.deliveryTime,
             rating: merchant.rating,
             address: {
-              latitude: faker.location.latitude(),
-              longitude: faker.location.longitude(),
+              latitude: 3.8667, // Yaoundé coordinates
+              longitude: 11.5167,
             },
-
           },
         }),
       ),
     )
+
+    console.log(`✅ Created ${merchantRecords.length} merchants`);
+
+    // Seed Delivery Zones (Yaoundé-based)
+    const deliveryZonesData = [
+      {
+        name: "Zone Centre-Ville",
+        code: ZoneCode.INNER,
+        deliveryFee: 2.99,
+        estimatedDeliveryMinutes: 25,
+        minOrderAmount: null,
+        color: "#10b981",
+        priority: 3,
+        neighborhoods: [
+          "Mendong",
+          "Bastos",
+          "Byem Assi Ecole",
+          "Centre Ville",
+          "Omnisport",
+          "Quartier du Lac",
+          "Nlongkak"
+        ],
+        // Simple polygon around central Yaoundé
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            [
+              [11.5000, 3.8500],
+              [11.5300, 3.8500],
+              [11.5300, 3.8800],
+              [11.5000, 3.8800],
+              [11.5000, 3.8500]
+            ]
+          ]
+        }
+      },
+      {
+        name: "Zone Intermédiaire",
+        code: ZoneCode.MID,
+        deliveryFee: 3.99,
+        estimatedDeliveryMinutes: 35,
+        minOrderAmount: 15,
+        color: "#3b82f6",
+        priority: 2,
+        neighborhoods: [
+          "Melen",
+          "Nkolndongo",
+          "Essos",
+          "Nkol Eton",
+          "Mokolo",
+          "Ngoa Ekelle",
+          "Briqueterie",
+          "Elig Essono",
+          "Biyem Assi",
+          "Emana"
+        ],
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            [
+              [11.4800, 3.8400],
+              [11.5400, 3.8400],
+              [11.5400, 3.8900],
+              [11.4800, 3.8900],
+              [11.4800, 3.8400]
+            ]
+          ]
+        }
+      },
+      {
+        name: "Zone Périphérique",
+        code: ZoneCode.OUTER,
+        deliveryFee: 5.99,
+        estimatedDeliveryMinutes: 50,
+        minOrderAmount: 25,
+        color: "#f59e0b",
+        priority: 1,
+        neighborhoods: [
+          "Ekounou",
+          "Emombo",
+          "Nkolbisson",
+          "Simbock",
+          "Mvog Ada",
+          "Odza",
+          "Nkomo",
+          "Mballa 2",
+          "Nsimeyong"
+        ],
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            [
+              [11.4500, 3.8200],
+              [11.5700, 3.8200],
+              [11.5700, 3.9100],
+              [11.4500, 3.9100],
+              [11.4500, 3.8200]
+            ]
+          ]
+        }
+      },
+      {
+        name: "Hub Aéroport",
+        code: ZoneCode.HUB_A,
+        deliveryFee: 4.99,
+        estimatedDeliveryMinutes: 40,
+        minOrderAmount: 20,
+        color: "#8b5cf6",
+        priority: 2,
+        neighborhoods: [
+          "Nsimalen",
+          "Aéroport",
+          "Zone Aéroportuaire"
+        ],
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            [
+              [11.5400, 3.7200],
+              [11.5800, 3.7200],
+              [11.5800, 3.7500],
+              [11.5400, 3.7500],
+              [11.5400, 3.7200]
+            ]
+          ]
+        }
+      }
+    ];
+
+    const deliveryZoneRecords = await Promise.all(
+      deliveryZonesData.map((zone) =>
+        prisma.deliveryZone.create({
+          data: {
+            name: zone.name,
+            code: zone.code,
+            description: `Delivery zone covering ${zone.neighborhoods.join(', ')}`,
+            deliveryFee: zone.deliveryFee,
+            geometry: zone.geometry, // Json type
+            neighborhoods: zone.neighborhoods,
+            priority: zone.priority,
+            status: ZoneStatus.ACTIVE,
+            version: 1,
+            estimatedDeliveryMinutes: zone.estimatedDeliveryMinutes,
+            color: zone.color,
+          },
+        })
+      )
+    );
+
+    console.log(`✅ Created ${deliveryZoneRecords.length} delivery zones`);
 
     // Seed UserMerchantManager relationships
     await Promise.all(
@@ -335,7 +475,6 @@ async function seedDatabase() {
           .fill(null)
           .map(async () => {
             const randomUser = faker.helpers.arrayElement(userRecords) as { id: string }
-            // Check if this user-merchant relationship already exists
             const existingRelation = await prisma.userMerchantManager.findUnique({
               where: {
                 userId_merchantId: {
@@ -359,23 +498,8 @@ async function seedDatabase() {
       ),
     )
 
-    // Seed Wallets for users
-    await Promise.all(
-      userRecords.map(user =>
-        prisma.wallet.create({
-          data: {
-            userId: user.id,
-            balance: faker.number.float({ min: 0, max: 1000 }),
-            currency: 'USD',
-          },
-        }),
-      ),
-    )
-
-
     // Instacart-style product data
     const productTemplates = [
-      // Grocery products
       { name: "Organic Bananas", category: "Produce", price: 2.99, compareAtPrice: 3.49, unit: "lb", badges: ["ORGANIC", "BEST_SELLER"] },
       { name: "Fresh Atlantic Salmon", category: "Meat & Seafood", price: 12.99, compareAtPrice: 14.99, unit: "lb", badges: ["BEST_SELLER", "NON_GMO"] },
       { name: "Organic Free Range Eggs", category: "Dairy & Eggs", price: 5.99, compareAtPrice: 6.99, unit: "dozen", badges: ["ORGANIC", "NON_GMO"] },
@@ -384,21 +508,17 @@ async function seedDatabase() {
       { name: "Grass-Fed Ground Beef", category: "Meat & Seafood", price: 8.99, compareAtPrice: 9.99, unit: "lb", badges: ["ORGANIC", "NON_GMO"] },
       { name: "Greek Yogurt", category: "Dairy & Eggs", price: 4.49, compareAtPrice: 4.99, unit: "container", badges: ["LOW_FAT", "NON_GMO"] },
       { name: "Organic Strawberries", category: "Produce", price: 5.99, compareAtPrice: 6.99, unit: "lb", badges: ["ORGANIC", "BEST_SELLER"] },
-
-      // Pharmacy products
       { name: "Advil Pain Relief", category: "Health & Beauty", price: 9.99, compareAtPrice: 11.99, unit: "bottle", badges: ["BEST_SELLER"] },
       { name: "Vitamin D3 Supplement", category: "Health & Beauty", price: 14.99, compareAtPrice: 16.99, unit: "bottle", badges: ["NON_GMO"] },
       { name: "Hand Sanitizer", category: "Health & Beauty", price: 3.99, compareAtPrice: 4.49, unit: "bottle", badges: ["BEST_SELLER"] },
       { name: "Allergy Relief Medicine", category: "Health & Beauty", price: 12.99, compareAtPrice: 14.99, unit: "box", badges: ["NON_GMO"] },
-
-      // Food products
       { name: "Shake Shack Burger", category: "Food", price: 8.99, compareAtPrice: 9.99, unit: "burger", badges: ["BEST_SELLER"] },
       { name: "Chipotle Burrito Bowl", category: "Food", price: 11.99, compareAtPrice: 12.99, unit: "bowl", badges: ["NON_GMO"] },
       { name: "Caesar Salad", category: "Food", price: 9.99, compareAtPrice: 10.99, unit: "salad", badges: ["LOW_FAT"] },
       { name: "Margherita Pizza", category: "Food", price: 14.99, compareAtPrice: 16.99, unit: "pizza", badges: ["NEW"] },
     ]
 
-    // Seed Products with realistic Instacart-style data
+    // Seed Products
     const productRecords = await Promise.all(
       productTemplates.map(async (template, index) => {
         const productMedia = mediaRecords[index % mediaRecords.length]
@@ -406,10 +526,6 @@ async function seedDatabase() {
           cat.name.toLowerCase().includes(template.category.toLowerCase().split(' ')[0])
         )
 
-        const basePrice = template.price
-        const savings = template.compareAtPrice ? template.compareAtPrice - basePrice : 0
-
-        // Create additional media records for product images
         const productImageCount = faker.number.int({ min: 2, max: 5 })
         const productImages = await Promise.all(
           Array(productImageCount)
@@ -433,7 +549,7 @@ async function seedDatabase() {
             title: template.name,
             slug: faker.helpers.slugify(template.name),
             description: `${template.name} - Premium quality ${template.category.toLowerCase()} product`,
-            price: basePrice,
+            price: template.price,
             compareAtPrice: template.compareAtPrice,
             inventory: {
               quantity: faker.number.int({ min: 10, max: 100 }),
@@ -459,11 +575,10 @@ async function seedDatabase() {
               (template.category === 'Food' && m.merchantType === 'FOOD') ||
               (m.merchantType === 'GROCERY')
             )).id,
-            // Connect to main product image and additional images
             images: {
               connect: [
-                { id: productMedia.id }, // Main product image
-                ...productImages.map(img => ({ id: img.id })) // Additional images
+                { id: productMedia.id },
+                ...productImages.map(img => ({ id: img.id }))
               ]
             },
             categories: {
@@ -477,7 +592,9 @@ async function seedDatabase() {
       }),
     )
 
-    // Now seed wishlist items after products exist
+    console.log(`✅ Created ${productRecords.length} products`);
+
+    // Seed wishlist items
     await Promise.all(
       userRecords.flatMap(user =>
         Array(faker.number.int({ min: 0, max: 5 }))
@@ -486,7 +603,6 @@ async function seedDatabase() {
             if (productRecords.length === 0) return null
 
             const randomProduct = faker.helpers.arrayElement(productRecords) as { id: string }
-            // Check if this wishlist item already exists
             const existingWishlist = await prisma.wishlist.findUnique({
               where: {
                 productId_userId: {
@@ -510,12 +626,15 @@ async function seedDatabase() {
       ),
     )
 
-    // Seed Orders and OrderItems
+    // Seed Orders with Delivery Zones
     const orderRecords = await Promise.all(
       Array(15)
         .fill(null)
         .map(async () => {
-          const randomUser = faker.helpers.arrayElement(userRecords) as { id: string; email: string | null; fullName: string | null; phone: string | null }
+          const randomUser = faker.helpers.arrayElement(userRecords) as { id: string }
+          const randomZone = faker.helpers.arrayElement(deliveryZoneRecords)
+          const randomNeighborhood = faker.helpers.arrayElement(randomZone.neighborhoods)
+
           const orderItems = Array(faker.number.int({ min: 1, max: 3 }))
             .fill(null)
             .map(() => {
@@ -530,17 +649,23 @@ async function seedDatabase() {
           const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
           const shipping = faker.number.float({ min: 5, max: 20 })
           const discount = faker.number.float({ min: 0, max: subtotal * 0.2 })
+          const deliveryFee = randomZone.deliveryFee
           const total = subtotal + shipping - discount
-          const deliveryFee = faker.number.float({ min: 2, max: 10 })
 
           return prisma.order.create({
             data: {
               merchantId: faker.helpers.arrayElement(merchantRecords).id,
+              deliveryZoneId: randomZone.id,
               deliveryInfo: {
-                address: faker.location.streetAddress(),
+                address: `${faker.location.streetAddress()}, ${randomNeighborhood}, Yaoundé`,
                 additionalNotes: Math.random() > 0.5 ? faker.lorem.sentence() : null,
-                delivery_latitude: faker.location.latitude(),
-                delivery_longitude: faker.location.longitude(),
+                location: {
+                  type: "Point",
+                  coordinates: [
+                    faker.location.longitude({ min: 11.45, max: 11.58 }), // Yaoundé longitude
+                    faker.location.latitude({ min: 3.82, max: 3.91 }) // Yaoundé latitude
+                  ]
+                }
               },
               orderPrices: {
                 subtotal,
@@ -576,13 +701,14 @@ async function seedDatabase() {
         }),
     )
 
+    console.log(`✅ Created ${orderRecords.length} orders with delivery zones`);
+
     // Seed Transactions
     await Promise.all(
       orderRecords.map(async (order) => {
         const randomUser = userRecords.find(u => u.id === order.userId)
         if (!randomUser) return null
 
-        // Get user's wallet
         const wallet = await prisma.wallet.findUnique({
           where: { userId: randomUser.id }
         })
@@ -602,18 +728,24 @@ async function seedDatabase() {
       }).filter(Boolean),
     )
 
+    console.log(`✅ Created transactions`);
+
     // Seed Payments
     await Promise.all(
       orderRecords.map(order => {
-        if (Math.random() > 0.7) { // Only create payments for some orders
+        if (Math.random() > 0.7) {
           return prisma.payment.create({
             data: {
               customerId: order.userId,
               amountTotal: order.orderPrices.total,
-              merchantPayout: order.orderPrices.total * 0.85, // Merchant gets 85%
-              driverPayout: order.orderPrices.deliveryFee * 0.8, // Driver gets 80% of delivery fee
-              platformFee: order.orderPrices.total * 0.15, // Platform gets 15%
+              merchantPayout: order.orderPrices.total * 0.85,
+              driverPayout: order.orderPrices.deliveryFee * 0.8,
+              platformFee: order.orderPrices.total * 0.15,
               status: order.status === 'COMPLETED' ? 'COMPLETED' : 'PENDING',
+              gateway: faker.helpers.arrayElement([
+                'STRIPE',
+                'CASH'
+              ]),
               Order: {
                 connect: { id: order.id }
               },
@@ -624,9 +756,17 @@ async function seedDatabase() {
       }).filter(Boolean),
     )
 
+    console.log(`✅ Created payments`);
+    console.log('');
+    console.log('📊 Database seeding summary:');
+    console.log(`   - ${userRecords.length} users`);
+    console.log(`   - ${merchantRecords.length} merchants`);
+    console.log(`   - ${deliveryZoneRecords.length} delivery zones`);
+    console.log(`   - ${categoryRecords.length} categories`);
+    console.log(`   - ${productRecords.length} products`);
+    console.log(`   - ${orderRecords.length} orders`);
+    console.log('');
 
-
-    // console.log('Database seeded successfully!')
   } catch (error) {
     console.error('Error during database seeding:', error)
     throw error

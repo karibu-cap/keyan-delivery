@@ -9,7 +9,6 @@ datasource db {
 }
 
 // --------------------------------Media model------------------------------------
-// --------------------------------Media model------------------------------------
 model Media {
     id          String     @id @default(auto()) @map("_id") @db.ObjectId
     createdAt   DateTime   @default(now())
@@ -23,8 +22,7 @@ model Media {
     productId   String?    @db.ObjectId
 }
 
-// --------------------------------categories model------------------------------------
-// --------------------------------categories model------------------------------------
+// --------------------------------Categories model------------------------------------
 type SeoMetadata {
     seoTitle       String?
     seoDescription String?
@@ -43,13 +41,11 @@ model Category {
     parentCategoryId String?                @db.ObjectId
     parentCategory   Category?              @relation("CategoryParent", fields: [parentCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     subcategories    Category[]             @relation("CategoryParent")
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt        DateTime               @default(now())
+    updatedAt        DateTime               @updatedAt
 }
 
-// --------------------------------product model------------------------------------
-// --------------------------------product model------------------------------------
+// --------------------------------Product model------------------------------------
 enum ProductStatus {
     DRAFT
     VERIFIED
@@ -115,6 +111,23 @@ enum PromotionType {
     FIXED_AMOUNT_OFF
 }
 
+enum ZoneCode {
+    INNER
+    MID
+    OUTER
+    HUB_A
+    HUB_B
+    HUB_C
+    HUB_D
+    HUB_E
+}
+
+enum ZoneStatus {
+    ACTIVE
+    INACTIVE
+    MAINTENANCE
+}
+
 type Inventory {
     quantity          Int @default(0)
     lowStockThreshold Int @default(5)
@@ -160,8 +173,34 @@ model Product {
     savedListId    String?                @db.ObjectId
 }
 
-// --------------------------------order model------------------------------------
-// --------------------------------order model------------------------------------
+// --------------------------------Delivery Zone model------------------------------------
+model DeliveryZone {
+    id                       String       @id @default(auto()) @map("_id") @db.ObjectId
+    name                     String
+    code                     ZoneCode
+    description              String?
+    deliveryFee              Float
+    geometry                 ZoneGeometry
+    neighborhoods            String[]
+    priority                 Int          @default(0)
+    status                   ZoneStatus   @default(ACTIVE)
+    version                  Int          @default(1)
+    estimatedDeliveryMinutes Int?
+    color                    String?
+    orders                   Order[]
+    createdAt                DateTime     @default(now())
+    updatedAt                DateTime     @updatedAt
+
+    @@index([geometry], map: "geometry_2dsphere")
+    @@index([status])
+}
+
+type ZoneGeometry {
+    type        String // Always "Polygon" for zone boundaries
+    coordinates Json // [[[lng, lat], [lng, lat], ...]] as JSON
+}
+
+// --------------------------------Order model------------------------------------
 enum OrderStatus {
     PENDING
     ACCEPTED_BY_MERCHANT
@@ -199,33 +238,47 @@ type OrderPrices {
 }
 
 type DeliveryInfo {
-    address            String
-    additionalNotes    String?
-    delivery_latitude  Float
-    delivery_longitude Float
-    estimatedDelivery  DateTime?
-    deliveryContact    String?
+    address           String
+    additionalNotes   String?
+    // Optional: Store coordinates for driver/tracking purposes
+    location          DeliveryLocation?
+    estimatedDelivery DateTime?
+    deliveryContact   String?
+}
+
+type DeliveryLocation {
+    type        String // "Point"
+    coordinates Float[] // [longitude, latitude]
 }
 
 model Order {
-    id           String       @id @default(auto()) @map("_id") @db.ObjectId
-    deliveryInfo DeliveryInfo
-    items        OrderItem[]
-    orderPrices  OrderPrices
-    status       OrderStatus  @default(PENDING)
-    createdAt    DateTime     @default(now())
-    updatedAt    DateTime     @updatedAt
-    user         User         @relation(fields: [userId], references: [id])
-    userId       String       @db.ObjectId
-    merchantId   String       @db.ObjectId
-    merchant     Merchant     @relation(fields: [merchantId], references: [id])
-    pickupCode   String?
-    deliveryCode String?
-    driverId     String?
-    payment      Payment?     @relation(fields: [paymentId], references: [id])
-    paymentId    String?      @db.ObjectId
+    id             String        @id @default(auto()) @map("_id") @db.ObjectId
+    deliveryInfo   DeliveryInfo
+    items          OrderItem[]
+    orderPrices    OrderPrices
+    status         OrderStatus   @default(PENDING)
+    createdAt      DateTime      @default(now())
+    updatedAt      DateTime      @updatedAt
+    user           User          @relation(fields: [userId], references: [id])
+    userId         String        @db.ObjectId
+    merchantId     String        @db.ObjectId
+    merchant       Merchant      @relation(fields: [merchantId], references: [id])
+    pickupCode     String?
+    deliveryCode   String?
+    payment        Payment?      @relation(fields: [paymentId], references: [id])
+    paymentId      String?       @db.ObjectId
+    // Delivery zone selected at order placement
+    deliveryZone   DeliveryZone? @relation(fields: [deliveryZoneId], references: [id])
+    deliveryZoneId String?       @db.ObjectId
+
+    @@index([userId])
+    @@index([merchantId])
+    @@index([deliveryZoneId])
+    @@index([status])
+    @@index([createdAt])
 }
 
+// --------------------------------User model------------------------------------
 model User {
     id               String                @id @default(auto()) @map("_id") @db.ObjectId
     authId           String                @unique
@@ -237,7 +290,7 @@ model User {
     driverDocument   String?
     wallet           Wallet?
     productWishlist  Wishlist[]
-    driverStatus     DriverStatus?          @default(PENDING)
+    driverStatus     DriverStatus?
     orders           Order[]
     merchantManagers UserMerchantManager[]
     payments         Payment[]
@@ -247,8 +300,7 @@ model User {
     updatedAt        DateTime?             @updatedAt
 }
 
-// --------------------------------merchant model------------------------------------
-// --------------------------------merchant model------------------------------------
+// --------------------------------Merchant model------------------------------------
 type MerchantAddress {
     latitude  Float
     longitude Float
@@ -273,8 +325,7 @@ model Merchant {
     order        Order[]
 }
 
-// --------------------------------merchant manager relation------------------------------------
-// --------------------------------merchant manager relation------------------------------------
+// --------------------------------Merchant Manager relation------------------------------------
 model UserMerchantManager {
     id         String   @id @default(auto()) @map("_id") @db.ObjectId
     user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -286,8 +337,7 @@ model UserMerchantManager {
     @@unique([userId, merchantId])
 }
 
-// --------------------------------wallet model------------------------------------
-// --------------------------------wallet model------------------------------------
+// --------------------------------Wallet model------------------------------------
 model Wallet {
     id           String        @id @default(auto()) @map("_id") @db.ObjectId
     user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -299,8 +349,7 @@ model Wallet {
     transactions Transaction[]
 }
 
-// --------------------------------transaction model------------------------------------
-// --------------------------------transaction model------------------------------------
+// --------------------------------Transaction model------------------------------------
 model Transaction {
     id          String            @id @default(auto()) @map("_id") @db.ObjectId
     wallet      Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
@@ -313,26 +362,28 @@ model Transaction {
     createdAt   DateTime          @default(now())
 }
 
-// --------------------------------payment model------------------------------------
-// --------------------------------payment model------------------------------------
+// --------------------------------Payment model------------------------------------
+
+enum PaymentGateway {
+    STRIPE
+    CASH
+}
+
 model Payment {
-    id             String        @id @default(auto()) @map("_id") @db.ObjectId
-    customer       User          @relation(fields: [customerId], references: [id], onDelete: Cascade)
-    customerId     String        @db.ObjectId
+    id             String         @id @default(auto()) @map("_id") @db.ObjectId
+    customer       User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+    customerId     String         @db.ObjectId
     amountTotal    Float
     merchantPayout Float
     driverPayout   Float
     platformFee    Float
-    status         PaymentStatus @default(PENDING)
-    createdAt      DateTime      @default(now())
+    gateway        PaymentGateway
+    status         PaymentStatus  @default(PENDING)
+    createdAt      DateTime       @default(now())
     Order          Order[]
 }
 
-//------------------ Relation schema --------------------------------
-//------------------ Relation schema --------------------------------
-
-/// Many to many ( a blog can have 0 or more categories and categories can be link to 
-/// one or more blog)
+// --------------------------------Relation schemas------------------------------------
 model CategoriesOnProducts {
     id         String   @id @default(cuid()) @map("_id")
     product    Product  @relation(fields: [productId], references: [id])
@@ -394,8 +445,7 @@ model SavedList {
 }
 
 model Wishlist {
-    id String @id @default(cuid()) @map("_id")
-
+    id         String   @id @default(cuid()) @map("_id")
     product    Product  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     productId  String   @db.ObjectId
     user       User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)

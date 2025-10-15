@@ -33,6 +33,13 @@ function removeLocaleFromPath(path: string) {
   return path.replace(regex, '/');
 }
 
+function getLocaleFromPath(path: string) {
+  const localePattern = locales.join('|');
+  const regex = new RegExp(`^/(${localePattern})(/|$)`);
+  const match = path.match(regex);
+  return match ? match[1] : null;
+}
+
 
 
 export async function middleware(request: NextRequest) {
@@ -122,25 +129,24 @@ export async function middleware(request: NextRequest) {
 }
 
 // Helper to apply intlMiddleware and merge with auth headers where needed
-function applyIntl(request: NextRequest, authHeaders?: Headers, authResponse?: NextResponse) {
+function applyIntl(request: NextRequest, authHeaders?: Headers) {
   // If auth middleware wants to redirect (e.g., to login), apply intl to that redirect
 
-  if (authResponse) {
+  if (authHeaders) {
     // Extract the redirect path from auth response
-    const redirectUrl = new URL(authResponse.headers.get('location') || authResponse.url);
+    const redirectUrl = new URL(request.headers.get('location') || request.nextUrl.href);
     // Create a new request with the redirect path to let intl middleware handle locale
     const redirectRequest = new NextRequest(redirectUrl, request);
     const intlResponse = intlMiddleware(redirectRequest);
-
     // Return the intl response which will add locale to the redirect path
     return intlResponse;
   }
 
   // Normal flow: apply intl middleware
   const intlResponse = intlMiddleware(request);
-
   // If i18n redirects (e.g., adding locale to URL like /stores -> /en/stores)
   if (intlResponse.status === 307 || intlResponse.status === 308 || intlResponse.redirected) {
+
     return intlResponse;
   }
 

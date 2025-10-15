@@ -25,14 +25,10 @@ export async function POST(request: NextRequest) {
          cniUrl = await uploadBase64DriverToCloudinary(cniBase64);
       }
 
-      console.log(cniUrl);
-
       let licenseUrl;
       if (licenseBase64) {
          licenseUrl = await uploadBase64DriverToCloudinary(licenseBase64);
       }
-
-      console.log(licenseUrl);
 
       const user = await prisma.user.update({
          where: { authId: token.decodedToken.uid },
@@ -46,7 +42,6 @@ export async function POST(request: NextRequest) {
          },
       });
 
-      console.log(user);
       return NextResponse.json({ success: true, data: user });
    } catch (error) {
       console.error("Error uploading driver documents:", error);
