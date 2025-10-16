@@ -1,12 +1,12 @@
 import Navbar from "@/components/Navbar"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import { getUserTokens } from "@/lib/firebase-client/firebase-utils"
+import Link from "next/link"
 
-import { prisma } from "@/lib/prisma"
 import { UserProfile } from "@/components/client/customer/UserProfile"
-import { getLocale } from "next-intl/server"
+import { prisma } from "@/lib/prisma"
 import { getT } from "@/lib/server-translations"
+import { getLocale } from "next-intl/server"
 
 export default async function ProfilePage() {
   const token = await getUserTokens();
@@ -78,6 +78,6 @@ export default async function ProfilePage() {
   }
 
 
-  return <UserProfile user={user} />
+  return <UserProfile user={user} initialValue={locale} />
 
 }

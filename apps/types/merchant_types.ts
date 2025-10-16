@@ -1,9 +1,8 @@
-
 /**
  * Shared type definitions for merchant dashboard
  */
 
-import type { Media, OrderStatus, ProductStatus } from "@prisma/client";
+import type { Media, OrderStatus, ProductStatus } from '@prisma/client';
 
 export interface OrderItem {
   id: string;
@@ -18,7 +17,7 @@ export interface OrderItem {
 export interface Order {
   id: string;
   status: OrderStatus;
-  createdAt: string;
+  createdAt: string; 
   orderPrices: {
     total: number;
     subtotal: number;

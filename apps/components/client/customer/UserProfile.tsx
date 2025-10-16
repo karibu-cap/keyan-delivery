@@ -1,19 +1,19 @@
 'use client';
 
-import Navbar from "@/components/Navbar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
-import { ArrowLeftIcon, UserIcon, MapPinIcon, CreditCardIcon, BellIcon, ShieldIcon, HelpCircleIcon, StoreIcon, CheckCircleIcon, ClockIcon, Store } from "lucide-react"
-import { useState } from "react";
+import Navbar from "@/components/Navbar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useT } from '@/hooks/use-inline-translation';
+import { useToast } from '@/hooks/use-toast';
 import { Prisma, User } from "@prisma/client";
-import { useToast } from '@/hooks/use-toast'
-import { useT } from '@/hooks/use-inline-translation'
+import { ArrowLeftIcon, BellIcon, CheckCircleIcon, ClockIcon, CreditCardIcon, HelpCircleIcon, MapPinIcon, ShieldIcon, Store, StoreIcon, UserIcon } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 type IUser = Prisma.UserGetPayload<{
     include: {
@@ -25,7 +25,7 @@ type IUser = Prisma.UserGetPayload<{
     },
 }>;
 
-export function UserProfile({ user }: { user: IUser }) {
+export function UserProfile({ user, initialValue }: { user: IUser, initialValue?: string }) {
     const t = useT()
     const { toast } = useToast()
     const [currentUser, setCurrentUser] = useState<User>(user);
@@ -79,7 +79,7 @@ export function UserProfile({ user }: { user: IUser }) {
 
                 <h1 className="mb-6 text-3xl font-bold">{t("Profile & Settings")}</h1>
 
-                <Tabs defaultValue="profile" className="space-y-6">
+                <Tabs defaultValue={initialValue || "profile"} className="space-y-6">
                     <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-6">
                         <TabsTrigger value="profile">{t("Profile")}</TabsTrigger>
                         <TabsTrigger value="merchants">{t("Merchants")}</TabsTrigger>
