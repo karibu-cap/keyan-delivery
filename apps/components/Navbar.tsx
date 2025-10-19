@@ -183,9 +183,9 @@ const Navbar = () => {
       weight: null,
       weightUnit: null,
       savedListId: null,
-      _count: { OrderItem: 0 , cartItems: 0},
+      _count: { OrderItem: 0, cartItems: 0 },
     };
-    
+
     setSelectedProduct(productData);
     setIsProductModalOpen(true);
   }, []);

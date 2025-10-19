@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useT } from "@/hooks/use-inline-translation";
 import type { Product } from "@/types/merchant_types";
-import Image from "next/image";
 import Link from "next/link";
+import { OptimizedImage } from "../ClsOptimization";
 
 
 interface RecentProductsProps {
@@ -36,11 +36,12 @@ export default function RecentProducts({ products, merchantId }: RecentProductsP
                               className="flex items-center gap-4 p-4 rounded-2xl border border-border hover:shadow-card transition-all"
                          >
                               <div className="relative w-16 h-16">
-                                   <Image
+                                   <OptimizedImage
                                         src={product.images[0]?.url}
                                         blurDataURL={product.images[0]?.blurDataUrl ?? undefined}
                                         alt={product.title}
-                                        fill
+                                        width={64}
+                                        height={64}
                                         className="w-16 h-16 rounded-2xl object-cover"
                                    />
                               </div>

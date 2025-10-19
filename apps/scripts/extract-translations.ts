@@ -92,7 +92,7 @@ class TranslationExtractor {
      * Extract from all component files
      */
     async extractAll(pattern: string = '**/*.{ts,tsx}'): Promise<void> {
-        console.log('🔍 Scanning for inline translations...\n');
+        console.info('🔍 Scanning for inline translations...\n');
 
         const files = await glob(pattern, {
             ignore: [
@@ -103,7 +103,7 @@ class TranslationExtractor {
             ],
         });
 
-        console.log(`📁 Found ${files.length} files to scan\n`);
+        console.info(`📁 Found ${files.length} files to scan\n`);
 
         let processedFiles = 0;
         for (const file of files) {
@@ -116,7 +116,7 @@ class TranslationExtractor {
             }
         }
 
-        console.log(`\n\n✅ Extracted ${this.translations.size} unique translations\n`);
+        console.info(`\n\n✅ Extracted ${this.translations.size} unique translations\n`);
     }
 
     /**
@@ -138,7 +138,7 @@ class TranslationExtractor {
             'utf-8'
         );
 
-        console.log(`💾 Generated: ${outputPath}`);
+        console.info(`💾 Generated: ${outputPath}`);
     }
 
     /**
@@ -159,33 +159,33 @@ class TranslationExtractor {
         }
 
         fs.writeFileSync(outputPath, lines.join('\n'), 'utf-8');
-        console.log(`📊 Generated CSV: ${outputPath}`);
+        console.info(`📊 Generated CSV: ${outputPath}`);
     }
 
     /**
      * Generate detailed report
      */
     printReport(): void {
-        console.log('\n' + '='.repeat(60));
-        console.log('📋 EXTRACTION REPORT');
-        console.log('='.repeat(60) + '\n');
+        console.info('\n' + '='.repeat(60));
+        console.info('📋 EXTRACTION REPORT');
+        console.info('='.repeat(60) + '\n');
 
         const organized = this.organizeTranslations();
 
-        console.log('Translations by key:\n');
+        console.info('Translations by key:\n');
         for (const [key, translations] of Object.entries(organized)) {
-            console.log(` ${key.padEnd(15)} ${translations}`);
+            console.info(` ${key.padEnd(15)} ${translations}`);
         }
 
-        console.log('\n' + '='.repeat(60));
-        console.log(`TOTAL: ${this.translations.size} unique translations`);
-        console.log('='.repeat(60) + '\n');
+        console.info('\n' + '='.repeat(60));
+        console.info(`TOTAL: ${this.translations.size} unique translations`);
+        console.info('='.repeat(60) + '\n');
     }
 }
 
 // Main execution
 async function main() {
-    console.log(`
+    console.info(`
 ╔════════════════════════════════════════════════════════╗
 ║        INLINE TRANSLATION EXTRACTION TOOL              ║
 ║        Extracts t('...') calls from your code          ║
@@ -205,11 +205,11 @@ async function main() {
         // Print report
         extractor.printReport();
 
-        console.log('✅ NEXT STEPS:\n');
-        console.log('1. Review: messages/extracted-en.json');
-        console.log('2. Run: npm run translate');
-        console.log('3. Review: messages/sw.json');
-        console.log('4. Run: npm run merge\n');
+        console.info('✅ NEXT STEPS:\n');
+        console.info('1. Review: messages/extracted-en.json');
+        console.info('2. Run: npm run translate');
+        console.info('3. Review: messages/sw.json');
+        console.info('4. Run: npm run merge\n');
     } catch (error) {
         console.error('❌ Extraction failed:', error);
         process.exit(1);

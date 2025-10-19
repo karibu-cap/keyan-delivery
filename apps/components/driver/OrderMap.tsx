@@ -47,7 +47,7 @@ export default function OrderMap({ order, onClose }: OrderMapProps) {
                });
             },
             (error) => {
-               console.error("Error getting location:", error);
+               console.error({ message: "Error getting location:", error });
             }
          );
       }

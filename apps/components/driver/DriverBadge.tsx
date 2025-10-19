@@ -30,10 +30,10 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
 
    const fetchPendingOrders = async () => {
       try {
-         const {data} = await fetchDriverAvailableOrders();
+         const { data } = await fetchDriverAvailableOrders();
          setPendingOrdersCount(data?.length || 0);
       } catch (error) {
-         console.error("Error fetching pending orders:", error);
+         console.error({ message: "Error fetching pending orders:", error });
       } finally {
          setLoading(false);
       }

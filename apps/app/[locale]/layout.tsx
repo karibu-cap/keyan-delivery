@@ -1,6 +1,7 @@
 import { FontOptimizer } from "@/components/ClsOptimization";
 import Navbar from "@/components/Navbar";
 import { OfflineIndicator, OfflineProvider } from "@/components/OfflineSupport";
+import ServiceWorkerRegistration from "@/components/notifications/ServiceWorkerRegistration";
 import { Toaster } from "@/components/ui/toaster";
 import { routing } from "@/i18n/routing";
 import { generateHomeMetadata, generateOrganizationStructuredData } from "@/lib/metadata";
@@ -78,6 +79,7 @@ export default async function RootLayout({
                <body
                     className={`${geistSans.variable} ${geistMono.variable} antialiased`}
                >
+                    <ServiceWorkerRegistration />
                     <NextIntlClientProvider>
 
                          <FontOptimizer>

@@ -1,4 +1,4 @@
-import { getCachedProducts, getCachedProductCount } from '@/lib/cache';
+import { getCachedProductCount, getCachedProducts } from '@/lib/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error({ message: 'Error fetching products:', error });
     return NextResponse.json(
       { success: false, error: 'Failed to fetch products' },
       { status: 500 }

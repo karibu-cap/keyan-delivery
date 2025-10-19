@@ -1,7 +1,7 @@
 // Enhanced Sitemap Generation with Next.js Optimizations
+import { generateSitemapData } from '@/lib/metadata';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
-import { generateSitemapData } from '@/lib/metadata';
 
 // Generate XML sitemap for SEO with Next.js best practices
 export async function GET(request: Request) {

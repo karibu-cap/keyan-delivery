@@ -1,6 +1,7 @@
 import { updateOrderStatus } from '@/lib/actions/server/merchants';
 import { NextRequest, NextResponse } from 'next/server';
 
+
 export async function PATCH(
     request: NextRequest,
     props: { params: Promise<{ merchantId: string, orderId: string }> }

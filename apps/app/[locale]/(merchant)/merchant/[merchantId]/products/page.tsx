@@ -54,7 +54,7 @@ async function getProducts(merchantId: string) {
                total: data.total,
           };
      } catch (error) {
-          console.error('Error fetching products:', error);
+          console.error({ message: 'Error fetching products:', error });
           return null;
      }
 }

@@ -31,7 +31,7 @@ export function TransactionHistory() {
             setTransactions(data.data);
          }
       } catch (error) {
-         console.error("Error fetching transactions:", error);
+         console.error({ message: "Error fetching transactions:", error });
       } finally {
          setLoading(false);
       }
@@ -84,8 +84,8 @@ export function TransactionHistory() {
                         <div className="flex items-center gap-3">
                            <div
                               className={`w-10 h-10 rounded-full flex items-center justify-center ${transaction.type === "credit"
-                                    ? "bg-success/10"
-                                    : "bg-destructive/10"
+                                 ? "bg-success/10"
+                                 : "bg-destructive/10"
                                  }`}
                            >
                               {transaction.type === "credit" ? (

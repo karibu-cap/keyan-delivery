@@ -29,7 +29,7 @@ export async function renderPDFPreview(file: File): Promise<string | null> {
 
       return canvas.toDataURL('image/png');
    } catch (error) {
-      console.error('Error creating PDF preview:', error);
+      console.error({ message: 'Error creating PDF preview:', error });
       return null;
    }
 }

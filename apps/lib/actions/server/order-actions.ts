@@ -13,10 +13,10 @@ export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'u
         // Revalidate relevant paths
         revalidatePath('/orders');
         revalidatePath(`/orders/${order.id}`);
-        
+
         return order;
     } catch (error) {
-        console.error('Error creating order:', error);
+        console.error({ message: 'Error creating order:', error });
         return null;
     }
 }
@@ -31,16 +31,16 @@ export async function getOrder(orderId: string): Promise<Order | null> {
                 user: true,
             }
         });
-        
+
         return order;
     } catch (error) {
-        console.error(`Error fetching order ${orderId}:`, error);
+        console.error({ message: `Error fetching order ${orderId}:`, error });
         return null;
     }
 }
 
 export async function updateOrder(
-    orderId: string, 
+    orderId: string,
     updates: Partial<Order>
 ): Promise<Order | null> {
     try {
@@ -52,10 +52,10 @@ export async function updateOrder(
         // Revalidate paths
         revalidatePath('/orders');
         revalidatePath(`/orders/${orderId}`);
-        
+
         return order;
     } catch (error) {
-        console.error(`Error updating order ${orderId}:`, error);
+        console.error({ message: `Error updating order ${orderId}:`, error });
         return null;
     }
 }
@@ -63,7 +63,7 @@ export async function updateOrder(
 export async function getUserOrders(userId: string): Promise<Order[]> {
     try {
         const orders = await prisma.order.findMany({
-            where: { 
+            where: {
                 OR: [
                     { userId: userId },
                     { merchantId: userId },
@@ -79,10 +79,10 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
                 createdAt: 'desc'
             }
         });
-        
+
         return orders;
     } catch (error) {
-        console.error(`Error fetching orders for user ${userId}:`, error);
+        console.error({ message: `Error fetching orders for user ${userId}:`, error });
         return [];
     }
 }
@@ -99,10 +99,10 @@ export async function cancelOrderByMerchand(orderId: string): Promise<Order | nu
         // Revalidate paths
         revalidatePath('/orders');
         revalidatePath(`/orders/${orderId}`);
-        
+
         return order;
     } catch (error) {
-        console.error(`Error cancelling order ${orderId}:`, error);
+        console.error({ message: `Error cancelling order ${orderId}:`, error });
         return null;
     }
 }

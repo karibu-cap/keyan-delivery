@@ -49,7 +49,7 @@ export const useSearch = (): UseSearchReturn => {
                 merchant: product.merchant.businessName,
             }));
         } catch (error) {
-            console.error('Product search error:', error);
+            console.error({ message: 'Product search error:', error });
             return [];
         }
     }, []);
@@ -71,12 +71,12 @@ export const useSearch = (): UseSearchReturn => {
                 merchant: merchant.businessName,
             }));
         } catch (error) {
-            console.error('Merchant search error:', error);
+            console.error({ message: 'Merchant search error:', error });
             return [];
         }
     }, []);
 
-    const searchCategories =    useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
+    const searchCategories = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
         try {
             const response = await fetchCategories({
                 search: searchQuery,
@@ -92,7 +92,7 @@ export const useSearch = (): UseSearchReturn => {
                 category: category.name,
             }));
         } catch (error) {
-            console.error('Category search error:', error);
+            console.error({ message: 'Category search error:', error });
             return [];
         }
     }, []);
@@ -123,7 +123,7 @@ export const useSearch = (): UseSearchReturn => {
                 setResults(allResults);
                 setIsOpen(allResults.length > 0);
             } catch (error) {
-                console.error('Search error:', error);
+                console.error({ message: 'Search error:', error });
                 setResults([]);
             } finally {
                 setIsLoading(false);

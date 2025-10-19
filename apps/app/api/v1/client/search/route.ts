@@ -1,7 +1,7 @@
 import { SearchResult } from '@/lib/actions/client';
 import { getCachedSearchResults } from '@/lib/cache';
-import { NextRequest, NextResponse } from 'next/server';
 import { performAdvancedSearch } from '@/lib/search/vector-search';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
     try {
@@ -72,11 +72,11 @@ export async function GET(request: NextRequest) {
             success: true,
             results: results.slice(0, limit)
         }, {
-          headers: {
-            'Cache-Control': 'public, max-age=60, s-maxage=120', // 1 min public, 2 min shared (search results change frequently)
-            'CDN-Cache-Control': 'max-age=120',
-            'Vercel-CDN-Cache-Control': 'max-age=120',
-          }
+            headers: {
+                'Cache-Control': 'public, max-age=60, s-maxage=120', // 1 min public, 2 min shared (search results change frequently)
+                'CDN-Cache-Control': 'max-age=120',
+                'Vercel-CDN-Cache-Control': 'max-age=120',
+            }
         });
 
     } catch (error) {

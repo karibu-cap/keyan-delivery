@@ -113,7 +113,7 @@ export function SearchWithTypeahead({
     const [showFilterPanel, setShowFilterPanel] = useState(false);
     const [recentResults, setRecentResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-const [hasSearched, setHasSearched] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
 
     const debouncedQuery = useDebounce(query, 300);
     const { history, addToHistory, clearHistory, removeFromHistory } = useSearchHistory();
@@ -137,8 +137,8 @@ const [hasSearched, setHasSearched] = useState(false);
         if (!searchQuery.trim()) return;
 
         setHasSearched(true);
-setIsOpen(true);
-setIsLoading(true);
+        setIsOpen(true);
+        setIsLoading(true);
         addToHistory(searchQuery);
 
         try {

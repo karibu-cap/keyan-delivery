@@ -1,380 +1,385 @@
-// // Yetu Delivery - Service Worker for PWA capabilities
-// const CACHE_NAME = 'Yetu-delivery-v1';
-// const RUNTIME_CACHE = 'Yetu-runtime-v1';
+const CACHE_NAME = 'Yetu-delivery-v1';
+const RUNTIME_CACHE = 'Yetu-runtime-v1';
 
-// // Assets to cache on install
-// const PRECACHE_ASSETS = [
-//     '/',
-//     '/manifest.json',
-//     '/offline.html',
-//     // Add other critical assets
-// ];
 
-// // API endpoints to cache
-// const API_CACHE_PATTERNS = [
-//     /\/api\/v1\/client\/categories/,
-//     /\/api\/v1\/client\/merchants/,
-//     /\/api\/v1\/client\/products\/featured/,
-// ];
+// Assets to cache on install
+const PRECACHE_ASSETS = [
+    '/',
+    '/manifest.json',
+    '/offline.html',
+    // Add other critical assets
+];
 
-// // Install event - cache static assets
-// self.addEventListener('install', event => {
-//     console.log('[SW] Install event');
+// API endpoints to cache
+const API_CACHE_PATTERNS = [
+    /\/api\/v1\/client\/categories/,
+    /\/api\/v1\/client\/merchants/,
+    /\/api\/v1\/client\/products\/featured/,
+];
 
-//     event.waitUntil(
-//         caches.open(CACHE_NAME)
-//             .then(cache => {
-//                 console.log('[SW] Caching app shell');
-//                 return cache.addAll(PRECACHE_ASSETS);
-//             })
-//             .then(() => {
-//                 return self.skipWaiting();
-//             })
-//     );
-// });
+// Install event - cache static assets
+self.addEventListener('install', event => {
+    console.info('[SW] Install event');
 
-// // Activate event - clean up old caches
-// self.addEventListener('activate', event => {
-//     console.log('[SW] Activate event');
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => {
+                console.info('[SW] Caching app shell');
+                return cache.addAll(PRECACHE_ASSETS);
+            })
+            .then(() => {
+                return self.skipWaiting();
+            })
+    );
+});
 
-//     event.waitUntil(
-//         caches.keys().then(cacheNames => {
-//             return Promise.all(
-//                 cacheNames.map(cacheName => {
-//                     if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
-//                         console.log('[SW] Deleting old cache:', cacheName);
-//                         return caches.delete(cacheName);
-//                     }
-//                 })
-//             );
-//         }).then(() => {
-//             return self.clients.claim();
-//         })
-//     );
-// });
+// Activate event - clean up old caches
+self.addEventListener('activate', event => {
+    console.info('[SW] Activate event');
 
-// // Fetch event - implement caching strategies
-// self.addEventListener('fetch', event => {
-//     const { request } = event;
-//     const url = new URL(request.url);
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
+                        console.info('[SW] Deleting old cache:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        }).then(() => {
+            return self.clients.claim();
+        })
+    );
+});
 
-//     // Skip non-HTTP requests
-//     if (!request.url.startsWith('http')) {
-//         return;
-//     }
+// Fetch event - implement caching strategies
+self.addEventListener('fetch', event => {
+    const { request } = event;
+    const url = new URL(request.url);
 
-//     // Handle API requests with Network First strategy
-//     if (url.pathname.startsWith('/api/')) {
-//         event.respondWith(networkFirstStrategy(request));
-//         return;
-//     }
+    // Skip non-HTTP requests
+    if (!request.url.startsWith('http')) {
+        return;
+    }
 
-//     // Handle image requests with Cache First strategy
-//     if (request.destination === 'image') {
-//         event.respondWith(cacheFirstStrategy(request));
-//         return;
-//     }
+    // Handle API requests with Network First strategy
+    if (url.pathname.startsWith('/api/')) {
+        event.respondWith(networkFirstStrategy(request));
+        return;
+    }
 
-//     // Handle navigation requests with Network First, falling back to cache
-//     if (request.mode === 'navigate') {
-//         event.respondWith(navigationStrategy(request));
-//         return;
-//     }
+    // Handle image requests with Cache First strategy
+    if (request.destination === 'image') {
+        event.respondWith(cacheFirstStrategy(request));
+        return;
+    }
 
-//     // Default to Stale While Revalidate for other requests
-//     event.respondWith(staleWhileRevalidateStrategy(request));
-// });
+    // Handle navigation requests with Network First, falling back to cache
+    if (request.mode === 'navigate') {
+        event.respondWith(navigationStrategy(request));
+        return;
+    }
 
-// // Network First Strategy - Try network first, fall back to cache
-// async function networkFirstStrategy(request) {
-//     try {
-//         const networkResponse = await fetch(request);
+    // Default to Stale While Revalidate for other requests
+    event.respondWith(staleWhileRevalidateStrategy(request));
+});
 
-//         // Cache successful responses for future use
-//         if (networkResponse.ok) {
-//             const cache = await caches.open(RUNTIME_CACHE);
-//             cache.put(request, networkResponse.clone());
-//         }
+// Network First Strategy - Try network first, fall back to cache
+async function networkFirstStrategy(request) {
+    try {
+        const networkResponse = await fetch(request);
 
-//         return networkResponse;
-//     } catch (error) {
-//         console.log('[SW] Network failed, trying cache:', request.url);
+        // Cache successful responses for future use
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
 
-//         const cachedResponse = await caches.match(request);
-//         if (cachedResponse) {
-//             return cachedResponse;
-//         }
+        return networkResponse;
+    } catch (error) {
+        console.info('[SW] Network failed, trying cache:', request.url);
 
-//         // Return offline page for navigation requests
-//         if (request.mode === 'navigate') {
-//             const offlineResponse = await caches.match('/offline.html');
-//             return offlineResponse || new Response('Offline - Please check your connection', {
-//                 status: 503,
-//                 statusText: 'Service Unavailable'
-//             });
-//         }
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
 
-//         throw error;
-//     }
-// }
+        // Return offline page for navigation requests
+        if (request.mode === 'navigate') {
+            const offlineResponse = await caches.match('/offline.html');
+            return offlineResponse || new Response('Offline - Please check your connection', {
+                status: 503,
+                statusText: 'Service Unavailable'
+            });
+        }
 
-// // Cache First Strategy - Try cache first, fall back to network
-// async function cacheFirstStrategy(request) {
-//     const cachedResponse = await caches.match(request);
+        throw error;
+    }
+}
 
-//     if (cachedResponse) {
-//         return cachedResponse;
-//     }
+// Cache First Strategy - Try cache first, fall back to network
+async function cacheFirstStrategy(request) {
+    const cachedResponse = await caches.match(request);
 
-//     try {
-//         const networkResponse = await fetch(request);
+    if (cachedResponse) {
+        return cachedResponse;
+    }
 
-//         if (networkResponse.ok) {
-//             const cache = await caches.open(RUNTIME_CACHE);
-//             cache.put(request, networkResponse.clone());
-//         }
+    try {
+        const networkResponse = await fetch(request);
 
-//         return networkResponse;
-//     } catch (error) {
-//         console.error('[SW] Both cache and network failed for image:', request.url);
-//         throw error;
-//     }
-// }
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
 
-// // Navigation Strategy - Network first with offline fallback
-// async function navigationStrategy(request) {
-//     try {
-//         const networkResponse = await fetch(request);
+        return networkResponse;
+    } catch (error) {
+        console.error('[SW] Both cache and network failed for image:', error);
+        throw error;
+    }
+}
 
-//         if (networkResponse.ok) {
-//             const cache = await caches.open(RUNTIME_CACHE);
-//             cache.put(request, networkResponse.clone());
-//         }
+// Navigation Strategy - Network first with offline fallback
+async function navigationStrategy(request) {
+    try {
+        const networkResponse = await fetch(request);
 
-//         return networkResponse;
-//     } catch (error) {
-//         console.log('[SW] Navigation network failed, trying cache');
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
 
-//         // Try cache first
-//         const cachedResponse = await caches.match(request);
-//         if (cachedResponse) {
-//             return cachedResponse;
-//         }
+        return networkResponse;
+    } catch (error) {
+        console.info('[SW] Navigation network failed, trying cache');
 
-//         // Return offline page as last resort
-//         const offlineResponse = await caches.match('/offline.html');
-//         return offlineResponse || new Response('Offline - Please check your connection', {
-//             status: 503,
-//             statusText: 'Service Unavailable'
-//         });
-//     }
-// }
+        // Try cache first
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
 
-// // Stale While Revalidate Strategy - Return cache immediately, update in background
-// async function staleWhileRevalidateStrategy(request) {
-//     const cachedResponse = await caches.match(request);
+        // Return offline page as last resort
+        const offlineResponse = await caches.match('/offline.html');
+        return offlineResponse || new Response('Offline - Please check your connection', {
+            status: 503,
+            statusText: 'Service Unavailable'
+        });
+    }
+}
 
-//     // Start network request (don't await)
-//     const networkPromise = fetch(request).then(networkResponse => {
-//         if (networkResponse.ok) {
-//             caches.open(RUNTIME_CACHE).then(cache => {
-//                 cache.put(request, networkResponse.clone());
-//             });
-//         }
-//         return networkResponse;
-//     }).catch(error => {
-//         console.log('[SW] Background fetch failed:', request.url);
-//         return null;
-//     });
+// Stale While Revalidate Strategy - Return cache immediately, update in background
+async function staleWhileRevalidateStrategy(request) {
+    const cachedResponse = await caches.match(request);
 
-//     // Return cached version immediately if available
-//     if (cachedResponse) {
-//         return cachedResponse;
-//     }
+    // Start network request (don't await)
+    const networkPromise = fetch(request).then(networkResponse => {
+        if (networkResponse.ok) {
+            caches.open(RUNTIME_CACHE).then(cache => {
+                cache.put(request, networkResponse.clone());
+            });
+        }
+        return networkResponse;
+    }).catch(error => {
+        console.info('[SW] Background fetch failed:', request.url);
+        return null;
+    });
 
-//     // If no cache, wait for network
-//     return networkPromise;
-// }
+    // Return cached version immediately if available
+    if (cachedResponse) {
+        return cachedResponse;
+    }
 
-// // Background sync for offline actions
-// self.addEventListener('sync', event => {
-//     console.log('[SW] Background sync:', event.tag);
+    // If no cache, wait for network
+    return networkPromise;
+}
 
-//     if (event.tag === 'cart-sync') {
-//         event.waitUntil(syncCartData());
-//     }
+// Background sync for offline actions
+self.addEventListener('sync', event => {
+    console.info('[SW] Background sync:', event.tag);
 
-//     if (event.tag === 'order-sync') {
-//         event.waitUntil(syncOrderData());
-//     }
-// });
+    if (event.tag === 'cart-sync') {
+        event.waitUntil(syncCartData());
+    }
 
-// // Sync cart data when back online
-// async function syncCartData() {
-//     try {
-//         // Get pending cart actions from IndexedDB or local storage
-//         const pendingActions = await getPendingCartActions();
+    if (event.tag === 'order-sync') {
+        event.waitUntil(syncOrderData());
+    }
+});
 
-//         for (const action of pendingActions) {
-//             try {
-//                 await fetch('/api/v1/client/cart', {
-//                     method: 'POST',
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                     },
-//                     body: JSON.stringify(action.data)
-//                 });
+// Sync cart data when back online
+async function syncCartData() {
+    try {
+        // Get pending cart actions from IndexedDB or local storage
+        const pendingActions = await getPendingCartActions();
 
-//                 // Remove from pending actions after successful sync
-//                 await removePendingCartAction(action.id);
-//             } catch (error) {
-//                 console.error('[SW] Failed to sync cart action:', error);
-//             }
-//         }
-//     } catch (error) {
-//         console.error('[SW] Cart sync failed:', error);
-//     }
-// }
+        for (const action of pendingActions) {
+            try {
+                await fetch('/api/v1/client/cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(action.data)
+                });
 
-// // Sync order data when back online
-// async function syncOrderData() {
-//     try {
-//         const pendingOrders = await getPendingOrders();
+                // Remove from pending actions after successful sync
+                await removePendingCartAction(action.id);
+            } catch (error) {
+                console.error({ message: '[SW] Failed to sync cart action:', error });
+            }
+        }
+    } catch (error) {
+        console.error({ message: '[SW] Cart sync failed:', error });
+    }
+}
 
-//         for (const order of pendingOrders) {
-//             try {
-//                 await fetch('/api/v1/client/orders', {
-//                     method: 'POST',
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                     },
-//                     body: JSON.stringify(order)
-//                 });
+// Sync order data when back online
+async function syncOrderData() {
+    try {
+        const pendingOrders = await getPendingOrders();
 
-//                 await removePendingOrder(order.id);
-//             } catch (error) {
-//                 console.error('[SW] Failed to sync order:', error);
-//             }
-//         }
-//     } catch (error) {
-//         console.error('[SW] Order sync failed:', error);
-//     }
-// }
+        for (const order of pendingOrders) {
+            try {
+                await fetch('/api/v1/client/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(order)
+                });
 
-// // Push notification handling
-// self.addEventListener('push', event => {
-//     console.log('[SW] Push received');
+                await removePendingOrder(order.id);
+            } catch (error) {
+                console.error({ message: '[SW] Failed to sync order:', error });
+            }
+        }
+    } catch (error) {
+        console.error({ message: '[SW] Order sync failed:', error });
+    }
+}
 
-//     if (!event.data) {
-//         return;
-//     }
+self.addEventListener('push', (event) => {
+    console.info('[SW] Push notification received', event);
 
-//     const data = event.data.json();
-//     const options = {
-//         body: data.body,
-//         icon: '/icons/icon-192x192.png',
-//         badge: '/icons/badge-72x72.png',
-//         vibrate: [100, 50, 100],
-//         data: {
-//             url: data.url || '/',
-//             orderId: data.orderId
-//         },
-//         actions: [
-//             {
-//                 action: 'view',
-//                 title: 'View',
-//                 icon: '/icons/action-view.png'
-//             },
-//             {
-//                 action: 'close',
-//                 title: 'Close',
-//                 icon: '/icons/action-close.png'
-//             }
-//         ]
-//     };
+    let notificationData = {
+        title: 'Nouvelle notification',
+        body: 'Vous avez reçu une nouvelle notification',
+        icon: '/icon-192x192.png',
+        badge: '/badge-72x72.png',
+        tag: 'default',
+        data: {
+            url: '/',
+        },
+    };
 
-//     event.waitUntil(
-//         self.registration.showNotification(data.title, options)
-//     );
-// });
+    if (event.data) {
+        try {
+            const payload = event.data.json();
+            notificationData = {
+                title: payload.title || notificationData.title,
+                body: payload.body || notificationData.body,
+                icon: payload.icon || notificationData.icon,
+                badge: payload.badge || notificationData.badge,
+                tag: payload.tag || notificationData.tag,
+                data: payload.data || notificationData.data,
+                image: payload.image,
+                actions: payload.actions,
+                requireInteraction: payload.requireInteraction || false,
+            };
+        } catch (e) {
+            console.error({ message: '[SW] Error parsing push data:', e });
+        }
+    }
 
-// // Notification click handling
-// self.addEventListener('notificationclick', event => {
-//     console.log('[SW] Notification clicked:', event.action);
+    const promiseChain = self.registration.showNotification(
+        notificationData.title,
+        {
+            body: notificationData.body,
+            icon: notificationData.icon,
+            badge: notificationData.badge,
+            tag: notificationData.tag,
+            data: notificationData.data,
+            image: notificationData.image,
+            actions: notificationData.actions,
+            requireInteraction: notificationData.requireInteraction,
+            vibrate: [200, 100, 200],
+        }
+    );
 
-//     event.notification.close();
+    event.waitUntil(promiseChain);
+});
 
-//     if (event.action === 'view') {
-//         const url = event.notification.data.url || '/';
-//         event.waitUntil(
-//             clients.openWindow(url)
-//         );
-//     }
-// });
+self.addEventListener('notificationclick', (event) => {
+    console.info('[SW] Notification clicked:', event.notification);
 
-// // Message handling for communication with main thread
-// self.addEventListener('message', event => {
-//     console.log('[SW] Message received:', event.data);
+    event.notification.close();
 
-//     if (event.data.type === 'SKIP_WAITING') {
-//         self.skipWaiting();
-//     }
+    if (event.action) {
+        console.info('[SW] Action clicked:', event.action);
+    }
 
-//     if (event.data.type === 'GET_VERSION') {
-//         event.ports[0].postMessage({ version: CACHE_NAME });
-//     }
+    const urlToOpen = event.notification.data?.url || '/';
 
-//     if (event.data.type === 'CLEAR_CACHE') {
-//         event.waitUntil(
-//             caches.keys().then(cacheNames => {
-//                 return Promise.all(
-//                     cacheNames.map(cacheName => caches.delete(cacheName))
-//                 );
-//             })
-//         );
-//     }
-// });
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            for (let i = 0; i < clientList.length; i++) {
+                const client = clientList[i];
+                if (client.url === new URL(urlToOpen, self.location.origin).href && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(urlToOpen);
+            }
+        })
+    );
+});
 
-// // Helper functions for offline storage
-// async function getPendingCartActions() {
-//     // This would typically use IndexedDB
-//     // For now, return empty array
-//     return [];
-// }
+// Message handling for communication with main thread
+self.addEventListener('message', event => {
+    console.info('[SW] Message received:', event.data);
 
-// async function removePendingCartAction(id) {
-//     // Remove from IndexedDB
-//     console.log('[SW] Removed pending cart action:', id);
-// }
+    if (event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 
-// async function getPendingOrders() {
-//     // This would typically use IndexedDB
-//     return [];
-// }
+    if (event.data.type === 'GET_VERSION') {
+        event.ports[0].postMessage({ version: CACHE_NAME });
+    }
 
-// async function removePendingOrder(id) {
-//     console.log('[SW] Removed pending order:', id);
-// }
+    if (event.data.type === 'CLEAR_CACHE') {
+        event.waitUntil(
+            caches.keys().then(cacheNames => {
+                return Promise.all(
+                    cacheNames.map(cacheName => caches.delete(cacheName))
+                );
+            })
+        );
+    }
+});
 
-// // Periodic background sync (if supported)
-// self.addEventListener('periodicsync', event => {
-//     console.log('[SW] Periodic sync:', event.tag);
+// Periodic background sync (if supported)
+self.addEventListener('periodicsync', event => {
+    console.info('[SW] Periodic sync:', event.tag);
 
-//     if (event.tag === 'content-sync') {
-//         event.waitUntil(syncContentData());
-//     }
-// });
+    if (event.tag === 'content-sync') {
+        event.waitUntil(syncContentData());
+    }
+});
 
-// // Sync content data periodically
-// async function syncContentData() {
-//     try {
-//         // Refresh cached content in background
-//         const response = await fetch('/api/v1/client/products/featured');
-//         if (response.ok) {
-//             const cache = await caches.open(RUNTIME_CACHE);
-//             cache.put('/api/v1/client/products/featured', response.clone());
-//         }
-//     } catch (error) {
-//         console.error('[SW] Periodic sync failed:', error);
-//     }
-// }
+// Sync content data periodically
+async function syncContentData() {
+    try {
+        // Refresh cached content in background
+        const response = await fetch('/api/v1/client/products/featured');
+        if (response.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put('/api/v1/client/products/featured', response.clone());
+        }
+    } catch (error) {
+        console.error({ message: '[SW] Periodic sync failed:', error });
+    }
+}

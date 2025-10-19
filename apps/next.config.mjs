@@ -36,6 +36,7 @@ const nextConfig = {
         imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
         minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     },
+
     experimental: {
         optimizePackageImports: ['lucide-react'],
     },
@@ -51,6 +52,16 @@ const nextConfig = {
     // Enable modern JavaScript features
     compiler: {
         removeConsole: process.env.NODE_ENV === 'production',
+    },
+    webpack: (config, { isServer }) => {
+        // Allow Service Worker to be served from /public
+        if (!isServer) {
+            config.resolve.fallback = {
+                ...config.resolve.fallback,
+                fs: false,
+            };
+        }
+        return config;
     },
     // Configure headers for caching and security
     async headers() {
@@ -92,9 +103,26 @@ const nextConfig = {
                     },
                 ],
             },
+            {
+                source: '/sw.js',
+                headers: [
+                    {
+                        key: 'Content-Type',
+                        value: 'application/javascript; charset=utf-8',
+                    },
+                    {
+                        key: 'Cache-Control',
+                        value: 'no-cache, no-store, must-revalidate',
+                    },
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "default-src 'self'; script-src 'self'",
+                    },
+                ],
+            },
         ];
     },
-    
+
 }
 
 export default withNextIntl(nextConfig)

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { clientConfig, serverConfig } from './auth_config';
 import { locales } from './i18n/config';
 import { routing } from './i18n/routing';
+import { getUserTokens } from './lib/firebase-client/server-firebase-utils';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -104,11 +105,15 @@ export async function middleware(request: NextRequest) {
 
       if (isFetchError) {
         console.warn('Network error detected, allowing access to public paths');
+        const token = await getUserTokens()
 
         const pathname = request.nextUrl.pathname;
         const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
         if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? basePath === path : path.test(basePath))) {
           return applyIntl(request); // Apply i18n for public paths
+        }
+        if (token?.decodedToken.email_verified == true || (token?.decodedToken.exp ?? 0) > Date.now() / 1000) {
+          return applyIntl(request);
         }
       }
 
@@ -161,7 +166,7 @@ function applyIntl(request: NextRequest, authHeaders?: Headers) {
 
 
 // Keep your matcher (it already excludes general API/trpc but includes specific auth APIs)
-export const config =  {
+export const config = {
   matcher: [
     '/api/refresh-token',
     '/api/login',

@@ -155,7 +155,7 @@ export async function generateProductMetadata(
             },
         };
     } catch (error) {
-        console.error('Error generating product metadata:', error);
+        console.error({ message: 'Error generating product metadata:', error });
         return {
             ...baseMetadata,
             title: 'Product - Yetu Delivery',
@@ -168,6 +168,15 @@ export async function generateMerchantMetadata(
     merchantId: string,
     locale = 'en'
 ): Promise<Metadata> {
+    // Add validation for merchantId
+    if (!merchantId) {
+        console.error('generateMerchantMetadata: merchantId is required');
+        return {
+            ...baseMetadata,
+            title: 'Store - Yetu Delivery',
+        };
+    }
+
     try {
         const merchant = await prisma.merchant.findUnique({
             where: { id: merchantId },
@@ -229,7 +238,7 @@ export async function generateMerchantMetadata(
             },
         };
     } catch (error) {
-        console.error('Error generating merchant metadata:', error);
+        console.error({ message: 'Error generating merchant metadata:', error });
         return {
             ...baseMetadata,
             title: 'Store - Yetu Delivery',
@@ -293,7 +302,7 @@ export async function generateCategoryMetadata(
             },
         };
     } catch (error) {
-        console.error('Error generating category metadata:', error);
+        console.error({ message: 'Error generating category metadata:', error });
         return {
             ...baseMetadata,
             title: 'Category - Yetu Delivery',
@@ -418,7 +427,7 @@ export async function generateSitemapData() {
             })),
         };
     } catch (error) {
-        console.error('Error generating sitemap data:', error);
+        console.error({ message: 'Error generating sitemap data:', error });
         return { products: [], merchants: [], categories: [] };
     }
 }

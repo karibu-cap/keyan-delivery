@@ -1,9 +1,10 @@
 "use client"
 
-// Offline Support and Network Error Handling
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useT } from '@/hooks/use-inline-translation';
+import { toast } from '@/hooks/use-toast';
+
 import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
@@ -44,12 +45,16 @@ export function OfflineProvider({ children }: { children: React.ReactNode }) {
             setIsOnline(true);
             setLastOnlineTime(new Date());
             setRetryCount(0);
-            console.log(t('🔗 Connection restored'));
+            toast(
+                { description: t('🔗 Connection restored') }
+            )
         };
 
         const handleOffline = () => {
             setIsOnline(false);
-            console.log(t('📴 Connection lost'));
+            toast(
+                { description: t('📴 Connection lost') }
+            )
         };
 
         // Set initial state

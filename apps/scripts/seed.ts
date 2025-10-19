@@ -5,7 +5,7 @@ import { env } from '../envConfig.js'
 import { prisma } from '../lib/prisma.js'
 
 // Verify env is loaded
-console.log('Database URL exists:', !!env.DATABASE_URL)
+console.info('Database URL exists:', !!env.DATABASE_URL)
 
 const creatorId = 'D6o7bZwXeQbrtNfDQIgTIeJv6v02'
 
@@ -32,7 +32,7 @@ export async function getBlurDataUrl(imageUrl: string) {
 
     return base64
   } catch (err) {
-    console.error('Error generating blur placeholder:', err)
+    console.error({ message: 'Error generating blur placeholder:', err })
     return getFallbackBlurDataUrl()
   }
 }
@@ -48,17 +48,17 @@ function getFallbackBlurDataUrl(): string {
  */
 async function runSeed() {
   try {
-    console.log('Starting database seeding...')
+    console.info('Starting database seeding...')
 
     // Run seed function
     await seedDatabase()
 
-    console.log('Seeding completed successfully.')
+    console.info('Seeding completed successfully.')
 
     // Close the connection
     process.exit(0)
   } catch (error) {
-    console.error('Seeding failed:', error)
+    console.error({ message: 'Seeding failed:', error })
     process.exit(1)
   }
 }
@@ -179,7 +179,7 @@ async function seedDatabase() {
       })
     );
 
-    console.log(`✅ Created ${userRecords.length} users with different roles`);
+    console.info(`✅ Created ${userRecords.length} users with different roles`);
 
     // Create wallets for all users including drivers
     await Promise.all(
@@ -318,7 +318,7 @@ async function seedDatabase() {
       ),
     )
 
-    console.log(`✅ Created ${merchantRecords.length} merchants`);
+    console.info(`✅ Created ${merchantRecords.length} merchants`);
 
     // Seed Delivery Zones (Yaoundé-based)
     const deliveryZonesData = [
@@ -466,7 +466,7 @@ async function seedDatabase() {
       )
     );
 
-    console.log(`✅ Created ${deliveryZoneRecords.length} delivery zones`);
+    console.info(`✅ Created ${deliveryZoneRecords.length} delivery zones`);
 
     // Seed UserMerchantManager relationships
     await Promise.all(
@@ -592,7 +592,7 @@ async function seedDatabase() {
       }),
     )
 
-    console.log(`✅ Created ${productRecords.length} products`);
+    console.info(`✅ Created ${productRecords.length} products`);
 
     // Seed wishlist items
     await Promise.all(
@@ -625,6 +625,51 @@ async function seedDatabase() {
           .filter(Boolean),
       ),
     )
+
+
+    console.info('📱 Seeding push subscriptions...');
+
+    const merchantUsers = userRecords.filter(u => u.roles.includes('merchant'));
+    const customerUsers = userRecords.filter(u => u.roles.includes('customer'));
+    const driverUsers = userRecords.filter(u => u.roles.includes('driver'));
+
+    const sampleSubscriptions = [
+      // Merchants
+      ...merchantUsers.slice(0, 3).map(user => ({
+        userId: user.id,
+        endpoint: `https://fcm.googleapis.com/fcm/send/${faker.string.alphanumeric(150)}`,
+        p256dh: faker.string.alphanumeric(87),
+        auth: faker.string.alphanumeric(22),
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0',
+      })),
+      // Customers
+      ...customerUsers.slice(0, 5).map(user => ({
+        userId: user.id,
+        endpoint: `https://fcm.googleapis.com/fcm/send/${faker.string.alphanumeric(150)}`,
+        p256dh: faker.string.alphanumeric(87),
+        auth: faker.string.alphanumeric(22),
+        userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) Safari/604.1',
+      })),
+
+      // Drivers
+      ...driverUsers.slice(0, 3).map(user => ({
+        userId: user.id,
+        endpoint: `https://fcm.googleapis.com/fcm/send/${faker.string.alphanumeric(150)}`,
+        p256dh: faker.string.alphanumeric(87),
+        auth: faker.string.alphanumeric(22),
+        userAgent: 'Mozilla/5.0 (Linux; Android 13) Chrome/120.0.0.0 Mobile',
+      })),
+    ];
+
+    await Promise.all(
+      sampleSubscriptions.map(sub =>
+        prisma.pushSubscription.create({
+          data: sub,
+        })
+      )
+    );
+
+    console.info(`✅ Created ${sampleSubscriptions.length} push subscriptions`);
 
     // Seed Orders with Delivery Zones
     const orderRecords = await Promise.all(
@@ -701,7 +746,7 @@ async function seedDatabase() {
         }),
     )
 
-    console.log(`✅ Created ${orderRecords.length} orders with delivery zones`);
+    console.info(`✅ Created ${orderRecords.length} orders with delivery zones`);
 
     // Seed Transactions
     await Promise.all(
@@ -728,7 +773,7 @@ async function seedDatabase() {
       }).filter(Boolean),
     )
 
-    console.log(`✅ Created transactions`);
+    console.info(`✅ Created transactions`);
 
     // Seed Payments
     await Promise.all(
@@ -756,19 +801,19 @@ async function seedDatabase() {
       }).filter(Boolean),
     )
 
-    console.log(`✅ Created payments`);
-    console.log('');
-    console.log('📊 Database seeding summary:');
-    console.log(`   - ${userRecords.length} users`);
-    console.log(`   - ${merchantRecords.length} merchants`);
-    console.log(`   - ${deliveryZoneRecords.length} delivery zones`);
-    console.log(`   - ${categoryRecords.length} categories`);
-    console.log(`   - ${productRecords.length} products`);
-    console.log(`   - ${orderRecords.length} orders`);
-    console.log('');
+    console.info(`✅ Created payments`);
+    console.info('');
+    console.info('📊 Database seeding summary:');
+    console.info(`   - ${userRecords.length} users`);
+    console.info(`   - ${merchantRecords.length} merchants`);
+    console.info(`   - ${deliveryZoneRecords.length} delivery zones`);
+    console.info(`   - ${categoryRecords.length} categories`);
+    console.info(`   - ${productRecords.length} products`);
+    console.info(`   - ${orderRecords.length} orders`);
+    console.info('');
 
   } catch (error) {
-    console.error('Error during database seeding:', error)
+    console.error({ message: 'Error during database seeding:', error })
     throw error
   } finally {
     await prisma.$disconnect()
@@ -780,7 +825,7 @@ export default seedDatabase
 // If running as a script
 if (import.meta.url === `file://${process.argv[1]}`) {
   runSeed().catch(error => {
-    console.error('Script failed:', error)
+    console.error({ message: 'Script failed:', error })
     process.exit(1)
   })
 }

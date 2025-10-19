@@ -14,14 +14,14 @@ export interface DeliveryZone {
  */
 export async function getDeliveryZones(): Promise<DeliveryZone[] | null> {
   const response = await fetch(`/api/v1/delivery-zones`, {
-     method: "GET",
-     headers: {
-        "Content-Type": "application/json",
-     },
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
-  if(!response.ok) {
-    console.error('Error fetching delivery zones:', response);
+  if (!response.ok) {
+    console.error({ message: 'Error fetching delivery zones:', response });
     return null;
   }
 

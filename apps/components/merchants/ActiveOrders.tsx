@@ -9,9 +9,9 @@ import {
 } from "lucide-react";
 import { getOrderStatusColor, getStatusIcon, getNextStatus, canReject, canCancel, formatOrderId } from "@/lib/orders-utils";
 import { useT } from "@/hooks/use-inline-translation";
-import Image from "next/image";
 import type { Order } from "@/types/merchant_types";
 import { OrderStatus } from "@prisma/client";
+import { OptimizedImage } from "../ClsOptimization";
 
 interface ActiveOrdersProps {
      orders: Order[];
@@ -102,13 +102,13 @@ export default function ActiveOrders({
                               <div className="space-y-2 mb-4">
                                    {order.items.map((item) => (
                                         <div key={item.id} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                                             <div className="relative w-12 h-12">
-                                                  <Image
+                                             <div className="relative w-16 h-16">
+                                                  <OptimizedImage
                                                        src={item.product.images[0].url}
                                                        blurDataURL={item.product.images[0].blurDataUrl ?? undefined}
                                                        alt={item.product.title}
                                                        fill
-                                                       className="rounded-lg object-cover"
+                                                       className="w-16 h-16 rounded-lg object-cover"
                                                   />
                                              </div>
 

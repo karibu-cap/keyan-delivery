@@ -1,6 +1,7 @@
 
 import { invalidateMerchantCache } from '@/lib/cache';
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
+import { notifyClientOrderStatusChange, notifyDriverOrderReady } from '@/lib/notifications/push-service';
 import { prisma } from '@/lib/prisma';
 import { generateSlug } from '@/lib/utils';
 import {
@@ -13,13 +14,14 @@ import {
     type IOrderAnalytics,
 } from '@/types/merchant_analytics';
 import { MerchantType, OrderStatus, ProductStatus, UserRole } from '@prisma/client';
+import { getLocale } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 /**
  * Get merchant statistics (complete logic including auth)
  */
-export async function getMerchantStats(merchantId: string):Promise<NextResponse> {
+export async function getMerchantStats(merchantId: string): Promise<NextResponse> {
     try {
         const token = await getUserTokens();
 
@@ -261,7 +263,7 @@ export async function getMerchantStats(merchantId: string):Promise<NextResponse>
         });
 
     } catch (error) {
-        console.error('Error fetching merchant stats:', error);
+        console.error({ message: 'Error fetching merchant stats:', error });
         return NextResponse.json(
             { success: false, error: 'Failed to fetch statistics' },
             { status: 500 }
@@ -280,7 +282,7 @@ export async function createMerchantApplication(applicationData: {
     longitude: number;
     logoUrl: string;
     bannerUrl?: string;
-}):Promise<NextResponse> {
+}): Promise<NextResponse> {
     try {
         const token = await getUserTokens();
 
@@ -377,7 +379,7 @@ export async function createMerchantApplication(applicationData: {
             message: 'Merchant application submitted successfully. Pending approval.',
         });
     } catch (error) {
-        console.error('Error creating merchant application:', error);
+        console.error({ message: 'Error creating merchant application:', error });
         return NextResponse.json(
             { success: false, error: 'Failed to submit merchant application' },
             { status: 500 }
@@ -396,7 +398,7 @@ export async function getMerchantProducts(
         limit?: number;
         offset?: number;
     }
-):Promise<NextResponse> {
+): Promise<NextResponse> {
     try {
         const token = await getUserTokens();
 
@@ -463,7 +465,7 @@ export async function getMerchantProducts(
             hasMore: filters?.offset ? (filters.offset + (filters?.limit || 0)) < total : false
         });
     } catch (error) {
-        console.error('Error fetching merchant products:', error);
+        console.error({ message: 'Error fetching merchant products:', error });
         return NextResponse.json(
             { success: false, products: [], total: 0 },
             { status: 500 }
@@ -477,7 +479,7 @@ export async function getMerchantProducts(
 export async function getMerchantOrders(
     merchantId: string,
     type: "active" | "history" = "active"
-):Promise<NextResponse> {
+): Promise<NextResponse> {
     try {
         const token = await getUserTokens();
 
@@ -562,7 +564,7 @@ export async function getMerchantOrders(
             pendingCount,
         });
     } catch (error) {
-        console.error('Error fetching merchant orders:', error);
+        console.error({ message: 'Error fetching merchant orders:', error });
         return NextResponse.json(
             { success: false, orders: [], pendingCount: 0 },
             { status: 500 }
@@ -573,35 +575,35 @@ export async function getMerchantOrders(
 /**
  * Get merchant base on user id.
  */
-export async function getMerchantById(merchantId: string):Promise<NextResponse> {
+export async function getMerchantById(merchantId: string): Promise<NextResponse> {
     try {
-      const token = await getUserTokens();
+        const token = await getUserTokens();
 
-      if (!token?.decodedToken?.uid) {
-          return NextResponse.json(
-              { success: false, error: 'Unauthorized' },
-              { status: 401 }
-          );
-      }
+        if (!token?.decodedToken?.uid) {
+            return NextResponse.json(
+                { success: false, error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
 
-      // Find user by Firebase UID
-      const user = await prisma.user.findUnique({
-          where: { authId: token.decodedToken.uid }
-      });
+        // Find user by Firebase UID
+        const user = await prisma.user.findUnique({
+            where: { authId: token.decodedToken.uid }
+        });
 
-      if (!user) {
-          return NextResponse.json(
-              { success: false, error: 'User not found' },
-              { status: 404 }
-          );
-      }
+        if (!user) {
+            return NextResponse.json(
+                { success: false, error: 'User not found' },
+                { status: 404 }
+            );
+        }
 
-      const merchant = await prisma.merchant.findUnique({
-          where: { id: merchantId },
-      });
-      return NextResponse.json({ success: true, merchant });
+        const merchant = await prisma.merchant.findUnique({
+            where: { id: merchantId },
+        });
+        return NextResponse.json({ success: true, merchant });
     } catch (error) {
-        console.error('Error fetching merchant:', error);
+        console.error({ message: 'Error fetching merchant:', error });
         return NextResponse.json(
             { success: false, merchant: null },
             { status: 500 }
@@ -616,9 +618,10 @@ export async function updateOrderStatus(
     orderId: string,
     newStatus: OrderStatus,
     merchantId: string
-):Promise<NextResponse> {
+): Promise<NextResponse> {
     try {
         const token = await getUserTokens();
+        const locale = await getLocale();
 
         if (!token?.decodedToken?.uid) {
             return NextResponse.json(
@@ -701,17 +704,45 @@ export async function updateOrderStatus(
         const updatedOrder = await prisma.order.update({
             where: { id: orderId },
             data: updateData,
+            include: {
+                merchant: true,
+            },
         });
 
         revalidatePath('/orders');
         revalidatePath(`/orders/${orderId}`);
+
+        try {
+            // 1. Notify client for status change
+            await notifyClientOrderStatusChange(
+                updatedOrder.userId,
+                orderId,
+                newStatus,
+                locale
+            );
+            console.info('✅ Status change notification sent to client');
+
+            // 2. If order is ready to deliver, notify available drivers
+            if (newStatus === OrderStatus.READY_TO_DELIVER) {
+                const pickupAddress = `${updatedOrder.merchant.businessName}`;
+                await notifyDriverOrderReady(
+                    orderId,
+                    updatedOrder.merchant.businessName,
+                    pickupAddress,
+                    locale
+                );
+                console.info('✅ Order ready notification sent to drivers');
+            }
+        } catch (error) {
+            console.error({ message: 'Error sending notifications:', error });
+        }
 
         return NextResponse.json({
             success: true,
             order: updatedOrder,
         });
     } catch (error) {
-        console.error('Error updating order status:', error);
+        console.error({ message: 'Error updating order status:', error });
         return NextResponse.json(
             { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }
@@ -725,7 +756,7 @@ export async function updateOrderStatus(
 export async function getMerchantProductBySlug(
     merchantSlug: string,
     productSlug: string
-):Promise<NextResponse> {
+): Promise<NextResponse> {
     try {
         const token = await getUserTokens();
 
@@ -786,7 +817,7 @@ export async function getMerchantProductBySlug(
 
         return NextResponse.json({ success: true, product });
     } catch (error) {
-        console.error('Error fetching product by slug:', error);
+        console.error({ message: 'Error fetching product by slug:', error });
         return NextResponse.json(
             { success: false, error: 'Failed to fetch product' },
             { status: 500 }
@@ -798,338 +829,338 @@ export async function getMerchantProductBySlug(
 
 
 export async function getMerchantAnalytics(
-  merchantId: string,
-  days: number = 30
+    merchantId: string,
+    days: number = 30
 ): Promise<MerchantAnalytics> {
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - days);
-  startDate.setHours(0, 0, 0, 0);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
 
-  // Get all orders from the period
-  const orders = await prisma.order.findMany({
-    where: {
-      merchantId,
-      createdAt: {
-        gte: startDate,
-      },
-    },
-    include: {
-      items: {
-        include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              images: true,
-              categories: {
-                include: {
-                  category: {
-                    select: {
-                      name: true,
-                    },
-                  },
-                },
-              },
+    // Get all orders from the period
+    const orders = await prisma.order.findMany({
+        where: {
+            merchantId,
+            createdAt: {
+                gte: startDate,
             },
-          },
         },
-      },
-      user: {
-        select: {
-          id: true,
-          createdAt: true,
+        include: {
+            items: {
+                include: {
+                    product: {
+                        select: {
+                            id: true,
+                            title: true,
+                            images: true,
+                            categories: {
+                                include: {
+                                    category: {
+                                        select: {
+                                            name: true,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            user: {
+                select: {
+                    id: true,
+                    createdAt: true,
+                },
+            },
         },
-      },
-    },
-    orderBy: {
-      createdAt: 'asc',
-    },
-  });
+        orderBy: {
+            createdAt: 'asc',
+        },
+    });
 
-  const dailyData = calculateDailyAnalytics(orders, days);
+    const dailyData = calculateDailyAnalytics(orders, days);
 
-  const stats = calculateMerchantStats(dailyData);
+    const stats = calculateMerchantStats(dailyData);
 
-  const topProducts = calculateTopProducts(orders);
+    const topProducts = calculateTopProducts(orders);
 
-  const customerInsights = calculateCustomerInsights(orders);
+    const customerInsights = calculateCustomerInsights(orders);
 
-  const orderStatusBreakdown = calculateOrderStatusBreakdown(orders);
+    const orderStatusBreakdown = calculateOrderStatusBreakdown(orders);
 
-  const peakHours = calculatePeakHours(orders);
+    const peakHours = calculatePeakHours(orders);
 
-  return {
-    dailyData,
-    stats,
-    topProducts,
-    customerInsights,
-    orderStatusBreakdown,
-    peakHours,
-  };
+    return {
+        dailyData,
+        stats,
+        topProducts,
+        customerInsights,
+        orderStatusBreakdown,
+        peakHours,
+    };
 }
 
 function calculateDailyAnalytics(orders: IOrderAnalytics[], days: number): DailyAnalytics[] {
-  const dailyMap = new Map<string, DailyAnalytics>();
+    const dailyMap = new Map<string, DailyAnalytics>();
 
-  for (let i = 0; i < days; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    date.setHours(0, 0, 0, 0);
+    for (let i = 0; i < days; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        date.setHours(0, 0, 0, 0);
 
-    const dateKey = date.toISOString().split('T')[0];
-    dailyMap.set(dateKey, {
-      date,
-      totalRevenue: 0,
-      totalOrders: 0,
-      completedOrders: 0,
-      canceledOrders: 0,
-      rejectedOrders: 0,
-      pendingOrders: 0,
-      averageOrderValue: 0,
-      newCustomers: 0,
-      returningCustomers: 0,
+        const dateKey = date.toISOString().split('T')[0];
+        dailyMap.set(dateKey, {
+            date,
+            totalRevenue: 0,
+            totalOrders: 0,
+            completedOrders: 0,
+            canceledOrders: 0,
+            rejectedOrders: 0,
+            pendingOrders: 0,
+            averageOrderValue: 0,
+            newCustomers: 0,
+            returningCustomers: 0,
+        });
+    }
+
+    const customersByDate = new Map<string, Set<string>>();
+    const allCustomers = new Set<string>();
+
+    orders.forEach((order) => {
+        const orderDate = new Date(order.createdAt);
+        orderDate.setHours(0, 0, 0, 0);
+        const dateKey = orderDate.toISOString().split('T')[0];
+
+        const dayData = dailyMap.get(dateKey);
+        if (!dayData) return;
+
+        dayData.totalOrders++;
+
+        if (order.status === OrderStatus.COMPLETED) {
+            dayData.completedOrders++;
+            dayData.totalRevenue += order.orderPrices.total;
+        } else if (
+            order.status === OrderStatus.CANCELED_BY_MERCHANT ||
+            order.status === OrderStatus.CANCELED_BY_DRIVER
+        ) {
+            dayData.canceledOrders++;
+        } else if (
+            order.status === OrderStatus.REJECTED_BY_MERCHANT ||
+            order.status === OrderStatus.REJECTED_BY_DRIVER
+        ) {
+            dayData.rejectedOrders++;
+        } else {
+            dayData.pendingOrders++;
+        }
+
+        // Tracker les clients
+        if (!customersByDate.has(dateKey)) {
+            customersByDate.set(dateKey, new Set());
+        }
+        customersByDate.get(dateKey)!.add(order.userId);
+
+        // Nouveau vs returning customer
+        if (!allCustomers.has(order.userId)) {
+            dayData.newCustomers++;
+            allCustomers.add(order.userId);
+        } else {
+            dayData.returningCustomers++;
+        }
     });
-  }
 
-  const customersByDate = new Map<string, Set<string>>();
-  const allCustomers = new Set<string>();
+    dailyMap.forEach((dayData) => {
+        if (dayData.completedOrders > 0) {
+            dayData.averageOrderValue = dayData.totalRevenue / dayData.completedOrders;
+        }
+    });
 
-  orders.forEach((order) => {
-    const orderDate = new Date(order.createdAt);
-    orderDate.setHours(0, 0, 0, 0);
-    const dateKey = orderDate.toISOString().split('T')[0];
-
-    const dayData = dailyMap.get(dateKey);
-    if (!dayData) return;
-
-    dayData.totalOrders++;
-
-    if (order.status === OrderStatus.COMPLETED) {
-      dayData.completedOrders++;
-      dayData.totalRevenue += order.orderPrices.total;
-    } else if (
-      order.status === OrderStatus.CANCELED_BY_MERCHANT ||
-      order.status === OrderStatus.CANCELED_BY_DRIVER
-    ) {
-      dayData.canceledOrders++;
-    } else if (
-      order.status === OrderStatus.REJECTED_BY_MERCHANT ||
-      order.status === OrderStatus.REJECTED_BY_DRIVER
-    ) {
-      dayData.rejectedOrders++;
-    } else {
-      dayData.pendingOrders++;
-    }
-
-    // Tracker les clients
-    if (!customersByDate.has(dateKey)) {
-      customersByDate.set(dateKey, new Set());
-    }
-    customersByDate.get(dateKey)!.add(order.userId);
-
-    // Nouveau vs returning customer
-    if (!allCustomers.has(order.userId)) {
-      dayData.newCustomers++;
-      allCustomers.add(order.userId);
-    } else {
-      dayData.returningCustomers++;
-    }
-  });
-
-  dailyMap.forEach((dayData) => {
-    if (dayData.completedOrders > 0) {
-      dayData.averageOrderValue = dayData.totalRevenue / dayData.completedOrders;
-    }
-  });
-
-  return Array.from(dailyMap.values()).sort(
-    (a, b) => a.date.getTime() - b.date.getTime()
-  );
+    return Array.from(dailyMap.values()).sort(
+        (a, b) => a.date.getTime() - b.date.getTime()
+    );
 }
 
 function calculateMerchantStats(
-  dailyData: DailyAnalytics[],
+    dailyData: DailyAnalytics[],
 ): MerchantStats {
-  const totalRevenue = dailyData.reduce((sum, day) => sum + day.totalRevenue, 0);
-  const totalOrders = dailyData.reduce((sum, day) => sum + day.totalOrders, 0);
-  const completedOrders = dailyData.reduce((sum, day) => sum + day.completedOrders, 0);
-  const canceledOrders = dailyData.reduce((sum, day) => sum + day.canceledOrders, 0);
+    const totalRevenue = dailyData.reduce((sum, day) => sum + day.totalRevenue, 0);
+    const totalOrders = dailyData.reduce((sum, day) => sum + day.totalOrders, 0);
+    const completedOrders = dailyData.reduce((sum, day) => sum + day.completedOrders, 0);
+    const canceledOrders = dailyData.reduce((sum, day) => sum + day.canceledOrders, 0);
 
-  const averageOrderValue = completedOrders > 0 ? totalRevenue / completedOrders : 0;
-  const completionRate = totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0;
-  const cancelRate = totalOrders > 0 ? (canceledOrders / totalOrders) * 100 : 0;
+    const averageOrderValue = completedOrders > 0 ? totalRevenue / completedOrders : 0;
+    const completionRate = totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0;
+    const cancelRate = totalOrders > 0 ? (canceledOrders / totalOrders) * 100 : 0;
 
-  const midPoint = Math.floor(dailyData.length / 2);
-  const recentData = dailyData.slice(midPoint);
-  const previousData = dailyData.slice(0, midPoint);
+    const midPoint = Math.floor(dailyData.length / 2);
+    const recentData = dailyData.slice(midPoint);
+    const previousData = dailyData.slice(0, midPoint);
 
-  const recentRevenue = recentData.reduce((sum, day) => sum + day.totalRevenue, 0);
-  const previousRevenue = previousData.reduce((sum, day) => sum + day.totalRevenue, 0);
-  const revenueChange =
-    previousRevenue > 0 ? ((recentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
+    const recentRevenue = recentData.reduce((sum, day) => sum + day.totalRevenue, 0);
+    const previousRevenue = previousData.reduce((sum, day) => sum + day.totalRevenue, 0);
+    const revenueChange =
+        previousRevenue > 0 ? ((recentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
 
-  const recentOrders = recentData.reduce((sum, day) => sum + day.totalOrders, 0);
-  const previousOrders = previousData.reduce((sum, day) => sum + day.totalOrders, 0);
-  const ordersChange =
-    previousOrders > 0 ? ((recentOrders - previousOrders) / previousOrders) * 100 : 0;
+    const recentOrders = recentData.reduce((sum, day) => sum + day.totalOrders, 0);
+    const previousOrders = previousData.reduce((sum, day) => sum + day.totalOrders, 0);
+    const ordersChange =
+        previousOrders > 0 ? ((recentOrders - previousOrders) / previousOrders) * 100 : 0;
 
-  const recentAvg =
-    recentData.reduce((sum, day) => sum + day.averageOrderValue, 0) / recentData.length;
-  const previousAvg =
-    previousData.reduce((sum, day) => sum + day.averageOrderValue, 0) / previousData.length;
-  const avgOrderChange = previousAvg > 0 ? ((recentAvg - previousAvg) / previousAvg) * 100 : 0;
+    const recentAvg =
+        recentData.reduce((sum, day) => sum + day.averageOrderValue, 0) / recentData.length;
+    const previousAvg =
+        previousData.reduce((sum, day) => sum + day.averageOrderValue, 0) / previousData.length;
+    const avgOrderChange = previousAvg > 0 ? ((recentAvg - previousAvg) / previousAvg) * 100 : 0;
 
-  return {
-    totalRevenue,
-    revenueChange,
-    totalOrders,
-    ordersChange,
-    completedOrders,
-    completionRate,
-    averageOrderValue,
-    avgOrderChange,
-    canceledOrders,
-    cancelRate,
-  };
+    return {
+        totalRevenue,
+        revenueChange,
+        totalOrders,
+        ordersChange,
+        completedOrders,
+        completionRate,
+        averageOrderValue,
+        avgOrderChange,
+        canceledOrders,
+        cancelRate,
+    };
 }
 
 function calculateTopProducts(orders: IOrderAnalytics[]): TopProduct[] {
-  const productMap = new Map<string,
-    {
-      name: string;
-      image: string | null;
-      quantity: number;
-      revenue: number;
-      orders: Set<string>;
-      category?: string;
-    }
-  >();
+    const productMap = new Map<string,
+        {
+            name: string;
+            image: string | null;
+            quantity: number;
+            revenue: number;
+            orders: Set<string>;
+            category?: string;
+        }
+    >();
 
-  orders.forEach((order) => {
-    if (order.status !== OrderStatus.COMPLETED) return;
+    orders.forEach((order) => {
+        if (order.status !== OrderStatus.COMPLETED) return;
 
-    order.items.forEach((item: IOrderAnalytics['items'][number]) => {
-      const productId = item.productId;
-      const existing = productMap.get(productId);
+        order.items.forEach((item: IOrderAnalytics['items'][number]) => {
+            const productId = item.productId;
+            const existing = productMap.get(productId);
 
-      if (existing) {
-        existing.quantity += item.quantity;
-        existing.revenue += item.price * item.quantity;
-        existing.orders.add(order.id);
-      } else {
-        productMap.set(productId, {
-          name: item.product.title,
-          image: item.product.images[0]?.url || null,
-          quantity: item.quantity,
-          revenue: item.price * item.quantity,
-          orders: new Set([order.id]),
-          category: item.product.categories[0]?.category?.name,
+            if (existing) {
+                existing.quantity += item.quantity;
+                existing.revenue += item.price * item.quantity;
+                existing.orders.add(order.id);
+            } else {
+                productMap.set(productId, {
+                    name: item.product.title,
+                    image: item.product.images[0]?.url || null,
+                    quantity: item.quantity,
+                    revenue: item.price * item.quantity,
+                    orders: new Set([order.id]),
+                    category: item.product.categories[0]?.category?.name,
+                });
+            }
         });
-      }
     });
-  });
 
-  return Array.from(productMap.entries())
-    .map(([productId, data]) => ({
-      productId,
-      name: data.name,
-      image: data.image,
-      quantity: data.quantity,
-      revenue: data.revenue,
-      orders: data.orders.size,
-      category: data.category,
-    }))
-    .sort((a, b) => b.revenue - a.revenue)
-    .slice(0, 10);
+    return Array.from(productMap.entries())
+        .map(([productId, data]) => ({
+            productId,
+            name: data.name,
+            image: data.image,
+            quantity: data.quantity,
+            revenue: data.revenue,
+            orders: data.orders.size,
+            category: data.category,
+        }))
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 10);
 }
 
 function calculateCustomerInsights(orders: IOrderAnalytics[]): CustomerInsight {
-  const customerOrderMap = new Map<string, number>();
-  let newCustomers = 0;
+    const customerOrderMap = new Map<string, number>();
+    let newCustomers = 0;
 
-  orders.forEach((order) => {
-    const count = customerOrderMap.get(order.userId) || 0;
-    customerOrderMap.set(order.userId, count + 1);
+    orders.forEach((order) => {
+        const count = customerOrderMap.get(order.userId) || 0;
+        customerOrderMap.set(order.userId, count + 1);
 
-    if (count === 0) {
-      newCustomers++;
-    }
-  });
+        if (count === 0) {
+            newCustomers++;
+        }
+    });
 
-  const totalCustomers = customerOrderMap.size;
-  const returningCustomers = totalCustomers - newCustomers;
-  const totalOrdersCount = Array.from(customerOrderMap.values()).reduce(
-    (sum, count) => sum + count,
-    0
-  );
-  const averageOrdersPerCustomer =
-    totalCustomers > 0 ? totalOrdersCount / totalCustomers : 0;
+    const totalCustomers = customerOrderMap.size;
+    const returningCustomers = totalCustomers - newCustomers;
+    const totalOrdersCount = Array.from(customerOrderMap.values()).reduce(
+        (sum, count) => sum + count,
+        0
+    );
+    const averageOrdersPerCustomer =
+        totalCustomers > 0 ? totalOrdersCount / totalCustomers : 0;
 
-  return {
-    totalCustomers,
-    newCustomers,
-    returningCustomers,
-    averageOrdersPerCustomer,
-  };
+    return {
+        totalCustomers,
+        newCustomers,
+        returningCustomers,
+        averageOrdersPerCustomer,
+    };
 }
 
 function calculateOrderStatusBreakdown(orders: IOrderAnalytics[]): OrderStatusBreakdown {
-  const breakdown = {
-    completed: 0,
-    pending: 0,
-    canceled: 0,
-    rejected: 0,
-    inPreparation: 0,
-    readyToDeliver: 0,
-    onTheWay: 0,
-  };
+    const breakdown = {
+        completed: 0,
+        pending: 0,
+        canceled: 0,
+        rejected: 0,
+        inPreparation: 0,
+        readyToDeliver: 0,
+        onTheWay: 0,
+    };
 
-  orders.forEach((order) => {
-    switch (order.status) {
-      case OrderStatus.COMPLETED:
-        breakdown.completed++;
-        break;
-      case OrderStatus.PENDING:
-      case OrderStatus.ACCEPTED_BY_MERCHANT:
-      case OrderStatus.ACCEPTED_BY_DRIVER:
-        breakdown.pending++;
-        break;
-      case OrderStatus.CANCELED_BY_MERCHANT:
-      case OrderStatus.CANCELED_BY_DRIVER:
-        breakdown.canceled++;
-        break;
-      case OrderStatus.REJECTED_BY_MERCHANT:
-      case OrderStatus.REJECTED_BY_DRIVER:
-        breakdown.rejected++;
-        break;
-      case OrderStatus.IN_PREPARATION:
-        breakdown.inPreparation++;
-        break;
-      case OrderStatus.READY_TO_DELIVER:
-        breakdown.readyToDeliver++;
-        break;
-      case OrderStatus.ON_THE_WAY:
-        breakdown.onTheWay++;
-        break;
-    }
-  });
+    orders.forEach((order) => {
+        switch (order.status) {
+            case OrderStatus.COMPLETED:
+                breakdown.completed++;
+                break;
+            case OrderStatus.PENDING:
+            case OrderStatus.ACCEPTED_BY_MERCHANT:
+            case OrderStatus.ACCEPTED_BY_DRIVER:
+                breakdown.pending++;
+                break;
+            case OrderStatus.CANCELED_BY_MERCHANT:
+            case OrderStatus.CANCELED_BY_DRIVER:
+                breakdown.canceled++;
+                break;
+            case OrderStatus.REJECTED_BY_MERCHANT:
+            case OrderStatus.REJECTED_BY_DRIVER:
+                breakdown.rejected++;
+                break;
+            case OrderStatus.IN_PREPARATION:
+                breakdown.inPreparation++;
+                break;
+            case OrderStatus.READY_TO_DELIVER:
+                breakdown.readyToDeliver++;
+                break;
+            case OrderStatus.ON_THE_WAY:
+                breakdown.onTheWay++;
+                break;
+        }
+    });
 
-  return breakdown;
+    return breakdown;
 }
 
 function calculatePeakHours(orders: IOrderAnalytics[]): { hour: number; orders: number }[] {
-  const hourMap = new Map<number, number>();
+    const hourMap = new Map<number, number>();
 
-  for (let i = 0; i < 24; i++) {
-    hourMap.set(i, 0);
-  }
+    for (let i = 0; i < 24; i++) {
+        hourMap.set(i, 0);
+    }
 
-  orders.forEach((order) => {
-    const hour = new Date(order.createdAt).getHours();
-    hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
-  });
+    orders.forEach((order) => {
+        const hour = new Date(order.createdAt).getHours();
+        hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
+    });
 
-  return Array.from(hourMap.entries())
-    .map(([hour, orders]) => ({ hour, orders }))
-    .sort((a, b) => b.orders - a.orders);
+    return Array.from(hourMap.entries())
+        .map(([hour, orders]) => ({ hour, orders }))
+        .sort((a, b) => b.orders - a.orders);
 }

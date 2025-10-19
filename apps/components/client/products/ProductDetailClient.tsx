@@ -298,8 +298,8 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                         {stockQuantity > 10
                                             ? t("In Stock")
                                             : stockQuantity > 0
-                                            ? `${t("Only")} ${stockQuantity} ${t("left")}`
-                                            : t("Out of Stock")}
+                                                ? `${t("Only")} ${stockQuantity} ${t("left")}`
+                                                : t("Out of Stock")}
                                     </span>
                                 </div>
 
