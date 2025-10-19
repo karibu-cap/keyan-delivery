@@ -1,25 +1,32 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { ArrowLeftIcon, MapPinIcon, UserIcon } from "@/components/Icons"
-import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
-import Navbar from "@/components/Navbar"
 import { OrderStatusBadge } from "@/components/client/orders/OrderStatusBadge"
 import { OrderTimeline } from "@/components/client/orders/OrderTimeline"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import dynamic from "next/dynamic"
+import { useT } from "@/hooks/use-inline-translation"
+import { ROUTES } from "@/lib/router"
 import { OrderStatus } from "@prisma/client"
 import { PhoneIcon } from "lucide-react"
-import { ROUTES } from "@/lib/router"
-import { useT } from "@/hooks/use-inline-translation"
+import { useLocale } from "next-intl"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 
-// Dynamically import map component to avoid SSR issues
+// Dynamically import map component with enhanced lazy loading
 const OrderMap = dynamic(() => import("@/components/client/orders/OrderMap"), {
      ssr: false,
-     loading: () => <div className="h-[400px] rounded-lg bg-muted animate-pulse" />,
+     loading: () => (
+          <div className="h-[400px] rounded-lg bg-muted animate-pulse flex items-center justify-center">
+               <div className="text-center space-y-2">
+                    <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto" />
+                    <p className="text-sm text-muted-foreground">Loading map...</p>
+               </div>
+          </div>
+     ),
 })
 
 interface OrderTrackingData {
@@ -50,6 +57,7 @@ interface OrderTrackingData {
 export default function OrderTrackPage() {
      const params = useParams()
      const orderId = params.orderId as string
+     const locale = useLocale()
 
      const [orderData, setOrderData] = useState<OrderTrackingData | null>(null)
      const [loading, setLoading] = useState(true)
@@ -97,7 +105,6 @@ export default function OrderTrackPage() {
      if (loading) {
           return (
                <div className="min-h-screen bg-background">
-                    <Navbar />
                     <main className="container mx-auto max-w-6xl px-4 py-6">
                          <Skeleton className="mb-4 h-10 w-32" />
                          <Skeleton className="mb-6 h-10 w-64" />
@@ -118,7 +125,6 @@ export default function OrderTrackPage() {
      if (error || !orderData) {
           return (
                <div className="min-h-screen bg-background">
-                    <Navbar />
                     <main className="container mx-auto max-w-6xl px-4 py-6">
                          <div className="py-16 text-center">
                               <h2 className="mb-2 text-2xl font-bold">Error Loading Order</h2>
@@ -136,8 +142,6 @@ export default function OrderTrackPage() {
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
-
                <main className="container mx-auto max-w-6xl px-4 py-6">
                     <Button variant="ghost" aria-label="Back to order" onClick={() => {
                          if (window.history.length > 1) {
@@ -180,7 +184,7 @@ export default function OrderTrackPage() {
                                         <CardTitle>{t("Order Progress")}</CardTitle>
                                    </CardHeader>
                                    <CardContent>
-                                        <OrderTimeline status={orderData.status} />
+                                        <OrderTimeline status={orderData.status} locale={locale} />
                                    </CardContent>
                               </Card>
                          </div>

@@ -1,5 +1,4 @@
-import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { getCachedMerchants } from '@/lib/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -11,7 +10,17 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const whereClause: Prisma.MerchantWhereInput = {
+    // Use cached function instead of direct Prisma calls
+    const merchants = await getCachedMerchants({
+      search: search || undefined,
+      limit,
+      offset
+    });
+
+    // We need to get total count separately since getCachedMerchants doesn't return pagination info
+    // Let's create a cached count function or use the existing pattern
+    const { prisma } = await import('@/lib/prisma');
+    const whereClause: Record<string, unknown> = {
       isVerified: true,
     };
 
@@ -21,30 +30,7 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-
-    const merchants = await prisma.merchant.findMany({
-      where: whereClause,
-      take: limit,
-      skip: offset,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        products: {
-          where: { status: 'VERIFIED', visibility: true },
-          select: { id: true }
-        },
-        managers: {
-          include: {
-            user: {
-              select: { fullName: true, phone: true }
-            }
-          }
-        }
-      }
-    });
-
     const totalCount = await prisma.merchant.count({ where: whereClause });
-
-
 
     return NextResponse.json({
       success: true,
@@ -56,6 +42,12 @@ export async function GET(request: NextRequest) {
           offset,
           hasMore: offset + limit < totalCount,
         }
+      }
+    }, {
+      headers: {
+        'Cache-Control': 'public, max-age=600, s-maxage=1200', // 10 min public, 20 min shared
+        'CDN-Cache-Control': 'max-age=1200',
+        'Vercel-CDN-Cache-Control': 'max-age=1200',
       }
     });
 

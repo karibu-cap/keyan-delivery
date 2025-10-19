@@ -1,31 +1,29 @@
 "use client"
 
+import { OptimizedImage } from "@/components/ClsOptimization"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { MinusIcon, PlusIcon, Trash2Icon, ArrowLeftIcon } from "lucide-react"
-import Image from "next/image"
+import { useCart } from "@/hooks/use-cart"
+import { useT } from "@/hooks/use-inline-translation"
+import { ArrowLeftIcon, MinusIcon, PlusIcon, Trash2Icon } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useCart } from "@/hooks/use-cart"
-import Navbar from "@/components/Navbar"
-import { useT } from "@/hooks/use-inline-translation"
 
 export default function CartPage() {
     const t = useT()
-    const { cartItems, updateQuantity, removeItem } = useCart()
+    const { cart, updateQuantity, removeItem } = useCart()
     const router = useRouter()
 
     const deliveryFee = 0
     const serviceFee = 0
-    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+    const total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0)
 
     const finalTotal = total + deliveryFee + serviceFee
 
-    if (cartItems.length === 0) {
+    if (cart.items.length === 0) {
         return (
             <div className="min-h-screen bg-background">
-                <Navbar />
                 <div className="container mx-auto px-4 py-16">
                     <div className="mx-auto max-w-md text-center">
                         <div className="mb-6 flex justify-center">
@@ -53,8 +51,6 @@ export default function CartPage() {
 
     return (
         <div className="min-h-screen bg-background">
-            <Navbar />
-
             <main className="container mx-auto px-4 py-6">
                 <Link href="/stores">
                     <Button variant="ghost" className="mb-4 gap-2">
@@ -71,14 +67,16 @@ export default function CartPage() {
                         <Card>
                             <CardContent className="p-6">
                                 <div className="space-y-4">
-                                    {cartItems.map((item) => (
+                                    {cart.items.map((item) => (
                                         <div key={item.product.id} className="flex gap-4 border-b pb-4 last:border-b-0 last:pb-0">
                                             <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
-                                                <Image
+                                                <OptimizedImage
                                                     src={item.product.images[0].url || "/placeholder.svg"}
                                                     alt={item.product.title}
+                                                    blurDataURL={item.product.images[0]?.blurDataUrl || undefined}
                                                     fill
                                                     className="object-cover"
+
                                                 />
                                             </div>
 
@@ -117,7 +115,7 @@ export default function CartPage() {
 
                                                     <div className="flex items-center gap-4">
                                                         <span className="font-bold text-[#0aad0a]">
-                                                            ${(item.product.price * item.quantity).toFixed(2)}
+                                                            ${(item.price * item.quantity).toFixed(2)}
                                                         </span>
                                                         <Button
                                                             size="icon"

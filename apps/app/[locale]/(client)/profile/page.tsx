@@ -1,11 +1,10 @@
-import Navbar from "@/components/Navbar"
 import { Button } from "@/components/ui/button"
-import { getUserTokens } from "@/lib/firebase-client/firebase-utils"
+import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
 import Link from "next/link"
 
 import { UserProfile } from "@/components/client/customer/UserProfile"
+import { getT } from "@/i18n/server-translations"
 import { prisma } from "@/lib/prisma"
-import { getT } from "@/lib/server-translations"
 import { getLocale } from "next-intl/server"
 
 export default async function ProfilePage() {
@@ -16,7 +15,6 @@ export default async function ProfilePage() {
   if (!token?.decodedToken?.uid) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <main className="container mx-auto px-4 py-6">
           <div className="py-16 text-center">
             <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
@@ -32,7 +30,6 @@ export default async function ProfilePage() {
   if (!token?.decodedToken?.uid) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <main className="container mx-auto px-4 py-6">
           <div className="py-16 text-center">
             <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
@@ -63,7 +60,6 @@ export default async function ProfilePage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <main className="container mx-auto px-4 py-6">
           <div className="py-16 text-center">
             <h2 className="mb-2 text-2xl font-bold">{t("User Not Found")}</h2>

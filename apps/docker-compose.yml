@@ -7,14 +7,14 @@ services:
     hostname: mongo  # Add this line
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: keyan-client
-      MONGO_INITDB_ROOT_PASSWORD: keyan-client
-      MONGO_INITDB_DATABASE: keyan-client
+      MONGO_INITDB_ROOT_USERNAME: Yetu-client
+      MONGO_INITDB_ROOT_PASSWORD: Yetu-client
+      MONGO_INITDB_DATABASE: Yetu-client
     ports:
       - 27017:27017
     command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27017
     healthcheck:
-       test: ["CMD", "mongosh", "--port", "27017", "-u", "keyan-client", "-p", "keyan-client", "--authenticationDatabase", "admin", "--eval", "rs.status()", "--quiet"]
+       test: ["CMD", "mongosh", "--port", "27017", "-u", "Yetu-client", "-p", "Yetu-client", "--authenticationDatabase", "admin", "--eval", "rs.status()", "--quiet"]
        interval: 10s
        timeout: 10s
        start_period: 30s
@@ -23,7 +23,7 @@ services:
        - mongodb_data:/data/db
        - ./mongo-keyfile:/etc/mongo-keyfile:ro
     networks:
-      - keyan-network
+      - Yetu-network
       
   mongo-express:
     image: mongo-express:latest
@@ -32,20 +32,20 @@ services:
     ports:
       - "8081:8081"
     environment:
-      ME_CONFIG_MONGODB_URL: mongodb://keyan-client:keyan-client@mongo:27017/?authSource=admin&replicaSet=rs0
-      ME_CONFIG_MONGODB_ADMINUSERNAME: "keyan-client"
-      ME_CONFIG_MONGODB_ADMINPASSWORD: "keyan-client"
+      ME_CONFIG_MONGODB_URL: mongodb://Yetu-client:Yetu-client@mongo:27017/?authSource=admin&replicaSet=rs0
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "Yetu-client"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "Yetu-client"
       ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
       ME_CONFIG_BASICAUTH: false
     depends_on:
       mongo:
         condition: service_healthy
     networks:
-      - keyan-network
+      - Yetu-network
 
 volumes:
   mongodb_data: {}
 
 networks:
-  keyan-network:
+  Yetu-network:
     driver: bridge

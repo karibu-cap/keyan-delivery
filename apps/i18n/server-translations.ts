@@ -5,7 +5,7 @@
  * Usage in Server Components:
  * 
  * const t = await getT();
- * <h1>{t('Welcome to Keyan')}</h1>
+ * <h1>{t('Welcome to Yetu')}</h1>
  */
 
 // Helper: Generate key from text (same as client-side)

@@ -1,21 +1,19 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getT } from "@/i18n/server-translations";
 import { Store } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import { getT } from "@/lib/server-translations";
 import { getLocale } from "next-intl/server";
+import Link from "next/link";
 
 /**
  * 404 page for merchant dashboard
  * Shown when merchant ID is invalid
  */
 export default async function MerchantNotFound() {
-     const local = await getLocale()
-     const t = await getT(local)
+  const local = await getLocale()
+  const t = await getT(local)
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
 
       <section className="gradient-hero py-16 px-4">
         <div className="container mx-auto max-w-7xl">

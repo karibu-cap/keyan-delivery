@@ -1,4 +1,3 @@
-// app/merchant/[merchantId]/products/components/ProductsStats.tsx
 import { Badge } from "@/components/ui/badge";
 
 interface ProductsStatsProps {

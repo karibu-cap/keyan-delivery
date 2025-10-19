@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { getCachedProducts, getCachedProductCount } from '@/lib/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -11,57 +11,24 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // Build where clause
-    const where: Record<string, unknown> = {
-      visibility: true,
-      status: 'VERIFIED'
+    // Build filters for cached functions
+    const filters: Parameters<typeof getCachedProducts>[0] = {
+      merchantId: merchantId || undefined,
+      categoryId: categoryId || undefined,
+      search: search || undefined,
+      merchantType: merchantType || undefined,
+      limit,
+      offset
     };
 
-    if (merchantId) {
-      where.merchantId = merchantId;
-    }
-
-    if (merchantType) {
-      where.merchant = {
-        merchantType: merchantType
-      };
-    }
-
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
-      ];
-    }
-
-    if (categoryId) {
-      where.categories = {
-        some: {
-          categoryId: categoryId
-        }
-      };
-    }
-
-    const products = await prisma.product.findMany({
-      where,
-      include: {
-        images: true,
-        categories: {
-          include: {
-            category: true
-          }
-        },
-        merchant: true,
-        promotions: true
-      },
-      orderBy: [
-        { createdAt: 'desc' }
-      ],
-      take: limit,
-      skip: offset
+    // Use cached functions instead of direct Prisma calls
+    const products = await getCachedProducts(filters);
+    const total = await getCachedProductCount({
+      merchantId: merchantId || undefined,
+      categoryId: categoryId || undefined,
+      search: search || undefined,
+      merchantType: merchantType || undefined
     });
-
-    const total = await prisma.product.count({ where });
 
     return NextResponse.json({
       success: true,
@@ -70,6 +37,12 @@ export async function GET(request: NextRequest) {
         total,
         limit,
         offset
+      }
+    }, {
+      headers: {
+        'Cache-Control': 'public, max-age=300, s-maxage=600', // 5 min public, 10 min shared
+        'CDN-Cache-Control': 'max-age=600',
+        'Vercel-CDN-Cache-Control': 'max-age=600',
       }
     });
   } catch (error) {

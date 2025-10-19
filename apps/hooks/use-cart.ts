@@ -1,34 +1,18 @@
-import { toast } from '@/hooks/use-toast'
-import { IProduct } from '@/lib/actions/stores'
-import { DeliveryInfo } from '@prisma/client'
-import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
+import { toast } from '@/hooks/use-toast';
+import type { Cart } from '@/types/cart';
+import { DeliveryInfo } from '@prisma/client';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
-// Enhanced Cart Item interface for API integration
-export interface EnhancedCartItem extends CartItem {
-    id?: string;
-    selectedWeight?: number | null;
-    unit?: string | null;
-    priceAtAdd: number;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
 export interface CartShipment {
     method: 'DELIVERY' | 'EXPEDITION'
     cost: number
     location: string
 }
-export interface CartItem {
-    product: IProduct
-    quantity: number
-    price: number
-}
 
 interface CartStore {
-    cartItems: CartItem[]
-    total: number
-    totalItems: number
-    addItem: (item: CartItem) => void
+    cart: Cart,
+    addItem: ({ productId, quantity, price }: { productId: string, quantity: number, price: number }) => void
     removeItem: (idToRemove: string) => void
     updateQuantity: (id: string, quantity: number) => void
     clearCart: () => void
@@ -59,111 +43,122 @@ const useCartDeliveryInfo = create<CartDeliveryInfo>(set => ({
 
 const useCart = create(
     persist<CartStore>(
-        (set, get) => ({
-            cartItems: [],
-            get items() {
-                return get().cartItems
+        (set, _) => ({
+            cart: {
+                items: [],
+                total: 0,
+                itemCount: 0,
             },
-            get total() {
-                return get().cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-            },
-            get totalItems() {
-                return get().cartItems.reduce((sum, item) => sum + item.quantity, 0)
-            },
-            addItem: (data: CartItem) => {
-                const { product, quantity, price } = data
-                const currentItems = get().cartItems
-                const isExisting = currentItems.find(cartItem => cartItem.product.id === product.id)
+            addItem: async ({ productId, quantity, price }: { productId: string; quantity: number; price: number; }) => {
+                const response = await fetch('/api/v1/client/cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId, quantity, price }),
+                })
 
-                // Check inventory
-                const availableStock = product.inventory?.stockQuantity || 0
-                if (availableStock < quantity) {
+                const responseJson = await response.json()
+                if (!responseJson.success) {
                     toast({
-                        title: '❌ Insufficient stock',
-                        description: `Only ${availableStock} items available`,
+                        title: '❌ Failed to add item to cart',
+                        description: responseJson.error,
                         variant: 'destructive'
                     })
                     return
                 }
 
-                if (isExisting) {
-                    const newQuantity = isExisting.quantity + quantity
-                    if (availableStock < newQuantity) {
-                        toast({
-                            title: '❌ Insufficient stock',
-                            description: `Only ${availableStock} items available`,
-                            variant: 'destructive'
-                        })
-                        return
-                    }
 
-                    const updatedItems = currentItems.map(cartItem =>
-                        cartItem.product.id === product.id
-                            ? { ...cartItem, quantity: newQuantity, price }
-                            : cartItem
-                    )
-                    set({ cartItems: updatedItems })
-                    toast({
-                        title: '✅ Quantity updated',
-                        description: `${product.title} quantity increased to ${newQuantity}`,
-                    })
-                } else {
-                    set({ cartItems: [...currentItems, { product, quantity, price }] })
-                    toast({
+
+                const updatedItems = await fetch('/api/v1/client/cart')
+                const updatedItemsJson = await updatedItems.json()
+                console.log(responseJson, updatedItemsJson.data)
+
+                set({ cart: updatedItemsJson.data })
+                toast({
                         title: '🎉 Item added to cart',
-                        description: `${product.title} added successfully`,
+                        description: `added successfully`,
                     })
-                }
+
             },
-            removeItem: (idToRemove: string) => {
-                const newCartItems = get().cartItems.filter(
-                    cartItem => cartItem.product.id !== idToRemove,
-                )
-                set({ cartItems: newCartItems })
+            removeItem: async (productId: string) => {
+               
+                const response = await fetch('/api/v1/client/cart', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        productId,
+                    }),
+                })
 
-                if (newCartItems.length === 0) {
-                    useCartDeliveryInfo.getState().clearDeliveryInfo()
+                const responseJson = await response.json()
+                if (!responseJson.success) {
+                    toast({
+                        title: '❌ Failed to remove item from cart',
+                        description: responseJson.error,
+                        variant: 'destructive'
+                    })
+                    return
                 }
+
+                const updatedItems = await fetch('/api/v1/client/cart')
+                const updatedItemsJson = await updatedItems.json()
+                set({ cart: updatedItemsJson.data })
+                toast({
+                        title: 'Item removed from cart',
+                        description: `removed successfully`,
+                    })
+               
             },
-            updateQuantity: (id: string, quantity: number) => {
-                const currentItems = get().cartItems
-                const item = currentItems.find(cartItem => cartItem.product.id === id)
+            updateQuantity: async (id: string, quantity: number) => {
+               
+                const response = await fetch('/api/v1/client/cart', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        productId: id,
+                        quantity,
+                    }),
+                })
 
-                if (!item) return
-
-                if (quantity <= 0) {
-                    // Remove item when quantity is 0 or negative
-                    const newCartItems = currentItems.filter(
-                        cartItem => cartItem.product.id !== id
-                    )
-                    set({ cartItems: newCartItems })
-
-                    if (currentItems.length === 1) {
-                        useCartDeliveryInfo.getState().clearDeliveryInfo()
-                    }
-                } else {
-                    // Check inventory before updating
-                    const availableStock = item.product.inventory?.stockQuantity || 0
-                    if (quantity > availableStock) {
-                        toast({
-                            title: '❌ Insufficient stock',
-                            description: `Only ${availableStock} items available`,
-                            variant: 'destructive'
-                        })
-                        return
-                    }
-
-                    const newCartItems = currentItems.map(cartItem =>
-                        cartItem.product.id === id
-                            ? { ...cartItem, quantity }
-                            : cartItem
-                    )
-                    set({ cartItems: newCartItems })
+                const responseJson = await response.json()
+                if (!responseJson.success) {
+                    toast({
+                        title: '❌ Failed to update item quantity',
+                        description: responseJson.error,
+                        variant: 'destructive'
+                    })
+                    return
                 }
+
+                const updatedItems = await fetch('/api/v1/client/cart')
+                const updatedItemsJson = await updatedItems.json()
+                set({ cart: updatedItemsJson.data })
+                toast({
+                        title: '✅ Quantity updated',
+                        description: `new quantity to ${quantity}`,
+                    })
             },
-            clearCart: () => {
-                set({ cartItems: [] })
-                useCartDeliveryInfo.getState().clearDeliveryInfo()
+            clearCart: async () => {
+                const response =  await fetch('/api/v1/client/cart/clean', {
+                    method: 'DELETE',
+                })
+                const responseJson = await response.json()
+                if (!responseJson.success) {
+                    toast({
+                        title: '❌ Failed to clear cart',
+                        description: responseJson.error,
+                        variant: 'destructive'
+                    })
+                    return
+                }
+                const updatedItems = await fetch('/api/v1/client/cart')
+                const updatedItemsJson = await updatedItems.json()
+                set({ cart: updatedItemsJson.data })
             },
         }),
         {
@@ -173,4 +168,5 @@ const useCart = create(
     ),
 )
 
-export { useCart, useCartDeliveryInfo, useCartSideBar }
+export { useCart, useCartDeliveryInfo, useCartSideBar };
+

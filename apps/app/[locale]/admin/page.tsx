@@ -1,21 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Store,
-  Users,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Eye,
-  TrendingUp,
-  ShoppingCart,
-} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +11,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertCircle,
+  CheckCircle,
+  Eye,
+  ShoppingCart,
+  Store,
+  TrendingUp,
+  Users,
+  XCircle,
+} from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const Admin = () => {
@@ -112,7 +111,6 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
 
       {/* Hero */}
       <section className="gradient-hero py-16 px-4">

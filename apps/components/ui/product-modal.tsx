@@ -1,25 +1,25 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useCart } from "@/hooks/use-cart";
+import { IProduct } from "@/lib/actions/server/stores";
 import {
-    X,
-    Plus,
-    Minus,
-    Heart,
-    ZoomIn,
-    Star,
-    CheckCircle,
-    ChevronRight,
-    Truck,
-    Shield,
-    Package
+  CheckCircle,
+  ChevronRight,
+  Heart,
+  Minus,
+  Package,
+  Plus,
+  Shield,
+  Star,
+  Truck,
+  X,
+  ZoomIn
 } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useMemo, useState } from "react";
+import { Badge } from "./badge";
 import { Button } from "./button";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "./dialog";
-import Image from "next/image";
-import { useCart } from "@/hooks/use-cart";
-import { Badge } from "./badge";
-import { IProduct } from "@/lib/actions/stores";
 
 interface ProductModalProps {
     product: IProduct | null;
@@ -105,7 +105,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
         if (!product) return;
 
         addItem({
-            product,
+            productId: product.id,
             quantity,
             price: currentPrice,
         });

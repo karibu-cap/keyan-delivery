@@ -1,13 +1,13 @@
 'use client'
 import { useT } from '@/hooks/use-inline-translation'
 import { ROUTES } from '@/lib/router'
+import { MerchantType } from '@prisma/client'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronRight, Pause, Pill, Play, ShoppingBag, Store } from 'lucide-react'
 import Image from 'next/image'
 import Link from "next/link"
 import { useEffect, useState } from 'react'
 import { AuthModal } from './auth/AuthModal'
-import { MerchantType } from '@prisma/client'
 
 export default function DynamicHeroCarousel() {
      const [currentIndex, setCurrentIndex] = useState(0)

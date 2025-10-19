@@ -1,4 +1,4 @@
-import { getUserTokens } from '@/lib/firebase-client/firebase-utils';
+import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 

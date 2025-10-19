@@ -1,11 +1,10 @@
 // app/merchant/[merchantId]/products/page.tsx
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import ProductsHeader from "@/components/merchants/products/ProductsHeader";
 import ProductsContent from "@/components/merchants/products/ProductsContent";
-import { ProductsContentSkeleton } from "./loading";
+import ProductsHeader from "@/components/merchants/products/ProductsHeader";
 import { getMerchantProducts } from "@/lib/actions/server/merchants";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { ProductsContentSkeleton } from "./loading";
 
 /**
  * Products Management Page
@@ -76,8 +75,6 @@ export default async function MerchantProductsPage({
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
-
                <ProductsHeader merchantId={_merchantId} />
 
                <div className="container mx-auto max-w-7xl px-4 -mt-8 pb-12">

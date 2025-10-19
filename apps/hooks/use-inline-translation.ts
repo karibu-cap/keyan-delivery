@@ -10,7 +10,7 @@ import { ReactNode } from 'react';
  * const t = useInlineTranslation();
  * 
  * // Simple text
- * <h1>{t('Welcome to Keyan')}</h1>
+ * <h1>{t('Welcome to Yetu')}</h1>
  * 
  * // With variables
  * <p>{t('Hello {name}', { name: 'John' })}</p>

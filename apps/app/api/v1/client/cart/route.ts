@@ -1,30 +1,14 @@
-import { prisma } from '@/lib/prisma';
+import { addToCartAction, getCartAction, removeFromCartAction, updateCartItemAction } from '@/lib/actions/server/cart-actions';
+import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/cart - Fetch user's cart
 export async function GET() {
   try {
-    // For demo purposes, using a fixed user ID
-    // In production, get from session
-    const userId = 'demo-user-id';
+    const token = await getUserTokens();
 
-    const cartItems = await prisma.cartItem.findMany({
-      where: { userId },
-      include: {
-        product: {
-          include: {
-            images: true,
-            merchant: true
-          }
-        }
-      },
-      orderBy: { createdAt: 'asc' }
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: cartItems
-    });
+    const response = await getCartAction(token?.decodedToken?.uid);
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching cart:', error);
     return NextResponse.json(
@@ -38,95 +22,90 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { productId, quantity, selectedWeight, unit } = body;
+    const { productId, quantity, price, selectedWeight, unit } = body ;
 
-    if (!productId || !quantity) {
+    if (!productId || !quantity || !price) {
       return NextResponse.json(
-        { success: false, error: 'Product ID and quantity are required' },
+        { success: false, error: 'Product ID, quantity and price are required' },
         { status: 400 }
       );
     }
 
-    // For demo purposes, using a fixed user ID
-    const userId = 'demo-user-id';
+    const token = await getUserTokens();
+
+    const userId = token?.decodedToken?.uid;
 
     // Get product to verify it exists and get current price
-    const product = await prisma.product.findUnique({
-      where: { id: productId }
-    });
+    const response = await addToCartAction(productId, quantity, price, userId);
 
-    if (!product) {
+    if (!response.success) {
       return NextResponse.json(
-        { success: false, error: 'Product not found' },
+        { success: false, error: response.error },
         { status: 404 }
       );
     }
 
-    // Check if item already exists in cart
-    const existingItem = await prisma.cartItem.findUnique({
-      where: {
-        userId_productId: {
-          userId,
-          productId
-        }
-      }
-    });
-
-    if (existingItem) {
-      // Update quantity if item exists
-      const updatedItem = await prisma.cartItem.update({
-        where: { id: existingItem.id },
-        data: {
-          quantity: existingItem.quantity + quantity,
-          selectedWeight,
-          unit
-        },
-        include: {
-          product: {
-            include: {
-              images: true,
-              merchant: true
-            }
-          }
-        }
-      });
-
-      return NextResponse.json({
-        success: true,
-        data: updatedItem,
-        message: 'Cart item updated'
-      });
-    } else {
-      // Create new cart item
-      const cartItem = await prisma.cartItem.create({
-        data: {
-          userId,
-          productId,
-          quantity,
-          selectedWeight,
-          unit,
-          priceAtAdd: product.price
-        },
-        include: {
-          product: {
-            include: {
-              images: true,
-              merchant: true
-            }
-          }
-        }
-      });
-
-      return NextResponse.json({
-        success: true,
-        data: cartItem,
-        message: 'Item added to cart'
-      });
-    }
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('Error adding to cart:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to add item to cart' },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function DELETE(
+  request: NextRequest,
+) {
+  try {
+    const token = await getUserTokens();
+    const { productId } = await request.json();
+
+    if (!productId) {
+      return NextResponse.json(
+        { success: false, error: 'product ID is required' },
+        { status: 400 }
+      );
+    }
+
+   const response = await removeFromCartAction(productId, token?.decodedToken?.uid);
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Error removing cart item:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to remove cart item' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+) {
+  try {
+    const body = await request.json();
+    const { productId, quantity} = body;
+
+    if (!productId || quantity == undefined) {
+      return NextResponse.json(
+        { success: false, error: 'product ID and quantity are required' },
+        { status: 400 }
+      );
+    }
+
+    const token = await getUserTokens();
+
+    const response = await updateCartItemAction(productId, quantity, token?.decodedToken?.uid);
+
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Error updating cart item:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update cart item' },
       { status: 500 }
     );
   }

@@ -1,20 +1,21 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useT } from "@/hooks/use-inline-translation";
+import { IMerchant } from "@/lib/actions/server/stores";
+import { MerchantType } from "@prisma/client";
 import {
-    ShoppingBag,
     Clock,
+    Pill,
+    ShoppingBag,
     Star,
     Truck,
     UtensilsCrossed,
-    Pill,
 } from "lucide-react";
-import { IMerchant } from "@/lib/actions/stores";
-import { MerchantType } from "@prisma/client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import { useT } from "@/hooks/use-inline-translation";
 
 interface StoreCardProps {
     store: IMerchant;
@@ -40,9 +41,6 @@ export function StoreCard({ store, index }: StoreCardProps) {
         }
     }, []);
 
-    const handleStoreClick = useCallback(() => {
-        router.push(`/stores/${store.id}`);
-    }, [router, store.id]);
 
     const handleShopNowClick = useCallback(
         (e: React.MouseEvent) => {
@@ -58,17 +56,9 @@ export function StoreCard({ store, index }: StoreCardProps) {
     }, []);
 
     return (
-        <div
+        <Link href={'/stores/' + store.slug}
             className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer animate-slide-up group"
-            style={{ animationDelay: `${index * 50}ms` }}
-            onClick={handleStoreClick}
-            role="button"
             tabIndex={0}
-            onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                    handleStoreClick();
-                }
-            }}
             aria-label={`View ${store.businessName} store`}
         >
             {/* Header */}
@@ -160,6 +150,6 @@ export function StoreCard({ store, index }: StoreCardProps) {
                     <Truck className="w-4 h-4" />
                 </Button>
             </div>
-        </div>
+        </Link>
     );
 }

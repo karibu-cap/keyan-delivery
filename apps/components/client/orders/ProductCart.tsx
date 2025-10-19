@@ -1,6 +1,6 @@
-import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
-import { IProduct } from "@/lib/actions/stores"
+import { IProduct } from "@/lib/actions/server/stores"
+import Image from "next/image"
 interface ProductCardProps {
     product: IProduct
 }

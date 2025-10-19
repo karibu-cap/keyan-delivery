@@ -1,22 +1,21 @@
-import { notFound } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { ArrowLeftIcon, MapPinIcon, ClockIcon } from "@/components/Icons"
-import Link from "next/link"
-import Image from "next/image"
-import Navbar from "@/components/Navbar"
+import { ArrowLeftIcon, ClockIcon, MapPinIcon } from "@/components/Icons"
+import { OrderActions } from "@/components/client/orders/OrderActions"
 import { OrderStatusBadge } from "@/components/client/orders/OrderStatusBadge"
 import { OrderTimeline } from "@/components/client/orders/OrderTimeline"
-import { OrderStatus } from "@prisma/client"
-import { getUserTokens } from "@/lib/firebase-client/firebase-utils"
-import { prisma } from "@/lib/prisma"
-import { getLocale } from "next-intl/server"
-import { getT } from "@/lib/server-translations"
-import { OrderActions } from "@/components/client/orders/OrderActions"
-import { PhoneIcon } from "lucide-react"
-import { ROUTES } from "@/lib/router"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { getT } from "@/i18n/server-translations"
+import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
 import { formatOrderId } from "@/lib/orders-utils"
+import { prisma } from "@/lib/prisma"
+import { ROUTES } from "@/lib/router"
+import { OrderStatus } from "@prisma/client"
+import { PhoneIcon } from "lucide-react"
+import { getLocale } from "next-intl/server"
+import Image from "next/image"
+import Link from "next/link"
+import { notFound } from "next/navigation"
 
 
 
@@ -82,7 +81,6 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
      if (!token?.decodedToken?.uid) {
           return (
                <div className="min-h-screen bg-background">
-                    <Navbar />
                     <main className="container mx-auto px-4 py-6">
                          <div className="py-16 text-center">
                               <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
@@ -117,8 +115,6 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
-
                <main className="container mx-auto max-w-4xl px-4 py-6">
                     <Link href={ROUTES.orders} aria-label="Back to Orders">
                          <Button variant="ghost" className="mb-4 gap-2">
@@ -153,7 +149,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                    <CardTitle>{t("Order Status")}</CardTitle>
                               </CardHeader>
                               <CardContent>
-                                   <OrderTimeline status={order.status} />
+                                   <OrderTimeline status={order.status} locale={locale} />
                               </CardContent>
                          </Card>
                     )}

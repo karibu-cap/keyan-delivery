@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, FileText, Upload } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import { DocumentUpload } from "./DocumentUpload";
-import type { UploadedDocument } from "./DocumentUpload";
-import dynamic from "next/dynamic";
-import type { DocumentData } from "./DocumentGrid";
+import { useAuthStore } from "@/hooks/auth-store";
 import { useToast } from "@/hooks/use-toast";
 import { updateDriverDocuments } from "@/lib/actions/client/driver";
-import { useAuthStore } from "@/hooks/auth-store";
 import { buildExistingDocuments, DocumentInfo } from "@/lib/utils/documents";
+import { Clock, FileText, Upload } from "lucide-react";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import type { DocumentData } from "./DocumentGrid";
+import type { UploadedDocument } from "./DocumentUpload";
+import { DocumentUpload } from "./DocumentUpload";
 
 // Dynamically import DocumentGrid to avoid SSR issues
 const DocumentGrid = dynamic(() => import("./DocumentGrid").then(mod => ({ default: mod.DocumentGrid })), {
@@ -117,7 +116,6 @@ export function DriverPendingStatus() {
 
     return (
         <div className="min-h-screen bg-background">
-            <Navbar />
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-6xl mx-auto space-y-8">
                     {/* Header Card */}
