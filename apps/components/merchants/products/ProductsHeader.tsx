@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { getT } from "@/lib/server-translations";
+import { getT } from "@/i18n/server-translations";
 import { getLocale } from "next-intl/server";
 
 interface ProductsHeaderProps {

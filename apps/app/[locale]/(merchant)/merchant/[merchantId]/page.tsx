@@ -1,14 +1,13 @@
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import { getMerchantOrders, getMerchantProducts } from "@/lib/actions/server/merchants";
-import StatsCards from "@/components/merchants/StatsCards";
-import { OrdersTabsSkeleton, RecentProductsSkeleton, StatsCardsSkeleton } from "./loading";
-import type { Order, Product } from "@/types/merchant_types";
-import { OrderStatus, ProductStatus } from "@prisma/client";
 import DashboardHeader from "@/components/merchants/DashboardHeader";
 import OrdersTabs from "@/components/merchants/OrdersTabs";
 import RecentProducts from "@/components/merchants/RecentProducts";
+import StatsCards from "@/components/merchants/StatsCards";
+import { getMerchantOrders, getMerchantProducts } from "@/lib/actions/server/merchants";
+import type { Order, Product } from "@/types/merchant_types";
+import { OrderStatus, ProductStatus } from "@prisma/client";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { OrdersTabsSkeleton, RecentProductsSkeleton, StatsCardsSkeleton } from "./loading";
 
 
 // Enable ISR with on-demand revalidation
@@ -95,8 +94,6 @@ export default async function MerchantDashboardPage({ params }: { params: Promis
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
-
                <DashboardHeader merchantId={_params.merchantId} />
 
                <div className="container mx-auto max-w-7xl px-4 -mt-8 pb-12">

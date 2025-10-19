@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
-import Navbar from "@/components/Navbar";
 import { useT } from "@/hooks/use-inline-translation";
+import { AlertCircle } from "lucide-react";
+import { useEffect } from "react";
 
 /**
  * Error boundary for products page
@@ -24,7 +23,6 @@ export default function ProductsError({
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
 
                <section className="gradient-hero py-16 px-4">
                     <div className="container mx-auto max-w-7xl">

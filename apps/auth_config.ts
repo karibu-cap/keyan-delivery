@@ -1,5 +1,5 @@
 export const serverConfig = {
-  cookieName: 'KeyanToken',
+  cookieName: 'YetuToken',
   cookieSignatureKeys: [
     process.env.AUTH_COOKIE_SIGNATURE_KEY_CURRENT!,
     process.env.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS!,
@@ -16,7 +16,7 @@ export const serverConfig = {
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
     privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n') ?? '',
   },
-  tenantId: 'keyan-client',
+  tenantId: 'Yetu-client',
 }
 
 export const clientConfig = {

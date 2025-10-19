@@ -1,5 +1,5 @@
-import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,7 @@ const badgeVariants = cva(
         destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
         // Instacart-specific badge variants
-        bestSeller: "border-transparent bg-accent text-white hover:bg-accent/90",
+        bestSeller: "border-transparent bg-green text-green-foreground hover:bg-green/80",
         inStock: "border-transparent bg-success text-white",
         manyInStock: "border-transparent bg-success text-white",
         organic: "border-transparent bg-success text-white",

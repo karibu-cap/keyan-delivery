@@ -1,4 +1,4 @@
-import { IMerchant } from "../stores";
+import { IMerchant } from "../server/stores";
 
 interface PaginationInfo {
     total: number;
@@ -78,7 +78,7 @@ export async function fetchCategories({
     offset: number;
 }): Promise<{ categories: ICategory[] }> {
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (category) params.append('category', category);

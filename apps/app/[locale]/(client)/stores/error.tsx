@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import { StoresError } from "@/components/client/stores/StoresError";
+import { useEffect } from "react";
 
 export default function Error({
     error,
@@ -17,7 +16,6 @@ export default function Error({
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Navbar />
             <StoresError error={error} reset={reset} />
         </div>
     );

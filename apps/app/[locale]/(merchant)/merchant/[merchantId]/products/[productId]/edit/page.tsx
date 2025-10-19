@@ -1,13 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
      Select,
      SelectContent,
@@ -15,15 +12,17 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Camera, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import Link from "next/link";
 import { uploadImages } from "@/lib/actions/client";
-import { ProductBadge } from "@prisma/client";
-import { Checkbox } from "@/components/ui/checkbox";
-import { getMerchantProducts, updateMerchantProduct } from "@/lib/actions/merchants";
 import { fetchCategories } from "@/lib/actions/client/stores";
+import { getMerchantProducts, updateMerchantProduct } from "@/lib/actions/merchants";
+import { ProductBadge } from "@prisma/client";
+import { ArrowLeft, Camera, Loader2, X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface Category {
      id: string;
@@ -241,11 +240,9 @@ export default function EditProductPage() {
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
-
                <div className="container mx-auto max-w-4xl px-4 py-8">
                     <Link
-                         href="/merchant/products"
+                         href={`/merchant/${params.merchantId}/products`}
                          className="inline-flex items-center text-foreground mb-6 hover:text-primary transition-colors"
                     >
                          <ArrowLeft className="w-4 h-4 mr-2" />

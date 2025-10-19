@@ -1,9 +1,8 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { XCircle } from "lucide-react";
-import Navbar from "@/components/Navbar";
 import { DriverStatus } from "@prisma/client";
+import { XCircle } from "lucide-react";
 
 interface DriverRejectedStatusProps {
     driverStatus: DriverStatus;
@@ -14,7 +13,6 @@ export function DriverRejectedStatus({ driverStatus }: DriverRejectedStatusProps
 
     return (
         <div className="min-h-screen bg-background">
-            <Navbar />
             <div className="container mx-auto px-4 py-8">
                 <Card className="p-12 rounded-2xl shadow-card max-w-2xl mx-auto text-center border-red-500">
                     <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />

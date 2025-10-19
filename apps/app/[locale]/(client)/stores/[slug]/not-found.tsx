@@ -1,9 +1,8 @@
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Store, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { getT } from "@/i18n/server-translations";
+import { ArrowLeft, Store } from "lucide-react";
 import { getLocale } from "next-intl/server";
-import { getT } from "@/lib/server-translations";
+import Link from "next/link";
 
 export default async function NotFound() {
     const locale = await getLocale();
@@ -11,7 +10,6 @@ export default async function NotFound() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Navbar />
             <div className="container mx-auto max-w-7xl px-4 py-20">
                 <div className="text-center">
                     <Store className="w-20 h-20 text-gray-300 mx-auto mb-6" />

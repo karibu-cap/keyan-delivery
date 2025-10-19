@@ -1,5 +1,5 @@
 import { ICategory, fetchCategories, fetchMerchants } from '@/lib/actions/client/stores';
-import { IMerchant, IProduct } from '@/lib/actions/stores';
+import { IMerchant, IProduct } from '@/lib/actions/server/stores';
 import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from "./use-debounce";
 

@@ -1,5 +1,6 @@
 import { getLocale } from "next-intl/server";
-import { getT } from "@/lib/server-translations";
+import { getT } from "@/i18n/server-translations";
+import { GridSkeleton } from "@/components/ClsOptimization";
 
 export async function StoresLoading() {
     const locale = await getLocale();
@@ -25,10 +26,8 @@ export async function StoresLoading() {
 
             <section className="py-8 px-4">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-                        <p className="text-gray-600">{t("Loading stores...")}</p>
-                    </div>
+                    {/* CLS-optimized skeleton that matches the actual grid layout */}
+                    <GridSkeleton items={12} variant="product" columns={4} />
                 </div>
             </section>
         </>

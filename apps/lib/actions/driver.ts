@@ -1,6 +1,6 @@
 "use server";
 
-import { getUserTokens } from "@/lib/firebase-client/firebase-utils";
+import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
 import { prisma } from "@/lib/prisma";
 
 

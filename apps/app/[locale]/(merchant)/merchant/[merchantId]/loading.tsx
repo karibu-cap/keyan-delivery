@@ -1,7 +1,6 @@
-import Navbar from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getT } from "@/lib/server-translations";
+import { getT } from "@/i18n/server-translations";
 import { getLocale } from "next-intl/server";
 
 
@@ -15,7 +14,6 @@ export default async function MerchantDashboardLoading() {
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
 
                <section className="gradient-hero py-16 px-4">
                     <div className="container mx-auto max-w-7xl">

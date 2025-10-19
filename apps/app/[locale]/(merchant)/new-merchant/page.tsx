@@ -1,13 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -15,14 +11,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Upload, Camera, MapPin, Loader2 } from "lucide-react";
-import { Media, MerchantType } from "@prisma/client";
-import { uploadImages } from "@/lib/actions/client";
-import { ROUTES } from "@/lib/router";
-import { createNewMerchant } from "@/lib/actions/merchants";
-import { useToast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/use-inline-translation";
+import { useToast } from "@/hooks/use-toast";
+import { uploadImages } from "@/lib/actions/client";
+import { createNewMerchant } from "@/lib/actions/merchants";
+import { ROUTES } from "@/lib/router";
+import { Media, MerchantType } from "@prisma/client";
+import { ArrowLeft, Camera, Loader2, MapPin, Upload } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function NewMerchantPage() {
     const t = useT();
@@ -186,7 +184,6 @@ export default function NewMerchantPage() {
     };
     return (
         <div className="min-h-screen bg-background">
-            <Navbar />
 
             <div className="container mx-auto max-w-4xl px-4 py-8">
                 <Button

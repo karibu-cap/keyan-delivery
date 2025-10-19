@@ -1,14 +1,15 @@
 "use client";
 
-import { Minus, Plus, Star, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { OptimizedImage, StableText } from "@/components/ClsOptimization";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
-import { useState, useCallback, useMemo } from "react";
-import { motion } from "framer-motion";
-import { IProduct } from "@/lib/actions/stores";
 import { useT } from "@/hooks/use-inline-translation";
+import { IProduct } from "@/lib/actions/server/stores";
+import { motion } from "framer-motion";
+import { CheckCircle, Minus, Plus, Star } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useMemo } from "react";
 
 interface MerchantProductProps {
     product: IProduct & {
@@ -30,15 +31,10 @@ interface MerchantProductProps {
 
 export function MerchantProduct({ product, index }: MerchantProductProps) {
     const t = useT()
-    const { cartItems, addItem, updateQuantity } = useCart();
-    const [imageLoaded, setImageLoaded] = useState(false);
+    const { cart, addItem, updateQuantity } = useCart();
 
-    const cartItem = useMemo(
-        () => cartItems.find((item) => item.product.id === product.id),
-        [cartItems, product.id]
-    );
 
-    const quantity = cartItem?.quantity || 0;
+    const quantity = cart.items.find((item) => item.product.id === product.id)?.quantity || 0;
     const stockQuantity = product.inventory?.stockQuantity ?? 0;
     const isInStock = stockQuantity > 0;
 
@@ -49,7 +45,7 @@ export function MerchantProduct({ product, index }: MerchantProductProps) {
 
     const handleAddToCart = useCallback(() => {
         addItem({
-            product,
+            productId: product.id,
             quantity: 1,
             price: product.price,
         });
@@ -73,18 +69,19 @@ export function MerchantProduct({ product, index }: MerchantProductProps) {
             className="group h-full bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-xl transition-all duration-300"
         >
             <div className="relative">
-                <div className="relative aspect-square overflow-hidden bg-gray-50">
-                    <Image
-                        src={product.images[0].url}
-                        alt={product.title}
-                        fill
-                        className={`object-cover transition-all duration-300 group-hover:scale-110 ${imageLoaded ? "opacity-100" : "opacity-0"
-                            }`}
-                        onLoad={() => setImageLoaded(true)}
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        priority={index < 4}
-                    />
-                </div>
+                <Link href={`/products/${product.slug}`} className="block">
+                    <div className="relative aspect-square overflow-hidden bg-gray-50">
+                        <OptimizedImage
+                            src={product.images[0].url}
+                            alt={product.title}
+                            blurDataURL={product.images[0]?.blurDataUrl || undefined}
+                            placeholder="blur"
+                            className={`object-cover transition-all duration-300 group-hover:scale-110`}
+                            fill
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        />
+                    </div>
+                </Link>
 
                 {/* Badges */}
                 {product.badges && product.badges.length > 0 && (
@@ -147,9 +144,11 @@ export function MerchantProduct({ product, index }: MerchantProductProps) {
                 )}
 
                 {/* Product Name */}
-                <h3 className="font-medium text-gray-900 text-sm leading-tight mb-1 line-clamp-2 min-h-[2.5rem]">
-                    {product.title}
-                </h3>
+                <Link href={`/products/${product.slug}`}>
+                    <StableText lines={2} className="font-medium text-gray-900 text-sm leading-tight mb-1 hover:text-primary transition-colors cursor-pointer">
+                        {product.title}
+                    </StableText>
+                </Link>
 
                 {/* Size/Weight */}
                 <p className="text-xs text-gray-600 mb-2">

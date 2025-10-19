@@ -12,6 +12,7 @@ const PUBLIC_PATHS = [
   '/',
   '/stores',
   new RegExp('^/stores/.*$'),
+  new RegExp('^/products/.*$'),
   new RegExp('^/(api|trpc)/.*$'),
   '/cart',
   '/checkout',
@@ -32,15 +33,6 @@ function removeLocaleFromPath(path: string) {
   const regex = new RegExp(`^/(${localePattern})(/|$)`);
   return path.replace(regex, '/');
 }
-
-function getLocaleFromPath(path: string) {
-  const localePattern = locales.join('|');
-  const regex = new RegExp(`^/(${localePattern})(/|$)`);
-  const match = path.match(regex);
-  return match ? match[1] : null;
-}
-
-
 
 export async function middleware(request: NextRequest) {
   return authMiddleware(request, {

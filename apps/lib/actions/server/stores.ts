@@ -103,7 +103,7 @@ export interface Aisle {
 
 export async function searchStores(searchQuery: string): Promise<IMerchant[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
     const response = await fetch(
       `${baseUrl}/api/v1/client/merchants?search=${encodeURIComponent(searchQuery)}`,
       {
@@ -130,7 +130,7 @@ export async function searchStores(searchQuery: string): Promise<IMerchant[]> {
 
 export async function filterStoresByCategory(categoryId: string): Promise<IMerchant[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
     const response = await fetch(
       `${baseUrl}/api/v1/client/merchants?category=${encodeURIComponent(categoryId)}`,
       {
@@ -155,11 +155,11 @@ export async function filterStoresByCategory(categoryId: string): Promise<IMerch
   }
 }
 
-export async function fetchProduct(productId: string): Promise<IProduct | null> {
+export async function fetchProduct(slug: string): Promise<IProduct | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
     const response = await fetch(
-      `${baseUrl}/api/v1/client/products/${productId}`,
+      `${baseUrl}/api/v1/client/products/${slug}`,
       {
         cache: 'no-store',
       }
@@ -182,14 +182,46 @@ export async function fetchProduct(productId: string): Promise<IProduct | null> 
   }
 }
 
-export const fetchStoreDataById = cache(async (id: string): Promise<{
+export const fetchRelatedProducts = cache(async (slug: string, categoryIds: string[], merchantId: string): Promise<IProduct[]> => {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const response = await fetch(
+      `${baseUrl}/api/v1/client/products/${slug}/related`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ categoryIds, merchantId }),
+        cache: 'no-store',
+      }
+    );
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      return [];
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching related products:', error);
+    throw new Error('Failed to fetch related products');
+  }
+});
+
+export const fetchStoreDataBySlug = cache(async (slug: string): Promise<{
   merchant: IMerchantDetail;
   aisles: Aisle[];
 } | null> => {
   try {
     const merchant = await prisma.merchant.findUnique({
       where: {
-        id: id,
+        slug: slug,
         isVerified: true,
       },
       include: MerchantIncludes.storeDataById,

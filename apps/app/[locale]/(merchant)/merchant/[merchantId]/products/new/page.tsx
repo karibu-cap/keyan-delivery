@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
      Select,
      SelectContent,
@@ -15,16 +13,17 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, X, Loader2, Camera } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import Link from "next/link";
 import { uploadImages } from "@/lib/actions/client";
-import { createMerchantProduct } from "@/lib/actions/merchants";
-import { ProductStatus, ProductBadge } from "@prisma/client";
-import { Checkbox } from "@/components/ui/checkbox";
 import { fetchCategories } from "@/lib/actions/client/stores";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { createMerchantProduct } from "@/lib/actions/merchants";
+import { ProductBadge, ProductStatus } from "@prisma/client";
+import { ArrowLeft, Camera, Loader2, X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface Category {
      id: string;
@@ -211,7 +210,6 @@ export default function NewProductPage() {
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
 
                <div className="container mx-auto max-w-4xl px-4 py-8">
                     <Link

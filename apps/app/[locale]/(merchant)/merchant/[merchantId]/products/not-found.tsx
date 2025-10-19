@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getT } from "@/i18n/server-translations";
 import { Package } from "lucide-react";
-import Navbar from "@/components/Navbar";
 import { getLocale } from "next-intl/server";
-import { getT } from "@/lib/server-translations";
+import Link from "next/link";
 
 /**
  * 404 page for products
@@ -14,7 +13,6 @@ export default async function ProductsNotFound() {
      const t = await getT(local)
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
 
                <section className="gradient-hero py-16 px-4">
                     <div className="container mx-auto max-w-7xl">

@@ -1,20 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Upload, FileText, CheckCircle, ArrowLeft, Camera } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/hooks/auth-store";
 import { useToast } from "@/hooks/use-toast";
-import Link from "next/link";
 import { uploadDriverDocuments } from "@/lib/actions/client/driver";
+import { ROUTES } from "@/lib/router";
 import { fileToBase64 } from "@/lib/utils/client/base_64";
 import { renderPDFPreview } from "@/lib/utils/client/pdf-preview";
-import { ROUTES } from "@/lib/router";
-import { useAuthStore } from "@/hooks/auth-store";
+import { ArrowLeft, Camera, CheckCircle, FileText, Upload } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function DriverApplicationPage() {
    const router = useRouter();
@@ -138,7 +137,6 @@ export default function DriverApplicationPage() {
 
    return (
       <div className="min-h-screen bg-background">
-         <Navbar />
 
          <div className="container mx-auto max-w-4xl px-4 py-8">
             <Link

@@ -1,19 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
-import { useToast } from "@/hooks/use-toast";
-import { acceptOrder, completeDelivery } from "@/lib/actions/driver";
-import OrderMap from "@/components/driver/OrderMap";
-import { OrderStatus, DriverStatus } from "@prisma/client";
-import { useAuthStore } from "@/hooks/auth-store";
-import { DriverStatsCards } from "@/components/driver/DriverStatsCards";
 import { DriverLoadingState } from "@/components/driver/DriverLoadingState";
+import { DriverOrderTabs } from "@/components/driver/DriverOrderTabs";
 import { DriverPendingStatus } from "@/components/driver/DriverPendingStatus";
 import { DriverRejectedStatus } from "@/components/driver/DriverRejectedStatus";
-import { DriverOrderTabs } from "@/components/driver/DriverOrderTabs";
-import { fetchDriverInProgressOrders, fetchDriverAvailableOrders } from "@/lib/actions/client/driver";
+import { DriverStatsCards } from "@/components/driver/DriverStatsCards";
+import OrderMap from "@/components/driver/OrderMap";
+import { useAuthStore } from "@/hooks/auth-store";
+import { useToast } from "@/hooks/use-toast";
+import { fetchDriverAvailableOrders, fetchDriverInProgressOrders } from "@/lib/actions/client/driver";
 import { getUserWallet } from "@/lib/actions/client/user";
+import { acceptOrder, completeDelivery } from "@/lib/actions/driver";
+import { DriverStatus, OrderStatus } from "@prisma/client";
+import { useCallback, useEffect, useState } from "react";
 
 interface Order {
      id: string;
@@ -191,7 +190,6 @@ export default function DriverDashboard() {
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
 
                <div className="container mx-auto px-4 py-8">
                     {/* Header */}

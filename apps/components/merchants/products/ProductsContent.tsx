@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import ProductsList from "./ProductsList";
-import { IProduct } from "@/lib/actions/stores";
+import { IProduct } from "@/lib/actions/server/stores";
+import { useMemo, useState } from "react";
 import ProductsFilters from "./ProductsFilters";
+import ProductsList from "./ProductsList";
 import ProductsStats from "./ProductsStats";
 
 interface ProductsContentProps {

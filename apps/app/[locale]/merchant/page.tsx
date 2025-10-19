@@ -1,25 +1,8 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import {
-  Store,
-  Package,
-  DollarSign,
-  TrendingUp,
-  Plus,
-  Edit,
-  Eye,
-  CheckCircle,
-  Clock,
-  XCircle,
-  Camera,
-} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -35,7 +20,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Camera,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Edit,
+  Eye,
+  Package,
+  Plus,
+  Store,
+  TrendingUp,
+  XCircle,
+} from "lucide-react";
 
 const Merchant = () => {
   const { toast } = useToast()
@@ -106,7 +105,6 @@ const Merchant = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
 
       {/* Hero Section */}
       <section className="gradient-hero py-16 px-4">

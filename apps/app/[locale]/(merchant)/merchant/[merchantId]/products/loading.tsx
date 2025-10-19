@@ -1,8 +1,7 @@
-import Navbar from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getT } from "@/i18n/server-translations";
 import { getLocale } from "next-intl/server";
-import { getT } from "@/lib/server-translations";
 
 /**
  * Loading UI for products page
@@ -14,7 +13,6 @@ export default async function ProductsLoading() {
 
      return (
           <div className="min-h-screen bg-background">
-               <Navbar />
 
                <section className="gradient-hero py-16 px-4">
                     <div className="container mx-auto max-w-7xl">

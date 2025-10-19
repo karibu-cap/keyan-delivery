@@ -1,14 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Plus, AlertCircle } from "lucide-react";
-import { IProduct } from "@/lib/actions/stores";
-import { getStatusColor, getStatusIcon, getStatusName } from "@/lib/product-utils";
+import { Button } from "@/components/ui/button";
 import { useT } from "@/hooks/use-inline-translation";
+import { IProduct } from "@/lib/actions/server/stores";
+import { getStatusColor, getStatusIcon, getStatusName } from "@/lib/product-utils";
+import { AlertCircle, Edit, Plus } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ProductsListProps {
      products: IProduct[];

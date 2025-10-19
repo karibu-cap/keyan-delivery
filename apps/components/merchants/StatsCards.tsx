@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Package, DollarSign, TrendingUp, Store } from "lucide-react";
-import { getT } from "@/lib/server-translations";
+import { getT } from "@/i18n/server-translations";
 import { getLocale } from "next-intl/server";
 import type { DashboardStats } from "@/types/merchant_types";
 

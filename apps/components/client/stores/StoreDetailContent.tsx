@@ -1,27 +1,27 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Star,
-  Search,
-  ShoppingCart,
-  ArrowLeft,
-  Shield,
-  Menu,
-} from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
+import { useT } from "@/hooks/use-inline-translation";
+import { IMerchantDetail } from "@/lib/actions/server/stores";
+import { ROUTES } from "@/lib/router";
+import {
+  ArrowLeft,
+  Menu,
+  Search,
+  Shield,
+  ShoppingCart,
+  Star,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { IMerchantDetail } from "@/lib/actions/stores";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { MobileCategoryDrawer } from "./MobileCategoryDrawer";
 import { ProductGrid } from "./ProductGrid";
-import { useT } from "@/hooks/use-inline-translation";
-import { ROUTES } from "@/lib/router";
-import { useRouter } from "next/navigation";
 
 interface Aisle {
   id: string;
@@ -43,13 +43,8 @@ export function StoreDetailContent({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { cartItems } = useCart();
+  const { cart } = useCart();
   const router = useRouter();
-
-  const totalItems = useMemo(
-    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
-    [cartItems]
-  );
 
   const filteredProducts = useMemo(() => {
     if (!initialStore.products) return [];
@@ -136,12 +131,12 @@ export function StoreDetailContent({
                   variant="ghost"
                   size="icon"
                   className="relative"
-                  aria-label={`Cart with ${totalItems} items`}
+                  aria-label={`Cart with ${cart.itemCount} items`}
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  {totalItems > 0 && (
+                  {cart.itemCount > 0 && (
                     <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 bg-primary text-white text-xs rounded-full">
-                      {totalItems}
+                      {cart.itemCount}
                     </Badge>
                   )}
                 </Button>

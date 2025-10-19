@@ -1,32 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
+import { OptimizedImage } from "@/components/ClsOptimization";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { useCart } from "@/hooks/use-cart";
+import { useT } from "@/hooks/use-inline-translation";
+import { useToast } from "@/hooks/use-toast";
+import { getDeliveryZones, type DeliveryZone } from "@/lib/actions/client/zone";
+import { createOrders } from "@/lib/actions/orders";
+import { ROUTES } from "@/lib/router";
 import {
   ArrowLeft,
-  MapPin,
-  Phone,
-  CreditCard,
-  Shield,
-  Clock,
-  Package,
   Check,
+  Clock,
+  CreditCard,
+  MapPin,
+  Package,
+  Phone,
+  Shield,
 } from "lucide-react";
-import { useCart } from "@/hooks/use-cart";
-import { ROUTES } from "@/lib/router";
-import Image from "next/image";
-import { createOrders } from "@/lib/actions/orders";
-import { useToast } from "@/hooks/use-toast";
-import { useT } from "@/hooks/use-inline-translation";
-import { getDeliveryZones, type DeliveryZone } from "@/lib/actions/client/zone";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 
 interface DeliveryInfo {
@@ -38,7 +37,7 @@ interface DeliveryInfo {
 const EnhancedCheckout = () => {
   const t = useT();
   const router = useRouter();
-  const { cartItems, total: cartTotal, clearCart } = useCart();
+  const { cart, clearCart } = useCart();
   const { toast } = useToast();
 
   const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
@@ -76,10 +75,9 @@ const EnhancedCheckout = () => {
     fetchDeliveryZones();
   }, []);
 
-  if (cartItems.length === 0) {
+  if (cart.items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="container mx-auto px-4 py-16">
           <div className="mx-auto max-w-md text-center">
             <div className="mb-6 flex justify-center">
@@ -98,7 +96,7 @@ const EnhancedCheckout = () => {
     );
   }
 
-  const subtotal = cartTotal;
+  const subtotal = cart.total;
   const deliveryFee = selectedZone?.deliveryFee || 0;
   const serviceFee = 1.99;
   const total = subtotal + deliveryFee + serviceFee;
@@ -127,11 +125,11 @@ const EnhancedCheckout = () => {
 
     // Prepare order data
     const orderData = {
-      items: cartItems.map(item => ({
+      items: cart.items.map(item => ({
         productId: item.product.id,
         quantity: item.quantity,
         price: item.price,
-        merchantId: item.product.merchantId,
+        merchantId: item.product.merchant.id,
       })),
       deliveryInfo: {
         address: deliveryInfo.address,
@@ -184,8 +182,6 @@ const EnhancedCheckout = () => {
 
   return (
     <div className="min-h-screen bg-background pb-8">
-      <Navbar />
-
       <div className="container mx-auto max-w-7xl px-4 py-8">
         <Link
           href={ROUTES.stores}
@@ -435,13 +431,14 @@ const EnhancedCheckout = () => {
 
                 {/* Cart Items */}
                 <div className="space-y-4 mb-6">
-                  {cartItems.map((item) => (
+                  {cart.items.map((item) => (
                     <div key={item.product.id} className="flex gap-3">
-                      <Image
-                        src={item.product.images[0]?.url || "/placeholder.svg"}
+                      <OptimizedImage
+                        src={item.product.images[0].url || "/placeholder.svg"}
                         alt={item.product.title}
                         className="w-16 h-16 rounded-2xl object-cover"
                         width={64}
+                        blurDataURL={item.product.images[0]?.blurDataUrl || undefined}
                         height={64}
                       />
                       <div className="flex-1 min-w-0">
@@ -449,7 +446,7 @@ const EnhancedCheckout = () => {
                         <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
                       </div>
                     </div>
                   ))}

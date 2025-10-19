@@ -14,8 +14,8 @@ const compat = new FlatCompat({
 
 const config = [
   ...compat.config({
-    extends: ['next/core-web-vitals', 'next/typescript'],
-    plugins: ['@typescript-eslint', 'unused-imports'],
+    extends: ['next/core-web-vitals', 'next/typescript', 'prettier'],
+    plugins: ['@typescript-eslint', 'unused-imports', 'prettier'],
 
     settings: {
       react: {

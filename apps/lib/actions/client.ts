@@ -1,12 +1,12 @@
 import { Media, Merchant, User } from "@prisma/client";
-import { IMerchant, IProduct } from "./stores";
+import { IMerchant, IProduct } from "./server/stores";
 
 export interface SearchResult {
   id: string;
   title: string;
   type: 'product' | 'merchant';
   image?: string;
-  price?: number;
+  price?: number; 
   category?: string;
   product?: IProduct;
   merchant?: IMerchant;

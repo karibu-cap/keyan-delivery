@@ -27,21 +27,74 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'keyan-delivery-final-version.com',
-                port: '3000',
-                pathname: '/tmp/**',
-            },
-            {
-                protocol: 'https',
                 hostname: 'loremflickr.com',
             },
         ],
+        // Enable modern image optimization features
+        formats: ['image/webp', 'image/avif'],
+        deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+        imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+        minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     },
     experimental: {
         optimizePackageImports: ['lucide-react'],
     },
     // Use local cache directory for better performance
     distDir: process.env.NODE_ENV === 'development' ? '.next-local' : '.next',
+    // Enable compression for better performance
+    compress: true,
+    // Configure powered by header removal for security
+    poweredByHeader: false,
+    // Enable strict mode for React
+    reactStrictMode: true,
+    // Configure SWC minification (handled automatically in newer Next.js versions)
+    // Enable modern JavaScript features
+    compiler: {
+        removeConsole: process.env.NODE_ENV === 'production',
+    },
+    // Configure headers for caching and security
+    async headers() {
+        return [
+            {
+                source: '/(.*)',
+                headers: [
+                    {
+                        key: 'X-Frame-Options',
+                        value: 'DENY',
+                    },
+                    {
+                        key: 'X-Content-Type-Options',
+                        value: 'nosniff',
+                    },
+                    {
+                        key: 'Referrer-Policy',
+                        value: 'origin-when-cross-origin',
+                    },
+                ],
+            },
+            // Cache API routes appropriately
+            {
+                source: '/api/v1/client/(products|merchants|categories)',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=300, s-maxage=600',
+                    },
+                ],
+            },
+            // Cache search results for shorter periods
+            {
+                source: '/api/v1/client/search',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=60, s-maxage=120',
+                    },
+                ],
+            },
+        ];
+    },
+    
 }
 
 export default withNextIntl(nextConfig)

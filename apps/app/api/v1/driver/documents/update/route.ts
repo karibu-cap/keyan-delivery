@@ -1,6 +1,6 @@
 "use server"
 
-import { getUserTokens } from "@/lib/firebase-client/firebase-utils";
+import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
 import { prisma } from "@/lib/prisma";
 import { uploadBase64DriverToCloudinary } from "@/lib/utils/server/base_64";
 import { DriverStatus, UserRole } from "@prisma/client";

@@ -1,5 +1,6 @@
 import { getMerchantProducts } from '@/lib/actions/server/merchants';
-import { getUserTokens } from '@/lib/firebase-client/firebase-utils';
+import { invalidateProductCache } from '@/lib/cache';
+import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { prisma } from '@/lib/prisma';
 import { generateSlug } from '@/lib/utils';
 import { ProductStatus } from '@prisma/client';
@@ -157,6 +158,9 @@ export async function POST(request: NextRequest, props: { params: Promise<{ merc
                 }
             }
         });
+
+        // Invalidate product cache after successful creation
+        await invalidateProductCache();
 
         return NextResponse.json({
             success: true,

@@ -1,12 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useT } from "@/hooks/use-inline-translation";
 import type { Product } from "@/types/merchant_types";
+import Image from "next/image";
+import Link from "next/link";
 
 
 interface RecentProductsProps {
@@ -15,17 +15,17 @@ interface RecentProductsProps {
 }
 
 export default function RecentProducts({ products, merchantId }: RecentProductsProps) {
-     const router = useRouter();
+     const t = useT()
 
      return (
           <Card className="p-6 rounded-2xl shadow-card mt-8">
                <div className="flex items-center justify-between mb-6">
                     <div>
-                         <h2 className="text-2xl font-bold mb-1">Recent Products</h2>
-                         <p className="text-muted-foreground">Your latest products</p>
+                         <h2 className="text-2xl font-bold mb-1">{t("Recent Products")}</h2>
+                         <p className="text-muted-foreground">{t("Your latest products")}</p>
                     </div>
                     <Link href={`/merchant/${merchantId}/products`}>
-                         <Button variant="outline">View All Products</Button>
+                         <Button variant="outline">{t("View All Products")}</Button>
                     </Link>
                </div>
 
@@ -33,8 +33,7 @@ export default function RecentProducts({ products, merchantId }: RecentProductsP
                     {products.slice(0, 6).map((product) => (
                          <div
                               key={product.id}
-                              className="flex items-center gap-4 p-4 rounded-2xl border border-border hover:shadow-card transition-all cursor-pointer"
-                              onClick={() => router.push(`/merchant/${merchantId}/products/${product.id}`)}
+                              className="flex items-center gap-4 p-4 rounded-2xl border border-border hover:shadow-card transition-all"
                          >
                               <div className="relative w-16 h-16">
                                    <Image
@@ -50,7 +49,7 @@ export default function RecentProducts({ products, merchantId }: RecentProductsP
                                    <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
                                         <span>${product.price.toFixed(2)}</span>
                                         <span>•</span>
-                                        <span>Stock: {product.stock}</span>
+                                        <span>{t("Stock: ") + product.stock}</span>
                                    </div>
                                    <Badge
                                         variant={product.status === 'VERIFIED' ? 'default' : 'secondary'}

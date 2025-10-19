@@ -1,17 +1,18 @@
-import { Suspense } from "react";
-import Navbar from "@/components/Navbar";
-import { fetchMerchants, IMerchant } from "@/lib/actions/stores";
 import { StoresContent } from "@/components/client/stores/StoresContent";
 import { StoresLoading } from "@/components/client/stores/StoresLoading";
-import { getLocale } from "next-intl/server";
-import { getT } from "@/lib/server-translations";
+import { OfflineNetworkErrorBoundary } from "@/components/OfflineSupport";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { getT } from "@/i18n/server-translations";
+import { fetchMerchants, IMerchant } from "@/lib/actions/server/stores";
 import type { MerchantType } from "@prisma/client";
+import { getLocale } from "next-intl/server";
+import { Suspense } from "react";
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: "Your Stores | Keyan",
+  title: "Your Stores | Yetu",
   description: "Shop from stores near you",
 };
 
@@ -30,16 +31,22 @@ async function getStores(): Promise<IMerchant[]> {
   }
 }
 
-export default async function StoresPage(  { searchParams }: { searchParams: Promise<{ merchantType: MerchantType }> }) {
+export default async function StoresPage({ searchParams }: { searchParams: Promise<{ merchantType: MerchantType }> }) {
   const stores = await getStores();
   const _searchParams = await searchParams;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <Suspense fallback={<StoresLoading />}>
-        <StoresContent initialStores={stores} initialMerchantTypeFilters={_searchParams.merchantType} />
-      </Suspense>
+      <ErrorBoundary>
+        <OfflineNetworkErrorBoundary>
+          <Suspense fallback={<StoresLoading />}>
+            <StoresContent
+              stores={stores}
+              selectedMerchantType={_searchParams.merchantType || "all"}
+            />
+          </Suspense>
+        </OfflineNetworkErrorBoundary>
+      </ErrorBoundary>
     </div>
   );
 }
