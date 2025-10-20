@@ -158,8 +158,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
                 alt={alt}
                 {...(props.fill ? {} : { width, height })}
                 priority={priority}
-                loading={loading}
-                placeholder='blur'
+                loading={priority ? undefined : loading}
                 blurDataURL={blurDataURL || FAKE_BLUR}
                 sizes={imageSizes}
                 onLoad={() => {

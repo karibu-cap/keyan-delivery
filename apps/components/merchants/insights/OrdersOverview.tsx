@@ -35,9 +35,9 @@ export default function OrdersOverview({ breakdown }: OrdersOverviewProps) {
         {
             label: 'Completed',
             value: breakdown.completed,
-            color: 'bg-green-500',
-            lightColor: 'bg-green-100',
-            textColor: 'text-green-700',
+            color: 'bg-primary/50',
+            lightColor: 'bg-primary/10',
+            textColor: 'text-primary/70',
             icon: CheckCircle,
         },
         {
@@ -138,9 +138,9 @@ export default function OrdersOverview({ breakdown }: OrdersOverviewProps) {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3 border-t border-gray-200 pt-6 sm:gap-4">
-                <div className="rounded-lg bg-green-50 p-3 sm:p-4">
-                    <p className="text-xs font-medium text-green-600">{t('Success Rate')}</p>
-                    <p className="mt-1 text-xl font-bold text-green-700 sm:text-2xl">
+                <div className="rounded-lg bg-primary/5 p-3 sm:p-4">
+                    <p className="text-xs font-medium text-primary/60">{t('Success Rate')}</p>
+                    <p className="mt-1 text-xl font-bold text-primary/70 sm:text-2xl">
                         {total > 0 ? ((breakdown.completed / total) * 100).toFixed(1) : 0}%
                     </p>
                 </div>

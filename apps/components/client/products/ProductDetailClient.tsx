@@ -132,11 +132,12 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                 {/* Main Image */}
                                 <div className="relative aspect-square bg-gray-100">
                                     <OptimizedImage
-                                        src={product.images[selectedImage]?.url || "/placeholder.svg"}
+                                        src={product.images[selectedImage]?.url || "/icons/ios/542.png"}
                                         alt={product.title}
                                         fill
                                         className="object-cover"
                                         sizes="(max-width: 768px) 100vw, 50vw"
+                                        priority={true}
                                     />
                                     {discount > 0 && (
                                         <Badge
@@ -286,13 +287,13 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                     <CheckCircle
                                         className={cn(
                                             "w-5 h-5",
-                                            isInStock ? "text-green-600" : "text-gray-300"
+                                            isInStock ? "text-primary/60" : "text-gray-300"
                                         )}
                                     />
                                     <span
                                         className={cn(
                                             "font-medium",
-                                            isInStock ? "text-green-600" : "text-gray-500"
+                                            isInStock ? "text-primary/60" : "text-gray-500"
                                         )}
                                     >
                                         {stockQuantity > 10
@@ -321,7 +322,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={handleDecrease}
-                                                className="text-white hover:bg-primary-dark"
+                                                className="text-white hover:bg-primary"
                                             >
                                                 <Minus className="w-5 h-5" />
                                             </Button>
@@ -333,7 +334,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                                 size="icon"
                                                 onClick={handleIncrease}
                                                 disabled={quantity >= stockQuantity}
-                                                className="text-white hover:bg-primary-dark"
+                                                className="text-white hover:bg-primar"
                                             >
                                                 <Plus className="w-5 h-5" />
                                             </Button>

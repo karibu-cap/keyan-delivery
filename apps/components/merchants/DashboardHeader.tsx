@@ -16,7 +16,7 @@ export default async function DashboardHeader({ merchantId }: DashboardHeaderPro
                <div className="container mx-auto max-w-7xl">
                     <div className="text-white flex justify-between items-center">
                          <div>
-                              <h1 className="text-5xl font-bold mb-4">{t("Merchant Dashboard")}</h1>
+                              <h1 className="text-5xl font-bold mb-4">{t("Welcome Back To Your Dashboard")}</h1>
                               <p className="text-xl text-white/90">
                                    {t("Manage your store, products, and orders")}
                               </p>

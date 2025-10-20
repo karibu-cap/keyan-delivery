@@ -539,5 +539,7 @@
   "view-details": "Tazama maelezo",
   "your-order-has-been-accepted-by-merchantname": "Agizo lako limekubaliwa na {MerchantName}",
   "your-order-has-been-rejected-by-merchantname": "Agizo lako limekataliwa na {MerchantName}",
-  "your-order-has-been-canceled-by-merchantname": "Agizo lako limefutwa na {MerchantName}"
+  "your-order-has-been-canceled-by-merchantname": "Agizo lako limefutwa na {MerchantName}",
+  "connection-problem": "Shida ya unganisho",
+  "welcome-back-to-your-dashboard": "Karibu tena kwenye dashibodi yako"
 }

@@ -13,7 +13,7 @@ const badgeVariants = cva(
         destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
         // Instacart-specific badge variants
-        bestSeller: "border-transparent bg-green text-green-foreground hover:bg-green/80",
+        bestSeller: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
         inStock: "border-transparent bg-success text-white",
         manyInStock: "border-transparent bg-success text-white",
         organic: "border-transparent bg-success text-white",

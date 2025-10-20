@@ -117,7 +117,7 @@ export const LoadingDots: React.FC<{ className?: string }> = ({ className }) => 
             {[0, 1, 2].map((index) => (
                 <div
                     key={index}
-                    className="w-2 h-2 bg-primary-600 rounded-full animate-bounce"
+                    className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
                     style={{
                         animationDelay: `${index * 0.1}s`,
                         animationDuration: '0.6s',
@@ -350,7 +350,7 @@ export const ButtonLoading: React.FC<{
             <button
                 className={cn(
                     'inline-flex items-center justify-center rounded-md font-medium transition-colors',
-                    'bg-primary-600 text-white hover:bg-primary-700',
+                    'bg-primary/60 text-white hover:bg-primary/70',
                     'disabled:opacity-50 disabled:cursor-not-allowed',
                     sizeClasses[size],
                     className
@@ -434,7 +434,7 @@ export const ErrorState: React.FC<{
                 {onRetry && (
                     <button
                         onClick={onRetry}
-                        className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                        className="inline-flex items-center px-4 py-2 bg-primary/60 text-white rounded-md hover:bg-primary/70 transition-colors"
                     >
                         Try Again
                     </button>

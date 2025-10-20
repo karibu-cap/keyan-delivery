@@ -40,7 +40,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             value: stats.completedOrders.toString(),
             change: stats.completionRate,
             icon: CheckCircle,
-            bgColor: 'bg-green-500',
+            bgColor: 'bg-primary/50',
             suffix: '% taux',
         },
         {
@@ -80,12 +80,12 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 
                             <div className="mt-4 flex items-center text-sm">
                                 {isPositive ? (
-                                    <TrendingUp className="h-4 w-4 text-green-600" />
+                                    <TrendingUp className="h-4 w-4 text-primary/60" />
                                 ) : (
                                     <TrendingDown className="h-4 w-4 text-red-600" />
                                 )}
                                 <span
-                                    className={`ml-1 font-medium ${isPositive ? 'text-green-600' : 'text-red-600'
+                                    className={`ml-1 font-medium ${isPositive ? 'text-primary/60' : 'text-red-600'
                                         }`}
                                 >
                                     {Math.abs(card.change).toFixed(1)}%

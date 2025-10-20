@@ -41,7 +41,7 @@ export default function CartPage() {
                         <h1 className="mb-2 text-2xl font-bold">{t("Your cart is empty")}</h1>
                         <p className="mb-6 text-muted-foreground">{t("Add items from a store to start shopping")}</p>
                         <Link href="/stores">
-                            <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Start Shopping")}</Button>
+                            <Button className="bg-primary hover:bg-[#089808]">{t("Start Shopping")}</Button>
                         </Link>
                     </div>
                 </div>
@@ -71,7 +71,7 @@ export default function CartPage() {
                                         <div key={item.product.id} className="flex gap-4 border-b pb-4 last:border-b-0 last:pb-0">
                                             <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
                                                 <OptimizedImage
-                                                    src={item.product.images[0].url || "/placeholder.svg"}
+                                                    src={item.product.images[0].url || "/icons/ios/542.png"}
                                                     alt={item.product.title}
                                                     blurDataURL={item.product.images[0]?.blurDataUrl || undefined}
                                                     fill
@@ -105,7 +105,7 @@ export default function CartPage() {
                                                         <span className="w-8 text-center font-semibold">{item.quantity}</span>
                                                         <Button
                                                             size="icon"
-                                                            className="h-8 w-8 bg-[#0aad0a] hover:bg-[#089808]"
+                                                            className="h-8 w-8 bg-primary hover:bg-[#089808]"
                                                             onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                                                             disabled={item.quantity >= (item.product.inventory?.stockQuantity || 0)}
                                                         >
@@ -114,7 +114,7 @@ export default function CartPage() {
                                                     </div>
 
                                                     <div className="flex items-center gap-4">
-                                                        <span className="font-bold text-[#0aad0a]">
+                                                        <span className="font-bold text-primary">
                                                             ${(item.price * item.quantity).toFixed(2)}
                                                         </span>
                                                         <Button
@@ -158,11 +158,11 @@ export default function CartPage() {
 
                                 <div className="flex justify-between py-4 text-lg font-bold">
                                     <span>{t("Total")}</span>
-                                    <span className="text-[#0aad0a]">${finalTotal.toFixed(2)}</span>
+                                    <span className="text-primary">${finalTotal.toFixed(2)}</span>
                                 </div>
 
                                 <Button
-                                    className="w-full bg-[#0aad0a] hover:bg-[#089808]"
+                                    className="w-full bg-primary hover:bg-primary/80"
                                     size="lg"
                                     onClick={() => router.push("/checkout")}
                                 >

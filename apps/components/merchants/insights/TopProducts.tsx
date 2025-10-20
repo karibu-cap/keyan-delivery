@@ -28,7 +28,7 @@ export default function TopProducts({ products }: TopProductsProps) {
                     </h2>
                     <p className="text-sm text-gray-500">{t('Top 10 products')}</p>
                 </div>
-                <TrendingUp className="h-5 w-5 text-green-600" />
+                <TrendingUp className="h-5 w-5 text-primary/60" />
             </div>
 
             <div className="space-y-4">

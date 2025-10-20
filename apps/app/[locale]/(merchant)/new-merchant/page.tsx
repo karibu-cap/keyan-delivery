@@ -466,7 +466,7 @@ export default function NewMerchantPage() {
                         </Button>
                         <Button
                             type="submit"
-                            className="flex-1 bg-[#0aad0a] hover:bg-[#089808]"
+                            className="flex-1 bg-primary hover:bg-[#089808]"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (

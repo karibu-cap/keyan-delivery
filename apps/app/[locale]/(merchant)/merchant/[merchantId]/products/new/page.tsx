@@ -502,7 +502,7 @@ export default function NewProductPage() {
                               </Button>
                               <Button
                                    type="button"
-                                   className="flex-1 bg-[#0aad0a] hover:bg-[#089808]"
+                                   className="flex-1 bg-primary hover:bg-[#089808]"
                                    onClick={() => handleSubmit(ProductStatus.WAITING_FOR_REVIEW)}
                                    disabled={isSubmitting}
                               >

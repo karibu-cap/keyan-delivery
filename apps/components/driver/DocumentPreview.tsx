@@ -71,7 +71,7 @@ export function DocumentPreview({
     const getStatusColor = (status: string) => {
         switch (status) {
             case "approved":
-                return "bg-green-100 text-green-800 border-green-200";
+                return "bg-primary/10 text-primary/80 border-primary-200";
             case "rejected":
                 return "bg-red-100 text-red-800 border-red-200";
             case "pending":

@@ -8,6 +8,7 @@ import { OrderStatus, ProductStatus } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { OrdersTabsSkeleton, RecentProductsSkeleton, StatsCardsSkeleton } from "./loading";
+import { generateMerchantMetadata } from "@/lib/metadata";
 
 
 // Enable ISR with on-demand revalidation
@@ -18,15 +19,16 @@ export const experimental_ppr = true;
 interface PageProps {
      params: Promise<{
           merchantId: string;
+          locale: string;
      }>;
 }
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps) {
-     return {
-          title: "Merchant Dashboard",
-          description: "Manage your store, products, and orders",
-     };
+     const _merchantId = (await params).merchantId;
+     const _locale = (await params).locale;
+
+     return generateMerchantMetadata(_merchantId, _locale);
 }
 
 async function getDashboardData(merchantId: string) {
