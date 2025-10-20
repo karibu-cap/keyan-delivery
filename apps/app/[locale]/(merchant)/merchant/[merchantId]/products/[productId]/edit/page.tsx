@@ -456,7 +456,7 @@ export default function EditProductPage() {
                                    ))}
 
                                    {newImagePreviews.map((preview, index) => (
-                                        <div key={`new-${index}`} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-green-500">
+                                        <div key={`new-${index}`} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-primary-500">
                                              <OptimizedImage
                                                   src={preview}
                                                   alt={`New ${index + 1}`}
@@ -527,7 +527,7 @@ export default function EditProductPage() {
                               </Button>
                               <Button
                                    type="button"
-                                   className="flex-1 bg-[#0aad0a] hover:bg-[#089808]"
+                                   className="flex-1 bg-primary hover:bg-[#089808]"
                                    onClick={handleSubmit}
                                    disabled={isSubmitting}
                               >

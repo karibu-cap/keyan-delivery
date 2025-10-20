@@ -144,7 +144,7 @@ async function OrderCard({ order }: { order: IOrder }) {
                                    <p className="text-sm text-muted-foreground">
                                         {itemCount} {itemCount === 1 ? t("item") : t("items")}
                                    </p>
-                                   <p className="text-lg font-bold text-[#0aad0a]">
+                                   <p className="text-lg font-bold text-primary">
                                         ${order.orderPrices.total.toFixed(2)}
                                    </p>
                               </div>
@@ -206,7 +206,7 @@ async function OrdersList({ userId }: { userId: string }) {
                          {t("Start shopping to place your first order")}
                     </p>
                     <Link href="/stores">
-                         <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Start Shopping")}</Button>
+                         <Button className="bg-primary hover:bg-[#089808]">{t("Start Shopping")}</Button>
                     </Link>
                </div>
           )
@@ -270,7 +270,7 @@ export default async function OrdersPage() {
                                    {t("Please sign in to view your orders")}
                               </p>
                               <Link href="/sign-in">
-                                   <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Sign In")}</Button>
+                                   <Button className="bg-primary hover:bg-[#089808]">{t("Sign In")}</Button>
                               </Link>
                          </div>
                     </main>
@@ -293,7 +293,7 @@ export default async function OrdersPage() {
                                    {t("Please contact support if this issue persists")}
                               </p>
                               <Link href="/">
-                                   <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Go Home")}</Button>
+                                   <Button className="bg-primary hover:bg-[#089808]">{t("Go Home")}</Button>
                               </Link>
                          </div>
                     </main>

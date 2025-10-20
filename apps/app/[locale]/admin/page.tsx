@@ -84,7 +84,7 @@ const Admin = () => {
     {
       id: 2,
       type: "info",
-      message: "New merchant registration: Green Valley Organic",
+      message: "New merchant registration: primary Valley Organic",
       time: "1 hour ago",
     },
     {
@@ -305,18 +305,18 @@ const Admin = () => {
                   <div
                     key={alert.id}
                     className={`flex items-start gap-3 p-4 rounded-2xl ${alert.type === "urgent"
-                        ? "bg-destructive/10 border border-destructive/20"
-                        : alert.type === "warning"
-                          ? "bg-warning/10 border border-warning/20"
-                          : "bg-accent border border-border"
+                      ? "bg-destructive/10 border border-destructive/20"
+                      : alert.type === "warning"
+                        ? "bg-warning/10 border border-warning/20"
+                        : "bg-accent border border-border"
                       }`}
                   >
                     <AlertCircle
                       className={`w-5 h-5 mt-0.5 ${alert.type === "urgent"
-                          ? "text-destructive"
-                          : alert.type === "warning"
-                            ? "text-warning"
-                            : "text-primary"
+                        ? "text-destructive"
+                        : alert.type === "warning"
+                          ? "text-warning"
+                          : "text-primary"
                         }`}
                     />
                     <div className="flex-1 min-w-0">

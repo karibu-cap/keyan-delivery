@@ -88,7 +88,7 @@ const EnhancedCheckout = () => {
             <h1 className="mb-2 text-2xl font-bold">{t("Your cart is empty")}</h1>
             <p className="mb-6 text-muted-foreground">{t("Add items to your cart to proceed with checkout")}</p>
             <Link href="/stores">
-              <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Start Shopping")}</Button>
+              <Button className="bg-primary hover:bg-[#089808]">{t("Start Shopping")}</Button>
             </Link>
           </div>
         </div>
@@ -434,7 +434,7 @@ const EnhancedCheckout = () => {
                   {cart.items.map((item) => (
                     <div key={item.product.id} className="flex gap-3">
                       <OptimizedImage
-                        src={item.product.images[0].url || "/placeholder.svg"}
+                        src={item.product.images[0].url || "/icons/ios/542.png"}
                         alt={item.product.title}
                         className="w-16 h-16 rounded-2xl object-cover"
                         width={64}

@@ -130,7 +130,7 @@ export default function OrderTrackPage() {
                               <h2 className="mb-2 text-2xl font-bold">Error Loading Order</h2>
                               <p className="mb-6 text-muted-foreground">{error || "Order not found"}</p>
                               <Link href="/orders">
-                                   <Button className="bg-[#0aad0a] hover:bg-[#089808]">Back to Orders</Button>
+                                   <Button className="bg-primary hover:bg-[#089808]">Back to Orders</Button>
                               </Link>
                          </div>
                     </main>
@@ -212,7 +212,7 @@ export default function OrderTrackPage() {
                                         {orderData.deliveryInfo.estimatedDelivery && (
                                              <div className="rounded-lg bg-muted p-3">
                                                   <p className="mb-1 text-sm font-medium">{t("Estimated Arrival")}</p>
-                                                  <p className="text-lg font-bold text-[#0aad0a]">
+                                                  <p className="text-lg font-bold text-primary">
                                                        {new Date(orderData.deliveryInfo.estimatedDelivery).toLocaleTimeString([], {
                                                             hour: "2-digit",
                                                             minute: "2-digit",
@@ -231,8 +231,8 @@ export default function OrderTrackPage() {
                                         </CardHeader>
                                         <CardContent className="space-y-4">
                                              <div className="flex items-center gap-3">
-                                                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0aad0a]/10">
-                                                       <UserIcon className="h-6 w-6 text-[#0aad0a]" />
+                                                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                                                       <UserIcon className="h-6 w-6 text-primary" />
                                                   </div>
                                                   <div>
                                                        <p className="font-medium">{orderData.driver.name}</p>
@@ -260,7 +260,7 @@ export default function OrderTrackPage() {
                               <Card>
                                    <CardContent className="pt-6">
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                             <div className="h-2 w-2 animate-pulse rounded-full bg-[#0aad0a]" />
+                                             <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
                                              <span>{t("Updates every 30 seconds")}</span>
                                         </div>
                                    </CardContent>

@@ -117,7 +117,7 @@ export default function ActiveOrders({
                                                                       href={`https://wa.me/${formatPhoneForWhatsApp(order.deliveryInfo.deliveryContact)}`}
                                                                       target="_blank"
                                                                       rel="noopener noreferrer"
-                                                                      className="inline-flex items-center gap-1 text-green-600 hover:underline"
+                                                                      className="inline-flex items-center gap-1 text-primary/60 hover:underline"
                                                                       title="WhatsApp"
                                                                  >
                                                                       <MessageCircle className="w-3 h-3" />

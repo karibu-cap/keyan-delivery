@@ -141,7 +141,7 @@ export default function TestNotifications() {
 
                 <button
                     onClick={requestPermission}
-                    className="w-full px-4 py-3 bg-green-600 text-white rounded hover:bg-green-700"
+                    className="w-full px-4 py-3 bg-primary/60 text-white rounded hover:bg-primary/70"
                 >
                     2. Request Permission
                 </button>
@@ -175,7 +175,7 @@ export default function TestNotifications() {
                 </button>
             </div>
 
-            <div className="bg-gray-900 text-green-400 p-4 rounded font-mono text-sm h-96 overflow-y-auto">
+            <div className="bg-gray-900 text-primary/40 p-4 rounded font-mono text-sm h-96 overflow-y-auto">
                 <div className="font-bold mb-2">Console Logs:</div>
                 {logs.length === 0 ? (
                     <div className="text-gray-500">No logs yet...</div>
@@ -189,10 +189,10 @@ export default function TestNotifications() {
             <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
                 <h3 className="font-bold mb-2">📋 Instructions:</h3>
                 <ol className="list-decimal ml-5 space-y-1 text-sm">
-                    <li>Click "Check Permission" - should show "granted"</li>
-                    <li>Click "Check Service Worker Status" - should show "Active: true"</li>
-                    <li>Click "Test Direct Notification" - notification should appear</li>
-                    <li>Click "Test SW Notification" - notification should appear</li>
+                    <li>Click &quot;Check Permission&quot; - should show &quot;granted&quot;</li>
+                    <li>Click &quot;Check Service Worker Status&quot; - should show &quot;Active: true&quot;</li>
+                    <li>Click &quot;Test Direct Notification&ldquo; - notification should appear</li>
+                    <li>Click &quot;Test SW Notification&quot; - notification should appear</li>
                     <li>If any test fails, check the error message in the logs</li>
                 </ol>
             </div>

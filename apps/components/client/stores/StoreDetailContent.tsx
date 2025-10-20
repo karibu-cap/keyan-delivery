@@ -93,7 +93,7 @@ export function StoreDetailContent({
               </Button>
               <div className="flex items-center space-x-2 flex-1 min-w-0">
                 <OptimizedImage
-                  src={initialStore.logoUrl || "/placeholder.svg"}
+                  src={initialStore.logoUrl || "/icons/ios/542.png"}
                   alt={initialStore.businessName}
                   width={32}
                   height={32}
@@ -162,7 +162,7 @@ export function StoreDetailContent({
               </Button>
               <div className="flex items-center space-x-3">
                 <OptimizedImage
-                  src={initialStore.logoUrl || "/placeholder.svg"}
+                  src={initialStore.logoUrl || "/icons/ios/542.png"}
                   alt={initialStore.businessName}
                   width={48}
                   height={48}

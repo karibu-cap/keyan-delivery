@@ -1,7 +1,5 @@
 import { StoresContent } from "@/components/client/stores/StoresContent";
 import { StoresLoading } from "@/components/client/stores/StoresLoading";
-import { OfflineNetworkErrorBoundary } from "@/components/OfflineSupport";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { getT } from "@/i18n/server-translations";
 import { fetchMerchants, IMerchant } from "@/lib/actions/server/stores";
 import type { MerchantType } from "@prisma/client";
@@ -37,16 +35,12 @@ export default async function StoresPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ErrorBoundary>
-        <OfflineNetworkErrorBoundary>
-          <Suspense fallback={<StoresLoading />}>
-            <StoresContent
-              stores={stores}
-              selectedMerchantType={_searchParams.merchantType || "all"}
-            />
-          </Suspense>
-        </OfflineNetworkErrorBoundary>
-      </ErrorBoundary>
+      <Suspense fallback={<StoresLoading />}>
+        <StoresContent
+          stores={stores}
+          selectedMerchantType={_searchParams.merchantType || "all"}
+        />
+      </Suspense>
     </div>
   );
 }

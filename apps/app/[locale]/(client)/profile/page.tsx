@@ -20,7 +20,7 @@ export default async function ProfilePage() {
             <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
             <p className="mb-6 text-muted-foreground">{t("Please sign in to view your orders")}</p>
             <Link href="/sign-in">
-              <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Sign In")}</Button>
+              <Button className="bg-primary hover:bg-[#089808]">{t("Sign In")}</Button>
             </Link>
           </div>
         </main>
@@ -35,7 +35,7 @@ export default async function ProfilePage() {
             <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
             <p className="mb-6 text-muted-foreground">{t("Please sign in to view your orders")}</p>
             <Link href="/sign-in">
-              <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Sign In")}</Button>
+              <Button className="bg-primary hover:bg-[#089808]">{t("Sign In")}</Button>
             </Link>
           </div>
         </main>
@@ -65,7 +65,7 @@ export default async function ProfilePage() {
             <h2 className="mb-2 text-2xl font-bold">{t("User Not Found")}</h2>
             <p className="mb-6 text-muted-foreground">{t("Please contact support if this issue persists")}</p>
             <Link href="/">
-              <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Go Home")}</Button>
+              <Button className="bg-primary hover:bg-[#089808]">{t("Go Home")}</Button>
             </Link>
           </div>
         </main>

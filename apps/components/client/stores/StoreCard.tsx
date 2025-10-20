@@ -37,7 +37,7 @@ export function StoreCard({ store, index }: StoreCardProps) {
             case MerchantType.PHARMACY:
                 return <Pill className="w-5 h-5 text-blue-600" />;
             default:
-                return <ShoppingBag className="w-5 h-5 text-green-600" />;
+                return <ShoppingBag className="w-5 h-5 text-primary/60" />;
         }
     }, []);
 
@@ -88,9 +88,9 @@ export function StoreCard({ store, index }: StoreCardProps) {
             </div>
 
             {/* Delivery Time */}
-            <div className="flex items-center space-x-2 mb-4 bg-green-50 rounded-lg px-3 py-2">
-                <Clock className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-green-700">
+            <div className="flex items-center space-x-2 mb-4 bg-primary/5 rounded-lg px-3 py-2">
+                <Clock className="w-4 h-4 text-primary/60" />
+                <span className="text-sm font-medium text-primary/70">
                     {t("Delivery by")} {store.deliveryTime || "10:30am"}
                 </span>
             </div>
@@ -128,7 +128,7 @@ export function StoreCard({ store, index }: StoreCardProps) {
             {/* Delivery Fee */}
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                 <span className="text-sm text-gray-600">{t("Delivery fee")}</span>
-                <span className="text-sm font-semibold text-green-600">
+                <span className="text-sm font-semibold text-primary/60">
                     {t("FREE ($0.00)")}
                 </span>
             </div>

@@ -97,7 +97,7 @@ export default async function MerchantInsightsPage() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600">{t('New')}</span>
-                                <span className="font-semibold text-green-600">
+                                <span className="font-semibold text-primary/60">
                                     {analytics.customerInsights.newCustomers}
                                 </span>
                             </div>
@@ -149,8 +149,8 @@ export default async function MerchantInsightsPage() {
 
                     <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
                         <div className="mb-4 flex items-center gap-3">
-                            <div className="rounded-full bg-green-100 p-2">
-                                <TrendingUp className="h-5 w-5 text-green-600" />
+                            <div className="rounded-full bg-primary/10 p-2">
+                                <TrendingUp className="h-5 w-5 text-primary/60" />
                             </div>
                             <h3 className="font-semibold text-gray-900">{t("Global performance")}</h3>
                         </div>
@@ -158,13 +158,13 @@ export default async function MerchantInsightsPage() {
                             <div>
                                 <div className="mb-1 flex items-center justify-between">
                                     <span className="text-sm text-gray-600">{t("Completion rate")}</span>
-                                    <span className="text-sm font-semibold text-green-600">
+                                    <span className="text-sm font-semibold text-primary/60">
                                         {analytics.stats.completionRate.toFixed(1)}%
                                     </span>
                                 </div>
                                 <div className="h-2 overflow-hidden rounded-full bg-gray-200">
                                     <div
-                                        className="h-full rounded-full bg-green-600"
+                                        className="h-full rounded-full bg-primary/60"
                                         style={{ width: `${analytics.stats.completionRate}%` }}
                                     />
                                 </div>

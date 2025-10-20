@@ -98,13 +98,13 @@ export function OrderTimeline({ status, locale = 'en' }: OrderTimelineProps) {
                                    <div className="relative flex w-full items-center">
                                         {index > 0 && (
                                              <div
-                                                  className={`absolute right-1/2 top-1/2 h-0.5 w-full -translate-y-1/2 ${isCompleted ? "bg-[#0aad0a]" : "bg-muted"
+                                                  className={`absolute right-1/2 top-1/2 h-0.5 w-full -translate-y-1/2 ${isCompleted ? "bg-primary" : "bg-muted"
                                                        }`}
                                              />
                                         )}
                                         <div
                                              className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 ${isCompleted || isCurrent
-                                                  ? "border-[#0aad0a] bg-[#0aad0a] text-white"
+                                                  ? "border-primary bg-primary text-white"
                                                   : "border-muted bg-background text-muted-foreground"
                                                   }`}
                                         >
@@ -112,7 +112,7 @@ export function OrderTimeline({ status, locale = 'en' }: OrderTimelineProps) {
                                         </div>
                                         {index < steps.length - 1 && (
                                              <div
-                                                  className={`absolute left-1/2 top-1/2 h-0.5 w-full -translate-y-1/2 ${isCompleted ? "bg-[#0aad0a]" : "bg-muted"
+                                                  className={`absolute left-1/2 top-1/2 h-0.5 w-full -translate-y-1/2 ${isCompleted ? "bg-primary" : "bg-muted"
                                                        }`}
                                              />
                                         )}

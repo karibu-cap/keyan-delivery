@@ -88,7 +88,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                    {t("Please sign in to view your orders")}
                               </p>
                               <Link href="/sign-in">
-                                   <Button className="bg-[#0aad0a] hover:bg-[#089808]">{t("Sign In")}</Button>
+                                   <Button className="bg-primary hover:bg-[#089808]">{t("Sign In")}</Button>
                               </Link>
                          </div>
                     </main>
@@ -157,7 +157,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                     {/* Track Order Button */}
                     {showTracking && (
                          <Link href={`/orders/${order.id}/track`} className="mb-6 block">
-                              <Button className="w-full bg-[#0aad0a] hover:bg-[#089808]" size="lg">
+                              <Button className="w-full bg-primary hover:bg-[#089808]" size="lg">
                                    <MapPinIcon className="mr-2 h-5 w-5" />
                                    {t("Track Order")}
                               </Button>
@@ -198,7 +198,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                                                  </p>
                                                             </div>
                                                             <div className="text-right">
-                                                                 <p className="font-semibold text-[#0aad0a]">
+                                                                 <p className="font-semibold text-primary">
                                                                       ${(item.price * item.quantity).toFixed(2)}
                                                                  </p>
                                                             </div>
@@ -219,7 +219,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                                   <span>${order.orderPrices.deliveryFee.toFixed(2)}</span>
                                              </div>
                                              {order.orderPrices.discount > 0 && (
-                                                  <div className="flex justify-between text-sm text-green-600">
+                                                  <div className="flex justify-between text-sm text-primary/60">
                                                        <span>{t("Discount")}</span>
                                                        <span>-${order.orderPrices.discount.toFixed(2)}</span>
                                                   </div>
@@ -227,7 +227,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                              <Separator />
                                              <div className="flex justify-between text-lg font-bold">
                                                   <span>{t("Total")}</span>
-                                                  <span className="text-[#0aad0a]">
+                                                  <span className="text-primary">
                                                        ${order.orderPrices.total.toFixed(2)}
                                                   </span>
                                              </div>
@@ -328,7 +328,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                                   <PhoneIcon className="h-4 w-4 text-muted-foreground" />
                                                   <a
                                                        href={`tel:${order.merchant.phone}`}
-                                                       className="text-sm text-[#0aad0a] hover:underline"
+                                                       className="text-sm text-primary hover:underline"
                                                   >
                                                        {order.merchant.phone}
                                                   </a>

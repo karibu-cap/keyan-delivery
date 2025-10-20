@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useT } from '@/hooks/use-inline-translation';
+import { useMerchantStore } from "@/hooks/use-merchant-store";
 import { useToast } from '@/hooks/use-toast';
 import { Prisma, User } from "@prisma/client";
 import { ArrowLeftIcon, CheckCircleIcon, ClockIcon, CreditCardIcon, HelpCircleIcon, MapPinIcon, ShieldIcon, Store, StoreIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export enum TABS {
     PROFILE = "profile",
@@ -38,13 +39,18 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
     const { toast } = useToast()
     const [currentUser, setCurrentUser] = useState<User>(user);
     const [isEditing, setIsEditing] = useState(false);
-    const [notifications, setNotifications] = useState({
-        orderUpdates: true,
-        promotions: false,
-        newsletter: true
-    });
+    const { addMerchant } = useMerchantStore();
 
-    const merchants = user.merchantManagers.map((manager) => manager.merchant);
+
+    useEffect(() => {
+        user.merchantManagers.forEach((manager) => {
+            addMerchant(manager.merchant);
+        });
+    }, [user]);
+
+    const merchants = user.merchantManagers.map((manager) => {
+        return manager.merchant;
+    });
 
     const handleSaveProfile = async () => {
         if (!currentUser) return;
@@ -68,7 +74,6 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
     };
 
     const handleCancelEdit = () => {
-        // Reset user data to original state (you might want to fetch fresh data)
         setCurrentUser(user);
         setIsEditing(false);
     };
@@ -86,7 +91,7 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
 
                 <h1 className="mb-6 text-3xl font-bold">{t("Profile & Settings")}</h1>
 
-                <Tabs defaultValue={initialValue || TABS.PROFILE} className="space-y-6">
+                <Tabs defaultValue={initialValue || TABS.PROFILE} className="space-y-6 relative">
                     <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-6">
                         <TabsTrigger value={TABS.PROFILE}>{t("Profile")}</TabsTrigger>
                         <TabsTrigger value={TABS.MERCHANTS}>{t("Merchants")}</TabsTrigger>
@@ -108,12 +113,12 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                                 <Button variant="outline" onClick={handleCancelEdit}>
                                                     {t("Cancel")}
                                                 </Button>
-                                                <Button className="bg-[#0aad0a] hover:bg-[#089808]" onClick={handleSaveProfile}>
+                                                <Button className="bg-primary hover:bg-[#089808]" onClick={handleSaveProfile}>
                                                     {t("Save Changes")}
                                                 </Button>
                                             </>
                                         ) : (
-                                            <Button className="bg-[#0aad0a] hover:bg-[#089808]" onClick={() => setIsEditing(true)}>
+                                            <Button className="bg-primary hover:bg-[#089808]" onClick={() => setIsEditing(true)}>
                                                 {t("Edit Profile")}
                                             </Button>
                                         )}
@@ -122,8 +127,8 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#0aad0a]/10">
-                                        <UserIcon className="h-10 w-10 text-[#0aad0a]" />
+                                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                                        <UserIcon className="h-10 w-10 text-primary" />
                                     </div>
                                 </div>
 
@@ -178,13 +183,13 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                             <div key={merchant.id} className="rounded-lg border p-4">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex gap-3">
-                                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0aad0a]/10">
-                                                            <StoreIcon className="h-6 w-6 text-[#0aad0a]" />
+                                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                                                            <StoreIcon className="h-6 w-6 text-primary" />
                                                         </div>
                                                         <div className="flex-1">
                                                             <div className="mb-2 flex items-center gap-2">
                                                                 <h3 className="font-semibold">{merchant.businessName}</h3>
-                                                                <Badge variant={merchant.isVerified ? "default" : "secondary"} className={merchant.isVerified ? "bg-green-100 text-green-800" : ""}>
+                                                                <Badge variant={merchant.isVerified ? "default" : "secondary"} className={merchant.isVerified ? "bg-primary/10 text-primary/80" : ""}>
                                                                     {merchant.isVerified ? (
                                                                         <>
                                                                             <CheckCircleIcon className="mr-1 h-3 w-3" />
@@ -239,7 +244,7 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <CardTitle>{t("Delivery Addresses")}</CardTitle>
-                                    <Button className="bg-[#0aad0a] hover:bg-[#089808]">
+                                    <Button className="bg-primary hover:bg-[#089808]">
                                         <MapPinIcon className="mr-2 h-4 w-4" />
                                         {t("Add Address")}
                                     </Button>
@@ -250,13 +255,13 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                     {currentUser.phone ? (
                                         <div className="flex items-start justify-between rounded-lg border p-4">
                                             <div className="flex gap-3">
-                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0aad0a]/10">
-                                                    <MapPinIcon className="h-5 w-5 text-[#0aad0a]" />
+                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                                    <MapPinIcon className="h-5 w-5 text-primary" />
                                                 </div>
                                                 <div>
                                                     <div className="mb-1 flex items-center gap-2">
                                                         <p className="font-semibold">{t("Phone")}</p>
-                                                        <span className="rounded-full bg-[#0aad0a]/10 px-2 py-0.5 text-xs font-medium text-[#0aad0a]">
+                                                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                                                             {t("Default")}
                                                         </span>
                                                     </div>
@@ -290,7 +295,7 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <CardTitle>{t("Payment Methods")}</CardTitle>
-                                    <Button className="bg-[#0aad0a] hover:bg-[#089808]">
+                                    <Button className="bg-primary hover:bg-[#089808]">
                                         <CreditCardIcon className="mr-2 h-4 w-4" />
                                         {t("Add Card")}
                                     </Button>

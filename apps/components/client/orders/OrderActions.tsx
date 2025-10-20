@@ -67,7 +67,7 @@ export function OrderActions({
             </Button>
 
             {status === "ON_THE_WAY" && (
-                <Button className="flex-1 bg-[#0aad0a] hover:bg-[#089808]" asChild>
+                <Button className="flex-1 bg-primary hover:bg-[#089808]" asChild>
                     <Link href={`/orders/${orderId}/track`}>
                         {t("Track Order")}
                     </Link>

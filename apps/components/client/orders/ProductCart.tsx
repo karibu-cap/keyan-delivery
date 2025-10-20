@@ -10,7 +10,7 @@ export function ProductCard({ product }: ProductCardProps) {
     return (
         <Card className="overflow-hidden transition-shadow hover:shadow-md">
             <div className="relative h-48 w-full bg-muted">
-                <OptimizedImage src={product?.images[0].url || "/placeholder.svg"} alt={product.title} fill className="object-cover" blurDataURL={product?.images[0].blurDataUrl || "/placeholder.svg"} />
+                <OptimizedImage src={product?.images[0].url || "/icons/ios/542.png"} alt={product.title} fill className="object-cover" blurDataURL={product?.images[0].blurDataUrl || "/icons/ios/542.png"} />
             </div>
 
             <CardContent className="p-4">
@@ -19,7 +19,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <div className="text-lg font-bold text-[#0aad0a]">${product.price.toFixed(2)}</div>
+                    <div className="text-lg font-bold text-primary">${product.price.toFixed(2)}</div>
                 </div>
             </CardContent>
         </Card>

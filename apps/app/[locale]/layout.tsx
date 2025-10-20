@@ -1,6 +1,6 @@
 import { FontOptimizer } from "@/components/ClsOptimization";
 import Navbar from "@/components/Navbar";
-import { OfflineIndicator, OfflineProvider } from "@/components/OfflineSupport";
+import { OfflineIndicator, OfflineNetworkErrorBoundary, OfflineProvider } from "@/components/OfflineSupport";
 import { Toaster } from "@/components/ui/toaster";
 import { routing } from "@/i18n/routing";
 import { generateHomeMetadata, generateOrganizationStructuredData } from "@/lib/metadata";
@@ -11,6 +11,8 @@ import { notFound } from "next/navigation";
 import "./globals.css";
 import ServicesWorkerRegistration from "@/components/notifications/ServiceWorkerRegistration";
 import NotificationHandler from "@/components/notifications/NotificationHandler";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 
 const geistSans = Geist({
      variable: "--font-geist-sans",
@@ -59,8 +61,8 @@ export default async function RootLayout({
                <head>
                     <link rel="manifest" href="/manifest.json" />
                     <meta name="theme-color" content="#10b981" />
-                    <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+                    <meta name="mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-title" content="Yetu Delivery" />
                     <link rel="apple-touch-icon" href="/icons/ios/192.png" />
                     <link rel="icon" href="/icons/favicon.ico" />
@@ -81,19 +83,26 @@ export default async function RootLayout({
                <body
                     className={`${geistSans.variable} ${geistMono.variable} antialiased`}
                >
+
                     <ServicesWorkerRegistration />
                     <NotificationHandler />
-                    <NextIntlClientProvider>
+                    <ThemeProvider>
+                         <NextIntlClientProvider>
 
-                         <FontOptimizer>
-                              <OfflineProvider>
-                                   <Navbar />
-                                   {children}
-                                   <Toaster />
-                                   <OfflineIndicator />
-                              </OfflineProvider>
-                         </FontOptimizer>
-                    </NextIntlClientProvider>
+                              <FontOptimizer>
+                                   <OfflineProvider>
+                                        <OfflineNetworkErrorBoundary>
+                                             <ErrorBoundary>
+                                                  <Navbar />
+                                                  {children}
+                                                  <Toaster />
+                                                  <OfflineIndicator />
+                                             </ErrorBoundary>
+                                        </OfflineNetworkErrorBoundary>
+                                   </OfflineProvider>
+                              </FontOptimizer>
+                         </NextIntlClientProvider>
+                    </ThemeProvider>
 
                </body>
           </html>

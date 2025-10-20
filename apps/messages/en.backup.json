@@ -136,7 +136,7 @@
   "please-try-again-or-contact-support-if-the-issue-persists": "Please try again or contact support if the issue persists.",
   "order-placed-successfully": "Order placed successfully!",
   "your-delivery-code-is-deliverycode": "Your delivery code is: {deliveryCode}",
-  "continue-shopping": "Continue Shopping",
+  "continue-shopping": "Continue shopping",
   "checkout": "Checkout",
   "delivery-location": "Delivery Location",
   "where-should-we-deliver": "Where should we deliver?",
@@ -535,5 +535,9 @@
   "track": "Track",
   "order-ready-to-pick-up": "📦 Order ready to pick up!",
   "accepter": "Accepter",
-  "view-details": "View details"
+  "view-details": "View details",
+  "your-order-has-been-accepted-by-merchantname": "Your order has been accepted by {merchantName}",
+  "your-order-has-been-rejected-by-merchantname": "Your order has been rejected by {merchantName}",
+  "your-order-has-been-canceled-by-merchantname": "Your order has been canceled by {merchantName}",
+  "an-order-is-ready-at-merchantname": "An order is ready at ${merchantName"
 }

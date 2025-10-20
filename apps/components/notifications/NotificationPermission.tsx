@@ -230,7 +230,7 @@ export default function NotificationPermission() {
             <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
                 <div className="flex items-center gap-3">
                     {isSubscribed ? (
-                        <Bell className="h-5 w-5 text-green-600" />
+                        <Bell className="h-5 w-5 text-primary/60" />
                     ) : (
                         <BellOff className="h-5 w-5 text-gray-400" />
                     )}
