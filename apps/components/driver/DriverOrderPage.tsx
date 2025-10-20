@@ -414,13 +414,6 @@ export function DriverOrderPage({ order, onBack }: DriverOrderPageProps) {
                                         </div>
                                     )}
 
-                                    {/* Debug info - remove this after fixing */}
-                                    {process.env.NODE_ENV === 'development' && (
-                                        <div className="p-2 bg-yellow-100 text-yellow-800 text-xs rounded">
-                                            Current status: {order.status} | Expected: {OrderStatus.ON_THE_WAY}
-                                        </div>
-                                    )}
-
                                     {/* Completed Status */}
                                     {order.status === OrderStatus.COMPLETED && (
                                         <div className="flex items-center justify-center p-4 bg-success/10 rounded-lg border-2 border-success/30">

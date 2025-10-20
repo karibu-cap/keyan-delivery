@@ -9,6 +9,7 @@ import {
     Wallet,
     Motorbike,
 } from "lucide-react";
+import { useEffect } from "react";
 
 interface DriverStatsCardsProps {
 }
@@ -16,9 +17,12 @@ interface DriverStatsCardsProps {
 export function DriverStatsCards({
 }: DriverStatsCardsProps) {
 
-    const { balance } = useWallet();
+    const { balance, refreshWallet } = useWallet();
     const { availableOrders, inProgressOrders, completedOrders } = useDriverOrders();
 
+    useEffect(() => {
+        refreshWallet();
+    }, []);
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="p-6 rounded-2xl shadow-card">

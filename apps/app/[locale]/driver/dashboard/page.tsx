@@ -1,15 +1,19 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
 import { DriverStatus } from "@prisma/client";
 import { useAuthStore } from "@/hooks/auth-store";
 import { DriverStatsCards } from "@/components/driver/DriverStatsCards";
 import { DriverPendingStatus } from "@/components/driver/DriverPendingStatus";
 import { DriverRejectedStatus } from "@/components/driver/DriverRejectedStatus";
 import { DriverOrderTabs } from "@/components/driver/DriverOrderTabs";
+import { useEffect } from "react";
 
 export default function DriverDashboard() {
-    const { user } = useAuthStore();
+   const { user, reloadCurrentUser } = useAuthStore();
+   
+   useEffect(() => {
+      reloadCurrentUser();
+   }, []);
 
    // Display if statut is PENDING
    if (user?.driverStatus === DriverStatus.PENDING) {
@@ -23,7 +27,6 @@ export default function DriverDashboard() {
 
    return (
       <div className="min-h-screen bg-background">
-         <Navbar />
 
          <div className="container mx-auto px-4 py-8">
             {/* Header */}
