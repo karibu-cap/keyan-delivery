@@ -17,7 +17,8 @@ export interface OrderItem {
 export interface Order {
   id: string;
   status: OrderStatus;
-  createdAt: string; 
+  createdAt: string;
+  updatedAt: string;
   orderPrices: {
     total: number;
     subtotal: number;

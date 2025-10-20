@@ -4,6 +4,8 @@
 import { cn } from '@/lib/utils';
 import NextImage, { type ImageProps } from 'next/image';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+export const FAKE_BLUR =
+    'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQrJiEwUy0rLysuKCkwN0Y/ODNANykpQFdCS05QT0hHSlFWW1FSN05PW1H/2wBDARUXFx4eHR8eHVFLJSwtUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVH/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k='
 
 // Font loading optimization to prevent layout shifts
 export function useFontLoader() {
@@ -29,32 +31,6 @@ export interface ImageDimensions {
     width: number;
     height: number;
     aspectRatio: number;
-}
-
-export function useImageDimensions(src?: string): ImageDimensions | null {
-    const [dimensions, setDimensions] = useState<ImageDimensions | null>(null);
-    const imgRef = useRef<HTMLImageElement | null>(null);
-
-    useEffect(() => {
-        if (!src) return;
-
-        const img = new Image();
-        img.onload = () => {
-            const aspectRatio = img.naturalWidth / img.naturalHeight;
-            setDimensions({
-                width: img.naturalWidth,
-                height: img.naturalHeight,
-                aspectRatio,
-            });
-        };
-        img.src = src;
-
-        return () => {
-            img.onload = null;
-        };
-    }, [src]);
-
-    return dimensions;
 }
 
 interface OptimizedImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
@@ -88,7 +64,6 @@ interface OptimizedImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
 function getResponsiveSizes(width?: number, height?: number): string {
     if (!width || !height) return '100vw';
 
-    const aspectRatio = width / height;
 
     return `
         (max-width: 640px) 100vw,
@@ -107,18 +82,14 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     priority = false,
     loading = 'lazy',
     preload = false,
-    placeholder,
     blurDataURL,
     fallbackSrc,
     onLoad,
     onError,
     responsive = true,
     sizes,
-    animate = true,
-    animationDelay = 0,
     retryCount = 2,
     retryDelay = 1000,
-    className,
     style,
     ...props
 }) => {
@@ -179,14 +150,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         onError?.(new Error(`Failed to load image: ${src}`));
         onLoad?.(false);
     };
-
-    // Animation styles
-    const animationStyles: React.CSSProperties = animate ? {
-        opacity: isLoading ? 0 : 1,
-        transition: `opacity 0.3s ease-in-out`,
-        transitionDelay: `${animationDelay}ms`,
-    } : {};
-
     return (
         <>
             <NextImage
@@ -196,22 +159,14 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
                 {...(props.fill ? {} : { width, height })}
                 priority={priority}
                 loading={loading}
-                placeholder={placeholder ?? (blurDataURL ? 'blur' : 'empty')}
-                blurDataURL={blurDataURL}
+                placeholder='blur'
+                blurDataURL={blurDataURL || FAKE_BLUR}
                 sizes={imageSizes}
-                onLoadingComplete={() => {
+                onLoad={() => {
                     handleLoad();
                 }}
                 onError={handleError}
-                className={cn(
-                    'transition-opacity duration-300',
-                    isLoading && 'opacity-0',
-                    hasError && 'opacity-50',
-                    animate && 'ease-in-out',
-                    className
-                )}
                 style={{
-                    ...animationStyles,
                     ...style,
                     filter: hasError ? 'grayscale(100%)' : 'none',
                 }}
@@ -219,7 +174,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
             />
 
             {/* Loading state overlay */}
-            {isLoading && (
+            {isLoading && !blurDataURL && (
                 <div
                     className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center"
                     style={{ zIndex: 1 }}
@@ -404,91 +359,6 @@ export function GridSkeleton({
     );
 }
 
-// Layout shift prevention hook
-export function useLayoutShiftPrevention() {
-    const [isStable, setIsStable] = useState(false);
-
-    useEffect(() => {
-        // Wait for fonts and critical resources to load
-        const checkStability = async () => {
-            try {
-                // Wait for fonts to load
-                if (document.fonts && document.fonts.ready) {
-                    await document.fonts.ready;
-                }
-
-                // Wait for images to load (at least above the fold)
-                const aboveFoldImages = Array.from(document.querySelectorAll('img')).slice(0, 10);
-                await Promise.all(
-                    aboveFoldImages.map(img => {
-                        if (img.complete) return Promise.resolve();
-                        return new Promise(resolve => {
-                            img.onload = resolve;
-                            img.onerror = resolve;
-                        });
-                    })
-                );
-
-                setIsStable(true);
-            } catch (error) {
-                console.warn('Layout stability check failed:', error);
-                // Fallback to timeout
-                setTimeout(() => setIsStable(true), 2000);
-            }
-        };
-
-        checkStability();
-    }, []);
-
-    return isStable;
-}
-
-// Container with stable dimensions
-interface StableContainerProps {
-    children: React.ReactNode;
-    className?: string;
-    minHeight?: string;
-    fallback?: React.ReactNode;
-    isLoading?: boolean;
-}
-
-export function StableContainer({
-    children,
-    className,
-    minHeight,
-    fallback,
-    isLoading = false
-}: StableContainerProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (containerRef.current && !isLoading) {
-            // Set minimum height to prevent layout shifts when content changes
-            const height = containerRef.current.offsetHeight;
-            if (height > 0) {
-                containerRef.current.style.minHeight = `${height}px`;
-            }
-        }
-    }, [children, isLoading]);
-
-    return (
-        <div
-            ref={containerRef}
-            className={cn(
-                "relative transition-opacity duration-200",
-                isLoading ? "opacity-0" : "opacity-100",
-                className
-            )}
-            style={{
-                ...(minHeight && { minHeight }),
-            }}
-        >
-            {isLoading && fallback ? fallback : children}
-        </div>
-    );
-}
-
-// Text component with stable line heights
 interface StableTextProps {
     children: React.ReactNode;
     className?: string;
@@ -503,7 +373,6 @@ export function StableText({
     lineHeight = 'leading-normal'
 }: StableTextProps) {
     const height = useMemo(() => {
-        // Approximate height based on line count and typical font size
         const baseHeight = 1.2; // rem
         return `${lines * baseHeight}rem`;
     }, [lines]);
@@ -515,218 +384,6 @@ export function StableText({
                 minHeight: height,
                 maxHeight: height,
                 lineHeight: 'inherit',
-            }}
-        >
-            {children}
-        </div>
-    );
-}
-
-// Performance monitoring for CLS
-export function useCLSMonitoring() {
-    const [clsValue, setClsValue] = useState<number>(0);
-
-    useEffect(() => {
-        if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
-            return;
-        }
-
-        try {
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
-                        setClsValue(prev => prev + (entry as any).value);
-                    }
-                }
-            });
-
-            observer.observe({ entryTypes: ['layout-shift'] });
-
-            return () => {
-                observer.disconnect();
-            };
-        } catch (error) {
-            console.warn('CLS monitoring not supported:', error);
-        }
-    }, []);
-
-    return clsValue;
-}
-
-// Web Vitals integration for CLS tracking
-export function reportCLS(onPerfEntry?: (metric: any) => void) {
-    if (typeof window === 'undefined' || !('web-vitals' in window)) {
-        return;
-    }
-
-    try {
-        // This would normally use the web-vitals library
-        // For now, we'll use the PerformanceObserver approach
-        const observer = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-                if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
-                    onPerfEntry?.({
-                        name: 'CLS',
-                        value: (entry as any).value,
-                        rating: (entry as any).value > 0.25 ? 'poor' : (entry as any).value > 0.1 ? 'needs-improvement' : 'good',
-                    });
-                }
-            }
-        });
-
-        observer.observe({ entryTypes: ['layout-shift'] });
-    } catch (error) {
-        console.warn('CLS reporting failed:', error);
-    }
-}
-
-// Optimized Next.js Image component wrapper
-interface CLSOptimizedImageProps {
-    src: string;
-    alt: string;
-    width?: number;
-    height?: number;
-    className?: string;
-    priority?: boolean;
-    sizes?: string;
-    style?: React.CSSProperties;
-    onLoad?: () => void;
-    onError?: () => void;
-}
-
-export function CLSOptimizedImage({
-    src,
-    alt,
-    width,
-    height,
-    className,
-    priority = false,
-    sizes,
-    style,
-    onLoad,
-    onError,
-    ...props
-}: CLSOptimizedImageProps) {
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [imageError, setImageError] = useState(false);
-
-    const handleLoad = () => {
-        setIsLoaded(true);
-        onLoad?.();
-    };
-
-    const handleError = () => {
-        setImageError(true);
-        onError?.();
-    };
-
-    // Calculate aspect ratio for consistent layout
-    const aspectRatio = width && height ? width / height : undefined;
-
-    return (
-        <div
-            className={cn("relative overflow-hidden bg-gray-100", className)}
-            style={{
-                ...(aspectRatio && { aspectRatio }),
-                ...style,
-            }}
-        >
-            {!imageError ? (
-                <img
-                    {...props}
-                    src={src}
-                    alt={alt}
-                    width={width}
-                    height={height}
-                    className={cn(
-                        "w-full h-full object-cover transition-opacity duration-300",
-                        isLoaded ? "opacity-100" : "opacity-0"
-                    )}
-                    onLoad={handleLoad}
-                    onError={handleError}
-                    loading={priority ? "eager" : "lazy"}
-                    decoding="async"
-                    sizes={sizes}
-                />
-            ) : (
-                <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                    <div className="text-gray-400 text-center">
-                        <div className="w-12 h-12 mx-auto mb-2 bg-gray-200 rounded-full flex items-center justify-center">
-                            📷
-                        </div>
-                        <span className="text-xs">Image unavailable</span>
-                    </div>
-                </div>
-            )}
-
-            {/* Loading state */}
-            {!isLoaded && !imageError && (
-                <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// Hook for measuring element dimensions
-export function useElementDimensions<T extends HTMLElement>() {
-    const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
-    const elementRef = useRef<T>(null);
-
-    useEffect(() => {
-        const element = elementRef.current;
-        if (!element) return;
-
-        const updateDimensions = () => {
-            setDimensions({
-                width: element.offsetWidth,
-                height: element.offsetHeight,
-            });
-        };
-
-        // Initial measurement
-        updateDimensions();
-
-        // Observe size changes
-        const resizeObserver = new ResizeObserver(updateDimensions);
-        resizeObserver.observe(element);
-
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, []);
-
-    return { dimensions, elementRef };
-}
-
-// Dynamic content container that prevents layout shifts
-interface DynamicContentProps {
-    children: React.ReactNode;
-    className?: string;
-    minHeight?: string;
-    animate?: boolean;
-}
-
-export function DynamicContent({
-    children,
-    className,
-    minHeight,
-    animate = true
-}: DynamicContentProps) {
-    const { dimensions, elementRef } = useElementDimensions<HTMLDivElement>();
-
-    return (
-        <div
-            ref={elementRef}
-            className={cn(
-                "relative transition-all duration-300 ease-in-out",
-                animate && "animate-in fade-in-0 slide-in-from-top-2",
-                className
-            )}
-            style={{
-                ...(dimensions && { minHeight: `${dimensions.height}px` }),
-                ...((minHeight && !dimensions) && { minHeight }),
             }}
         >
             {children}
@@ -755,187 +412,3 @@ export function FontOptimizer({ children }: { children: React.ReactNode }) {
         </div>
     );
 }
-
-// Advanced font preloading utilities
-export class FontPreloader {
-    private static loadedFonts = new Set<string>();
-    private static loadingPromises = new Map<string, Promise<void>>();
-
-    // Preload a font with advanced options
-    static async preloadFont(
-        fontUrl: string,
-        fontFamily: string,
-        options: {
-            weight?: string | number;
-            style?: 'normal' | 'italic';
-            display?: 'auto' | 'block' | 'swap' | 'fallback' | 'optional';
-            unicodeRange?: string;
-            as?: 'font';
-        } = {}
-    ): Promise<void> {
-        const fontKey = `${fontFamily}-${fontUrl}-${options.weight || '400'}-${options.style || 'normal'}`;
-
-        // Return existing promise if already loading
-        if (this.loadingPromises.has(fontKey)) {
-            return this.loadingPromises.get(fontKey);
-        }
-
-        // Return immediately if already loaded
-        if (this.loadedFonts.has(fontKey)) {
-            return Promise.resolve();
-        }
-
-        const loadPromise = new Promise<void>((resolve, reject) => {
-            // Create font face
-            const fontFace = new FontFace(fontFamily, `url(${fontUrl})`, {
-                weight: String(options.weight || '400'),
-                style: options.style || 'normal',
-                display: options.display || 'swap',
-                unicodeRange: options.unicodeRange,
-            });
-
-            // Load the font
-            fontFace.load()
-                .then((loadedFace) => {
-                    document.fonts.add(loadedFace);
-                    this.loadedFonts.add(fontKey);
-                    resolve();
-                })
-                .catch((error) => {
-                    console.warn(`Failed to load font ${fontFamily}:`, error);
-                    reject(error);
-                });
-        });
-
-        this.loadingPromises.set(fontKey, loadPromise);
-        return loadPromise;
-    }
-
-    // Preload Google Fonts with optimization
-    static async preloadGoogleFont(
-        fontFamily: string,
-        weights: (number | string)[] = [400, 500, 600, 700],
-        styles: ('normal' | 'italic')[] = ['normal']
-    ): Promise<void> {
-        const promises = [];
-
-        for (const weight of weights) {
-            for (const style of styles) {
-                // Generate Google Fonts URL
-                const googleUrl = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@${weight}${style !== 'normal' ? `;${style}` : ''}&display=swap`;
-
-                try {
-                    const response = await fetch(googleUrl);
-                    const cssText = await response.text();
-
-                    // Extract font URLs from CSS
-                    const fontUrlMatches = cssText.match(/url\(([^)]+)\)/g);
-                    if (fontUrlMatches) {
-                        for (const match of fontUrlMatches) {
-                            const fontUrl = match.replace(/url\(['"]?([^'"]+)['"]?\)/, '$1');
-                            if (fontUrl.includes('fonts.gstatic.com')) {
-                                promises.push(
-                                    this.preloadFont(fontUrl, fontFamily, {
-                                        weight,
-                                        style,
-                                        display: 'swap'
-                                    })
-                                );
-                            }
-                        }
-                    }
-                } catch (error) {
-                    console.warn(`Failed to preload Google Font ${fontFamily}:`, error);
-                }
-            }
-        }
-
-        await Promise.allSettled(promises);
-    }
-
-    // Optimize font loading for better performance
-    static optimizeFontLoading() {
-        // Add font-display: swap to all @font-face rules
-        const style = document.createElement('style');
-        style.textContent = `
-            @font-face {
-                font-display: swap !important;
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Preload critical fonts
-        this.preloadGoogleFont('Inter', [400, 500, 600, 700]);
-    }
-
-    // Get font loading status
-    static getFontLoadingStatus(): {
-        totalFonts: number;
-        loadedFonts: number;
-        loadingFonts: number;
-    } {
-        return {
-            totalFonts: this.loadedFonts.size + this.loadingPromises.size,
-            loadedFonts: this.loadedFonts.size,
-            loadingFonts: this.loadingPromises.size,
-        };
-    }
-}
-
-// Export utility functions for external use
-export const CLSTools = {
-    // Measure layout shift
-    measureLayoutShift: () => {
-        if (typeof window === 'undefined') return 0;
-
-        let clsValue = 0;
-        const observer = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-                if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
-                    clsValue += (entry as any).value;
-                }
-            }
-        });
-
-        try {
-            observer.observe({ entryTypes: ['layout-shift'] });
-            return () => observer.disconnect();
-        } catch (error) {
-            console.warn('Layout shift measurement not available:', error);
-            return () => { };
-        }
-    },
-
-    // Reserve space for dynamic content
-    reserveSpace: (element: HTMLElement, minHeight?: number) => {
-        if (minHeight) {
-            element.style.minHeight = `${minHeight}px`;
-        }
-    },
-
-    // Optimize images for CLS prevention
-    optimizeImages: (container: HTMLElement) => {
-        const images = container.querySelectorAll('img');
-
-        images.forEach((img: HTMLImageElement) => {
-            // Add loading optimization
-            if (!img.loading) {
-                img.loading = 'lazy';
-            }
-
-            // Add decoding optimization
-            if (!img.decoding) {
-                img.decoding = 'async';
-            }
-
-            // Reserve space if dimensions are known
-            if (img.naturalWidth && img.naturalHeight) {
-                const aspectRatio = img.naturalWidth / img.naturalHeight;
-                const container = img.parentElement;
-                if (container && !container.style.aspectRatio) {
-                    container.style.aspectRatio = aspectRatio.toString();
-                }
-            }
-        });
-    },
-};

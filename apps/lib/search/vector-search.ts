@@ -135,9 +135,8 @@ export async function generateProductEmbeddings(productIds?: string[]) {
 
         for (const product of products) {
             // Combine title, description, and category for better semantic understanding
-            const textContent = `${product.title} ${product.description} ${
-                product.categories.map(pc => pc.category.name).join(' ')
-            } ${product.merchant.merchantType}`.trim();
+            const textContent = `${product.title} ${product.description} ${product.categories.map(pc => pc.category.name).join(' ')
+                } ${product.merchant.merchantType}`.trim();
 
             const vector = generateSimpleEmbedding(textContent);
 
@@ -158,7 +157,7 @@ export async function generateProductEmbeddings(productIds?: string[]) {
 
         return embeddings;
     } catch (error) {
-        console.error('Error generating product embeddings:', error);
+        console.error({ message: 'Error generating product embeddings:', error });
         throw error;
     }
 }
@@ -267,7 +266,7 @@ export async function vectorSimilaritySearch(
 
         return results;
     } catch (error) {
-        console.error('Error performing vector similarity search:', error);
+        console.error({ message: 'Error performing vector similarity search:', error });
         throw error;
     }
 }
@@ -366,7 +365,7 @@ export async function findSimilarProducts(
 
         return results;
     } catch (error) {
-        console.error('Error finding similar products:', error);
+        console.error({ message: 'Error finding similar products:', error });
         throw error;
     }
 }
@@ -390,7 +389,7 @@ export async function hybridSearch(
 
         return combinedResults.slice(0, searchQuery.limit || 20);
     } catch (error) {
-        console.error('Error performing hybrid search:', error);
+        console.error({ message: 'Error performing hybrid search:', error });
         throw error;
     }
 }
@@ -468,7 +467,7 @@ async function performLexicalSearch(searchQuery: SearchQuery) {
             rank: index + 1,
         })) as VectorSearchResult[];
     } catch (error) {
-        console.error('Error performing lexical search:', error);
+        console.error({ message: 'Error performing lexical search:', error });
         return [];
     }
 }
@@ -537,7 +536,7 @@ export function setCachedEmbedding(text: string, embedding: number[]): void {
 // Pre-compute embeddings for better performance
 export async function precomputeEmbeddings(): Promise<void> {
     try {
-        console.log('Starting embedding precomputation...');
+        console.info('Starting embedding precomputation...');
 
         const products = await prisma.product.findMany({
             where: {
@@ -557,20 +556,19 @@ export async function precomputeEmbeddings(): Promise<void> {
             },
         });
 
-        console.log(`Precomputing embeddings for ${products.length} products...`);
+        console.info(`Precomputing embeddings for ${products.length} products...`);
 
         for (const product of products) {
-            const text = `${product.title} ${product.description} ${
-                product.categories.map(pc => pc.category.name).join(' ')
-            } ${product.merchant.merchantType}`.trim();
+            const text = `${product.title} ${product.description} ${product.categories.map(pc => pc.category.name).join(' ')
+                } ${product.merchant.merchantType}`.trim();
 
             const embedding = generateSimpleEmbedding(text);
             setCachedEmbedding(text, embedding);
         }
 
-        console.log('Embedding precomputation completed');
+        console.info('Embedding precomputation completed');
     } catch (error) {
-        console.error('Error precomputing embeddings:', error);
+        console.error({ message: 'Error precomputing embeddings:', error });
     }
 }
 
@@ -582,7 +580,7 @@ export async function trackSearchAnalytics(
 ): Promise<void> {
     try {
         // This would typically send to an analytics service
-        console.log('Search analytics:', {
+        console.info('Search analytics:', {
             query,
             resultCount,
             clickedProducts,
@@ -598,7 +596,7 @@ export async function trackSearchAnalytics(
         //     }
         // });
     } catch (error) {
-        console.error('Error tracking search analytics:', error);
+        console.error({ message: 'Error tracking search analytics:', error });
     }
 }
 

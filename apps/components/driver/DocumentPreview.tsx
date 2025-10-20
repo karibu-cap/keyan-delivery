@@ -8,6 +8,7 @@ import { FileText, Download, Eye, Calendar, File, ExternalLink } from "lucide-re
 import PDFViewerComponent from "./PDFViewerComponent";
 
 
+
 export interface DocumentData {
     id: string;
     name: string;
@@ -93,7 +94,7 @@ export function DocumentPreview({
                         />
                     ) : isPDF && document.url && isClient ? (
                         <div className="w-full h-full bg-white">
-                                <PDFViewerComponent url={document.url} />
+                            <PDFViewerComponent url={document.url} />
                         </div>
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">

@@ -18,7 +18,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
         // Fallback for missing keys in development
         onError: (error) => {
             if (process.env.NODE_ENV === 'development') {
-                console.error('[i18n] Translation error:', error.message);
+                console.error({ message: '[i18n] Translation error:', error });
             }
         },
         getMessageFallback: ({ namespace, key }) => {

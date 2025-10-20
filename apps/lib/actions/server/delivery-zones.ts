@@ -27,7 +27,7 @@ export async function getActiveDeliveryZones() {
 
         return zones;
     } catch (error) {
-        console.error('Error fetching delivery zones:', error);
+        console.error({ message: 'Error fetching delivery zones:', error });
         return [];
     }
 }
@@ -63,7 +63,7 @@ export async function findDeliveryZoneByCoordinates(
         const zones = result?.cursor?.firstBatch || [];
         return zones.length > 0 ? zones[0] : null;
     } catch (error) {
-        console.error('Error finding zone by coordinates:', error);
+        console.error({ message: 'Error finding zone by coordinates:', error });
         return null;
     }
 }
@@ -89,7 +89,7 @@ export async function validateOrderForZone(
 
         return { valid: true };
     } catch (error) {
-        console.error('Error validating order for zone:', error);
+        console.error({ message: 'Error validating order for zone:', error });
         return { valid: false, error: 'Failed to validate delivery zone' };
     }
 }
@@ -125,7 +125,7 @@ export async function searchNeighborhoods(query: string) {
             )
         }));
     } catch (error) {
-        console.error('Error searching neighborhoods:', error);
+        console.error({ message: 'Error searching neighborhoods:', error });
         return [];
     }
 }
@@ -161,7 +161,7 @@ export async function getZoneStatistics() {
             neighborhoodCount: zone.neighborhoods.length,
         }));
     } catch (error) {
-        console.error('Error getting zone statistics:', error);
+        console.error({ message: 'Error getting zone statistics:', error });
         return [];
     }
 }

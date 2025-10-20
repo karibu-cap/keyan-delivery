@@ -9,7 +9,7 @@ import * as path from 'path';
  */
 
 interface MergeOptions {
-  overwrite?: boolean  ;
+  overwrite?: boolean;
   backup?: boolean;
 }
 
@@ -73,7 +73,7 @@ class TranslationMerger {
     if (this.options.backup && fs.existsSync(fullPath)) {
       const backupPath = fullPath.replace('.json', '.backup.json');
       fs.copyFileSync(fullPath, backupPath);
-      console.log(`📦 Backup created: ${backupPath}`);
+      console.info(`📦 Backup created: ${backupPath}`);
     }
 
     // Ensure directory exists
@@ -105,10 +105,10 @@ class TranslationMerger {
    * Merge extracted files into main files
    */
   merge(): void {
-    console.log('🔄 Starting merge process...\n');
+    console.info('🔄 Starting merge process...\n');
 
     // Merge English
-    console.log('📖 Merging English translations...');
+    console.info('📖 Merging English translations...');
     const currentEn = this.readJSON('./messages/en.json');
     const extractedEn = this.readJSON('./messages/extracted-en.json');
 
@@ -121,13 +121,13 @@ class TranslationMerger {
 
     this.writeJSON('./messages/en.json', mergedEn);
 
-    console.log(`  ✅ Before: ${beforeCountEn} translations`);
-    console.log(`  ✅ Extracted: ${extractedCountEn} translations`);
-    console.log(`  ✅ After: ${afterCountEn} translations`);
-    console.log(`  ✅ New keys added: ${newKeysEn}\n`);
+    console.info(`  ✅ Before: ${beforeCountEn} translations`);
+    console.info(`  ✅ Extracted: ${extractedCountEn} translations`);
+    console.info(`  ✅ After: ${afterCountEn} translations`);
+    console.info(`  ✅ New keys added: ${newKeysEn}\n`);
 
     // Merge Swahili
-    console.log('📖 Merging Swahili translations...');
+    console.info('📖 Merging Swahili translations...');
     const currentSw = this.readJSON('./messages/sw.json');
     const extractedSw = this.readJSON('./messages/extracted-sw.json');
 
@@ -140,15 +140,15 @@ class TranslationMerger {
 
     this.writeJSON('./messages/sw.json', mergedSw);
 
-    console.log(`  ✅ Before: ${beforeCountSw} translations`);
-    console.log(`  ✅ Extracted: ${extractedCountSw} translations`);
-    console.log(`  ✅ After: ${afterCountSw} translations`);
-    console.log(`  ✅ New keys added: ${newKeysSw}\n`);
+    console.info(`  ✅ Before: ${beforeCountSw} translations`);
+    console.info(`  ✅ Extracted: ${extractedCountSw} translations`);
+    console.info(`  ✅ After: ${afterCountSw} translations`);
+    console.info(`  ✅ New keys added: ${newKeysSw}\n`);
 
-    console.log('✅ Merge complete!\n');
+    console.info('✅ Merge complete!\n');
 
     // Cleanup extracted files
-    console.log('🧹 Cleaning up extracted files...');
+    console.info('🧹 Cleaning up extracted files...');
     const extractedFiles = [
       './messages/extracted-en.json',
       './messages/extracted-sw.json',
@@ -158,17 +158,17 @@ class TranslationMerger {
       const fullPath = path.join(process.cwd(), file);
       if (fs.existsSync(fullPath)) {
         fs.unlinkSync(fullPath);
-        console.log(`  🗑️  Deleted: ${file}`);
+        console.info(`  🗑️  Deleted: ${file}`);
       }
     }
 
-    console.log('\n✅ All done! Your translations are ready to use.\n');
+    console.info('\n✅ All done! Your translations are ready to use.\n');
   }
 }
 
 // Main execution
 async function main() {
-  console.log(`
+  console.info(`
 ╔════════════════════════════════════════════════════════╗
 ║        TRANSLATION MERGE TOOL                          ║
 ║        Merges extracted translations into main files   ║
@@ -183,12 +183,12 @@ async function main() {
 
     merger.merge();
 
-    console.log('🎯 Next steps:\n');
-    console.log('1. Test your app: npm run dev');
-    console.log('2. Check translations in UI');
-    console.log('3. Review and adjust as needed\n');
+    console.info('🎯 Next steps:\n');
+    console.info('1. Test your app: npm run dev');
+    console.info('2. Check translations in UI');
+    console.info('3. Review and adjust as needed\n');
   } catch (error) {
-    console.error('❌ Merge failed:', error);
+    console.error({ message: '❌ Merge failed:', error });
     process.exit(1);
   }
 }

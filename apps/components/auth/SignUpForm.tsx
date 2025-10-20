@@ -72,7 +72,7 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
       })
       router.replace(redirectTo || ROUTES.home)
     } catch (err) {
-      console.error(err)
+      console.error({ message: err })
       form.setError('root', {
         type: 'manual',
         message: error || t("An unexpected error occurred"),

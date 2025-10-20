@@ -61,7 +61,7 @@ export async function fetchMerchants({
 
         return data.data;
     } catch (error) {
-        console.error('Error fetching merchants:', error);
+        console.error({ message: 'Error fetching merchants:', error });
         throw new Error('Failed to fetch merchants');
     }
 }
@@ -104,7 +104,7 @@ export async function fetchCategories({
 
         return data.data;
     } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error({ message: 'Error fetching categories:', error });
         return { categories: [] };
     }
 }

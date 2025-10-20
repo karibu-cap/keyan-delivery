@@ -20,7 +20,7 @@ export default function DriverApplicationPage() {
    const { toast } = useToast();
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [cniFile, setCniFile] = useState<File | null>(null);
-   const {reloadCurrentUser } = useAuthStore();
+   const { reloadCurrentUser } = useAuthStore();
    const [licenseFile, setLicenseFile] = useState<File | null>(null);
 
 

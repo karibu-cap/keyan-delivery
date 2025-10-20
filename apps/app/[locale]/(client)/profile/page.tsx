@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
 import Link from "next/link"
 
-import { UserProfile } from "@/components/client/customer/UserProfile"
+import { TABS, UserProfile } from "@/components/client/customer/UserProfile"
 import { getT } from "@/i18n/server-translations"
 import { prisma } from "@/lib/prisma"
 import { getLocale } from "next-intl/server"
@@ -74,6 +74,6 @@ export default async function ProfilePage() {
   }
 
 
-  return <UserProfile user={user} initialValue={locale} />
+  return <UserProfile user={user} initialValue={TABS.PROFILE} />
 
 }

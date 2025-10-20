@@ -3,23 +3,23 @@
 import { useCart } from "@/hooks/use-cart";
 import { IProduct } from "@/lib/actions/server/stores";
 import {
-  CheckCircle,
-  ChevronRight,
-  Heart,
-  Minus,
-  Package,
-  Plus,
-  Shield,
-  Star,
-  Truck,
-  X,
-  ZoomIn
+    CheckCircle,
+    ChevronRight,
+    Heart,
+    Minus,
+    Package,
+    Plus,
+    Shield,
+    Star,
+    Truck,
+    X,
+    ZoomIn
 } from "lucide-react";
-import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
 import { Badge } from "./badge";
 import { Button } from "./button";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "./dialog";
+import { OptimizedImage } from "../ClsOptimization";
 
 interface ProductModalProps {
     product: IProduct | null;
@@ -142,7 +142,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
 
                         {/* Main Image */}
                         <div className="relative aspect-square overflow-hidden">
-                            <Image
+                            <OptimizedImage
                                 src={currentImage}
                                 alt={`${product.title} - Image ${selectedImageIndex + 1}`}
                                 fill
@@ -195,7 +195,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                                 }`}
                                             aria-label={`View image ${index + 1}`}
                                         >
-                                            <Image
+                                            <OptimizedImage
                                                 src={image.url}
                                                 alt={`${product.title} thumbnail ${index + 1}`}
                                                 width={80}

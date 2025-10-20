@@ -1,6 +1,8 @@
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
+import { notifyMerchantNewOrder } from '@/lib/notifications/push-service';
 import { prisma } from '@/lib/prisma';
 import { OrderItem } from '@prisma/client';
+import { getLocale } from 'next-intl/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -195,13 +197,28 @@ export async function POST(request: NextRequest) {
       }
     }
 
+
+    try {
+      console.log('Start notify the partner .......')
+      const locale = await getLocale()
+      await notifyMerchantNewOrder(
+        order.merchantId,
+        order.id,
+        order.orderPrices.total,
+        locale,
+      );
+      console.info('✅ Notification sent to merchant for new order:', order.id);
+    } catch (error) {
+      console.error({ message: '❌ Failed to send notification to merchant:', error });
+    }
+
     return NextResponse.json({
       success: true,
       data: order,
       message: 'Order created successfully',
     });
   } catch (error) {
-    console.error('Error creating order:', error);
+    console.error({ message: 'Error creating order:', error });
     return NextResponse.json(
       { success: false, error: 'Failed to create order' },
       { status: 500 }

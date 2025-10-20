@@ -1,18 +1,27 @@
 'use client';
 
+import NotificationPermission from "@/components/notifications/NotificationPermission";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useT } from '@/hooks/use-inline-translation';
 import { useToast } from '@/hooks/use-toast';
 import { Prisma, User } from "@prisma/client";
-import { ArrowLeftIcon, BellIcon, CheckCircleIcon, ClockIcon, CreditCardIcon, HelpCircleIcon, MapPinIcon, ShieldIcon, Store, StoreIcon, UserIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckCircleIcon, ClockIcon, CreditCardIcon, HelpCircleIcon, MapPinIcon, ShieldIcon, Store, StoreIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+
+export enum TABS {
+    PROFILE = "profile",
+    MERCHANTS = "merchants",
+    ADDRESSES = "addresses",
+    PAYMENT = "payment",
+    NOTIFICATIONS = "notifications",
+    SECURITY = "security",
+}
 
 type IUser = Prisma.UserGetPayload<{
     include: {
@@ -24,7 +33,7 @@ type IUser = Prisma.UserGetPayload<{
     },
 }>;
 
-export function UserProfile({ user, initialValue }: { user: IUser, initialValue?: string }) {
+export function UserProfile({ user, initialValue }: { user: IUser, initialValue?: TABS }) {
     const t = useT()
     const { toast } = useToast()
     const [currentUser, setCurrentUser] = useState<User>(user);
@@ -77,14 +86,14 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
 
                 <h1 className="mb-6 text-3xl font-bold">{t("Profile & Settings")}</h1>
 
-                <Tabs defaultValue={initialValue || "profile"} className="space-y-6">
+                <Tabs defaultValue={initialValue || TABS.PROFILE} className="space-y-6">
                     <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-6">
-                        <TabsTrigger value="profile">{t("Profile")}</TabsTrigger>
-                        <TabsTrigger value="merchants">{t("Merchants")}</TabsTrigger>
-                        <TabsTrigger value="addresses">{t("Addresses")}</TabsTrigger>
-                        <TabsTrigger value="payment">{t("Payment")}</TabsTrigger>
-                        <TabsTrigger value="notifications">{t("Notifications")}</TabsTrigger>
-                        <TabsTrigger value="security">{t("Security")}</TabsTrigger>
+                        <TabsTrigger value={TABS.PROFILE}>{t("Profile")}</TabsTrigger>
+                        <TabsTrigger value={TABS.MERCHANTS}>{t("Merchants")}</TabsTrigger>
+                        <TabsTrigger value={TABS.ADDRESSES}>{t("Addresses")}</TabsTrigger>
+                        <TabsTrigger value={TABS.PAYMENT}>{t("Payment")}</TabsTrigger>
+                        <TabsTrigger value={TABS.NOTIFICATIONS}>{t("Notifications")}</TabsTrigger>
+                        <TabsTrigger value={TABS.SECURITY}>{t("Security")}</TabsTrigger>
                     </TabsList>
 
                     {/* Profile Tab */}
@@ -306,47 +315,7 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                 <CardTitle>{t("Notification Preferences")}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-start gap-3">
-                                        <BellIcon className="mt-1 h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="font-medium">{t("Order Updates")}</p>
-                                            <p className="text-sm text-muted-foreground">{t("Get notified about your order status and delivery")}</p>
-                                        </div>
-                                    </div>
-                                    <Switch
-                                        checked={notifications.orderUpdates}
-                                        onCheckedChange={(checked) => setNotifications({ ...notifications, orderUpdates: checked })}
-                                    />
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-start gap-3">
-                                        <BellIcon className="mt-1 h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="font-medium">{t("Promotions & Deals")}</p>
-                                            <p className="text-sm text-muted-foreground">{t("Receive exclusive offers and discounts")}</p>
-                                        </div>
-                                    </div>
-                                    <Switch
-                                        checked={notifications.promotions}
-                                        onCheckedChange={(checked) => setNotifications({ ...notifications, promotions: checked })}
-                                    />
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-start gap-3">
-                                        <BellIcon className="mt-1 h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="font-medium">{t("Newsletter")}</p>
-                                            <p className="text-sm text-muted-foreground">{t("Weekly tips, recipes, and product recommendations")}</p>
-                                        </div>
-                                    </div>
-                                    <Switch
-                                        checked={notifications.newsletter}
-                                        onCheckedChange={(checked) => setNotifications({ ...notifications, newsletter: checked })}
-                                    />
-                                </div>
+                                <NotificationPermission />
                             </CardContent>
                         </Card>
                     </TabsContent>

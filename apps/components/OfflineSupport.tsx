@@ -1,9 +1,10 @@
 "use client"
 
-// Offline Support and Network Error Handling
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useT } from '@/hooks/use-inline-translation';
+import { toast } from '@/hooks/use-toast';
+
 import { RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
@@ -44,12 +45,16 @@ export function OfflineProvider({ children }: { children: React.ReactNode }) {
             setIsOnline(true);
             setLastOnlineTime(new Date());
             setRetryCount(0);
-            console.log(t('🔗 Connection restored'));
+            toast(
+                { description: t('🔗 Connection restored') }
+            )
         };
 
         const handleOffline = () => {
             setIsOnline(false);
-            console.log(t('📴 Connection lost'));
+            toast(
+                { description: t('📴 Connection lost') }
+            )
         };
 
         // Set initial state
@@ -355,7 +360,6 @@ export function useServiceWorker() {
                         }
                     });
 
-                    console.log('SW registered:', reg);
                 })
                 .catch((error) => {
                     console.error('SW registration failed:', error);
@@ -394,7 +398,6 @@ export class OfflineCache {
 
                 if (validResources.length > 0) {
                     await cache.addAll(validResources);
-                    console.log(`Cached ${validResources.length} resources for offline use`);
                 }
             } catch (error) {
                 console.error('Failed to cache resources:', error);
@@ -421,7 +424,6 @@ export class OfflineCache {
                 await Promise.all(
                     cacheNames.map(cacheName => caches.delete(cacheName))
                 );
-                console.log('All caches cleared');
             } catch (error) {
                 console.error('Failed to clear cache:', error);
             }
@@ -566,7 +568,6 @@ export class OfflineQueue {
 
             try {
                 await item.action();
-                console.log(`Processed offline action: ${item.id}`);
             } catch (error) {
                 console.error(`Failed to process offline action: ${item.id}`, error);
                 // Re-add to queue if failed

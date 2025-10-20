@@ -37,29 +37,29 @@ async function processChanges() {
     const files = Array.from(pendingChanges);
     pendingChanges.clear();
 
-    console.log('\n' + '='.repeat(60));
-    console.log(`🔄 Processing ${files.length} changed file(s)`);
-    console.log('='.repeat(60) + '\n');
+    console.info('\n' + '='.repeat(60));
+    console.info(`🔄 Processing ${files.length} changed file(s)`);
+    console.info('='.repeat(60) + '\n');
 
     try {
         // Step 1: Extract
-        console.log('📖 Extracting translations...');
+        console.info('📖 Extracting translations...');
         await runCommand('npm run extract --silent');
-        console.log('✅ Extraction complete\n');
+        console.info('✅ Extraction complete\n');
 
         // Step 2: Translate
-        console.log('🌍 Translating to Swahili...');
+        console.info('🌍 Translating to Swahili...');
         await runCommand('npm run translate --silent');
-        console.log('✅ Translation complete\n');
+        console.info('✅ Translation complete\n');
 
         // Step 3: Merge
-        console.log('🔄 Merging translations...');
+        console.info('🔄 Merging translations...');
         await runCommand('npm run merge --silent');
-        console.log('✅ Merge complete\n');
+        console.info('✅ Merge complete\n');
 
-        console.log('✅ All done! Your translations are up to date.\n');
+        console.info('✅ All done! Your translations are up to date.\n');
     } catch (error) {
-        console.error('❌ Error during processing:', error);
+        console.error({ message: '❌ Error during processing:', error });
     } finally {
         isProcessing = false;
 
@@ -71,7 +71,7 @@ async function processChanges() {
 }
 
 function startWatching() {
-    console.log(`
+    console.info(`
 ╔════════════════════════════════════════════════════════╗
 ║        TRANSLATION WATCH MODE                          ║
 ║        Auto-extracts translations on file save         ║
@@ -98,7 +98,7 @@ function startWatching() {
     watcher
         .on('change', (filePath) => {
             const relativePath = path.relative(process.cwd(), filePath);
-            console.log(`📝 File changed: ${relativePath}`);
+            console.info(`📝 File changed: ${relativePath}`);
 
             pendingChanges.add(filePath);
 
@@ -109,12 +109,12 @@ function startWatching() {
             }, 2000);
         })
         .on('error', (error) => {
-            console.error('❌ Watcher error:', error);
+            console.error({ message: '❌ Watcher error:', error });
         });
 
     // Graceful shutdown
     process.on('SIGINT', () => {
-        console.log('\n\n🛑 Stopping watch mode...');
+        console.info('\n\n🛑 Stopping watch mode...');
         watcher.close();
         process.exit(0);
     });

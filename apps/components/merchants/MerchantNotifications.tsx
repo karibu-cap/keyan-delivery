@@ -53,7 +53,7 @@ export default function MerchantNotifications() {
                 setUnreadCount(data.data.unreadCount);
             }
         } catch (error) {
-            console.error('Error fetching notifications:', error);
+            console.error({ message: 'Error fetching notifications:', error });
         } finally {
             setLoading(false);
         }

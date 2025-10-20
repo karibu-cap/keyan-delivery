@@ -22,7 +22,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { productId, quantity, price, selectedWeight, unit } = body ;
+    const { productId, quantity, price, selectedWeight, unit } = body;
 
     if (!productId || !quantity || !price) {
       return NextResponse.json(
@@ -70,7 +70,7 @@ export async function DELETE(
       );
     }
 
-   const response = await removeFromCartAction(productId, token?.decodedToken?.uid);
+    const response = await removeFromCartAction(productId, token?.decodedToken?.uid);
 
     return NextResponse.json(response);
   } catch (error) {
@@ -87,7 +87,7 @@ export async function PATCH(
 ) {
   try {
     const body = await request.json();
-    const { productId, quantity} = body;
+    const { productId, quantity } = body;
 
     if (!productId || quantity == undefined) {
       return NextResponse.json(

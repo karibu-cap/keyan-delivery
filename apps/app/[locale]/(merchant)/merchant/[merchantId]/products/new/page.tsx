@@ -20,7 +20,7 @@ import { fetchCategories } from "@/lib/actions/client/stores";
 import { createMerchantProduct } from "@/lib/actions/merchants";
 import { ProductBadge, ProductStatus } from "@prisma/client";
 import { ArrowLeft, Camera, Loader2, X } from "lucide-react";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ClsOptimization";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -411,7 +411,7 @@ export default function NewProductPage() {
                               <div className="grid grid-cols-5 gap-4">
                                    {imagePreviews.map((preview, index) => (
                                         <div key={index} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-border">
-                                             <Image
+                                             <OptimizedImage
                                                   src={preview}
                                                   alt={`Preview ${index + 1}`}
                                                   fill

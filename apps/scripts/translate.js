@@ -48,7 +48,7 @@ class OptimizedTranslator {
         try {
             const cache = this.readJSON(this.CACHE_FILE);
             if (cache && Object.keys(cache).length > 0) {
-                console.log(`📦 Found cache with ${Object.keys(cache).length} translations`);
+                console.info(`📦 Found cache with ${Object.keys(cache).length} translations`);
             }
             return cache || {};
         } catch {
@@ -67,10 +67,10 @@ class OptimizedTranslator {
     loadExistingTarget() {
         try {
             this.existingTargetData = this.readJSON('messages/' + this.targetLang + '.json');
-            console.log(`📂 Loaded existing target with ${this.countStrings(this.existingTargetData)} translations`);
+            console.info(`📂 Loaded existing target with ${this.countStrings(this.existingTargetData)} translations`);
             return this.existingTargetData;
         } catch {
-            console.log(`📂 No existing target found, will create new file`);
+            console.info(`📂 No existing target found, will create new file`);
             this.existingTargetData = {};
             return this.existingTargetData;
         }
@@ -194,9 +194,9 @@ class OptimizedTranslator {
     }
 
     async translate() {
-        console.log('🚀 OPTIMIZED PARALLEL TRANSLATOR\n');
-        console.log('⚡ Speed: ~2 minutes for 250 keys');
-        console.log(`📦 Batch size: ${this.BATCH_SIZE} parallel translations\n`);
+        console.info('🚀 OPTIMIZED PARALLEL TRANSLATOR\n');
+        console.info('⚡ Speed: ~2 minutes for 250 keys');
+        console.info(`📦 Batch size: ${this.BATCH_SIZE} parallel translations\n`);
 
         try {
             this.startTime = Date.now();
@@ -215,12 +215,12 @@ class OptimizedTranslator {
             this.totalCount = missingKeys.length;
 
             if (this.totalCount === 0) {
-                console.log('✨ All keys already translated! Nothing to do.\n');
+                console.info('✨ All keys already translated! Nothing to do.\n');
                 return;
             }
 
-            console.log(`🔢 Found ${this.totalCount} new strings to translate`);
-            console.log(`📈 ${Object.keys(targetFlat).length} existing + ${Object.keys(cache).length} cached\n`);
+            console.info(`🔢 Found ${this.totalCount} new strings to translate`);
+            console.info(`📈 ${Object.keys(targetFlat).length} existing + ${Object.keys(cache).length} cached\n`);
 
             // Process in batches
             const batches = [];
@@ -228,7 +228,7 @@ class OptimizedTranslator {
                 batches.push(missingKeys.slice(i, i + this.BATCH_SIZE));
             }
 
-            console.log(`📦 Processing ${batches.length} batches...\n`);
+            console.info(`📦 Processing ${batches.length} batches...\n`);
 
             const allTranslations = { ...cache };
 
@@ -250,7 +250,7 @@ class OptimizedTranslator {
                 }
             }
 
-            console.log('\n\n💾 Writing final file...');
+            console.info('\n\n💾 Writing final file...');
 
             // Merge: existing + cache + new translations
             const mergedFlat = { ...targetFlat, ...allTranslations };
@@ -260,18 +260,18 @@ class OptimizedTranslator {
 
             const elapsed = ((Date.now() - this.startTime) / 1000).toFixed(1);
 
-            console.log(`\n✅ COMPLETE!`);
-            console.log(`⏱️  Time: ${elapsed}s (${(this.totalCount / elapsed).toFixed(1)} translations/sec)`);
-            console.log(`✅ Success: ${this.translatedCount - this.errors.length}/${this.translatedCount}`);
-            console.log(`📊 Total: ${this.countStrings(finalData)} translations in final file`);
+            console.info(`\n✅ COMPLETE!`);
+            console.info(`⏱️  Time: ${elapsed}s (${(this.totalCount / elapsed).toFixed(1)} translations/sec)`);
+            console.info(`✅ Success: ${this.translatedCount - this.errors.length}/${this.translatedCount}`);
+            console.info(`📊 Total: ${this.countStrings(finalData)} translations in final file`);
 
             if (this.errors.length > 0) {
-                console.log(`\n⚠️  ${this.errors.length} errors (kept original text):`);
+                console.info(`\n⚠️  ${this.errors.length} errors (kept original text):`);
                 this.errors.slice(0, 3).forEach(err => {
-                    console.log(`   - "${err.text}..."`);
+                    console.info(`   - "${err.text}..."`);
                 });
                 if (this.errors.length > 3) {
-                    console.log(`   ... and ${this.errors.length - 3} more`);
+                    console.info(`   ... and ${this.errors.length - 3} more`);
                 }
             }
 
@@ -280,13 +280,13 @@ class OptimizedTranslator {
                 try {
                     const fs = await import('fs');
                     fs.unlinkSync(join(process.cwd(), this.CACHE_FILE));
-                    console.log('\n🧹 Cleaned up cache file');
+                    console.info('\n🧹 Cleaned up cache file');
                 } catch { }
             }
 
         } catch (error) {
-            console.error('\n❌ Translation failed:', error.message);
-            console.log('\n💡 TIP: Cache saved! Run again to resume from where it stopped.');
+            console.error({ message: '\n❌ Translation failed:', error });
+            console.info('\n💡 TIP: Cache saved! Run again to resume from where it stopped.');
             throw error;
         }
     }

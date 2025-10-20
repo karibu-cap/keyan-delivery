@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev-https": "next dev --experimental-https",
     "build": "next build",
     "seed": "tsc --project tsconfig.seed.json && node dist/scripts/seed.js",
     "start": "next start",
@@ -102,6 +103,7 @@
     "url-slug": "^4.0.1",
     "uuid": "^13.0.0",
     "vaul": "^1.1.2",
+    "web-push": "^3.6.7",
     "zod": "^4.1.12",
     "zustand": "^5.0.8"
   },
@@ -114,6 +116,7 @@
     "@types/node": "^20.19.21",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
     "@vitalets/google-translate-api": "^9.2.1",

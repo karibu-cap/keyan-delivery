@@ -1,6 +1,7 @@
 import { updateOrderStatus } from '@/lib/actions/server/merchants';
 import { NextRequest, NextResponse } from 'next/server';
 
+
 export async function PATCH(
     request: NextRequest,
     props: { params: Promise<{ merchantId: string, orderId: string }> }
@@ -12,6 +13,7 @@ export async function PATCH(
         const orderId = params.orderId;
 
         if (!newStatus) {
+            console.error('New status is required');
             return NextResponse.json(
                 { success: false, error: 'New status is required' },
                 { status: 400 }

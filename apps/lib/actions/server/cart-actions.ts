@@ -78,7 +78,7 @@ export async function addToCartAction(
         // In a real app, you'd use authenticated authId
         const effectiveauthId = authId || cartId;
 
-        console.log("111", effectiveauthId, cartId)
+        console.info("111", effectiveauthId, cartId)
 
         // Check if item already exists in cart
         const existingItem = await prisma.cartItem.findUnique({
@@ -100,7 +100,7 @@ export async function addToCartAction(
                 },
             });
         } else {
-            
+
             // Add new item
             await prisma.cartItem.create({
                 data: {
@@ -118,7 +118,7 @@ export async function addToCartAction(
 
         return { success: true };
     } catch (error) {
-        console.error('Error adding to cart:', error);
+        console.error({ message: 'Error adding to cart:', error });
         return { success: false, error: 'Failed to add item to cart' };
     }
 }
@@ -180,7 +180,7 @@ export async function updateCartItemAction(
 
         return { success: true };
     } catch (error) {
-        console.error('Error updating cart item:', error);
+        console.error({ message: 'Error updating cart item:', error });
         return { success: false, error: 'Failed to update cart item' };
     }
 }
@@ -218,7 +218,7 @@ export async function removeFromCartAction(
 
         return { success: true };
     } catch (error) {
-        console.error('Error removing from cart:', error);
+        console.error({ message: 'Error removing from cart:', error });
         return { success: false, error: 'Failed to remove item from cart' };
     }
 }
@@ -278,7 +278,7 @@ export async function getCartAction(authId?: string): Promise<{ success: boolean
             },
         };
     } catch (error) {
-        console.error('Error fetching cart:', error);
+        console.error({ message: 'Error fetching cart:', error });
         return { success: false, error: 'Failed to fetch cart' };
     }
 }
@@ -299,7 +299,7 @@ export async function clearCartAction(authId?: string): Promise<{ success: boole
 
         return { success: true };
     } catch (error) {
-        console.error('Error clearing cart:', error);
+        console.error({ message: 'Error clearing cart:', error });
         return { success: false, error: 'Failed to clear cart' };
     }
 }

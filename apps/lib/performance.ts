@@ -100,7 +100,7 @@ function reportMetric(name: string, value: number) {
                 userAgent: navigator.userAgent,
             }),
         }).catch(error => {
-            console.error('Failed to report metric:', error);
+            console.error({ message: 'Failed to report metric:', error });
         });
     }
 }
@@ -179,7 +179,7 @@ function reportDatabaseMetric(
             timestamp: Date.now(),
         }),
     }).catch(err => {
-        console.error('Failed to report database metric:', err);
+        console.error({ message: 'Failed to report database metric:', err });
     });
 }
 
@@ -251,7 +251,7 @@ export function initializeRUM() {
                 url: window.location.href,
             }),
         }).catch(error => {
-            console.error('Failed to report interaction:', error);
+            console.error({ message: 'Failed to report interaction:', error });
         });
     });
 
@@ -402,7 +402,7 @@ export class EdgePerformanceMonitor {
         const duration = Date.now() - startTime;
 
         // Log performance metrics
-        console.log(`Edge function ${functionName} took ${duration}ms`);
+        console.info(`Edge function ${functionName} took ${duration}ms`);
 
         return duration;
     }
@@ -487,8 +487,8 @@ export class EdgeCache {
         // Cache static assets and API responses
         const pathname = request.nextUrl.pathname;
         return pathname.startsWith('/api/') ||
-               pathname.includes('.') ||
-               pathname.startsWith('/_next/');
+            pathname.includes('.') ||
+            pathname.startsWith('/_next/');
     }
 }
 
@@ -655,8 +655,8 @@ export class ErrorTracker {
         const existingError = this.errors.find(e => {
             const timeDiff = errorInfo.timestamp - e.timestamp;
             return e.message === errorInfo.message &&
-                   e.url === errorInfo.url &&
-                   timeDiff < 60 * 60 * 1000; // 1 hour
+                e.url === errorInfo.url &&
+                timeDiff < 60 * 60 * 1000; // 1 hour
         });
 
         if (existingError) {
@@ -680,7 +680,7 @@ export class ErrorTracker {
                 context,
             }),
         }).catch(err => {
-            console.error('Failed to report error:', err);
+            console.error({ message: 'Failed to report error:', err });
         });
     }
 

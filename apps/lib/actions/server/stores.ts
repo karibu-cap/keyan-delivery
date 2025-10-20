@@ -123,7 +123,7 @@ export async function searchStores(searchQuery: string): Promise<IMerchant[]> {
 
     return data.data.merchants;
   } catch (error) {
-    console.error('Error searching stores:', error);
+    console.error({ message: 'Error searching stores:', error });
     throw new Error('Failed to search stores');
   }
 }
@@ -150,7 +150,7 @@ export async function filterStoresByCategory(categoryId: string): Promise<IMerch
 
     return data.data.merchants;
   } catch (error) {
-    console.error('Error filtering stores:', error);
+    console.error({ message: 'Error filtering stores:', error });
     throw new Error('Failed to filter stores');
   }
 }
@@ -177,7 +177,7 @@ export async function fetchProduct(slug: string): Promise<IProduct | null> {
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching product:', error);
+    console.error({ message: 'Error fetching product:', error });
     throw new Error('Failed to fetch product');
   }
 }
@@ -209,7 +209,7 @@ export const fetchRelatedProducts = cache(async (slug: string, categoryIds: stri
 
     return data.data;
   } catch (error) {
-    console.error('Error fetching related products:', error);
+    console.error({ message: 'Error fetching related products:', error });
     throw new Error('Failed to fetch related products');
   }
 });
@@ -249,7 +249,7 @@ export const fetchStoreDataBySlug = cache(async (slug: string): Promise<{
       aisles,
     };
   } catch (error) {
-    console.error('Error fetching store data:', error);
+    console.error({ message: 'Error fetching store data:', error });
     return null;
   }
 })
@@ -331,7 +331,7 @@ export async function fetchMerchants({
       }
     };
   } catch (error) {
-    console.error('Error fetching merchants:', error);
+    console.error({ message: 'Error fetching merchants:', error });
     throw new Error('Failed to fetch merchants');
   }
 }

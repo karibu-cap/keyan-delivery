@@ -2,11 +2,14 @@
 
 import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
 import { prisma } from "@/lib/prisma";
-
+import { OrderStatus } from "@prisma/client";
+import { getLocale } from "next-intl/server";
+import { notifyClientOrderStatusChange } from "../notifications/push-service";
 
 export async function acceptOrder(orderId: string, pickupCode: string) {
    try {
       const token = await getUserTokens();
+      const locale = await getLocale();
 
       if (!token?.decodedToken?.uid) {
          return { success: false, error: "Unauthorized" };
@@ -52,12 +55,24 @@ export async function acceptOrder(orderId: string, pickupCode: string) {
                },
             },
             merchant: true,
+            user: true,
          },
       });
 
+      try {
+         await notifyClientOrderStatusChange({
+            authId: updatedOrder.user.authId,
+            orderId: updatedOrder.id,
+            newStatus: OrderStatus.ACCEPTED_BY_DRIVER,
+            locale,
+         });
+      } catch (error) {
+         console.error({ message: '❌ Failed to notify client:', error });
+      }
+
       return { success: true, data: updatedOrder };
    } catch (error) {
-      console.error("Error accepting order:", error);
+      console.error({ message: "Error accepting order:", error });
       return {
          success: false,
          error: error instanceof Error ? error.message : "Failed to accept order",
@@ -68,6 +83,7 @@ export async function acceptOrder(orderId: string, pickupCode: string) {
 export async function updateOrderToOnTheWay(orderId: string) {
    try {
       const token = await getUserTokens();
+
 
       if (!token?.decodedToken?.uid) {
          return { success: false, error: "Unauthorized" };
@@ -92,7 +108,7 @@ export async function updateOrderToOnTheWay(orderId: string) {
 
       return { success: true, data: updatedOrder };
    } catch (error) {
-      console.error("Error updating order status:", error);
+      console.error({ message: "Error updating order status:", error });
       return {
          success: false,
          error: error instanceof Error ? error.message : "Failed to update order",
@@ -158,7 +174,7 @@ export async function completeDelivery(orderId: string, deliveryCode: string) {
 
       return { success: true, data: updatedOrder, earnings };
    } catch (error) {
-      console.error("Error completing delivery:", error);
+      console.error({ message: "Error completing delivery:", error });
       return {
          success: false,
          error: error instanceof Error ? error.message : "Failed to complete delivery",

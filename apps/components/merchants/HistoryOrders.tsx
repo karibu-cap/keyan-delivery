@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
 import { formatOrderId, getOrderStatusColor, getStatusIcon } from "@/lib/orders-utils";
 import { useT } from "@/hooks/use-inline-translation";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ClsOptimization";
 import type { Order } from "@/types/merchant_types";
 
 
@@ -63,7 +63,7 @@ export default function HistoryOrders({ orders }: HistoryOrdersProps) {
                                    {order.items.slice(0, 4).map((item) => (
                                         <div key={item.id} className="flex items-center gap-2 p-2 bg-muted rounded-lg">
                                              <div className="relative w-12 h-12">
-                                                  <Image
+                                                  <OptimizedImage
                                                        src={item.product.images[0].url}
                                                        blurDataURL={item.product.images[0].blurDataUrl ?? undefined}
                                                        alt={item.product.title}

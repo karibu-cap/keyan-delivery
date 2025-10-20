@@ -261,7 +261,7 @@ export const getCachedSearchResults = createCache(
 export async function invalidateCache(tags: string[]) {
     // In Next.js App Router, we need to revalidate paths or use tags
     // This is a placeholder for cache invalidation logic
-    console.log('Invalidating cache for tags:', tags);
+    console.info('Invalidating cache for tags:', tags);
 }
 
 export async function invalidateProductCache() {

@@ -1,5 +1,6 @@
 "use client";
 
+import { OptimizedImage } from '@/components/ClsOptimization';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -7,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
 import { Clock, Filter, Search, TrendingUp, X } from 'lucide-react';
-import Image from 'next/image';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Types
@@ -113,7 +113,7 @@ export function SearchWithTypeahead({
     const [showFilterPanel, setShowFilterPanel] = useState(false);
     const [recentResults, setRecentResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-const [hasSearched, setHasSearched] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
 
     const debouncedQuery = useDebounce(query, 300);
     const { history, addToHistory, clearHistory, removeFromHistory } = useSearchHistory();
@@ -137,8 +137,8 @@ const [hasSearched, setHasSearched] = useState(false);
         if (!searchQuery.trim()) return;
 
         setHasSearched(true);
-setIsOpen(true);
-setIsLoading(true);
+        setIsOpen(true);
+        setIsLoading(true);
         addToHistory(searchQuery);
 
         try {
@@ -299,7 +299,7 @@ setIsLoading(true);
                                         className="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                                         onClick={() => handleResultSelect(result)}
                                     >
-                                        <Image
+                                        <OptimizedImage
                                             src={result.image}
                                             alt={result.title}
                                             width={40}

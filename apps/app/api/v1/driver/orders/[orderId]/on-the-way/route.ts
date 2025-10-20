@@ -62,7 +62,7 @@ export async function POST(
          message: "Order status updated to on the way",
       });
    } catch (error) {
-      console.error("Error updating order status:", error);
+      console.error({ message: "Error updating order status:", error });
       return NextResponse.json(
          {
             success: false,

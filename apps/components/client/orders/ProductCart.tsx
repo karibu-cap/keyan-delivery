@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { IProduct } from "@/lib/actions/server/stores"
-import Image from "next/image"
+import { OptimizedImage } from "@/components/ClsOptimization"
 interface ProductCardProps {
     product: IProduct
 }
@@ -10,7 +10,7 @@ export function ProductCard({ product }: ProductCardProps) {
     return (
         <Card className="overflow-hidden transition-shadow hover:shadow-md">
             <div className="relative h-48 w-full bg-muted">
-                <Image src={product?.images[0].url || "/placeholder.svg"} alt={product.title} fill className="object-cover" blurDataURL={product?.images[0].blurDataUrl || "/placeholder.svg"} />
+                <OptimizedImage src={product?.images[0].url || "/placeholder.svg"} alt={product.title} fill className="object-cover" blurDataURL={product?.images[0].blurDataUrl || "/placeholder.svg"} />
             </div>
 
             <CardContent className="p-4">

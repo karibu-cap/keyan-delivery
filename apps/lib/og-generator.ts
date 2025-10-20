@@ -675,7 +675,7 @@ async function fetchFont(fontName: string): Promise<ArrayBuffer> {
 
         throw new Error('Font URL not found');
     } catch (error) {
-        console.error('Failed to fetch font:', error);
+        console.error({ message: 'Failed to fetch font:', error });
         // Return empty array buffer as fallback
         return new ArrayBuffer(0);
     }
@@ -717,7 +717,7 @@ export async function handleOGImageRequest(
             },
         });
     } catch (error) {
-        console.error('OG Image generation failed:', error);
+        console.error({ message: 'OG Image generation failed:', error });
 
         // Return fallback image or error response
         return new Response('OG Image generation failed', {

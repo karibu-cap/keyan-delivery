@@ -6,7 +6,7 @@ import { useT } from "@/hooks/use-inline-translation";
 import { IProduct } from "@/lib/actions/server/stores";
 import { getStatusColor, getStatusIcon, getStatusName } from "@/lib/product-utils";
 import { AlertCircle, Edit, Plus } from "lucide-react";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ClsOptimization";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -61,7 +61,7 @@ export default function ProductsList({
                               className="flex items-center gap-4 p-4 rounded-2xl border border-border hover:shadow-card transition-all"
                          >
                               <div className="relative">
-                                   <Image
+                                   <OptimizedImage
                                         src={product.images?.[0]?.url || '/placeholder-product.jpg'}
                                         alt={product.title}
                                         width={80}

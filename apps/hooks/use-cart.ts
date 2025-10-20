@@ -72,17 +72,17 @@ const useCart = create(
 
                 const updatedItems = await fetch('/api/v1/client/cart')
                 const updatedItemsJson = await updatedItems.json()
-                console.log(responseJson, updatedItemsJson.data)
+                console.info(responseJson, updatedItemsJson.data)
 
                 set({ cart: updatedItemsJson.data })
                 toast({
-                        title: '🎉 Item added to cart',
-                        description: `added successfully`,
-                    })
+                    title: '🎉 Item added to cart',
+                    description: `added successfully`,
+                })
 
             },
             removeItem: async (productId: string) => {
-               
+
                 const response = await fetch('/api/v1/client/cart', {
                     method: 'DELETE',
                     headers: {
@@ -107,13 +107,13 @@ const useCart = create(
                 const updatedItemsJson = await updatedItems.json()
                 set({ cart: updatedItemsJson.data })
                 toast({
-                        title: 'Item removed from cart',
-                        description: `removed successfully`,
-                    })
-               
+                    title: 'Item removed from cart',
+                    description: `removed successfully`,
+                })
+
             },
             updateQuantity: async (id: string, quantity: number) => {
-               
+
                 const response = await fetch('/api/v1/client/cart', {
                     method: 'PATCH',
                     headers: {
@@ -139,12 +139,12 @@ const useCart = create(
                 const updatedItemsJson = await updatedItems.json()
                 set({ cart: updatedItemsJson.data })
                 toast({
-                        title: '✅ Quantity updated',
-                        description: `new quantity to ${quantity}`,
-                    })
+                    title: '✅ Quantity updated',
+                    description: `new quantity to ${quantity}`,
+                })
             },
             clearCart: async () => {
-                const response =  await fetch('/api/v1/client/cart/clean', {
+                const response = await fetch('/api/v1/client/cart/clean', {
                     method: 'DELETE',
                 })
                 const responseJson = await response.json()

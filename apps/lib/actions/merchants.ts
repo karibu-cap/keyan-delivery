@@ -45,7 +45,7 @@ export async function createMerchantProduct(formData: Record<string, unknown>, m
 
         return data;
     } catch (error) {
-        console.error('Error creating product:', error);
+        console.error({ message: 'Error creating product:', error });
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',
@@ -82,7 +82,7 @@ export async function updateMerchantProduct({
 
         return data;
     } catch (error) {
-        console.error("Error updating product:", error);
+        console.error({ message: "Error updating product:", error });
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',
@@ -118,7 +118,7 @@ export async function updateOrderStatus(
 
         return data;
     } catch (error) {
-        console.error("Error updating order status:", error);
+        console.error({ message: "Error updating order status:", error });
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',
@@ -160,7 +160,7 @@ export async function getMerchantProducts(
         }
         return data;
     } catch (error) {
-        console.error("Error fetching merchant products:", error);
+        console.error({ message: "Error fetching merchant products:", error });
         return {
             success: false,
             products: [],
@@ -196,7 +196,7 @@ export async function getMerchantOrders(
 
         return data;
     } catch (error) {
-        console.error("Error fetching merchant orders:", error);
+        console.error({ message: "Error fetching merchant orders:", error });
         return {
             success: false,
             orders: [],
@@ -225,7 +225,7 @@ export async function deleteProduct(productId: string, merchantId: string) {
 
         return data;
     } catch (error) {
-        console.error("Error deleting product:", error);
+        console.error({ message: "Error deleting product:", error });
         return {
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error',

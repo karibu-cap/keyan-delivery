@@ -28,15 +28,15 @@ export async function GET() {
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${products
-    .map(
-        (product) => `  <url>
+                .map(
+                    (product) => `  <url>
     <loc>${baseUrl}/products/${product.slug}</loc>
     <lastmod>${product.updatedAt.toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`
-    )
-    .join("\n")}
+                )
+                .join("\n")}
 </urlset>`;
 
         return new NextResponse(sitemap, {

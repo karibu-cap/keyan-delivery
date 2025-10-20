@@ -10,7 +10,7 @@ import { formatOrderId } from "@/lib/orders-utils"
 import { prisma } from "@/lib/prisma"
 import { OrderItem, OrderStatus, Prisma } from "@prisma/client"
 import { getLocale } from "next-intl/server"
-import Image from "next/image"
+import { OptimizedImage } from "@/components/ClsOptimization"
 import Link from "next/link"
 import { Suspense } from "react"
 
@@ -126,7 +126,7 @@ async function OrderCard({ order }: { order: IOrder }) {
                                              className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-background"
                                              style={{ zIndex: 3 - idx }}
                                         >
-                                             <Image
+                                             <OptimizedImage
                                                   src={item.product.images[0]?.url || "/placeholder.png"}
                                                   alt={item.product.title}
                                                   fill
