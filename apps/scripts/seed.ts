@@ -627,50 +627,6 @@ async function seedDatabase() {
     )
 
 
-    console.info('📱 Seeding push subscriptions...');
-
-    const merchantUsers = userRecords.filter(u => u.roles.includes('merchant'));
-    const customerUsers = userRecords.filter(u => u.roles.includes('customer'));
-    const driverUsers = userRecords.filter(u => u.roles.includes('driver'));
-
-    const sampleSubscriptions = [
-      // Merchants
-      ...merchantUsers.slice(0, 3).map(user => ({
-        userId: user.id,
-        endpoint: `https://fcm.googleapis.com/fcm/send/${faker.string.alphanumeric(150)}`,
-        p256dh: faker.string.alphanumeric(87),
-        auth: faker.string.alphanumeric(22),
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0',
-      })),
-      // Customers
-      ...customerUsers.slice(0, 5).map(user => ({
-        userId: user.id,
-        endpoint: `https://fcm.googleapis.com/fcm/send/${faker.string.alphanumeric(150)}`,
-        p256dh: faker.string.alphanumeric(87),
-        auth: faker.string.alphanumeric(22),
-        userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) Safari/604.1',
-      })),
-
-      // Drivers
-      ...driverUsers.slice(0, 3).map(user => ({
-        userId: user.id,
-        endpoint: `https://fcm.googleapis.com/fcm/send/${faker.string.alphanumeric(150)}`,
-        p256dh: faker.string.alphanumeric(87),
-        auth: faker.string.alphanumeric(22),
-        userAgent: 'Mozilla/5.0 (Linux; Android 13) Chrome/120.0.0.0 Mobile',
-      })),
-    ];
-
-    await Promise.all(
-      sampleSubscriptions.map(sub =>
-        prisma.pushSubscription.create({
-          data: sub,
-        })
-      )
-    );
-
-    console.info(`✅ Created ${sampleSubscriptions.length} push subscriptions`);
-
     // Seed Orders with Delivery Zones
     const orderRecords = await Promise.all(
       Array(15)

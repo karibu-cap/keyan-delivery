@@ -55,16 +55,17 @@ export async function acceptOrder(orderId: string, pickupCode: string) {
                },
             },
             merchant: true,
+            user: true,
          },
       });
 
       try {
-         await notifyClientOrderStatusChange(
-            updatedOrder.userId,
-            updatedOrder.id,
-            OrderStatus.ACCEPTED_BY_DRIVER,
-            locale
-         );
+         await notifyClientOrderStatusChange({
+            authId: updatedOrder.user.authId,
+            orderId: updatedOrder.id,
+            newStatus: OrderStatus.ACCEPTED_BY_DRIVER,
+            locale,
+         });
       } catch (error) {
          console.error({ message: '❌ Failed to notify client:', error });
       }

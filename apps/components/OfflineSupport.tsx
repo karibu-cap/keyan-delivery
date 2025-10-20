@@ -360,7 +360,6 @@ export function useServiceWorker() {
                         }
                     });
 
-                    console.log('SW registered:', reg);
                 })
                 .catch((error) => {
                     console.error('SW registration failed:', error);
@@ -399,7 +398,6 @@ export class OfflineCache {
 
                 if (validResources.length > 0) {
                     await cache.addAll(validResources);
-                    console.log(`Cached ${validResources.length} resources for offline use`);
                 }
             } catch (error) {
                 console.error('Failed to cache resources:', error);
@@ -426,7 +424,6 @@ export class OfflineCache {
                 await Promise.all(
                     cacheNames.map(cacheName => caches.delete(cacheName))
                 );
-                console.log('All caches cleared');
             } catch (error) {
                 console.error('Failed to clear cache:', error);
             }
@@ -571,7 +568,6 @@ export class OfflineQueue {
 
             try {
                 await item.action();
-                console.log(`Processed offline action: ${item.id}`);
             } catch (error) {
                 console.error(`Failed to process offline action: ${item.id}`, error);
                 // Re-add to queue if failed

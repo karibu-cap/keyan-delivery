@@ -2,7 +2,12 @@
 
 import { useEffect } from 'react';
 
-export default function ServiceWorkerRegistration() {
+const isMobile = () => {
+    if (typeof window === 'undefined') return false;
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+};
+
+export default function ServicesWorkerRegistration() {
     useEffect(() => {
         if (typeof window === 'undefined') {
             console.log('⚠️ Window is undefined, skipping SW registration');
@@ -13,6 +18,14 @@ export default function ServiceWorkerRegistration() {
             console.log('⚠️ Service Workers are not supported in this browser');
             return;
         }
+
+        if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
+            console.log('⚠️ Service Workers are not supported in this browser');
+            return;
+        }
+
+        const deviceType = isMobile() ? 'Mobile' : 'Desktop';
+        console.log(`📱 Device: ${deviceType}`);
 
         // Function to register the Service Worker
         const registerServiceWorker = async () => {
@@ -29,7 +42,7 @@ export default function ServiceWorkerRegistration() {
                 // Register the new Service Worker
                 const registration = await navigator.serviceWorker.register('/sw.js', {
                     scope: '/',
-                    updateViaCache: 'none', // Important pour le développement
+                    updateViaCache: 'none',
                 });
 
                 console.log(`✅ Service Worker registered successfully!`);
@@ -95,7 +108,28 @@ export default function ServiceWorkerRegistration() {
 
         // Listen for messages from the service worker
         navigator.serviceWorker.addEventListener('message', (event) => {
-            console.log('📩 Message from service worker:', event.data);
+            console.log('📩 Message from SW:', event.data);
+
+            // DESKTOP ONLY : play sound if app is open
+            if (event.data && event.data.type === 'NOTIFICATION_DISPLAYED') {
+                if (!isMobile()) {
+                    console.log('🔊 Playing custom notification sound (desktop only)');
+
+                    try {
+                        const audio = new Audio('/notification-sound.mp3');
+                        audio.volume = 0.5;
+                        audio.play()
+                            .then(() => console.log('✅ Custom sound played'))
+                            .catch(err => {
+                                console.warn('⚠️ Could not play custom sound:', err.message);
+                            });
+                    } catch (err) {
+                        console.warn('⚠️ Audio error:', err);
+                    }
+                } else {
+                    console.log('📱 Mobile device - using system notification sound');
+                }
+            }
         });
 
         // Listen when the controller changes (new SW activated)

@@ -1,5 +1,6 @@
 "use client";
 
+import { OptimizedImage } from "@/components/ClsOptimization";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,7 +20,6 @@ import { fetchCategories } from "@/lib/actions/client/stores";
 import { getMerchantProducts, updateMerchantProduct } from "@/lib/actions/merchants";
 import { ProductBadge } from "@prisma/client";
 import { ArrowLeft, Camera, Loader2, X } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -437,7 +437,7 @@ export default function EditProductPage() {
                               <div className="grid grid-cols-5 gap-4">
                                    {formData.existingImages.map((image, index) => (
                                         <div key={`existing-${index}`} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-border">
-                                             <Image
+                                             <OptimizedImage
                                                   src={image}
                                                   alt={`Existing ${index + 1}`}
                                                   fill
@@ -457,7 +457,7 @@ export default function EditProductPage() {
 
                                    {newImagePreviews.map((preview, index) => (
                                         <div key={`new-${index}`} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-green-500">
-                                             <Image
+                                             <OptimizedImage
                                                   src={preview}
                                                   alt={`New ${index + 1}`}
                                                   fill

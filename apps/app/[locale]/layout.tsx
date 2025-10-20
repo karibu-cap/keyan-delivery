@@ -1,7 +1,6 @@
 import { FontOptimizer } from "@/components/ClsOptimization";
 import Navbar from "@/components/Navbar";
 import { OfflineIndicator, OfflineProvider } from "@/components/OfflineSupport";
-import ServiceWorkerRegistration from "@/components/notifications/ServiceWorkerRegistration";
 import { Toaster } from "@/components/ui/toaster";
 import { routing } from "@/i18n/routing";
 import { generateHomeMetadata, generateOrganizationStructuredData } from "@/lib/metadata";
@@ -10,6 +9,8 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import "./globals.css";
+import ServicesWorkerRegistration from "@/components/notifications/ServiceWorkerRegistration";
+import NotificationHandler from "@/components/notifications/NotificationHandler";
 
 const geistSans = Geist({
      variable: "--font-geist-sans",
@@ -29,15 +30,16 @@ export const metadata: Metadata = {
           statusBarStyle: "default",
           title: "Yetu Delivery",
      },
-     themeColor: "#10b981",
-     viewport: {
-          width: "device-width",
-          initialScale: 1,
-          maximumScale: 1,
-          userScalable: false,
-          viewportFit: "cover",
-     },
 };
+
+export const viewport = {
+     themeColor: "#10b981",
+     width: "device-width",
+     initialScale: 1,
+     maximumScale: 1,
+     userScalable: false,
+     viewportFit: "cover",
+}
 
 export default async function RootLayout({
      children,
@@ -60,8 +62,8 @@ export default async function RootLayout({
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
                     <meta name="apple-mobile-web-app-title" content="Yetu Delivery" />
-                    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-                    <link rel="icon" href="/favicon.ico" />
+                    <link rel="apple-touch-icon" href="/icons/ios/192.png" />
+                    <link rel="icon" href="/icons/favicon.ico" />
 
                     {/* Organization Structured Data */}
                     <script
@@ -79,7 +81,8 @@ export default async function RootLayout({
                <body
                     className={`${geistSans.variable} ${geistMono.variable} antialiased`}
                >
-                    <ServiceWorkerRegistration />
+                    <ServicesWorkerRegistration />
+                    <NotificationHandler />
                     <NextIntlClientProvider>
 
                          <FontOptimizer>

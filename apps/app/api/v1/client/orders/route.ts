@@ -199,6 +199,7 @@ export async function POST(request: NextRequest) {
 
 
     try {
+      console.log('Start notify the partner .......')
       const locale = await getLocale()
       await notifyMerchantNewOrder(
         order.merchantId,

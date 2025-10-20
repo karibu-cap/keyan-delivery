@@ -13,7 +13,7 @@ import { ROUTES } from "@/lib/router"
 import { OrderStatus } from "@prisma/client"
 import { PhoneIcon } from "lucide-react"
 import { getLocale } from "next-intl/server"
-import Image from "next/image"
+import { OptimizedImage } from "@/components/ClsOptimization"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
@@ -180,7 +180,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                                   <div key={item.id}>
                                                        <div className="flex items-center gap-4">
                                                             <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
-                                                                 <Image
+                                                                 <OptimizedImage
                                                                       src={item.product.images[0]?.url || "/placeholder.png"}
                                                                       alt={item.product.title}
                                                                       fill

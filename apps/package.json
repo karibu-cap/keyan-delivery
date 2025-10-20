@@ -120,7 +120,6 @@
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
     "@vitalets/google-translate-api": "^9.2.1",
-    "ast-types": "^0.14.2",
     "autoprefixer": "^10.4.21",
     "chokidar": "^4.0.3",
     "eslint": "^9",

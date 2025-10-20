@@ -2,7 +2,6 @@ import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
-
 export async function POST(request: NextRequest) {
     try {
         const token = await getUserTokens();
@@ -37,7 +36,7 @@ export async function POST(request: NextRequest) {
 
         await prisma.pushSubscription.deleteMany({
             where: {
-                userId: user.id,
+                authId: user.authId,
                 endpoint: endpoint,
             },
         });
@@ -78,7 +77,7 @@ export async function DELETE(request: NextRequest) {
         }
 
         const result = await prisma.pushSubscription.deleteMany({
-            where: { userId: user.id },
+            where: { authId: user.authId },
         });
 
         return NextResponse.json({

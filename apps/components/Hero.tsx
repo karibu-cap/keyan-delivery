@@ -4,10 +4,10 @@ import { ROUTES } from '@/lib/router'
 import { MerchantType } from '@prisma/client'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronRight, Pause, Pill, Play, ShoppingBag, Store } from 'lucide-react'
-import Image from 'next/image'
 import Link from "next/link"
 import { useEffect, useState } from 'react'
 import { AuthModal } from './auth/AuthModal'
+import { OptimizedImage } from './ClsOptimization'
 
 export default function DynamicHeroCarousel() {
      const [currentIndex, setCurrentIndex] = useState(0)
@@ -209,7 +209,7 @@ export default function DynamicHeroCarousel() {
                                         <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                                              {/* Product Image */}
                                              <div className="relative w-full aspect-[16/10]">
-                                                  <Image
+                                                  <OptimizedImage
                                                        src={current.image}
                                                        alt={current.title}
                                                        fill
@@ -437,7 +437,7 @@ export default function DynamicHeroCarousel() {
                                         <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                                              {/* Product Image */}
                                              <div className="relative w-full aspect-[4/3]">
-                                                  <Image
+                                                  <OptimizedImage
                                                        src={current.image}
                                                        alt={current.title}
                                                        fill

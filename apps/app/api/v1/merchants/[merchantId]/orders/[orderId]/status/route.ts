@@ -13,6 +13,7 @@ export async function PATCH(
         const orderId = params.orderId;
 
         if (!newStatus) {
+            console.error('New status is required');
             return NextResponse.json(
                 { success: false, error: 'New status is required' },
                 { status: 400 }

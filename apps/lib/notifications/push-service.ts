@@ -39,20 +39,19 @@ export interface NotificationPayload {
  * Send a push notification to a specific user
  */
 export async function sendNotificationToUser(
-    userId: string,
+    authId: string,
     payload: NotificationPayload
 ): Promise<{ success: boolean; errors?: string[] }> {
     try {
         // Get all subscriptions for the user
         const subscriptions = await prisma.pushSubscription.findMany({
-            where: { userId },
+            where: { authId },
         });
 
         if (subscriptions.length === 0) {
-            console.info(`No push subscriptions found for user ${userId}`);
+            console.info(`No push subscriptions found for user ${authId}`);
             return { success: false, errors: ['No subscriptions found'] };
         }
-
         // Send notification to all subscriptions
         const results = await Promise.allSettled(
             subscriptions.map(async (sub) => {
@@ -64,15 +63,13 @@ export async function sendNotificationToUser(
                             auth: sub.auth,
                         },
                     };
-
                     await webPush.sendNotification(
                         pushSubscription,
                         JSON.stringify(payload),
                         {
-                            TTL: 60 * 60 * 24, // 24 heures
+                            TTL: 60 * 60 * 24,
                         }
                     );
-
                     return { success: true };
                 } catch (error: any) {
                     console.error({ message: `Error sending notification to subscription ${sub.id}:`, error });
@@ -83,8 +80,7 @@ export async function sendNotificationToUser(
                         });
                         console.info(`Deleted invalid subscription ${sub.id}`);
                     }
-
-                    throw error;
+                    return { success: false };
                 }
             })
         );
@@ -96,7 +92,7 @@ export async function sendNotificationToUser(
 
         const successCount = results.filter((result) => result.status === 'fulfilled').length;
 
-        console.info(`Sent ${successCount}/${subscriptions.length} notifications to user ${userId}`);
+        console.info(`Sent ${successCount}/${subscriptions.length} notifications to user ${authId}`);
 
         return {
             success: successCount > 0,
@@ -112,15 +108,15 @@ export async function sendNotificationToUser(
  * Send a notification to multiple users
  */
 export async function sendNotificationToUsers(
-    userIds: string[],
+    authIds: string[],
     payload: NotificationPayload
 ): Promise<{ success: boolean; results: Record<string, boolean> }> {
     const results: Record<string, boolean> = {};
 
     await Promise.all(
-        userIds.map(async (userId) => {
-            const result = await sendNotificationToUser(userId, payload);
-            results[userId] = result.success;
+        authIds.map(async (authId) => {
+            const result = await sendNotificationToUser(authId, payload);
+            results[authId] = result.success;
         })
     );
 
@@ -148,13 +144,14 @@ export async function notifyMerchantNewOrder(
     });
     const t = await getT(locale);
 
-    const userIds = merchantManagers.map((m) => m.userId);
+    const authIds = merchantManagers.map((m) => m.user.authId);
+
 
     const payload: NotificationPayload = {
         title: t('🛒 New order!'),
         body: t(`You have received a new order of ${orderTotal.toFixed(2)} $`),
-        icon: '/icon-192x192.png',
-        badge: '/badge-72x72.png',
+        icon: '/icons/ios/192.png',
+        badge: '/icons/ios/72.png',
         tag: `new-order-${orderId}`,
         data: {
             url: `/merchant/orders/${orderId}`,
@@ -169,43 +166,44 @@ export async function notifyMerchantNewOrder(
         ],
         requireInteraction: true,
     };
-
-    return await sendNotificationToUsers(userIds, payload);
+    return await sendNotificationToUsers(authIds, payload);
 }
 
 /**
  * Send a notification for order status change (CLIENT)
  */
-export async function notifyClientOrderStatusChange(
-    userId: string,
+export async function notifyClientOrderStatusChange(props: {
+    authId: string,
     orderId: string,
     newStatus: string,
-    locale: string
-) {
-    const t = await getT(locale);
+    locale: string,
+    merchantName?: string
+}) {
+    const t = await getT(props.locale);
     const statusMessages: Record<string, string> = {
-        ACCEPTED_BY_MERCHANT: '✅ ' + t('Your order has been accepted by the merchant'),
-        REJECTED_BY_MERCHANT: '❌ ' + t('Your order has been rejected'),
+        ACCEPTED_BY_MERCHANT: '✅ ' + t('Your order has been accepted by {merchantName}', { merchantName: props.merchantName }),
+        REJECTED_BY_MERCHANT: '❌ ' + t('Your order has been rejected by {merchantName}', { merchantName: props.merchantName }),
         IN_PREPARATION: '👨‍🍳 ' + t('Your order is being prepared'),
         READY_TO_DELIVER: '📦 ' + t('Your order is ready for delivery'),
         ACCEPTED_BY_DRIVER: '🚗 ' + t('A driver has accepted your order'),
         ON_THE_WAY: '🛵 ' + t('Your order is on the way'),
         COMPLETED: '✅ ' + t('Your order has been delivered'),
-        CANCELED_BY_MERCHANT: '❌ ' + t('Your order has been canceled by the merchant'),
+        CANCELED_BY_MERCHANT: '❌ ' + t('Your order has been canceled by {merchantName}', { merchantName: props.merchantName }),
         CANCELED_BY_DRIVER: '❌ ' + t('Your order has been canceled by the driver'),
     };
 
     const payload: NotificationPayload = {
         title: t('Order status update'),
-        body: statusMessages[newStatus] || t('The status of your order has changed'),
-        icon: '/icon-192x192.png',
-        badge: '/badge-72x72.png',
-        tag: `order-status-${orderId}`,
+        body: statusMessages[props.newStatus] || t('The status of your order has changed'),
+        icon: '/icons/ios/192.png',
+        badge: '/icons/ios/72.png',
+        tag: `order-status-${props.orderId}`,
         data: {
-            url: `/orders/${orderId}`,
-            orderId,
-            status: newStatus,
+            url: `/orders/${props.orderId}`,
+            orderId: props.orderId,
+            status: props.newStatus,
             type: 'order_status_change',
+            trackUrl: `/orders/${props.orderId}/track`,
         },
         actions: [
             {
@@ -215,7 +213,7 @@ export async function notifyClientOrderStatusChange(
         ],
     };
 
-    return await sendNotificationToUser(userId, payload);
+    return await sendNotificationToUser(props.authId, payload);
 }
 
 /**
@@ -237,9 +235,9 @@ export async function notifyDriverOrderReady(
         },
     });
 
-    const userIds = availableDrivers.map((d) => d.id);
+    const authIds = availableDrivers.map((d) => d.authId);
 
-    if (userIds.length === 0) {
+    if (authIds.length === 0) {
         console.info('No available drivers found');
         return { success: false, results: {} };
     }
@@ -247,8 +245,8 @@ export async function notifyDriverOrderReady(
     const payload: NotificationPayload = {
         title: t('📦 Order ready to pick up!'),
         body: t('An order is ready at ${merchantName'),
-        icon: '/icon-192x192.png',
-        badge: '/badge-72x72.png',
+        icon: '/icons/ios/192.png',
+        badge: '/icons/ios/72.png',
         tag: `order-ready-${orderId}`,
         data: {
             url: `/driver/orders/${orderId}`,
@@ -270,5 +268,5 @@ export async function notifyDriverOrderReady(
         requireInteraction: true,
     };
 
-    return await sendNotificationToUsers(userIds, payload);
+    return await sendNotificationToUsers(authIds, payload);
 }

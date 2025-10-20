@@ -1,8 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { TrendingUp } from 'lucide-react';
 import { useT } from '@/hooks/use-inline-translation';
+import { OptimizedImage } from '@/components/ClsOptimization';
 
 interface Product {
     productId: string;
@@ -49,7 +49,7 @@ export default function TopProducts({ products }: TopProductsProps) {
 
                                 {product.image && (
                                     <div className="relative h-12 w-12 overflow-hidden rounded-lg">
-                                        <Image
+                                        <OptimizedImage
                                             src={product.image}
                                             alt={product.name}
                                             fill

@@ -5,13 +5,17 @@ import {
      Package,
      CheckCircle,
      AlertCircle,
-     XCircle
+     XCircle,
+     Loader2,
+     Phone,
+     MessageCircle
 } from "lucide-react";
 import { getOrderStatusColor, getStatusIcon, getNextStatus, canReject, canCancel, formatOrderId } from "@/lib/orders-utils";
 import { useT } from "@/hooks/use-inline-translation";
-import type { Order } from "@/types/merchant_types";
+import { Order } from "@/types/merchant_types";
 import { OrderStatus } from "@prisma/client";
 import { OptimizedImage } from "../ClsOptimization";
+import { format } from "date-fns";
 
 interface ActiveOrdersProps {
      orders: Order[];
@@ -25,11 +29,23 @@ export default function ActiveOrders({
      isUpdating
 }: ActiveOrdersProps) {
      const t = useT()
-     /// add the pending order on top
+
+     const formatPhoneForTel = (phone: string) => {
+          return phone.replace(/\D/g, '');
+     }
+
+     const formatPhoneForWhatsApp = (phone: string) => {
+          const cleaned = phone.replace(/\D/g, '');
+          return cleaned.startsWith('237') ? cleaned : `237${cleaned}`;
+     }
      orders.sort((a, b) => {
-          if (a.status === OrderStatus.PENDING) return -1;
-          if (b.status === OrderStatus.PENDING) return 1;
-          return 0;
+          const aPending = a.status === OrderStatus.PENDING;
+          const bPending = b.status === OrderStatus.PENDING;
+
+          if (aPending && !bPending) return -1;
+          if (bPending && !aPending) return 1;
+
+          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
      });
 
      if (orders.length === 0) {
@@ -52,116 +68,161 @@ export default function ActiveOrders({
                     const nextStatus = getNextStatus(order.status);
 
                     return (
-                         <Card
+                         <div
                               key={order.id}
-                              className={`p-6 rounded-2xl shadow-card transition-all ${isPending ? 'ring-2 bg-orange-100 ring-offset-2 animate-pulse' : ''
-                                   }`}
+                              className={`relative rounded-2xl shadow-card transition-all ${isPending ? 'ring-2 ring-offset-2 animate-pulse' : ''}`}
                          >
-                              <div className="flex items-start justify-between mb-4">
-                                   <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                             <h3 className="text-lg font-semibold">
-                                                  {t("Order")} {formatOrderId(order.id)}
-                                             </h3>
-                                             <Badge className={`${getOrderStatusColor(order.status)} text-white`}>
-                                                  <StatusIcon className="w-3 h-3 mr-1" />
-                                                  {order.status.replace(/_/g, ' ')}
-                                             </Badge>
-                                             {isPending && (
-                                                  <Badge variant="destructive" className="animate-pulse">
-                                                       <AlertCircle className="w-3 h-3 mr-1" />
-                                                       {t("Action Required")}
+                              <Card className={`p-6 rounded-2xl ${isPending ? 'bg-orange-100 ring-orange-200' : ''}`}>
+                                   <div className="flex items-start justify-between mb-4">
+                                        <div className="flex-1">
+                                             <div className="flex items-center gap-3 mb-2">
+                                                  <h3 className="text-lg font-semibold">
+                                                       {t("Order")} {formatOrderId(order.id)}
+                                                  </h3>
+                                                  <Badge className={`${getOrderStatusColor(order.status)} text-white`}>
+                                                       <StatusIcon className="w-3 h-3 mr-1" />
+                                                       {order.status.replace(/_/g, ' ')}
                                                   </Badge>
-                                             )}
+                                                  {isPending && (
+                                                       <Badge variant="destructive" className="animate-pulse">
+                                                            <AlertCircle className="w-3 h-3 mr-1" />
+                                                            {t("Action Required")}
+                                                       </Badge>
+                                                  )}
+                                             </div>
+                                             <div className="text-sm text-muted-foreground space-y-1">
+                                                  <div className="flex items-center justify-between">
+                                                       <span><strong>{t("Customer")}:</strong> {order.user.fullName}</span>
+                                                       <a
+                                                            href={`tel:+${formatPhoneForTel(order.user.phone)}`}
+                                                            className="inline-flex items-center gap-1 text-primary hover:underline ml-2"
+                                                       >
+                                                            <Phone className="w-3 h-3" />
+                                                            {order.user.phone}
+                                                       </a>
+                                                  </div>
+                                                  <p><strong>{t("Address")}:</strong> {order.deliveryInfo.address}</p>
+                                                  {order.deliveryInfo.deliveryContact && (
+                                                       <div className="flex items-center justify-between">
+                                                            <span><strong>{t("Contact")}:</strong> {order.deliveryInfo.deliveryContact}</span>
+                                                            <div className="inline-flex items-center gap-5 ml-2">
+                                                                 <a
+                                                                      href={`tel:+${formatPhoneForTel(order.deliveryInfo.deliveryContact)}`}
+                                                                      className="inline-flex items-center gap-1 text-primary hover:underline"
+                                                                      title="Call"
+                                                                 >
+                                                                      <Phone className="w-3 h-3" />
+                                                                 </a>
+                                                                 <a
+                                                                      href={`https://wa.me/${formatPhoneForWhatsApp(order.deliveryInfo.deliveryContact)}`}
+                                                                      target="_blank"
+                                                                      rel="noopener noreferrer"
+                                                                      className="inline-flex items-center gap-1 text-green-600 hover:underline"
+                                                                      title="WhatsApp"
+                                                                 >
+                                                                      <MessageCircle className="w-3 h-3" />
+                                                                 </a>
+                                                            </div>
+                                                       </div>
+                                                  )}
+                                                  <p><strong>{t("Order Time")}:</strong> {format(order.createdAt, 'dd MMMM yyyy HH:mm')}</p>
+                                                  {order.pickupCode && (
+                                                       <p>
+                                                            <strong>{t("Pickup Code")}:</strong>
+                                                            <span className="ml-2 font-mono text-lg text-primary">
+                                                                 {order.pickupCode}
+                                                            </span>
+                                                       </p>
+                                                  )}
+                                             </div>
                                         </div>
-                                        <div className="text-sm text-muted-foreground space-y-1">
-                                             <p><strong>{t("Customer")}:</strong> {order.user.fullName} - {order.user.phone}</p>
-                                             <p><strong>{t("Address")}:</strong> {order.deliveryInfo.address}</p>
-                                             <p><strong>{t("Contact")}:</strong> {order.deliveryInfo.deliveryContact}</p>
-                                             <p><strong>{t("Order Time")}:</strong> {new Date(order.createdAt).toLocaleString()}</p>
-                                             {order.pickupCode && (
-                                                  <p>
-                                                       <strong>{t("Pickup Code")}:</strong>
-                                                       <span className="ml-2 font-mono text-lg text-primary">
-                                                            {order.pickupCode}
-                                                       </span>
-                                                  </p>
-                                             )}
+                                        <div className="text-right">
+                                             <div className="text-2xl font-bold text-primary">
+                                                  ${order.orderPrices.total.toFixed(2)}
+                                             </div>
+                                             <div className="text-sm text-muted-foreground">
+                                                  {order.items.length} item{order.items.length > 1 ? 's' : ''}
+                                             </div>
                                         </div>
                                    </div>
-                                   <div className="text-right">
-                                        <div className="text-2xl font-bold text-primary">
-                                             ${order.orderPrices.total.toFixed(2)}
-                                        </div>
-                                        <div className="text-sm text-muted-foreground">
-                                             {order.items.length} item{order.items.length > 1 ? 's' : ''}
-                                        </div>
+
+                                   <div className="space-y-2 mb-4">
+                                        {order.items.map((item) => (
+                                             <div key={item.id} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                                                  <div className="relative w-16 h-16">
+                                                       <OptimizedImage
+                                                            src={item.product.images[0].url}
+                                                            blurDataURL={item.product.images[0].blurDataUrl ?? undefined}
+                                                            alt={item.product.title}
+                                                            fill
+                                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                            className="w-16 h-16 rounded-lg object-cover"
+                                                       />
+                                                  </div>
+
+                                                  <div className="flex-1">
+                                                       <p className="font-medium">{item.product.title}</p>
+                                                       <p className="text-sm text-muted-foreground">
+                                                            Qty: {item.quantity} × ${item.price.toFixed(2)}
+                                                       </p>
+                                                  </div>
+                                                  <div className="font-semibold">
+                                                       ${(item.quantity * item.price).toFixed(2)}
+                                                  </div>
+                                             </div>
+                                        ))}
                                    </div>
-                              </div>
 
-                              <div className="space-y-2 mb-4">
-                                   {order.items.map((item) => (
-                                        <div key={item.id} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                                             <div className="relative w-16 h-16">
-                                                  <OptimizedImage
-                                                       src={item.product.images[0].url}
-                                                       blurDataURL={item.product.images[0].blurDataUrl ?? undefined}
-                                                       alt={item.product.title}
-                                                       fill
-                                                       className="w-16 h-16 rounded-lg object-cover"
-                                                  />
-                                             </div>
+                                   <div className="flex gap-2 pt-4 border-t">
+                                        {nextStatus && (
+                                             <Button
+                                                  onClick={() => onStatusUpdate(order.id, nextStatus)}
+                                                  className="flex-1"
+                                                  disabled={isUpdating}
+                                             >
+                                                  {isUpdating ? (
+                                                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                  ) : (
+                                                       <CheckCircle className="w-4 h-4 mr-2" />
+                                                  )}
+                                                  {nextStatus === OrderStatus.ACCEPTED_BY_MERCHANT && 'Accept Order'}
+                                                  {nextStatus === OrderStatus.IN_PREPARATION && 'Start Preparation'}
+                                                  {nextStatus === OrderStatus.READY_TO_DELIVER && 'Mark Ready for Delivery'}
+                                             </Button>
+                                        )}
 
-                                             <div className="flex-1">
-                                                  <p className="font-medium">{item.product.title}</p>
-                                                  <p className="text-sm text-muted-foreground">
-                                                       Qty: {item.quantity} × ${item.price.toFixed(2)}
-                                                  </p>
-                                             </div>
-                                             <div className="font-semibold">
-                                                  ${(item.quantity * item.price).toFixed(2)}
-                                             </div>
-                                        </div>
-                                   ))}
-                              </div>
+                                        {canReject(order.status) && (
+                                             <Button
+                                                  variant="destructive"
+                                                  onClick={() => onStatusUpdate(order.id, OrderStatus.REJECTED_BY_MERCHANT)}
+                                                  disabled={isUpdating}
+                                             >
+                                                  {isUpdating ? (
+                                                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                  ) : (
+                                                       <XCircle className="w-4 h-4 mr-2" />
+                                                  )}
+                                                  {t("Reject")}
+                                             </Button>
+                                        )}
 
-                              <div className="flex gap-2 pt-4 border-t">
-                                   {nextStatus && (
-                                        <Button
-                                             onClick={() => onStatusUpdate(order.id, nextStatus)}
-                                             className="flex-1"
-                                             disabled={isUpdating}
-                                        >
-                                             <CheckCircle className="w-4 h-4 mr-2" />
-                                             {nextStatus === OrderStatus.ACCEPTED_BY_MERCHANT && 'Accept Order'}
-                                             {nextStatus === OrderStatus.IN_PREPARATION && 'Start Preparation'}
-                                             {nextStatus === OrderStatus.READY_TO_DELIVER && 'Mark Ready for Pickup'}
-                                        </Button>
-                                   )}
-
-                                   {canReject(order.status) && (
-                                        <Button
-                                             variant="destructive"
-                                             onClick={() => onStatusUpdate(order.id, OrderStatus.REJECTED_BY_MERCHANT)}
-                                             disabled={isUpdating}
-                                        >
-                                             <XCircle className="w-4 h-4 mr-2" />
-                                             {t("Reject")}
-                                        </Button>
-                                   )}
-
-                                   {canCancel(order.status) && (
-                                        <Button
-                                             variant="outline"
-                                             onClick={() => onStatusUpdate(order.id, OrderStatus.CANCELED_BY_MERCHANT)}
-                                             disabled={isUpdating}
-                                        >
-                                             <XCircle className="w-4 h-4 mr-2" />
-                                             {t("Cancel")}
-                                        </Button>
-                                   )}
-                              </div>
-                         </Card>
+                                        {canCancel(order.status) && (
+                                             <Button
+                                                  variant="outline"
+                                                  onClick={() => onStatusUpdate(order.id, OrderStatus.CANCELED_BY_MERCHANT)}
+                                                  disabled={isUpdating}
+                                             >
+                                                  {isUpdating ? (
+                                                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                  ) : (
+                                                       <XCircle className="w-4 h-4 mr-2" />
+                                                  )}
+                                                  {t("Cancel")}
+                                             </Button>
+                                        )}
+                                   </div>
+                              </Card>
+                         </div>
                     );
                })}
           </>

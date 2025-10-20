@@ -50,7 +50,7 @@ export default function OrdersTabs({
                } else {
                     toast({
                          title: t('Error'),
-                         description: res.message || t('Failed to update order'),
+                         description: res.error || t('Failed to update order'),
                          variant: 'destructive'
                     });
                }

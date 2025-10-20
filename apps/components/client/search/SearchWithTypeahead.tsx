@@ -1,5 +1,6 @@
 "use client";
 
+import { OptimizedImage } from '@/components/ClsOptimization';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -7,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
 import { Clock, Filter, Search, TrendingUp, X } from 'lucide-react';
-import Image from 'next/image';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Types
@@ -299,7 +299,7 @@ export function SearchWithTypeahead({
                                         className="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                                         onClick={() => handleResultSelect(result)}
                                     >
-                                        <Image
+                                        <OptimizedImage
                                             src={result.image}
                                             alt={result.title}
                                             width={40}

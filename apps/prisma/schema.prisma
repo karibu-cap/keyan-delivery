@@ -306,8 +306,8 @@ model User {
 // --------------------------------push notification model------------------------------------
 model PushSubscription {
     id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId     String   @db.ObjectId
+    user       User     @relation(fields: [authId], references: [authId], onDelete: Cascade)
+    authId     String   @unique
     endpoint   String
     p256dh     String
     auth       String
@@ -315,8 +315,7 @@ model PushSubscription {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
 
-    @@unique([userId, endpoint])
-    @@index([userId])
+    @@unique([authId, endpoint])
 }
 
 // --------------------------------Merchant model------------------------------------

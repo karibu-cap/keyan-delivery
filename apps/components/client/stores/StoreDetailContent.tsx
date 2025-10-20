@@ -15,7 +15,7 @@ import {
   ShoppingCart,
   Star,
 } from "lucide-react";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ClsOptimization";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -92,7 +92,7 @@ export function StoreDetailContent({
                 <ArrowLeft className="w-5 h-5" />
               </Button>
               <div className="flex items-center space-x-2 flex-1 min-w-0">
-                <Image
+                <OptimizedImage
                   src={initialStore.logoUrl || "/placeholder.svg"}
                   alt={initialStore.businessName}
                   width={32}
@@ -161,7 +161,7 @@ export function StoreDetailContent({
                 <ArrowLeft className="w-5 h-5" />
               </Button>
               <div className="flex items-center space-x-3">
-                <Image
+                <OptimizedImage
                   src={initialStore.logoUrl || "/placeholder.svg"}
                   alt={initialStore.businessName}
                   width={48}

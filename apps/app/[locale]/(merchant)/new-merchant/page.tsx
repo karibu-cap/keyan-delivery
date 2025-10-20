@@ -1,5 +1,6 @@
 "use client";
 
+import { OptimizedImage } from "@/components/ClsOptimization";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,6 @@ import { createNewMerchant } from "@/lib/actions/merchants";
 import { ROUTES } from "@/lib/router";
 import { Media, MerchantType } from "@prisma/client";
 import { ArrowLeft, Camera, Loader2, MapPin, Upload } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -293,7 +293,7 @@ export default function NewMerchantPage() {
                                 <div className="mt-2">
                                     {logoPreview ? (
                                         <div className="relative w-full h-48 rounded-lg border-2 border-dashed border-border overflow-hidden">
-                                            <Image
+                                            <OptimizedImage
                                                 src={logoPreview}
                                                 alt="Logo preview"
                                                 fill
@@ -339,7 +339,7 @@ export default function NewMerchantPage() {
                                 <div className="mt-2">
                                     {bannerPreview ? (
                                         <div className="relative w-full h-48 rounded-lg border-2 border-dashed border-border overflow-hidden">
-                                            <Image
+                                            <OptimizedImage
                                                 src={bannerPreview}
                                                 alt="Banner preview"
                                                 fill

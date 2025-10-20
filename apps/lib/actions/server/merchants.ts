@@ -706,20 +706,22 @@ export async function updateOrderStatus(
             data: updateData,
             include: {
                 merchant: true,
+                user: true,
             },
         });
 
-        revalidatePath('/orders');
-        revalidatePath(`/orders/${orderId}`);
+
 
         try {
+            console.info('✅Start notification-');
             // 1. Notify client for status change
-            await notifyClientOrderStatusChange(
-                updatedOrder.userId,
+            await notifyClientOrderStatusChange({
+                authId: updatedOrder.user.authId,
                 orderId,
                 newStatus,
-                locale
-            );
+                locale,
+                merchantName: updatedOrder.merchant.businessName
+            });
             console.info('✅ Status change notification sent to client');
 
             // 2. If order is ready to deliver, notify available drivers
@@ -737,6 +739,8 @@ export async function updateOrderStatus(
             console.error({ message: 'Error sending notifications:', error });
         }
 
+        revalidatePath('/orders');
+        revalidatePath(`/orders/${orderId}`);
         return NextResponse.json({
             success: true,
             order: updatedOrder,

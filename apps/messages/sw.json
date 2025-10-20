@@ -536,5 +536,8 @@
   "order-ready-to-pick-up": "Agizo Tayari kuchukua!",
   "an-order-is-ready-at-merchantname": "Agizo liko tayari kwa $ {MerchantName",
   "accepter": "Accepter",
-  "view-details": "Tazama maelezo"
+  "view-details": "Tazama maelezo",
+  "your-order-has-been-accepted-by-merchantname": "Agizo lako limekubaliwa na {MerchantName}",
+  "your-order-has-been-rejected-by-merchantname": "Agizo lako limekataliwa na {MerchantName}",
+  "your-order-has-been-canceled-by-merchantname": "Agizo lako limefutwa na {MerchantName}"
 }
