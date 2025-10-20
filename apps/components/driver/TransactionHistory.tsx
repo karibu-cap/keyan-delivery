@@ -1,41 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpCircle, ArrowDownCircle, Clock } from "lucide-react";
 import { TransactionStatus } from "@prisma/client";
-
-interface Transaction {
-   id: string;
-   amount: number;
-   type: "credit" | "debit";
-   description: string;
-   status: TransactionStatus;
-   createdAt: Date;
-}
+import { useTransactions } from "@/hooks/use-transactions";
+import { useEffect } from "react";
 
 export function TransactionHistory() {
-   const [transactions, setTransactions] = useState<Transaction[]>([]);
-   const [loading, setLoading] = useState(true);
+   const { transactions, loading, error, refreshTransactions } = useTransactions();
 
    useEffect(() => {
-      fetchTransactions();
-   }, []);
-
-   const fetchTransactions = async () => {
-      try {
-         const response = await fetch("/api/v1/driver/transactions");
-         const data = await response.json();
-         if (data.success) {
-            setTransactions(data.data);
-         }
-      } catch (error) {
-         console.error({ message: "Error fetching transactions:", error });
-      } finally {
-         setLoading(false);
-      }
-   };
+      refreshTransactions();
+   }, [refreshTransactions]);
 
    const getStatusColor = (status: TransactionStatus) => {
       switch (status) {
@@ -56,6 +33,17 @@ export function TransactionHistory() {
             <CardContent className="p-8 text-center">
                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
                <p className="text-muted-foreground">Loading transactions...</p>
+            </CardContent>
+         </Card>
+      );
+   }
+
+   if (error) {
+      return (
+         <Card className="rounded-2xl shadow-card">
+            <CardContent className="p-8 text-center">
+               <p className="text-destructive mb-2">Error loading transactions</p>
+               <p className="text-muted-foreground">{error}</p>
             </CardContent>
          </Card>
       );

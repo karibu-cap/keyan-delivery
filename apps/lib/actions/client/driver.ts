@@ -29,6 +29,27 @@ export async function updateDriverDocuments(data: { cniBase64?: string | null, l
    return await response.json();
 }
 
+export async function updateOrderStatusByDriver(data: {
+   action: string;
+   pickupCode?: string | undefined;
+   deliveryCode?: string | undefined;
+   orderId: string;
+}) {
+   const response = await fetch(`/api/v1/orders/${data.orderId}/status`, {
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+         action: data.action,
+         pickupCode: data.pickupCode,
+         deliveryCode: data.deliveryCode,
+      }),
+   });
+
+   return await response.json();
+}
+
 export async function fetchDriverAvailableOrders() {
    const response = await fetch("/api/v1/driver/orders/available");
    return await response.json();
@@ -36,6 +57,11 @@ export async function fetchDriverAvailableOrders() {
 
 export async function fetchDriverInProgressOrders() {
    const response = await fetch("/api/v1/driver/orders/active");
+   return await response.json();
+};
+
+export async function fetchDriverCompletedOrders() {
+   const response = await fetch("/api/v1/driver/orders/complete");
    return await response.json();
 };
 

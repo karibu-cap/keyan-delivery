@@ -3,14 +3,12 @@
 import { Card } from "@/components/ui/card";
 import { DriverStatus } from "@prisma/client";
 import { XCircle } from "lucide-react";
+import { useAuthStore } from "@/hooks/auth-store";
 
-interface DriverRejectedStatusProps {
-    driverStatus: DriverStatus;
-}
-
-export function DriverRejectedStatus({ driverStatus }: DriverRejectedStatusProps) {
-    const isBanned = driverStatus === DriverStatus.BANNED;
-
+export function DriverRejectedStatus() {
+    
+    const { user } = useAuthStore();
+    const isBanned = user?.driverStatus === DriverStatus.BANNED;
     return (
         <div className="min-h-screen bg-background">
             <div className="container mx-auto px-4 py-8">
@@ -21,8 +19,8 @@ export function DriverRejectedStatus({ driverStatus }: DriverRejectedStatusProps
                     </h1>
                     <p className="text-lg text-muted-foreground mb-6">
                         {isBanned
-                            ? "Votre compte chauffeur a été banni."
-                            : "Votre demande pour devenir chauffeur a été rejetée."}
+                            ? "Votre compte livreur a été banni."
+                            : "Votre demande pour devenir livreur a été rejetée."}
                     </p>
                     <div className="bg-red-50 p-6 rounded-lg">
                         <p className="text-sm text-muted-foreground">

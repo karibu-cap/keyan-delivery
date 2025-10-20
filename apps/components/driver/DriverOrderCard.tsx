@@ -12,8 +12,13 @@ import {
     DollarSign,
     Navigation,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useOrderStatus } from "@/hooks/use-order-status";
+import { Truck } from "lucide-react";
 import { OrderStatus } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/router";
+import { useDriverOrders } from "@/hooks/use-driver-orders";
+import { useWallet } from "@/hooks/use-wallet";
 
 interface Order {
     id: string;
@@ -52,197 +57,198 @@ interface Order {
 interface DriverOrderCardProps {
     order: Order;
     isActive?: boolean;
-    processingOrderId: string | null;
-    onAcceptOrder: (orderId: string) => Promise<void>;
-    onCompleteDelivery: (orderId: string) => Promise<void>;
-    onViewOnMap: (order: Order) => void;
 }
 
 export function DriverOrderCard({
     order,
     isActive = false,
-    processingOrderId,
-    onAcceptOrder,
-    onCompleteDelivery,
-    onViewOnMap,
 }: DriverOrderCardProps) {
-    const { toast } = useToast();
     const [pickupCode, setPickupCode] = useState("");
     const [deliveryCode, setDeliveryCode] = useState("");
+    const router = useRouter();
+
+    const { refreshOrders } = useDriverOrders();
+    const { refreshWallet } = useWallet();
+
+    const { loading, acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
+        redirectOnComplete: false,
+        onOrderUpdate: () => {
+            // Refresh orders after successful action
+            setPickupCode("");
+            setDeliveryCode("");
+            refreshOrders();
+            refreshWallet();
+        }
+    });
+
+    const handleViewOrderDetails = (orderId: string) => {
+        router.push(ROUTES.driverOrderDetails(orderId));
+    };
 
     const handleAcceptOrder = async () => {
-        if (!pickupCode.trim()) {
-            toast({
-                title: "Pickup code required",
-                description: "Please enter the pickup code from the merchant",
-                variant: "destructive",
-            });
-            return;
-        }
-
-        await onAcceptOrder(order.id);
+        if (!pickupCode.trim()) return;
+        await acceptOrder(order.id, pickupCode);
         setPickupCode("");
     };
 
     const handleCompleteDelivery = async () => {
-        if (!deliveryCode.trim()) {
-            toast({
-                title: "Delivery code required",
-                description: "Please enter the delivery code from the customer",
-                variant: "destructive",
-            });
-            return;
-        }
-
-        await onCompleteDelivery(order.id);
+        if (!deliveryCode.trim()) return;
+        await completeDelivery(order.id, deliveryCode);
         setDeliveryCode("");
     };
+return (
+    <Card className="p-6 rounded-2xl shadow-card hover:shadow-lg transition-all flex flex-col h-full">
+        <div className="flex flex-col flex-1">
+            {/* Header */}
+            <div className="flex items-start justify-between mb-4">
+                <div>
+                    <h3 className="font-semibold text-lg">{order.merchant.businessName}</h3>
+                    <p className="text-sm text-muted-foreground">
+                        Order #{order.id.slice(-6)}
+                    </p>
+                </div>
+                <Badge variant={isActive ? "default" : "secondary"}>
+                    {isActive ? "Active" : "Available"}
+                </Badge>
+            </div>
 
-    return (
-        <Card className="p-6 rounded-2xl shadow-card hover:shadow-lg transition-all">
-            <div className="space-y-4">
-                {/* Header */}
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h3 className="font-semibold text-lg">{order.merchant.businessName}</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Order #{order.id.slice(-6)}
-                        </p>
-                    </div>
-                    <Badge variant={isActive ? "default" : "secondary"}>
-                        {isActive ? "Active" : "Available"}
-                    </Badge>
+            {/* Order Details - Simplified */}
+            <div className="space-y-3 mb-4">
+                {/* Items Count */}
+                <div className="flex items-center gap-2">
+                    <Package className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">{order.items.length} items</span>
                 </div>
 
-                {/* Order Details */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Driver Earnings - Highlighted */}
+                <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg border border-success/20">
                     <div className="flex items-center gap-2">
-                        <Package className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm">{order.items.length} items</span>
+                        <DollarSign className="w-5 h-5 text-success" />
+                        <span className="text-sm font-medium text-success">Your Earnings</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-success" />
-                        <span className="text-sm font-semibold text-success">
-                            ${order.orderPrices.deliveryFee.toFixed(2)}
-                        </span>
-                    </div>
+                    <span className="text-lg font-bold text-success">
+                        ${order.orderPrices.deliveryFee.toFixed(2)}
+                    </span>
                 </div>
+            </div>
 
-                {/* Delivery Address */}
-                <div className="flex items-start gap-2 p-3 bg-accent/50 rounded-lg">
-                    <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">Delivery to:</p>
-                        <p className="text-sm text-muted-foreground truncate">
-                            {order.deliveryInfo.address}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            Contact: {order.deliveryInfo.deliveryContact}
-                        </p>
-                    </div>
+            {/* Delivery Address */}
+            <div className="flex items-start gap-2 p-3 bg-accent/50 rounded-lg mb-4">
+                <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">Delivery to:</p>
+                    <p className="text-sm text-muted-foreground truncate">
+                        {order.deliveryInfo.address}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        Contact: {order.deliveryInfo.deliveryContact}
+                    </p>
                 </div>
+            </div>
 
-                {/* Items List */}
-                <div className="border-t pt-3">
-                    <p className="text-sm font-medium mb-2">Items:</p>
-                    <div className="space-y-1">
-                        {order.items.map((item) => (
-                            <div key={item.id} className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">
-                                    {item.quantity}x {item.product.title}
-                                </span>
-                                <span>${(item.price * item.quantity).toFixed(2)}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-between font-semibold text-sm mt-2 pt-2 border-t">
-                        <span>Total:</span>
-                        <span>${order.orderPrices.total.toFixed(2)}</span>
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                {!isActive ? (
-                    <div className="space-y-3">
-                        <div>
-                            <Label htmlFor={`pickup-${order.id}`} className="text-sm mb-1">
-                                Enter Pickup Code
-                            </Label>
-                            <Input
-                                id={`pickup-${order.id}`}
-                                placeholder="Enter code from merchant"
-                                value={pickupCode}
-                                onChange={(e) => setPickupCode(e.target.value.toUpperCase())}
-                                className="uppercase"
-                            />
-                        </div>
-                        <Button
-                            className="w-full rounded-2xl"
-                            onClick={handleAcceptOrder}
-                            disabled={processingOrderId === order.id}
-                        >
-                            {processingOrderId === order.id ? "Processing..." : "Accept Order"}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="w-full rounded-2xl"
-                            onClick={() => onViewOnMap(order)}
-                        >
-                            <Navigation className="w-4 h-4 mr-2" />
-                            View on Map
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="space-y-3">
-                        {order.status === "ACCEPTED_BY_DRIVER" && (
-                            <>
-                                <p className="text-sm text-center text-muted-foreground">
-                                    Pickup Code: <span className="font-mono font-bold text-foreground">{order.pickupCode}</span>
-                                </p>
-                                <Button
-                                    variant="outline"
-                                    className="w-full rounded-2xl"
-                                    onClick={() => onViewOnMap(order)}
-                                >
-                                    <Navigation className="w-4 h-4 mr-2" />
-                                    Navigate
-                                </Button>
-                            </>
+            {/* Content area that grows to fill space */}
+            <div className="flex-1 flex flex-col justify-end">
+                {/* Status-specific content (when applicable) */}
+                {isActive && (
+                    <div className="space-y-3 mb-4">
+                        {order.status === OrderStatus.ACCEPTED_BY_DRIVER && (
+                            <p className="text-sm text-center text-muted-foreground">
+                                Pickup Code: <span className="font-mono font-bold text-foreground">{order.pickupCode}</span>
+                            </p>
                         )}
-                        {order.status === "ON_THE_WAY" && (
-                            <>
-                                <div>
-                                    <Label htmlFor={`delivery-${order.id}`} className="text-sm mb-1">
-                                        Enter Delivery Code
-                                    </Label>
-                                    <Input
-                                        id={`delivery-${order.id}`}
-                                        placeholder="Enter code from customer"
-                                        value={deliveryCode}
-                                        onChange={(e) => setDeliveryCode(e.target.value.toUpperCase())}
-                                        className="uppercase"
-                                    />
-                                </div>
-                                <Button
-                                    className="w-full rounded-2xl"
-                                    onClick={handleCompleteDelivery}
-                                    disabled={processingOrderId === order.id}
-                                >
-                                    {processingOrderId === order.id ? "Processing..." : "Complete Delivery"}
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="w-full rounded-2xl"
-                                    onClick={() => onViewOnMap(order)}
-                                >
-                                    <Navigation className="w-4 h-4 mr-2" />
-                                    Navigate
-                                </Button>
-                            </>
+
+                        {order.status === OrderStatus.ON_THE_WAY && (
+                            <div>
+                                <Label htmlFor={`delivery-${order.id}`} className="text-sm mb-1">
+                                    Enter Delivery Code
+                                </Label>
+                                <Input
+                                    id={`delivery-${order.id}`}
+                                    placeholder="Enter code from customer"
+                                    value={deliveryCode}
+                                    onChange={(e) => setDeliveryCode(e.target.value.toUpperCase())}
+                                    className="uppercase"
+                                />
+                            </div>
+                        )}
+
+                        {order.status === OrderStatus.COMPLETED && (
+                            <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                                <p className="text-sm font-medium text-green-800">Order Completed</p>
+                                <p className="text-xs text-green-600 mt-1">Delivery successful!</p>
+                            </div>
                         )}
                     </div>
                 )}
+
+                {/* Input field for available orders */}
+                {!isActive && (
+                    <div className="mb-4">
+                        <Label htmlFor={`pickup-${order.id}`} className="text-sm mb-1">
+                            Enter Pickup Code
+                        </Label>
+                        <Input
+                            id={`pickup-${order.id}`}
+                            placeholder="Enter code from merchant"
+                            value={pickupCode}
+                            onChange={(e) => setPickupCode(e.target.value.toUpperCase())}
+                            className="uppercase"
+                        />
+                    </div>
+                )}
             </div>
-        </Card>
-    );
+
+            {/* Action Buttons - Always at bottom with consistent spacing */}
+            <div className="space-y-3 mt-auto">
+                {/* Primary action buttons */}
+                {!isActive ? (
+                    <Button
+                        className="w-full rounded-2xl"
+                        onClick={handleAcceptOrder}
+                        disabled={loading || !pickupCode.trim()}
+                    >
+                        {loading ? "Processing..." : "Accept Order"}
+                    </Button>
+                ) : (
+                    <>
+                        {order.status === OrderStatus.ACCEPTED_BY_DRIVER && (
+                            <Button
+                                className="w-full rounded-2xl"
+                                onClick={() => startDelivery(order.id)}
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                ) : (
+                                    <Truck className="w-4 h-4 mr-2" />
+                                )}
+                                Start Delivery
+                            </Button>
+                        )}
+
+                        {order.status === OrderStatus.ON_THE_WAY && (
+                            <Button
+                                className="w-full rounded-2xl"
+                                onClick={handleCompleteDelivery}
+                                disabled={loading || !deliveryCode.trim()}
+                            >
+                                {loading ? "Processing..." : "Complete Delivery"}
+                            </Button>
+                        )}
+                    </>
+                )}
+
+                {/* View Details button - Always present for all orders */}
+                <Button
+                    variant="outline"
+                    className="w-full rounded-2xl"
+                    onClick={() => handleViewOrderDetails(order.id)}
+                >
+                    <Navigation className="w-4 h-4 mr-2" />
+                    View Details
+                </Button>
+            </div>
+        </div>
+    </Card>
+);
 }

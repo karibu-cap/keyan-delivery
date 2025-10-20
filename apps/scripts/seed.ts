@@ -685,8 +685,8 @@ async function seedDatabase() {
                 'COMPLETED'
               ]),
               userId: randomUser.id,
-              pickupCode: Math.random() > 0.5 ? faker.string.alphanumeric(6).toUpperCase() : null,
-              deliveryCode: Math.random() > 0.5 ? faker.string.alphanumeric(6).toUpperCase() : null,
+              pickupCode: faker.string.alphanumeric(6).toUpperCase(),
+              deliveryCode: faker.string.alphanumeric(6).toUpperCase(),
               items: {
                 create: orderItems.map(item => ({
                   productId: item.productId,

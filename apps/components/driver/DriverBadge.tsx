@@ -9,6 +9,7 @@ import { DriverStatus, UserRole } from "@prisma/client";
 import { useAuthStore } from "@/hooks/auth-store";
 import { fetchDriverAvailableOrders } from "@/lib/actions/client/driver";
 import { ROUTES } from "@/lib/router";
+import { useDriverOrders } from "@/hooks/use-driver-orders";
 
 interface DriverBadgeProps {
    onClick?: () => void;
@@ -17,27 +18,7 @@ interface DriverBadgeProps {
 export function DriverBadge({ onClick }: DriverBadgeProps) {
    const router = useRouter();
    const { user } = useAuthStore();
-   const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
-   const [loading, setLoading] = useState(true);
-
-   useEffect(() => {
-      if (user?.driverStatus === DriverStatus.APPROVED) {
-         fetchPendingOrders();
-      } else {
-         setLoading(false);
-      }
-   }, [user?.driverStatus]);
-
-   const fetchPendingOrders = async () => {
-      try {
-         const { data } = await fetchDriverAvailableOrders();
-         setPendingOrdersCount(data?.length || 0);
-      } catch (error) {
-         console.error({ message: "Error fetching pending orders:", error });
-      } finally {
-         setLoading(false);
-      }
-   };
+   const { availableOrders } = useDriverOrders();
 
    if (!user?.roles?.includes(UserRole.driver)) {
       return null;
@@ -114,9 +95,9 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
             )} */}
          </div>
 
-         {config.showCount && !loading && pendingOrdersCount > 0 && (
+         {config.showCount && availableOrders.length > 0 && (
             <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-xs rounded-full">
-               {pendingOrdersCount > 9 ? "9+" : pendingOrdersCount}
+               {availableOrders.length > 9 ? "9+" : availableOrders.length}
             </Badge>
          )}
       </Button>
