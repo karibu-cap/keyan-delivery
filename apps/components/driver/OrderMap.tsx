@@ -5,6 +5,7 @@ import { X, Navigation, MapPin, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { calculateDistanceInKm } from "@/lib/utils/client/distances";
 
 interface OrderMapProps {
    order: {
@@ -64,28 +65,8 @@ export default function OrderMap({ order, onClose }: OrderMapProps) {
       window.open(url, "_blank");
    };
 
-   const calculateDistance = (
-      lat1: number,
-      lon1: number,
-      lat2: number,
-      lon2: number
-   ): string => {
-      const R = 6371; // Earth's radius in km
-      const dLat = ((lat2 - lat1) * Math.PI) / 180;
-      const dLon = ((lon2 - lon1) * Math.PI) / 180;
-      const a =
-         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-         Math.cos((lat1 * Math.PI) / 180) *
-         Math.cos((lat2 * Math.PI) / 180) *
-         Math.sin(dLon / 2) *
-         Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const distance = R * c;
-      return distance.toFixed(2);
-   };
-
    const merchantDistance = currentLocation
-      ? calculateDistance(
+      ? calculateDistanceInKm(
          currentLocation.latitude,
          currentLocation.longitude,
          order.merchant.address.latitude,
@@ -94,7 +75,7 @@ export default function OrderMap({ order, onClose }: OrderMapProps) {
       : "N/A";
 
    const deliveryDistance = currentLocation
-      ? calculateDistance(
+      ? calculateDistanceInKm(
          currentLocation.latitude,
          currentLocation.longitude,
          order.deliveryInfo.delivery_latitude,
