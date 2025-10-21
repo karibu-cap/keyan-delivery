@@ -208,7 +208,7 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                                                 <Badge variant="outline">{merchant.merchantType}</Badge>
                                                             </div>
                                                             <div className="text-xs text-muted-foreground">
-                                                                {t("Manager since")}: {new Date(merchant.createdAt).toLocaleDateString()}
+                                                                {t("Manager since")}: {t.formatDateTime(merchant.createdAt)}
                                                             </div>
                                                         </div>
                                                     </div>

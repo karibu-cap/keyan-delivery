@@ -5,14 +5,14 @@ import { OrderTimeline } from "@/components/client/orders/OrderTimeline"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { getT } from "@/i18n/server-translations"
+import { getServerT } from "@/i18n/server-translations"
 import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
 import { formatOrderId } from "@/lib/orders-utils"
 import { prisma } from "@/lib/prisma"
 import { ROUTES } from "@/lib/router"
 import { OrderStatus } from "@prisma/client"
 import { PhoneIcon } from "lucide-react"
-import { getLocale } from "next-intl/server"
+
 import { OptimizedImage } from "@/components/ClsOptimization"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -75,8 +75,8 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
      const params = await props.params;
 
      const token = await getUserTokens()
-     const locale = await getLocale()
-     const t = await getT(locale)
+
+     const t = await getServerT()
 
      if (!token?.decodedToken?.uid) {
           return (
@@ -130,13 +130,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                    {t("Order")} {formatOrderId(order.id)}
                               </h1>
                               <p className="mt-1 text-muted-foreground">
-                                   {t("Placed on")} {new Date(order.createdAt).toLocaleDateString(locale, {
-                                        year: "numeric",
-                                        month: "long",
-                                        day: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                   })}
+                                   {t("Placed on")} {t.formatDateTime(order.createdAt)}
                               </p>
                          </div>
                          <OrderStatusBadge status={order.status} />
@@ -149,7 +143,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                    <CardTitle>{t("Order Status")}</CardTitle>
                               </CardHeader>
                               <CardContent>
-                                   <OrderTimeline status={order.status} locale={locale} />
+                                   <OrderTimeline status={order.status} />
                               </CardContent>
                          </Card>
                     )}
@@ -194,12 +188,12 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                                                       {t("Quantity")}: {item.quantity}
                                                                  </p>
                                                                  <p className="text-sm text-muted-foreground">
-                                                                      ${item.price.toFixed(2)} {t("each")}
+                                                                      {t.formatAmount(item.price)} {t("each")}
                                                                  </p>
                                                             </div>
                                                             <div className="text-right">
                                                                  <p className="font-semibold text-primary">
-                                                                      ${(item.price * item.quantity).toFixed(2)}
+                                                                      {t.formatAmount((item.price * item.quantity))}
                                                                  </p>
                                                             </div>
                                                        </div>
@@ -212,23 +206,23 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                         <div className="mt-6 space-y-2">
                                              <div className="flex justify-between text-sm">
                                                   <span className="text-muted-foreground">{t("Subtotal")}</span>
-                                                  <span>${order.orderPrices.subtotal.toFixed(2)}</span>
+                                                  <span>{t.formatAmount(order.orderPrices.subtotal)}</span>
                                              </div>
                                              <div className="flex justify-between text-sm">
                                                   <span className="text-muted-foreground">{t("Delivery Fee")}</span>
-                                                  <span>${order.orderPrices.deliveryFee.toFixed(2)}</span>
+                                                  <span>{t.formatAmount(order.orderPrices.deliveryFee)}</span>
                                              </div>
                                              {order.orderPrices.discount > 0 && (
                                                   <div className="flex justify-between text-sm text-primary/60">
                                                        <span>{t("Discount")}</span>
-                                                       <span>-${order.orderPrices.discount.toFixed(2)}</span>
+                                                       <span>{t.formatAmount(order.orderPrices.discount)}</span>
                                                   </div>
                                              )}
                                              <Separator />
                                              <div className="flex justify-between text-lg font-bold">
                                                   <span>{t("Total")}</span>
                                                   <span className="text-primary">
-                                                       ${order.orderPrices.total.toFixed(2)}
+                                                       {t.formatAmount(order.orderPrices.total)}
                                                   </span>
                                              </div>
                                         </div>
@@ -269,7 +263,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                                   <div>
                                                        <p className="font-medium">{t("Address")}</p>
                                                        <p className="text-sm text-muted-foreground">
-                                                            {order.deliveryInfo.address}
+                                                            {order.deliveryInfo.additionalNotes}
                                                        </p>
                                                   </div>
                                              </div>
@@ -305,7 +299,7 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                                        <div>
                                                             <p className="font-medium">{t("Estimated Delivery")}</p>
                                                             <p className="text-sm text-muted-foreground">
-                                                                 {new Date(order.deliveryInfo.estimatedDelivery).toLocaleString(locale)}
+                                                                 {t.formatDateTime(order.deliveryInfo.estimatedDelivery)}
                                                             </p>
                                                        </div>
                                                   </div>

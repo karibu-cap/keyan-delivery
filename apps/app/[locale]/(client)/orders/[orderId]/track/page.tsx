@@ -10,7 +10,6 @@ import { useT } from "@/hooks/use-inline-translation"
 import { ROUTES } from "@/lib/router"
 import { OrderStatus } from "@prisma/client"
 import { PhoneIcon } from "lucide-react"
-import { useLocale } from "next-intl"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
@@ -57,7 +56,6 @@ interface OrderTrackingData {
 export default function OrderTrackPage() {
      const params = useParams()
      const orderId = params.orderId as string
-     const locale = useLocale()
 
      const [orderData, setOrderData] = useState<OrderTrackingData | null>(null)
      const [loading, setLoading] = useState(true)
@@ -184,7 +182,7 @@ export default function OrderTrackPage() {
                                         <CardTitle>{t("Order Progress")}</CardTitle>
                                    </CardHeader>
                                    <CardContent>
-                                        <OrderTimeline status={orderData.status} locale={locale} />
+                                        <OrderTimeline status={orderData.status} />
                                    </CardContent>
                               </Card>
                          </div>

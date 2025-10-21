@@ -14,7 +14,6 @@ import {
     type IOrderAnalytics,
 } from '@/types/merchant_analytics';
 import { MerchantType, OrderStatus, ProductStatus, UserRole } from '@prisma/client';
-import { getLocale } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
@@ -646,7 +645,6 @@ export async function updateOrderStatus(
 ): Promise<NextResponse> {
     try {
         const token = await getUserTokens();
-        const locale = await getLocale();
 
         if (!token?.decodedToken?.uid) {
             return NextResponse.json(
@@ -744,7 +742,6 @@ export async function updateOrderStatus(
                 authId: updatedOrder.user.authId,
                 orderId,
                 newStatus,
-                locale,
                 merchantName: updatedOrder.merchant.businessName
             });
             console.info('✅ Status change notification sent to client');
@@ -756,7 +753,6 @@ export async function updateOrderStatus(
                     orderId,
                     updatedOrder.merchant.businessName,
                     pickupAddress,
-                    locale
                 );
                 console.info('✅ Order ready notification sent to drivers');
             }

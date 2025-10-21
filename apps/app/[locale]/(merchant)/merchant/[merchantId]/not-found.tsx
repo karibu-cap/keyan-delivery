@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getT } from "@/i18n/server-translations";
+import { getServerT } from "@/i18n/server-translations";
 import { Store } from "lucide-react";
-import { getLocale } from "next-intl/server";
+
 import Link from "next/link";
 
 /**
@@ -10,8 +10,8 @@ import Link from "next/link";
  * Shown when merchant ID is invalid
  */
 export default async function MerchantNotFound() {
-  const local = await getLocale()
-  const t = await getT(local)
+
+  const t = await getServerT()
   return (
     <div className="min-h-screen bg-background">
 

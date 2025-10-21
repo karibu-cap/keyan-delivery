@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, BarChart3 } from "lucide-react";
-import { getT } from "@/i18n/server-translations";
-import { getLocale } from "next-intl/server";
+import { getServerT } from "@/i18n/server-translations";
+
 import { SlideUp } from "./animations/TransitionWrappers";
 
 interface DashboardHeaderProps {
@@ -10,8 +10,8 @@ interface DashboardHeaderProps {
 }
 
 export default async function DashboardHeader({ merchantId }: DashboardHeaderProps) {
-     const local = await getLocale()
-     const t = await getT(local)
+
+     const t = await getServerT()
 
      return (
           <section className="gradient-hero py-8 sm:py-12 lg:py-16 px-4">

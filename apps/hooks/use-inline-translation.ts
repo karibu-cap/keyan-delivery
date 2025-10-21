@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import { ReactNode } from 'react';
 
 /**
@@ -65,6 +65,7 @@ function trackMissing(text: string, key: string) {
 
 export function useInlineTranslation(namespace?: string) {
     const tBase = useTranslations(namespace);
+    const format = useFormatter();
 
     /**
      * Main translation function with auto-key generation
@@ -91,6 +92,7 @@ export function useInlineTranslation(namespace?: string) {
             return text;
         }
     }
+
 
     /**
      * Rich text translation with React components
@@ -133,10 +135,33 @@ export function useInlineTranslation(namespace?: string) {
         }
     }
 
+    function formatAmount(
+        number: number,
+    ): string {
+        return format.number(number, { style: 'currency', currency: 'KES' });
+    }
+
+    function formatDateTime(
+        date: Date,
+        displayTime = false
+    ): string {
+        return format.dateTime(date, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: displayTime ? 'numeric' : undefined,
+            minute: displayTime ? 'numeric' : undefined,
+        });
+    }
+
+
+
     // Return t function with additional methods
     return Object.assign(t, {
         rich,
         plural,
+        formatAmount,
+        formatDateTime,
     });
 }
 

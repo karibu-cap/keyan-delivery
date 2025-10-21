@@ -1,33 +1,14 @@
+'use client'
+import { useT } from "@/hooks/use-inline-translation"
 import { OrderStatus } from "@prisma/client"
 import { CheckIcon, PackageIcon, TruckIcon, HomeIcon } from "lucide-react"
 
 interface OrderTimelineProps {
      status: OrderStatus
-     locale?: string
 }
 
-// Server-side translation function
-function getTranslatedText(key: string, locale: string = 'en'): string {
-     const translations: Record<string, Record<string, string>> = {
-          en: {
-               "Order Confirmed": "Order Confirmed",
-               "Preparing Order": "Preparing Order",
-               "Out for Delivery": "Out for Delivery",
-               "Delivered": "Delivered",
-          },
-          sw: {
-               "Order Confirmed": "Agizo Limeidhinishwa",
-               "Preparing Order": "Inatayarisha Agizo",
-               "Out for Delivery": "Imetoka kwa Ajili ya Uwasilishaji",
-               "Delivered": "Imewasilishwa",
-          }
-     };
-
-     return translations[locale]?.[key] || key;
-}
-
-export function OrderTimeline({ status, locale = 'en' }: OrderTimelineProps) {
-     const t = (key: string) => getTranslatedText(key, locale);
+export function OrderTimeline({ status }: OrderTimelineProps) {
+     const t = useT()
 
      const steps = [
           { id: OrderStatus.ACCEPTED_BY_MERCHANT, label: t("Order Confirmed"), icon: CheckIcon },

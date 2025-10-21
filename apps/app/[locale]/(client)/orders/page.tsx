@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getT } from "@/i18n/server-translations"
+import { getServerT } from "@/i18n/server-translations"
 import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
 import { formatOrderId } from "@/lib/orders-utils"
 import { prisma } from "@/lib/prisma"
 import { OrderItem, OrderStatus, Prisma } from "@prisma/client"
-import { getLocale } from "next-intl/server"
+
 import { OptimizedImage } from "@/components/ClsOptimization"
 import Link from "next/link"
 import { Suspense } from "react"
@@ -88,8 +88,8 @@ function categorizeOrders(orders: IOrder[]) {
 
 // Order card component
 async function OrderCard({ order }: { order: IOrder }) {
-     const locale = await getLocale()
-     const t = await getT(locale)
+
+     const t = await getServerT()
      const itemCount = order.items.reduce((sum: number, item: OrderItem) => sum + item.quantity, 0)
 
      return (
@@ -105,11 +105,11 @@ async function OrderCard({ order }: { order: IOrder }) {
                                    <div className="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
                                         <div className="flex items-center gap-1">
                                              <ClockIcon className="h-4 w-4" />
-                                             <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                                             <span>{t.formatDateTime(order.createdAt)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
                                              <MapPinIcon className="h-4 w-4" />
-                                             <span className="line-clamp-1">{order.deliveryInfo.address}</span>
+                                             <span className="line-clamp-1">{order.deliveryInfo.additionalNotes}</span>
                                         </div>
                                    </div>
                               </div>
@@ -145,7 +145,7 @@ async function OrderCard({ order }: { order: IOrder }) {
                                         {itemCount} {itemCount === 1 ? t("item") : t("items")}
                                    </p>
                                    <p className="text-lg font-bold text-primary">
-                                        ${order.orderPrices.total.toFixed(2)}
+                                        {t.formatAmount(order.orderPrices.total)}
                                    </p>
                               </div>
                          </div>
@@ -176,8 +176,8 @@ function OrdersSkeleton() {
 
 // Orders list component
 async function OrdersList({ userId }: { userId: string }) {
-     const locale = await getLocale()
-     const t = await getT(locale)
+
+     const t = await getServerT()
      const orders = await getOrders(userId)
      const { active, history } = categorizeOrders(orders)
 
@@ -257,8 +257,8 @@ async function OrdersList({ userId }: { userId: string }) {
 // Main page component
 export default async function OrdersPage() {
      const token = await getUserTokens()
-     const locale = await getLocale()
-     const t = await getT(locale)
+
+     const t = await getServerT()
 
      if (!token?.decodedToken?.uid) {
           return (

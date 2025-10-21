@@ -265,11 +265,11 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
                                 <div className="space-y-2">
                                     <div className="flex items-baseline space-x-3">
                                         <span className="text-3xl font-bold text-gray-900">
-                                            ${product.price.toFixed(2)}
+                                            {t.formatAmount(product.price)}
                                         </span>
                                         {product.compareAtPrice && product.compareAtPrice > product.price && (
                                             <span className="text-xl text-gray-500 line-through">
-                                                ${product.compareAtPrice.toFixed(2)}
+                                                {t.formatAmount(product.compareAtPrice)}
                                             </span>
                                         )}
                                     </div>

@@ -1,15 +1,15 @@
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getT } from "@/i18n/server-translations";
-import { getLocale } from "next-intl/server";
+import { getServerT } from "@/i18n/server-translations";
+
 
 /**
  * Loading UI for products page
  * Displayed instantly while fetching data
  */
 export default async function ProductsLoading() {
-     const local = await getLocale()
-     const t = await getT(local)
+
+     const t = await getServerT()
 
      return (
           <div className="min-h-screen bg-background">

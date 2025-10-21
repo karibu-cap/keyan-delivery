@@ -70,7 +70,7 @@ export default function TopProducts({ products }: TopProductsProps) {
 
                             <div className="text-right">
                                 <p className="font-semibold text-gray-900">
-                                    ${product.revenue.toFixed(2)}
+                                    {t.formatAmount(product.revenue)}
                                 </p>
                                 <p className="text-sm text-gray-500">
                                     {product.quantity} {t('sold')}

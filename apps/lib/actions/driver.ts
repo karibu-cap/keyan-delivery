@@ -3,13 +3,11 @@
 import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
-import { getLocale } from "next-intl/server";
 import { notifyClientOrderStatusChange } from "../notifications/push-service";
 
 export async function acceptOrder(orderId: string, pickupCode: string) {
    try {
       const token = await getUserTokens();
-      const locale = await getLocale();
 
       if (!token?.decodedToken?.uid) {
          return { success: false, error: "Unauthorized" };
@@ -64,7 +62,6 @@ export async function acceptOrder(orderId: string, pickupCode: string) {
             authId: updatedOrder.user.authId,
             orderId: updatedOrder.id,
             newStatus: OrderStatus.ACCEPTED_BY_DRIVER,
-            locale,
          });
       } catch (error) {
          console.error({ message: '❌ Failed to notify client:', error });

@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Navigation, MapPin, Store, Package, DollarSign, Clock, Phone, CheckCircle, Truck, AlertCircle } from "lucide-react";
+import { ArrowLeft, Navigation, MapPin, Store, Package, WalletIcon, Clock, Phone, CheckCircle, Truck, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Navbar from "@/components/Navbar";
 import { OrderStatus } from "@prisma/client";
 import { useOrderStatus } from "@/hooks/use-order-status";
 import { calculateDistanceInKm } from "@/lib/utils/client/distances";
 import { useDriverOrders } from "@/hooks/use-driver-orders";
 import { useWallet } from "@/hooks/use-wallet";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface Order {
     id: string;
@@ -56,6 +56,7 @@ interface DriverOrderPageProps {
 
 export function DriverOrderPage({ order, onBack }: DriverOrderPageProps) {
     const router = useRouter();
+    const t = useT();
     const [currentLocation, setCurrentLocation] = useState<{
         latitude: number;
         longitude: number;
@@ -101,7 +102,7 @@ export function DriverOrderPage({ order, onBack }: DriverOrderPageProps) {
         window.open(url, "_blank");
     };
 
-    
+
 
     const merchantDistance = currentLocation
         ? calculateDistanceInKm(
@@ -259,7 +260,7 @@ export function DriverOrderPage({ order, onBack }: DriverOrderPageProps) {
                                     <span className="text-sm">{order.items.length} items</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <DollarSign className="w-4 h-4 text-success" />
+                                    <WalletIcon className="w-4 h-4 text-success" />
                                     <span className="text-sm font-semibold text-success">
                                         ${order.orderPrices.deliveryFee.toFixed(2)} earnings
                                     </span>
@@ -281,7 +282,7 @@ export function DriverOrderPage({ order, onBack }: DriverOrderPageProps) {
                                             <div className="text-right ml-2">
                                                 <p className="font-semibold text-sm">${(item.price * item.quantity).toFixed(2)}</p>
                                                 <p className="text-xs text-muted-foreground">
-                                                    ${item.price.toFixed(2)} each
+                                                    {t.formatAmount(item.price)} each
                                                 </p>
                                             </div>
                                         </div>

@@ -3,9 +3,8 @@
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { Calendar, TrendingUp, Users } from 'lucide-react';
-import { getT } from '@/i18n/server-translations';
+import { getServerT } from '@/i18n/server-translations';
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
-import { getLocale } from 'next-intl/server';
 import type { MerchantAnalytics } from '@/types/merchant_analytics';
 import OrdersOverview from '@/components/merchants/insights/OrdersOverview';
 import RevenueChart from '@/components/merchants/insights/RevenueChart';
@@ -35,8 +34,8 @@ async function getMerchantByUser(authId: string) {
 }
 
 export default async function MerchantInsightsPage() {
-    const local = await getLocale()
-    const t = await getT(local);
+
+    const t = await getServerT();
     const tokens = await getUserTokens();
     const authId = tokens?.decodedToken.uid;
     if (!authId) {

@@ -21,7 +21,6 @@ import { OrderStatus } from "@prisma/client";
 import { OptimizedImage } from "@/components/ClsOptimization";
 import { useState } from "react";
 import { getStatusIcon, getNextStatus, getOrderStatusColor, canReject, canCancel } from "@/lib/orders-utils";
-import { format } from "date-fns";
 import EmptyState from "./animations/EmptyStates";
 import { HoverScale, Pulse, StaggerChildren, StaggerItem } from "./animations/TransitionWrappers";
 
@@ -203,7 +202,7 @@ export default function ActiveOrders({
                                                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 sm:gap-1">
                                                             <div className="text-right">
                                                                  <div className="text-xl sm:text-2xl font-bold">
-                                                                      ${order.orderPrices.total.toFixed(2)}
+                                                                      {t.formatAmount(order.orderPrices.total)}
                                                                  </div>
                                                                  <div className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                                                                       {order.items.length} {t("item")}
@@ -255,7 +254,7 @@ export default function ActiveOrders({
                                                             <Clock className="w-4 h-4 flex-shrink-0" />
                                                             <span className="truncate">
                                                                  {t("Order Time")}:{" "}
-                                                                 {format(new Date(order.createdAt), "dd MMMM yyyy hh:mm")}
+                                                                 {t.formatDateTime(new Date(order.createdAt), true)}
                                                             </span>
                                                        </div>
                                                        {order.pickupCode && (

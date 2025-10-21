@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useT } from '@/hooks/use-inline-translation';
 import { cn } from '@/lib/utils';
 import { Clock, Filter, Search, TrendingUp, X } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -107,6 +108,7 @@ export function SearchWithTypeahead({
     categories = [],
     merchants = []
 }: SearchWithTypeaheadProps) {
+    const t = useT();
     const [query, setQuery] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [selectedFilters, setSelectedFilters] = useState<SearchFilters>({});
@@ -315,7 +317,7 @@ export function SearchWithTypeahead({
                                             </p>
                                             <div className="flex items-center mt-1">
                                                 <span className="text-sm font-semibold text-primary">
-                                                    ${result.price.toFixed(2)}
+                                                    {t.formatAmount(result.price)}
                                                 </span>
                                                 {result.rating && (
                                                     <div className="flex items-center ml-2">

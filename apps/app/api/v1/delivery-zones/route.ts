@@ -1,18 +1,27 @@
-import { getActiveDeliveryZones } from '@/lib/actions/server/delivery-zones';
-import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-/**
- * GET /api/v1/delivery-zones
- * Get all active delivery zones
- */
-export async function GET(_: NextRequest) {
+export async function GET() {
     try {
-        const zones = await getActiveDeliveryZones();
+        const zones = await prisma.deliveryZone.findMany({
+            where: { status: 'ACTIVE' },
+            select: {
+                id: true,
+                name: true,
+                code: true,
+                deliveryFee: true,
+                estimatedDeliveryMinutes: true,
+                geometry: true,
+                color: true,
+                description: true,
+                landmarks: true,
+            },
+            orderBy: { priority: 'desc' }
+        });
 
         return NextResponse.json({
             success: true,
-            data: zones,
-            message: 'Delivery zones retrieved successfully'
+            data: zones
         });
     } catch (error) {
         console.error('Error fetching delivery zones:', error);

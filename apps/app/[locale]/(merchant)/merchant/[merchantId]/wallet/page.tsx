@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
-import { getLocale } from 'next-intl/server';
-import { getT } from '@/i18n/server-translations';
+import { getServerT } from '@/i18n/server-translations';
 import { prisma } from '@/lib/prisma';
 import {
     getMerchantWallet,
@@ -46,8 +45,8 @@ async function verifyMerchantAccess(merchantId: string, authId: string) {
 export default async function MerchantWalletPage({ params, searchParams }: PageProps) {
     const { merchantId } = await params;
     const search = await searchParams;
-    const locale = await getLocale();
-    const t = await getT(locale);
+
+    const t = await getServerT();
 
     const tokens = await getUserTokens();
     const authId = tokens?.decodedToken.uid;

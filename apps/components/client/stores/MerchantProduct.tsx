@@ -151,33 +151,33 @@ export function MerchantProduct({ product, index }: MerchantProductProps) {
                 </Link>
 
                 {/* Size/Weight */}
-                <p className="text-xs text-gray-600 mb-2">
+                <p className="text-xs text-gray-600">
                     {product.weight && product.weightUnit
-                        ? `${product.weight} ${product.weightUnit}`
+                        ? `${product.weight.toFixed(2)} ${product.weightUnit}`
                         : product.unit || "1 ct"}
                 </p>
 
                 {/* Price */}
-                <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-lg font-bold text-gray-900">
-                        ${product.price.toFixed(2)}
+                <div className="flex items-center space-x-2">
+                    <span className="text-sm font-bold text-gray-900">
+                        {t.formatAmount(product.price)}
                     </span>
                     {product.compareAtPrice && product.compareAtPrice > product.price && (
-                        <>
-                            <span className="text-sm text-gray-500 line-through">
-                                ${product.compareAtPrice.toFixed(2)}
-                            </span>
-                            <Badge variant="destructive" className="text-xs px-1 py-0">
-                                {Math.round(
-                                    ((product.compareAtPrice - product.price) /
-                                        product.compareAtPrice) *
-                                    100
-                                )}
-                                % {t("off")}
-                            </Badge>
-                        </>
+                        <span className="text-sm text-gray-500 line-through">
+                            {t.formatAmount(product.compareAtPrice)}
+                        </span>
                     )}
                 </div>
+                {product.compareAtPrice && product.compareAtPrice > product.price && (
+                    <Badge variant="sale" className="text-xs px-1 py-0 mb-2">
+                        {Math.round(
+                            ((product.compareAtPrice - product.price) /
+                                product.compareAtPrice) *
+                            100
+                        )}
+                        % {t("off")}
+                    </Badge>
+                )}
 
                 {/* Stock */}
                 <div className="flex items-center space-x-1 mb-2">

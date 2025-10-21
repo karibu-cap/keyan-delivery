@@ -170,7 +170,6 @@ export async function generateMerchantMetadata(
 ): Promise<Metadata> {
     // Add validation for merchantId
     if (!merchantId) {
-        console.error('generateMerchantMetadata: merchantId is required');
         return {
             ...baseMetadata,
             title: 'Store - Yetu Delivery',

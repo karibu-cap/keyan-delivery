@@ -1,4 +1,4 @@
-import { getT } from '@/i18n/server-translations';
+import { getServerT } from '@/i18n/server-translations';
 import { prisma } from '@/lib/prisma';
 import webPush from 'web-push';
 
@@ -135,14 +135,13 @@ export async function notifyMerchantNewOrder(
     merchantId: string,
     orderId: string,
     orderTotal: number,
-    locale: string
 ) {
     // Find the managers of the merchant
     const merchantManagers = await prisma.userMerchantManager.findMany({
         where: { merchantId },
         include: { user: true },
     });
-    const t = await getT(locale);
+    const t = await getServerT();
 
     const authIds = merchantManagers.map((m) => m.user.authId);
 
@@ -176,10 +175,9 @@ export async function notifyClientOrderStatusChange(props: {
     authId: string,
     orderId: string,
     newStatus: string,
-    locale: string,
     merchantName?: string
 }) {
-    const t = await getT(props.locale);
+    const t = await getServerT();
     const statusMessages: Record<string, string> = {
         ACCEPTED_BY_MERCHANT: '✅ ' + t('Your order has been accepted by {merchantName}', { merchantName: props.merchantName }),
         REJECTED_BY_MERCHANT: '❌ ' + t('Your order has been rejected by {merchantName}', { merchantName: props.merchantName }),
@@ -223,9 +221,8 @@ export async function notifyDriverOrderReady(
     orderId: string,
     merchantName: string,
     pickupAddress: string,
-    locale: string
 ) {
-    const t = await getT(locale);
+    const t = await getServerT();
 
     // Find all available drivers (APPROVED and without current order)
     const availableDrivers = await prisma.user.findMany({

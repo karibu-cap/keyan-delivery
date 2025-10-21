@@ -69,6 +69,101 @@ Category,Key,English,Swahili,File,Line
 "an-order-is-ready-at-merchantname","An order is ready at ${merchantName","","lib/notifications/push-service.ts",247
 "accepter","Accepter","","lib/notifications/push-service.ts",261
 "view-details","View details","","lib/notifications/push-service.ts",265
+"configuration-error","Configuration error","","components/notifications/NotificationPermission.tsx",60
+"vapid-key-not-configured-please-contact-support","VAPID key not configured. Please contact support.","","components/notifications/NotificationPermission.tsx",61
+"notification-activation-failed","Notification activation failed","","components/notifications/NotificationPermission.tsx",73
+"you-can-activate-them-in-your-browser-settings","You can activate them in your browser settings.","","components/notifications/NotificationPermission.tsx",74
+"subscribed-to-push-notifications","✅ Subscribed to push notifications","","components/notifications/NotificationPermission.tsx",130
+"you-will-now-receive-push-notifications-for-new-orders","You will now receive push notifications for new orders.","","components/notifications/NotificationPermission.tsx",131
+"error-activating-notifications","Error activating notifications","","components/notifications/NotificationPermission.tsx",141
+"unknown-error-occurred","Unknown error occurred","","components/notifications/NotificationPermission.tsx",142
+"unsubscribed-from-push-notifications","✅ Unsubscribed from push notifications","","components/notifications/NotificationPermission.tsx",173
+"you-will-no-longer-receive-push-notifications-for-new-orders","You will no longer receive push notifications for new orders.","","components/notifications/NotificationPermission.tsx",174
+"error-unsubscribing","Error unsubscribing","","components/notifications/NotificationPermission.tsx",182
+"please-try-again-later","Please try again later","","components/notifications/NotificationPermission.tsx",183
+"activate-notifications-to-be-informed-in-real-time-of-your-orders","Activate notifications to be informed in real-time of your orders!","","components/notifications/NotificationPermission.tsx",204
+"loading","Loading...","","components/notifications/NotificationPermission.tsx",213
+"activate","Activate","","components/notifications/NotificationPermission.tsx",213
+"notifications-push","Notifications Push","","components/notifications/NotificationPermission.tsx",238
+"you-receive-notifications","You receive notifications","","components/notifications/NotificationPermission.tsx",241
+"activate-to-receive-alerts","Activate to receive alerts","","components/notifications/NotificationPermission.tsx",242
+"disable","Disable","","components/notifications/NotificationPermission.tsx",257
+"blocked","Blocked","","components/notifications/NotificationPermission.tsx",259
+"enable","Enable","","components/notifications/NotificationPermission.tsx",260
+"notifications-are-blocked-please-enable-them-in-your-browser-settings","Notifications are blocked. Please enable them in your browser settings.","","components/notifications/NotificationPermission.tsx",267
+"my-stores","My Stores","","components/merchants/StoresList.tsx",42
+"store","store","","components/merchants/StoresList.tsx",45
+"no-stores-found","No stores found","","components/merchants/StoresList.tsx",52
+"current","Current","","components/merchants/StoresList.tsx",93
+"verified","Verified","","components/merchants/StoresList.tsx",108
+"pending","Pending","","components/merchants/StoresList.tsx",113
+"switch-to-this-store","Switch to this store","","components/merchants/StoresList.tsx",127
+"total-products","Total Products","","components/merchants/StatsCards.tsx",18
+"active","active","","components/merchants/StatsCards.tsx",20
+"monthly-revenue","Monthly Revenue","","components/merchants/StatsCards.tsx",26
+"completed","completed","","components/merchants/StatsCards.tsx",28
+"orders-today","Orders Today","","components/merchants/StatsCards.tsx",34
+"store-rating","Store Rating","","components/merchants/StatsCards.tsx",42
+"recent-products","Recent Products","","components/merchants/RecentProducts.tsx",31
+"your-latest-products","Your latest products","","components/merchants/RecentProducts.tsx",33
+"view-all-products","View All Products","","components/merchants/RecentProducts.tsx",39
+"stock","Stock","","components/merchants/RecentProducts.tsx",77
+"success","Success","","components/merchants/OrdersTabs.tsx",44
+"error","Error","","components/merchants/OrdersTabs.tsx",54
+"failed-to-update-order","Failed to update order","","components/merchants/OrdersTabs.tsx",55
+"failed-to-update-order-status","Failed to update order status","","components/merchants/OrdersTabs.tsx",62
+"active-orders","Active Orders","","components/merchants/OrdersTabs.tsx",76
+"history","History","","components/merchants/OrdersTabs.tsx",91
+"merchant-profile","Merchant Profile","","components/merchants/MerchantProfile.tsx",54
+"manage-your-store-information-and-switch-between-stores","Manage your store information and switch between stores","","components/merchants/MerchantProfile.tsx",57
+"pending-verification","Pending Verification","","components/merchants/MerchantProfile.tsx",114
+"store-information","Store Information","","components/merchants/MerchantProfile.tsx",130
+"phone","Phone","","components/merchants/MerchantProfile.tsx",137
+"not-provided","Not provided","","components/merchants/MerchantProfile.tsx",139
+"location","Location","","components/merchants/MerchantProfile.tsx",147
+"member-since","Member Since","","components/merchants/MerchantProfile.tsx",157
+"rating","Rating","","components/merchants/MerchantProfile.tsx",172
+"delivery-time","Delivery Time","","components/merchants/MerchantProfile.tsx",185
+"exit-merchant-mode","Exit Merchant Mode","","components/merchants/MerchantProfile.tsx",198
+"return-to-customer-mode-to-browse-and-order-from-stores","Return to customer mode to browse and order from stores","","components/merchants/MerchantProfile.tsx",202
+"switch-to-customer-mode","Switch to Customer Mode","","components/merchants/MerchantProfile.tsx",210
+"notifications","Notifications","","components/merchants/MerchantNotifications.tsx",109
+"no-notifications","No notifications","","components/merchants/MerchantNotifications.tsx",122
+"view-all-notifications","View all notifications","","components/merchants/MerchantNotifications.tsx",168
+"total","Total","","components/merchants/HistoryOrders.tsx",115
+"cancelled","Cancelled","","components/merchants/HistoryOrders.tsx",138
+"rejected","Rejected","","components/merchants/HistoryOrders.tsx",138
+"revenue","Revenue","","components/merchants/HistoryOrders.tsx",151
+"search-by-order-id-or-customer","Search by order ID or customer...","","components/merchants/HistoryOrders.tsx",168
+"all-status","All Status","","components/merchants/HistoryOrders.tsx",182
+"sort-by-date","Sort by Date","","components/merchants/HistoryOrders.tsx",195
+"sort-by-amount","Sort by Amount","","components/merchants/HistoryOrders.tsx",196
+"showing","Showing","","components/merchants/HistoryOrders.tsx",205
+"of","of","","components/merchants/HistoryOrders.tsx",205
+"clear-filters","Clear filters","","components/merchants/HistoryOrders.tsx",217
+"no-orders-match-your-filters","No orders match your filters","","components/merchants/HistoryOrders.tsx",230
+"order","Order","","components/merchants/HistoryOrders.tsx",256
+"item","item","","components/merchants/HistoryOrders.tsx",300
+"you-are-about-to-switch-back-to-customer-mode-you-will-be-able-to","You are about to switch back to customer mode. You will be able to:","","components/merchants/ExitMerchantModeDialog.tsx",46
+"browse-and-shop-from-stores","Browse and shop from stores","","components/merchants/ExitMerchantModeDialog.tsx",49
+"view-your-orders-and-cart","View your orders and cart","","components/merchants/ExitMerchantModeDialog.tsx",50
+"manage-your-customer-profile","Manage your customer profile","","components/merchants/ExitMerchantModeDialog.tsx",51
+"you-can-return-to-merchant-mode-anytime-from-your-profile","You can return to merchant mode anytime from your profile.","","components/merchants/ExitMerchantModeDialog.tsx",54
+"cancel","Cancel","","components/merchants/ExitMerchantModeDialog.tsx",60
+"welcome-back-to-your-dashboard","Welcome Back To Your Dashboard","","components/merchants/DashboardHeader.tsx",24
+"manage-your-store-products-and-orders","Manage your store, products, and orders","","components/merchants/DashboardHeader.tsx",27
+"insights","Insights","","components/merchants/DashboardHeader.tsx",39
+"add-product","Add Product","","components/merchants/DashboardHeader.tsx",45
+"no-active-orders","No active orders","","components/merchants/ActiveOrders.tsx",94
+"new-orders-will-appear-here","New orders will appear here","","components/merchants/ActiveOrders.tsx",95
+"action-required","Action Required","","components/merchants/ActiveOrders.tsx",145
+"call","Call","","components/merchants/ActiveOrders.tsx",171
+"order-time","Order Time","","components/merchants/ActiveOrders.tsx",257
+"pickup-code","Pickup Code","","components/merchants/ActiveOrders.tsx",265
+"accept-order","Accept Order","","components/merchants/ActiveOrders.tsx",288
+"start-preparation","Start Preparation","","components/merchants/ActiveOrders.tsx",290
+"mark-ready","Mark Ready","","components/merchants/ActiveOrders.tsx",292
+"reject","Reject","","components/merchants/ActiveOrders.tsx",313
 "lightning-fast","Lightning Fast","","components/home/HomePageClient.tsx",19
 "30-minute-average-delivery-time-for-all-your-essentials","30-minute average delivery time for all your essentials","","components/home/HomePageClient.tsx",20
 "safe-secure","Safe & Secure","","components/home/HomePageClient.tsx",24
@@ -108,156 +203,6 @@ Category,Key,English,Swahili,File,Line
 "terms-of-service","Terms of Service","","components/home/HomePageClient.tsx",233
 "privacy-policy","Privacy Policy","","components/home/HomePageClient.tsx",234
 "all-rights-reserved","All rights reserved.","","components/home/HomePageClient.tsx",240
-"configuration-error","Configuration error","","components/notifications/NotificationPermission.tsx",60
-"vapid-key-not-configured-please-contact-support","VAPID key not configured. Please contact support.","","components/notifications/NotificationPermission.tsx",61
-"notification-activation-failed","Notification activation failed","","components/notifications/NotificationPermission.tsx",73
-"you-can-activate-them-in-your-browser-settings","You can activate them in your browser settings.","","components/notifications/NotificationPermission.tsx",74
-"subscribed-to-push-notifications","✅ Subscribed to push notifications","","components/notifications/NotificationPermission.tsx",130
-"you-will-now-receive-push-notifications-for-new-orders","You will now receive push notifications for new orders.","","components/notifications/NotificationPermission.tsx",131
-"error-activating-notifications","Error activating notifications","","components/notifications/NotificationPermission.tsx",141
-"unknown-error-occurred","Unknown error occurred","","components/notifications/NotificationPermission.tsx",142
-"unsubscribed-from-push-notifications","✅ Unsubscribed from push notifications","","components/notifications/NotificationPermission.tsx",173
-"you-will-no-longer-receive-push-notifications-for-new-orders","You will no longer receive push notifications for new orders.","","components/notifications/NotificationPermission.tsx",174
-"error-unsubscribing","Error unsubscribing","","components/notifications/NotificationPermission.tsx",182
-"please-try-again-later","Please try again later","","components/notifications/NotificationPermission.tsx",183
-"activate-notifications-to-be-informed-in-real-time-of-your-orders","Activate notifications to be informed in real-time of your orders!","","components/notifications/NotificationPermission.tsx",204
-"loading","Loading...","","components/notifications/NotificationPermission.tsx",213
-"activate","Activate","","components/notifications/NotificationPermission.tsx",213
-"notifications-push","Notifications Push","","components/notifications/NotificationPermission.tsx",238
-"you-receive-notifications","You receive notifications","","components/notifications/NotificationPermission.tsx",241
-"activate-to-receive-alerts","Activate to receive alerts","","components/notifications/NotificationPermission.tsx",242
-"disable","Disable","","components/notifications/NotificationPermission.tsx",257
-"blocked","Blocked","","components/notifications/NotificationPermission.tsx",259
-"enable","Enable","","components/notifications/NotificationPermission.tsx",260
-"notifications-are-blocked-please-enable-them-in-your-browser-settings","Notifications are blocked. Please enable them in your browser settings.","","components/notifications/NotificationPermission.tsx",267
-"account-created","Account created","","components/auth/SignUpForm.tsx",70
-"welcome-your-account-has-been-created-successfully","Welcome! Your account has been created successfully.","","components/auth/SignUpForm.tsx",71
-"an-unexpected-error-occurred","An unexpected error occurred","","components/auth/SignUpForm.tsx",78
-"welcome","Welcome!","","components/auth/SignUpForm.tsx",86
-"you-have-successfully-signed-in-with-google","You have successfully signed in with Google","","components/auth/SignUpForm.tsx",87
-"create-account","Create Account","","components/auth/SignUpForm.tsx",93
-"join-our-platform-today","Join our platform today","","components/auth/SignUpForm.tsx",93
-"want-to-become-a-merchant-or-driver-you-can-apply-after-creating-your-account","Want to become a merchant or driver? You can apply after creating your account.","","components/auth/SignUpForm.tsx",125
-"full-name","Full Name *","","components/auth/SignUpForm.tsx",134
-"enter-your-name","Enter your name","","components/auth/SignUpForm.tsx",136
-"phone-number","Phone Number","","components/auth/SignUpForm.tsx",148
-"email","Email *","","components/auth/SignUpForm.tsx",162
-"password","Password *","","components/auth/SignUpForm.tsx",176
-"enter-your-password","Enter your password","","components/auth/SignUpForm.tsx",179
-"sign-up","Sign Up","","components/auth/SignUpForm.tsx",192
-"continue-with-google","Continue with Google","","components/auth/SignUpForm.tsx",203
-"already-have-an-account-sign-in","Already have an account? Sign In","","components/auth/SignUpForm.tsx",212
-"welcome-back","Welcome back!","","components/auth/SignInForm.tsx",52
-"you-have-successfully-logged-in","You have successfully logged in","","components/auth/SignInForm.tsx",53
-"sign-in-to-your-account","Sign in to your account","","components/auth/SignInForm.tsx",79
-"enter-your-email","Enter your email","","components/auth/SignInForm.tsx",89
-"don-t-have-an-account-sign-up","Don't have an account? Sign Up","","components/auth/SignInForm.tsx",132
-"password-reset-email-sent","Password reset email sent","","components/auth/ResetPasswordForm.tsx",48
-"check-your-email-for-further-instructions","Check your email for further instructions","","components/auth/ResetPasswordForm.tsx",49
-"reset-password","Reset Password","","components/auth/ResetPasswordForm.tsx",61
-"enter-your-email-to-reset-your-password","Enter your email to reset your password","","components/auth/ResetPasswordForm.tsx",61
-"send-reset-link","Send Reset Link","","components/auth/ResetPasswordForm.tsx",80
-"back-to-login","Back to login","","components/auth/ResetPasswordForm.tsx",88
-"error","Error","","components/auth/NewPasswordForm.tsx",31
-"passwords-do-not-match","Passwords do not match","","components/auth/NewPasswordForm.tsx",32
-"success","Success","","components/auth/NewPasswordForm.tsx",43
-"password-successfully-reset-you-can-now-login","Password successfully reset! You can now login.","","components/auth/NewPasswordForm.tsx",44
-"failed-to-reset-password-the-link-may-be-expired-or-invalid","Failed to reset password. The link may be expired or invalid.","","components/auth/NewPasswordForm.tsx",51
-"set-new-password","Set New Password","","components/auth/NewPasswordForm.tsx",59
-"new-password","New Password","","components/auth/NewPasswordForm.tsx",64
-"confirm-new-password","Confirm New Password","","components/auth/NewPasswordForm.tsx",72
-"resetting","Resetting...","","components/auth/NewPasswordForm.tsx",80
-"my-stores","My Stores","","components/merchants/StoresList.tsx",38
-"store","store","","components/merchants/StoresList.tsx",41
-"no-stores-found","No stores found","","components/merchants/StoresList.tsx",48
-"current","Current","","components/merchants/StoresList.tsx",89
-"verified","Verified","","components/merchants/StoresList.tsx",104
-"pending","Pending","","components/merchants/StoresList.tsx",109
-"switch-to-this-store","Switch to this store","","components/merchants/StoresList.tsx",121
-"total-products","Total Products","","components/merchants/StatsCards.tsx",18
-"active","active","","components/merchants/StatsCards.tsx",20
-"monthly-revenue","Monthly Revenue","","components/merchants/StatsCards.tsx",26
-"completed","completed","","components/merchants/StatsCards.tsx",28
-"orders-today","Orders Today","","components/merchants/StatsCards.tsx",34
-"store-rating","Store Rating","","components/merchants/StatsCards.tsx",42
-"recent-products","Recent Products","","components/merchants/RecentProducts.tsx",31
-"your-latest-products","Your latest products","","components/merchants/RecentProducts.tsx",33
-"view-all-products","View All Products","","components/merchants/RecentProducts.tsx",39
-"stock","Stock","","components/merchants/RecentProducts.tsx",77
-"failed-to-update-order","Failed to update order","","components/merchants/OrdersTabs.tsx",55
-"failed-to-update-order-status","Failed to update order status","","components/merchants/OrdersTabs.tsx",62
-"active-orders","Active Orders","","components/merchants/OrdersTabs.tsx",76
-"history","History","","components/merchants/OrdersTabs.tsx",91
-"merchant-profile","Merchant Profile","","components/merchants/MerchantProfile.tsx",48
-"manage-your-store-information-and-switch-between-stores","Manage your store information and switch between stores","","components/merchants/MerchantProfile.tsx",50
-"pending-verification","Pending Verification","","components/merchants/MerchantProfile.tsx",101
-"store-information","Store Information","","components/merchants/MerchantProfile.tsx",117
-"phone","Phone","","components/merchants/MerchantProfile.tsx",124
-"not-provided","Not provided","","components/merchants/MerchantProfile.tsx",126
-"location","Location","","components/merchants/MerchantProfile.tsx",134
-"member-since","Member Since","","components/merchants/MerchantProfile.tsx",144
-"rating","Rating","","components/merchants/MerchantProfile.tsx",159
-"delivery-time","Delivery Time","","components/merchants/MerchantProfile.tsx",172
-"exit-merchant-mode","Exit Merchant Mode","","components/merchants/MerchantProfile.tsx",185
-"return-to-customer-mode-to-browse-and-order-from-stores","Return to customer mode to browse and order from stores","","components/merchants/MerchantProfile.tsx",189
-"switch-to-customer-mode","Switch to Customer Mode","","components/merchants/MerchantProfile.tsx",197
-"notifications","Notifications","","components/merchants/MerchantNotifications.tsx",109
-"no-notifications","No notifications","","components/merchants/MerchantNotifications.tsx",122
-"view-all-notifications","View all notifications","","components/merchants/MerchantNotifications.tsx",168
-"total","Total","","components/merchants/HistoryOrders.tsx",115
-"cancelled","Cancelled","","components/merchants/HistoryOrders.tsx",138
-"rejected","Rejected","","components/merchants/HistoryOrders.tsx",138
-"revenue","Revenue","","components/merchants/HistoryOrders.tsx",151
-"search-by-order-id-or-customer","Search by order ID or customer...","","components/merchants/HistoryOrders.tsx",168
-"all-status","All Status","","components/merchants/HistoryOrders.tsx",182
-"sort-by-date","Sort by Date","","components/merchants/HistoryOrders.tsx",195
-"sort-by-amount","Sort by Amount","","components/merchants/HistoryOrders.tsx",196
-"showing","Showing","","components/merchants/HistoryOrders.tsx",205
-"of","of","","components/merchants/HistoryOrders.tsx",205
-"clear-filters","Clear filters","","components/merchants/HistoryOrders.tsx",217
-"no-orders-match-your-filters","No orders match your filters","","components/merchants/HistoryOrders.tsx",230
-"order","Order","","components/merchants/HistoryOrders.tsx",256
-"item","item","","components/merchants/HistoryOrders.tsx",300
-"you-are-about-to-switch-back-to-customer-mode-you-will-be-able-to","You are about to switch back to customer mode. You will be able to:","","components/merchants/ExitMerchantModeDialog.tsx",46
-"browse-and-shop-from-stores","Browse and shop from stores","","components/merchants/ExitMerchantModeDialog.tsx",49
-"view-your-orders-and-cart","View your orders and cart","","components/merchants/ExitMerchantModeDialog.tsx",50
-"manage-your-customer-profile","Manage your customer profile","","components/merchants/ExitMerchantModeDialog.tsx",51
-"you-can-return-to-merchant-mode-anytime-from-your-profile","You can return to merchant mode anytime from your profile.","","components/merchants/ExitMerchantModeDialog.tsx",54
-"cancel","Cancel","","components/merchants/ExitMerchantModeDialog.tsx",60
-"welcome-back-to-your-dashboard","Welcome Back To Your Dashboard","","components/merchants/DashboardHeader.tsx",24
-"manage-your-store-products-and-orders","Manage your store, products, and orders","","components/merchants/DashboardHeader.tsx",27
-"insights","Insights","","components/merchants/DashboardHeader.tsx",39
-"add-product","Add Product","","components/merchants/DashboardHeader.tsx",45
-"no-active-orders","No active orders","","components/merchants/ActiveOrders.tsx",94
-"new-orders-will-appear-here","New orders will appear here","","components/merchants/ActiveOrders.tsx",95
-"action-required","Action Required","","components/merchants/ActiveOrders.tsx",145
-"call","Call","","components/merchants/ActiveOrders.tsx",171
-"order-time","Order Time","","components/merchants/ActiveOrders.tsx",257
-"pickup-code","Pickup Code","","components/merchants/ActiveOrders.tsx",265
-"accept-order","Accept Order","","components/merchants/ActiveOrders.tsx",288
-"start-preparation","Start Preparation","","components/merchants/ActiveOrders.tsx",290
-"mark-ready","Mark Ready","","components/merchants/ActiveOrders.tsx",292
-"reject","Reject","","components/merchants/ActiveOrders.tsx",313
-"available-balance","Available Balance","","components/merchants/wallet/WalletBalance.tsx",39
-"last-updated","Last updated","","components/merchants/wallet/WalletBalance.tsx",48
-"total-earned","Total Earned","","components/merchants/wallet/WalletBalance.tsx",59
-"completed-transactions","completed transactions","","components/merchants/wallet/WalletBalance.tsx",67
-"total-spent","Total Spent","","components/merchants/wallet/WalletBalance.tsx",77
-"all-time-expenses","All time expenses","","components/merchants/wallet/WalletBalance.tsx",85
-"pending-transactions","Pending Transactions","","components/merchants/wallet/WalletBalance.tsx",96
-"awaiting-confirmation","Awaiting confirmation","","components/merchants/wallet/WalletBalance.tsx",106
-"transaction-history","Transaction History","","components/merchants/wallet/TransactionsList.tsx",129
-"type","Type","","components/merchants/wallet/TransactionsList.tsx",137
-"all-types","All Types","","components/merchants/wallet/TransactionsList.tsx",140
-"credit","Credit","","components/merchants/wallet/TransactionsList.tsx",141
-"debit","Debit","","components/merchants/wallet/TransactionsList.tsx",142
-"status","Status","","components/merchants/wallet/TransactionsList.tsx",149
-"failed","Failed","","components/merchants/wallet/TransactionsList.tsx",155
-"no-transactions-found","No transactions found","","components/merchants/wallet/TransactionsList.tsx",166
-"transactions-will-appear-here-once-you-start-receiving-payments","Transactions will appear here once you start receiving payments","","components/merchants/wallet/TransactionsList.tsx",168
-"transactions","transactions","","components/merchants/wallet/TransactionsList.tsx",248
-"previous","Previous","","components/merchants/wallet/TransactionsList.tsx",259
-"next","Next","","components/merchants/wallet/TransactionsList.tsx",298
 "no-products-found","No products found","","components/merchants/products/ProductsList.tsx",33
 "try-adjusting-your-filters","Try adjusting your filters","","components/merchants/products/ProductsList.tsx",36
 "start-by-adding-your-first-product","Start by adding your first product","","components/merchants/products/ProductsList.tsx",37
@@ -287,12 +232,32 @@ Category,Key,English,Swahili,File,Line
 "weekly-revenue","Weekly Revenue","","components/merchants/insights/RevenueChart.tsx",283
 "hover-to-see-daily-breakdown","Hover to see daily breakdown","","components/merchants/insights/RevenueChart.tsx",287
 "orders-overview","Orders Overview","","components/merchants/insights/OrdersOverview.tsx",97
-"status-breakdown-total-total-orders","Status breakdown - {{total}} total orders","","components/merchants/insights/OrdersOverview.tsx",100
+"status-breakdown-total-total-orders","Status breakdown - {total} total orders","","components/merchants/insights/OrdersOverview.tsx",100
 "success-rate","Success Rate","","components/merchants/insights/OrdersOverview.tsx",142
 "failure-rate","Failure Rate","","components/merchants/insights/OrdersOverview.tsx",148
 "no-results-found","No results found","","components/merchants/animations/EmptyStates.tsx",90
 "no-order-history","No order history","","components/merchants/animations/EmptyStates.tsx",97
 "completed-and-cancelled-orders-will-appear-here","Completed and cancelled orders will appear here","","components/merchants/animations/EmptyStates.tsx",98
+"no-transactions-found","No transactions found","","components/merchants/animations/EmptyStates.tsx",104
+"transactions-will-appear-here-once-you-start-receiving-payments","Transactions will appear here once you start receiving payments","","components/merchants/animations/EmptyStates.tsx",105
+"available-balance","Available Balance","","components/merchants/wallet/WalletBalance.tsx",41
+"last-updated","Last updated","","components/merchants/wallet/WalletBalance.tsx",50
+"total-earned","Total Earned","","components/merchants/wallet/WalletBalance.tsx",61
+"completed-transactions","completed transactions","","components/merchants/wallet/WalletBalance.tsx",69
+"total-spent","Total Spent","","components/merchants/wallet/WalletBalance.tsx",79
+"all-time-expenses","All time expenses","","components/merchants/wallet/WalletBalance.tsx",87
+"pending-transactions","Pending Transactions","","components/merchants/wallet/WalletBalance.tsx",98
+"awaiting-confirmation","Awaiting confirmation","","components/merchants/wallet/WalletBalance.tsx",108
+"transaction-history","Transaction History","","components/merchants/wallet/TransactionsList.tsx",129
+"type","Type","","components/merchants/wallet/TransactionsList.tsx",137
+"all-types","All Types","","components/merchants/wallet/TransactionsList.tsx",140
+"credit","Credit","","components/merchants/wallet/TransactionsList.tsx",141
+"debit","Debit","","components/merchants/wallet/TransactionsList.tsx",142
+"status","Status","","components/merchants/wallet/TransactionsList.tsx",149
+"failed","Failed","","components/merchants/wallet/TransactionsList.tsx",155
+"transactions","transactions","","components/merchants/wallet/TransactionsList.tsx",248
+"previous","Previous","","components/merchants/wallet/TransactionsList.tsx",259
+"next","Next","","components/merchants/wallet/TransactionsList.tsx",298
 "oops-something-went-wrong","Oops! Something went wrong","","components/client/stores/StoresError.tsx",20
 "all-stores","All stores","","components/client/stores/StoresContent.tsx",52
 "grocery","Grocery","","components/client/stores/StoresContent.tsx",53
@@ -358,6 +323,19 @@ Category,Key,English,Swahili,File,Line
 "failed-to-download-receipt-please-try-again","Failed to download receipt. Please try again.","","components/client/orders/OrderActions.tsx",50
 "view-receipt","View Receipt","","components/client/orders/OrderActions.tsx",66
 "track-order","Track Order","","components/client/orders/OrderActions.tsx",72
+"location-outside-delivery-zone","Location outside delivery zone","","components/client/map/MapPicker.tsx",148
+"please-select-a-location-within-the-shaded-area","Please select a location within the shaded area.","","components/client/map/MapPicker.tsx",149
+"your-browser-doesn-t-support-geolocation","Your browser doesn't support geolocation.","","components/client/map/MapPicker.tsx",211
+"you-re-outside-the-delivery-zone","You're outside the delivery zone","","components/client/map/MapPicker.tsx",237
+"your-current-location-is-not-within-our-delivery-area-please-select-a-location-within-the-shaded-zon","Your current location is not within our delivery area. Please select a location within the shaded zone.","","components/client/map/MapPicker.tsx",238
+"please-check-your-location-permissions-and-try-again","Please check your location permissions and try again.","","components/client/map/MapPicker.tsx",249
+"drop-a-pin-at-your-exact-location","Drop a pin at your exact location","","components/client/map/MapPicker.tsx",277
+"tap-anywhere-on-the-map-or-drag-the-red-marker-to-your-delivery-location","Tap anywhere on the map or drag the red marker to your delivery location.","","components/client/map/MapPicker.tsx",280
+"you-can-only-select-locations-within-the-shaded-delivery-zone","You can only select locations within the shaded delivery zone.","","components/client/map/MapPicker.tsx",281
+"use-my-location","Use my location","","components/client/map/MapPicker.tsx",323
+"location-selected","Location selected","","components/client/map/MapPicker.tsx",349
+"high-accuracy","High accuracy","","components/client/map/MapPicker.tsx",358
+"tip-zoom-in-for-better-precision-the-more-accurate-your-pin-the-easier-delivery-will-be","Tip: Zoom in for better precision. The more accurate your pin, the easier delivery will be!","","components/client/map/MapPicker.tsx",366
 "profile-updated","Profile Updated","","components/client/customer/UserProfile.tsx",63
 "your-profile-has-been-successfully-updated","Your profile has been successfully updated","","components/client/customer/UserProfile.tsx",64
 "failed-to-update-profile-please-try-again","Failed to update profile. Please try again.","","components/client/customer/UserProfile.tsx",70
@@ -370,6 +348,9 @@ Category,Key,English,Swahili,File,Line
 "personal-information","Personal Information","","components/client/customer/UserProfile.tsx",109
 "save-changes","Save Changes","","components/client/customer/UserProfile.tsx",117
 "edit-profile","Edit Profile","","components/client/customer/UserProfile.tsx",122
+"full-name","Full Name","","components/client/customer/UserProfile.tsx",137
+"email","Email","","components/client/customer/UserProfile.tsx",146
+"phone-number","Phone Number","","components/client/customer/UserProfile.tsx",158
 "my-merchants","My Merchants","","components/client/customer/UserProfile.tsx",176
 "manager-since","Manager since","","components/client/customer/UserProfile.tsx",211
 "manage","Manage","","components/client/customer/UserProfile.tsx",219
@@ -389,6 +370,7 @@ Category,Key,English,Swahili,File,Line
 "add-a-payment-method-to-place-orders","Add a payment method to place orders","","components/client/customer/UserProfile.tsx",309
 "notification-preferences","Notification Preferences","","components/client/customer/UserProfile.tsx",320
 "password-security","Password & Security","","components/client/customer/UserProfile.tsx",333
+"password","Password","","components/client/customer/UserProfile.tsx",340
 "last-changed-3-months-ago","Last changed 3 months ago","","components/client/customer/UserProfile.tsx",341
 "change-password","Change Password","","components/client/customer/UserProfile.tsx",344
 "two-factor-authentication","Two-Factor Authentication","","components/client/customer/UserProfile.tsx",351
@@ -400,6 +382,108 @@ Category,Key,English,Swahili,File,Line
 "delete-account","Delete Account","","components/client/customer/UserProfile.tsx",380
 "permanently-delete-your-account","Permanently delete your account","","components/client/customer/UserProfile.tsx",381
 "delete","Delete","","components/client/customer/UserProfile.tsx",385
+"account-created","Account created","","components/auth/SignUpForm.tsx",70
+"welcome-your-account-has-been-created-successfully","Welcome! Your account has been created successfully.","","components/auth/SignUpForm.tsx",71
+"an-unexpected-error-occurred","An unexpected error occurred","","components/auth/SignUpForm.tsx",78
+"welcome","Welcome!","","components/auth/SignUpForm.tsx",86
+"you-have-successfully-signed-in-with-google","You have successfully signed in with Google","","components/auth/SignUpForm.tsx",87
+"create-account","Create Account","","components/auth/SignUpForm.tsx",93
+"join-our-platform-today","Join our platform today","","components/auth/SignUpForm.tsx",93
+"want-to-become-a-merchant-or-driver-you-can-apply-after-creating-your-account","Want to become a merchant or driver? You can apply after creating your account.","","components/auth/SignUpForm.tsx",125
+"enter-your-name","Enter your name","","components/auth/SignUpForm.tsx",136
+"enter-your-password","Enter your password","","components/auth/SignUpForm.tsx",179
+"sign-up","Sign Up","","components/auth/SignUpForm.tsx",192
+"continue-with-google","Continue with Google","","components/auth/SignUpForm.tsx",203
+"already-have-an-account-sign-in","Already have an account? Sign In","","components/auth/SignUpForm.tsx",212
+"welcome-back","Welcome back!","","components/auth/SignInForm.tsx",52
+"you-have-successfully-logged-in","You have successfully logged in","","components/auth/SignInForm.tsx",53
+"sign-in-to-your-account","Sign in to your account","","components/auth/SignInForm.tsx",79
+"enter-your-email","Enter your email","","components/auth/SignInForm.tsx",89
+"don-t-have-an-account-sign-up","Don't have an account? Sign Up","","components/auth/SignInForm.tsx",132
+"password-reset-email-sent","Password reset email sent","","components/auth/ResetPasswordForm.tsx",48
+"check-your-email-for-further-instructions","Check your email for further instructions","","components/auth/ResetPasswordForm.tsx",49
+"reset-password","Reset Password","","components/auth/ResetPasswordForm.tsx",61
+"enter-your-email-to-reset-your-password","Enter your email to reset your password","","components/auth/ResetPasswordForm.tsx",61
+"send-reset-link","Send Reset Link","","components/auth/ResetPasswordForm.tsx",80
+"back-to-login","Back to login","","components/auth/ResetPasswordForm.tsx",88
+"passwords-do-not-match","Passwords do not match","","components/auth/NewPasswordForm.tsx",32
+"password-successfully-reset-you-can-now-login","Password successfully reset! You can now login.","","components/auth/NewPasswordForm.tsx",44
+"failed-to-reset-password-the-link-may-be-expired-or-invalid","Failed to reset password. The link may be expired or invalid.","","components/auth/NewPasswordForm.tsx",51
+"set-new-password","Set New Password","","components/auth/NewPasswordForm.tsx",59
+"new-password","New Password","","components/auth/NewPasswordForm.tsx",64
+"confirm-new-password","Confirm New Password","","components/auth/NewPasswordForm.tsx",72
+"resetting","Resetting...","","components/auth/NewPasswordForm.tsx",80
+"failed-to-load-stores","Failed to load stores","","app/[locale]/(client)/stores/page.tsx",28
+"store-not-found","Store Not Found","","app/[locale]/(client)/stores/not-found.tsx",17
+"the-store-you-re-looking-for-doesn-t-exist-or-is-currently-unavailable","The store you're looking for doesn't exist or is currently unavailable.","","app/[locale]/(client)/stores/not-found.tsx",20
+"back-to-stores","Back to Stores","","app/[locale]/(client)/stores/not-found.tsx",25
+"authentication-required","Authentication Required","","app/[locale]/(client)/profile/page.tsx",20
+"please-sign-in-to-view-your-orders","Please sign in to view your orders","","app/[locale]/(client)/profile/page.tsx",21
+"user-not-found","User Not Found","","app/[locale]/(client)/profile/page.tsx",65
+"please-contact-support-if-this-issue-persists","Please contact support if this issue persists","","app/[locale]/(client)/profile/page.tsx",66
+"go-home","Go Home","","app/[locale]/(client)/profile/page.tsx",68
+"items","items","","app/[locale]/(client)/orders/page.tsx",145
+"no-orders-yet","No orders yet","","app/[locale]/(client)/orders/page.tsx",204
+"start-shopping-to-place-your-first-order","Start shopping to place your first order","","app/[locale]/(client)/orders/page.tsx",206
+"your-orders","Your Orders","","app/[locale]/(client)/orders/page.tsx",314
+"failed-to-load-delivery-zones","Failed to load delivery zones","","app/[locale]/(client)/checkout/page.tsx",84
+"please-refresh-the-page","Please refresh the page","","app/[locale]/(client)/checkout/page.tsx",85
+"your-cart-is-empty","Your cart is empty","","app/[locale]/(client)/checkout/page.tsx",120
+"add-items-to-your-cart-to-proceed-with-checkout","Add items to your cart to proceed with checkout","","app/[locale]/(client)/checkout/page.tsx",122
+"please-complete-all-required-fields","Please complete all required fields","","app/[locale]/(client)/checkout/page.tsx",180
+"make-sure-you-ve-filled-in-all-delivery-details","Make sure you've filled in all delivery details","","app/[locale]/(client)/checkout/page.tsx",181
+"failed-to-place-order","Failed to place order","","app/[locale]/(client)/checkout/page.tsx",218
+"please-try-again-or-contact-support-if-the-issue-persists","Please try again or contact support if the issue persists.","","app/[locale]/(client)/checkout/page.tsx",219
+"order-placed-successfully","Order placed successfully!","","app/[locale]/(client)/checkout/page.tsx",226
+"when-few-second-you-will-be-redirected-to-order-page","When few second, you will be redirected to order page.","","app/[locale]/(client)/checkout/page.tsx",227
+"please-try-again","Please try again","","app/[locale]/(client)/checkout/page.tsx",238
+"precise-location-from-map-pin","Precise location from map pin","","app/[locale]/(client)/checkout/page.tsx",252
+"high-accuracy-gps-coordinates","High accuracy - GPS coordinates","","app/[locale]/(client)/checkout/page.tsx",254
+"precise-location-from-landmark","Precise location from landmark","","app/[locale]/(client)/checkout/page.tsx",262
+"we-ll-find-your-location-automatically","We'll find your location automatically","","app/[locale]/(client)/checkout/page.tsx",272
+"medium-accuracy","Medium accuracy","","app/[locale]/(client)/checkout/page.tsx",274
+"approximate-zone-location","Approximate zone location","","app/[locale]/(client)/checkout/page.tsx",281
+"driver-will-call-for-directions","Driver will call for directions","","app/[locale]/(client)/checkout/page.tsx",283
+"continue-shopping","Continue shopping","","app/[locale]/(client)/checkout/page.tsx",297
+"checkout","Checkout","","app/[locale]/(client)/checkout/page.tsx",300
+"complete-your-order-in-a-few-simple-steps","Complete your order in a few simple steps","","app/[locale]/(client)/checkout/page.tsx",302
+"step-1-delivery-zone","Step 1: Delivery Zone","","app/[locale]/(client)/checkout/page.tsx",317
+"choose-your-delivery-area","Choose your delivery area","","app/[locale]/(client)/checkout/page.tsx",320
+"covers","Covers","","app/[locale]/(client)/checkout/page.tsx",372
+"step-2-choose-location-method","Step 2: Choose Location Method","","app/[locale]/(client)/checkout/page.tsx",416
+"how-would-you-like-to-specify-your-location","How would you like to specify your location?","","app/[locale]/(client)/checkout/page.tsx",419
+"our-delivery-zones","Our delivery zones","","app/[locale]/(client)/checkout/page.tsx",423
+"popular-choice","Popular choice","","app/[locale]/(client)/checkout/page.tsx",452
+"other-option","Other option","","app/[locale]/(client)/checkout/page.tsx",466
+"drop-pin-on-map","Drop pin on map","","app/[locale]/(client)/checkout/page.tsx",482
+"select-your-exact-location","Select your exact location","","app/[locale]/(client)/checkout/page.tsx",484
+"i-ll-describe-my-location","I'll describe my location","","app/[locale]/(client)/checkout/page.tsx",509
+"pin-your-location","Pin Your Location","","app/[locale]/(client)/checkout/page.tsx",540
+"tap-the-map-or-drag-the-marker-to-your-exact-location","Tap the map or drag the marker to your exact location","","app/[locale]/(client)/checkout/page.tsx",543
+"step-3-complete-address","Step 3: Complete Address","","app/[locale]/(client)/checkout/page.tsx",577
+"provide-detailed-delivery-instructions","Provide detailed delivery instructions","","app/[locale]/(client)/checkout/page.tsx",580
+"delivering-to","Delivering to","","app/[locale]/(client)/checkout/page.tsx",590
+"pin-dropped-location","Pin-dropped location","","app/[locale]/(client)/checkout/page.tsx",599
+"full-address","Full Address","","app/[locale]/(client)/checkout/page.tsx",633
+"be-specific-house-color-landmarks-access-instructions","Be specific: house color, landmarks, access instructions","","app/[locale]/(client)/checkout/page.tsx",644
+"step-4-contact-information","Step 4: Contact Information","","app/[locale]/(client)/checkout/page.tsx",660
+"so-we-can-reach-you-for-delivery","So we can reach you for delivery","","app/[locale]/(client)/checkout/page.tsx",663
+"order-summary","Order Summary","","app/[locale]/(client)/checkout/page.tsx",690
+"qty","Qty","","app/[locale]/(client)/checkout/page.tsx",710
+"subtotal","Subtotal","","app/[locale]/(client)/checkout/page.tsx",724
+"placing-order","Placing Order...","","app/[locale]/(client)/checkout/page.tsx",748
+"place-order","Place Order","","app/[locale]/(client)/checkout/page.tsx",748
+"please-select-a-delivery-zone","Please select a delivery zone","","app/[locale]/(client)/checkout/page.tsx",753
+"please-choose-a-location-method","Please choose a location method","","app/[locale]/(client)/checkout/page.tsx",754
+"please-drop-a-pin-on-the-map","Please drop a pin on the map","","app/[locale]/(client)/checkout/page.tsx",755
+"please-enter-the-specific-address","Please enter the specific address","","app/[locale]/(client)/checkout/page.tsx",756
+"please-enter-the-delivery-phone-number","Please enter the delivery phone number","","app/[locale]/(client)/checkout/page.tsx",757
+"secure-checkout","Secure Checkout","","app/[locale]/(client)/checkout/page.tsx",766
+"your-information-is-protected-and-encrypted","Your information is protected and encrypted","","app/[locale]/(client)/checkout/page.tsx",768
+"add-items-from-a-store-to-start-shopping","Add items from a store to start shopping","","app/[locale]/(client)/cart/page.tsx",40
+"your-cart","Your Cart","","app/[locale]/(client)/cart/page.tsx",60
+"clear-cart","Clear Cart","","app/[locale]/(client)/cart/page.tsx",61
+"proceed-to-checkout","Proceed to Checkout","","app/[locale]/(client)/cart/page.tsx",161
 "location-captured-successfully","Location captured successfully","","app/[locale]/(merchant)/new-merchant/page.tsx",78
 "failed-to-get-location","Failed to get location","","app/[locale]/(merchant)/new-merchant/page.tsx",85
 "please-enter-manually","Please enter manually","","app/[locale]/(merchant)/new-merchant/page.tsx",86
@@ -437,74 +521,6 @@ Category,Key,English,Swahili,File,Line
 "you-apos-ll-receive-a-confirmation-email-within-24-48-hours","• You&apos;ll receive a confirmation email within 24-48 hours","","app/[locale]/(merchant)/new-merchant/page.tsx",489
 "once-approved-you-apos-ll-need-to-add-at-least-5-products-before-your-store-goes-live","• Once approved, you&apos;ll need to add at least 5 products before your store goes live","","app/[locale]/(merchant)/new-merchant/page.tsx",491
 "you-apos-ll-be-able-to-manage-your-products-and-orders-from-the-merchant-dashboard","• You&apos;ll be able to manage your products and orders from the merchant dashboard","","app/[locale]/(merchant)/new-merchant/page.tsx",493
-"failed-to-load-stores","Failed to load stores","","app/[locale]/(client)/stores/page.tsx",28
-"store-not-found","Store Not Found","","app/[locale]/(client)/stores/not-found.tsx",17
-"the-store-you-re-looking-for-doesn-t-exist-or-is-currently-unavailable","The store you're looking for doesn't exist or is currently unavailable.","","app/[locale]/(client)/stores/not-found.tsx",20
-"back-to-stores","Back to Stores","","app/[locale]/(client)/stores/not-found.tsx",25
-"authentication-required","Authentication Required","","app/[locale]/(client)/profile/page.tsx",20
-"please-sign-in-to-view-your-orders","Please sign in to view your orders","","app/[locale]/(client)/profile/page.tsx",21
-"user-not-found","User Not Found","","app/[locale]/(client)/profile/page.tsx",65
-"please-contact-support-if-this-issue-persists","Please contact support if this issue persists","","app/[locale]/(client)/profile/page.tsx",66
-"go-home","Go Home","","app/[locale]/(client)/profile/page.tsx",68
-"items","items","","app/[locale]/(client)/orders/page.tsx",145
-"no-orders-yet","No orders yet","","app/[locale]/(client)/orders/page.tsx",204
-"start-shopping-to-place-your-first-order","Start shopping to place your first order","","app/[locale]/(client)/orders/page.tsx",206
-"your-orders","Your Orders","","app/[locale]/(client)/orders/page.tsx",314
-"failed-to-load-delivery-zones","Failed to load delivery zones","","app/[locale]/(client)/checkout/page.tsx",66
-"please-refresh-the-page","Please refresh the page","","app/[locale]/(client)/checkout/page.tsx",67
-"your-cart-is-empty","Your cart is empty","","app/[locale]/(client)/checkout/page.tsx",88
-"add-items-to-your-cart-to-proceed-with-checkout","Add items to your cart to proceed with checkout","","app/[locale]/(client)/checkout/page.tsx",89
-"please-complete-all-required-fields","Please complete all required fields","","app/[locale]/(client)/checkout/page.tsx",115
-"make-sure-you-ve-selected-a-zone-and-filled-in-delivery-details","Make sure you've selected a zone and filled in delivery details","","app/[locale]/(client)/checkout/page.tsx",116
-"failed-to-place-order","Failed to place order","","app/[locale]/(client)/checkout/page.tsx",155
-"please-try-again-or-contact-support-if-the-issue-persists","Please try again or contact support if the issue persists.","","app/[locale]/(client)/checkout/page.tsx",156
-"order-placed-successfully","Order placed successfully!","","app/[locale]/(client)/checkout/page.tsx",163
-"your-delivery-code-is-deliverycode","Your delivery code is: {deliveryCode}","","app/[locale]/(client)/checkout/page.tsx",164
-"please-try-again","Please try again","","app/[locale]/(client)/checkout/page.tsx",175
-"continue-shopping","Continue shopping","","app/[locale]/(client)/checkout/page.tsx",191
-"checkout","Checkout","","app/[locale]/(client)/checkout/page.tsx",194
-"select-your-delivery-zone","Select your delivery zone","","app/[locale]/(client)/checkout/page.tsx",195
-"delivery-zone","Delivery Zone","","app/[locale]/(client)/checkout/page.tsx",207
-"choose-where-you-want-delivery","Choose where you want delivery","","app/[locale]/(client)/checkout/page.tsx",208
-"delivery","delivery","","app/[locale]/(client)/checkout/page.tsx",257
-"areas-included","Areas included","","app/[locale]/(client)/checkout/page.tsx",271
-"complete-address","Complete Address","","app/[locale]/(client)/checkout/page.tsx",314
-"street-details","Street / Details","","app/[locale]/(client)/checkout/page.tsx",315
-"full-address","Full Address","","app/[locale]/(client)/checkout/page.tsx",321
-"ex-carrefour-mendong-near-the-pharmacy-nblue-house-with-white-gate","Ex: Carrefour Mendong, near the pharmacy\nBlue house with white gate","","app/[locale]/(client)/checkout/page.tsx",324
-"selected-zone","Selected zone","","app/[locale]/(client)/checkout/page.tsx",336
-"contact-information","Contact Information","","app/[locale]/(client)/checkout/page.tsx",359
-"for-delivery-updates","For delivery updates","","app/[locale]/(client)/checkout/page.tsx",360
-"additional-notes-optional","Additional Notes (Optional)","","app/[locale]/(client)/checkout/page.tsx",378
-"any-special-instructions-for-delivery","Any special instructions for delivery?","","app/[locale]/(client)/checkout/page.tsx",381
-"payment-method","Payment Method","","app/[locale]/(client)/checkout/page.tsx",400
-"select-payment-option","Select payment option","","app/[locale]/(client)/checkout/page.tsx",401
-"cash-on-delivery","Cash on Delivery","","app/[locale]/(client)/checkout/page.tsx",409
-"pay-when-you-receive","Pay when you receive","","app/[locale]/(client)/checkout/page.tsx",410
-"mtn-mobile-money","MTN Mobile Money","","app/[locale]/(client)/checkout/page.tsx",417
-"coming-soon","Coming soon","","app/[locale]/(client)/checkout/page.tsx",418
-"order-summary","Order Summary","","app/[locale]/(client)/checkout/page.tsx",430
-"subtotal","Subtotal","","app/[locale]/(client)/checkout/page.tsx",460
-"service-fee","Service Fee","","app/[locale]/(client)/checkout/page.tsx",475
-"estimated-delivery","Estimated delivery","","app/[locale]/(client)/checkout/page.tsx",492
-"minutes","minutes","","app/[locale]/(client)/checkout/page.tsx",492
-"secure-delivery-with-confirmation-code","Secure delivery with confirmation code","","app/[locale]/(client)/checkout/page.tsx",501
-"placing-order","Placing Order...","","app/[locale]/(client)/checkout/page.tsx",513
-"select-delivery-zone","Select Delivery Zone","","app/[locale]/(client)/checkout/page.tsx",515
-"enter-address","Enter Address","","app/[locale]/(client)/checkout/page.tsx",517
-"enter-phone-number","Enter Phone Number","","app/[locale]/(client)/checkout/page.tsx",519
-"place-order","Place Order","","app/[locale]/(client)/checkout/page.tsx",520
-"by-placing-an-order-you-agree-to-our-terms-of-service","By placing an order, you agree to our Terms of Service","","app/[locale]/(client)/checkout/page.tsx",525
-"add-items-from-a-store-to-start-shopping","Add items from a store to start shopping","","app/[locale]/(client)/cart/page.tsx",42
-"your-cart","Your Cart","","app/[locale]/(client)/cart/page.tsx",62
-"proceed-to-checkout","Proceed to Checkout","","app/[locale]/(client)/cart/page.tsx",169
-"merchant-not-found","Merchant Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",21
-"the-merchant-you-re-looking-for-doesn-t-exist-or-you-don-t-have-access-to-it","The merchant you're looking for doesn't exist or you don't have access to it.","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",31
-"go-to-home","Go to Home","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",35
-"merchant-dashboard","Merchant Dashboard","","app/[locale]/(merchant)/merchant/[merchantId]/loading.tsx",21
-"loading-your-dashboard","Loading your dashboard...","","app/[locale]/(merchant)/merchant/[merchantId]/loading.tsx",23
-"something-went-wrong","Something went wrong","","app/[locale]/(merchant)/merchant/[merchantId]/error.tsx",39
-"we-encountered-an-error-while-loading-your-dashboard","We encountered an error while loading your dashboard.","","app/[locale]/(merchant)/merchant/[merchantId]/error.tsx",41
 "the-store-you-apos-re-looking-for-doesn-apos-t-exist-or-is-currently-unavailable","The store you&apos;re looking for doesn&apos;t exist or is currently unavailable.","","app/[locale]/(client)/stores/[slug]/not-found.tsx",20
 "back-to-orders","Back to Orders","","app/[locale]/(client)/orders/[orderId]/page.tsx",122
 "placed-on","Placed on","","app/[locale]/(client)/orders/[orderId]/page.tsx",133
@@ -517,26 +533,16 @@ Category,Key,English,Swahili,File,Line
 "delivery-information","Delivery Information","","app/[locale]/(client)/orders/[orderId]/page.tsx",263
 "address","Address","","app/[locale]/(client)/orders/[orderId]/page.tsx",270
 "notes","Notes","","app/[locale]/(client)/orders/[orderId]/page.tsx",294
+"estimated-delivery","Estimated Delivery","","app/[locale]/(client)/orders/[orderId]/page.tsx",306
 "merchant","Merchant","","app/[locale]/(client)/orders/[orderId]/page.tsx",320
 "method","Method","","app/[locale]/(client)/orders/[orderId]/page.tsx",349
-"wallet-transactions","Wallet & Transactions","","app/[locale]/(merchant)/merchant/[merchantId]/wallet/page.tsx",95
-"manage-your-earnings-and-view-transaction-history","Manage your earnings and view transaction history","","app/[locale]/(merchant)/merchant/[merchantId]/wallet/page.tsx",97
-"products-not-found","Products Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",20
-"we-couldn-t-find-the-products-you-re-looking-for","We couldn't find the products you're looking for.","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",30
-"loading-your-products","Loading your products...","","app/[locale]/(merchant)/merchant/[merchantId]/products/loading.tsx",23
-"failed-to-load-products","Failed to Load Products","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",38
-"we-encountered-an-error-while-loading-your-products","We encountered an error while loading your products.","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",40
-"go-back","Go Back","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",50
-"insights-analytics","Insights & Analytics","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",61
-"last-30-days","Last 30 days","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",70
-"clients","Clients","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",94
-"new","New","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",105
-"returning","Returning","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",111
-"average-orders-per-customer","Average orders per customer","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",118
-"global-performance","Global performance","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",134
-"completion-rate","Completion rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",140
-"cancellation-rate","Cancellation rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",154
-"pending-orders","pending orders","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",171
+"merchant-not-found","Merchant Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",21
+"the-merchant-you-re-looking-for-doesn-t-exist-or-you-don-t-have-access-to-it","The merchant you're looking for doesn't exist or you don't have access to it.","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",31
+"go-to-home","Go to Home","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",35
+"merchant-dashboard","Merchant Dashboard","","app/[locale]/(merchant)/merchant/[merchantId]/loading.tsx",21
+"loading-your-dashboard","Loading your dashboard...","","app/[locale]/(merchant)/merchant/[merchantId]/loading.tsx",23
+"something-went-wrong","Something went wrong","","app/[locale]/(merchant)/merchant/[merchantId]/error.tsx",39
+"we-encountered-an-error-while-loading-your-dashboard","We encountered an error while loading your dashboard.","","app/[locale]/(merchant)/merchant/[merchantId]/error.tsx",41
 "back-to-order-details","Back to Order Details","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",154
 "order-progress","Order Progress","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",184
 "delivery-details","Delivery Details","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",197
@@ -545,3 +551,21 @@ Category,Key,English,Swahili,File,Line
 "driver-information","Driver Information","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",230
 "call-driver","Call Driver","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",251
 "updates-every-30-seconds","Updates every 30 seconds","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",264
+"wallet-transactions","Wallet & Transactions","","app/[locale]/(merchant)/merchant/[merchantId]/wallet/page.tsx",102
+"manage-your-earnings-and-view-transaction-history","Manage your earnings and view transaction history","","app/[locale]/(merchant)/merchant/[merchantId]/wallet/page.tsx",105
+"insights-analytics","Insights & Analytics","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",65
+"last-30-days","Last 30 days","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",75
+"clients","Clients","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",100
+"new","New","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",111
+"returning","Returning","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",117
+"average-orders-per-customer","Average orders per customer","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",124
+"global-performance","Global performance","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",140
+"completion-rate","Completion rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",146
+"cancellation-rate","Cancellation rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",160
+"pending-orders","pending orders","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",177
+"products-not-found","Products Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",20
+"we-couldn-t-find-the-products-you-re-looking-for","We couldn't find the products you're looking for.","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",30
+"loading-your-products","Loading your products...","","app/[locale]/(merchant)/merchant/[merchantId]/products/loading.tsx",23
+"failed-to-load-products","Failed to Load Products","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",38
+"we-encountered-an-error-while-loading-your-products","We encountered an error while loading your products.","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",40
+"go-back","Go Back","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",50

@@ -78,8 +78,8 @@ export async function GET(
                 currentLocation: order.deliveryInfo.location
                     ? {
                         coordinates: [
-                            order.deliveryInfo.location.coordinates[0] + 0.001,
-                            order.deliveryInfo.location.coordinates[1] + 0.001,
+                            order.deliveryInfo.location.lng + 0.001,
+                            order.deliveryInfo.location.lat + 0.001,
                         ] as [number, number],
                     }
                     : undefined,

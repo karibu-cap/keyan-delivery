@@ -1,10 +1,10 @@
-import { getLocale } from "next-intl/server";
-import { getT } from "@/i18n/server-translations";
+
+import { getServerT } from "@/i18n/server-translations";
 import { GridSkeleton } from "@/components/ClsOptimization";
 
 export async function StoresLoading() {
-    const locale = await getLocale();
-    const t = await getT(locale);
+
+    const t = await getServerT();
     return (
         <>
             <section className="bg-white py-8 px-4 border-b border-gray-200">

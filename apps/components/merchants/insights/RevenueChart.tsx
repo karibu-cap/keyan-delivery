@@ -5,7 +5,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { DailyAnalytics } from '@/types/merchant_analytics';
-import { DollarSign, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { WalletIcon, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 import { useT } from '@/hooks/use-inline-translation';
 import EmptyState from '../animations/EmptyStates';
 
@@ -166,11 +166,11 @@ export default function RevenueChart({ data }: RevenueChartProps) {
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                     <div className="rounded-lg bg-blue-50 px-3 py-2">
                         <div className="flex items-center gap-2">
-                            <DollarSign className="h-4 w-4 text-blue-600" />
+                            <WalletIcon className="h-4 w-4 text-blue-600" />
                             <div>
                                 <p className="text-xs text-blue-600">{t('Total')}</p>
                                 <p className="text-sm font-semibold text-blue-900">
-                                    ${stats.totalRevenue.toFixed(2)}
+                                    {t.formatAmount(stats.totalRevenue)}
                                 </p>
                             </div>
                         </div>
@@ -182,7 +182,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
                             <div>
                                 <p className="text-xs text-purple-600">{t('Avg/day')}</p>
                                 <p className="text-sm font-semibold text-purple-900">
-                                    ${stats.averageRevenue.toFixed(2)}
+                                    {t.formatAmount(stats.averageRevenue)}
                                 </p>
                             </div>
                         </div>
@@ -231,7 +231,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
                                         {week.totalOrders} {t('orders')}
                                     </span>
                                     <span className="font-semibold text-gray-900">
-                                        ${week.totalRevenue.toFixed(2)}
+                                        {t.formatAmount(week.totalRevenue)}
                                     </span>
                                 </div>
                             </div>
@@ -255,15 +255,11 @@ export default function RevenueChart({ data }: RevenueChartProps) {
                                                     key={dayIndex}
                                                     style={{ width: `${dayPercentage}%` }}
                                                     className="border-r border-blue-400/30 last:border-r-0 relative group/day"
-                                                    title={`${new Date(day.date).toLocaleDateString()}: $${day.totalRevenue.toFixed(2)}`}
+                                                    title={`${new Date(day.date).toLocaleDateString()}: ${t.formatAmount(day.totalRevenue)}`}
                                                 >
                                                     {/* Tooltip on hover */}
                                                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover/day:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                                                        {new Date(day.date).toLocaleDateString('en-US', {
-                                                            weekday: 'short',
-                                                            month: 'short',
-                                                            day: 'numeric'
-                                                        })}: ${day.totalRevenue.toFixed(2)}
+                                                        {t.formatDateTime(day.date,)}: {t.formatAmount(day.totalRevenue)}
                                                     </div>
                                                 </div>
                                             );

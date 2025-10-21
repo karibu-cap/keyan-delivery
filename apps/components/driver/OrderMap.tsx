@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { calculateDistanceInKm } from "@/lib/utils/client/distances";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface OrderMapProps {
    order: {
@@ -32,6 +33,7 @@ interface OrderMapProps {
 }
 
 export default function OrderMap({ order, onClose }: OrderMapProps) {
+   const t = useT()
    const [currentLocation, setCurrentLocation] = useState<{
       latitude: number;
       longitude: number;
@@ -186,12 +188,12 @@ export default function OrderMap({ order, onClose }: OrderMapProps) {
                   <div className="flex items-center justify-between">
                      <div>
                         <p className="text-sm text-muted-foreground mb-1">Order Total</p>
-                        <p className="text-2xl font-bold">${order.orderPrices.total.toFixed(2)}</p>
+                        <p className="text-2xl font-bold"> {t.formatAmount(order.orderPrices.total)}</p>
                      </div>
                      <div className="text-right">
                         <p className="text-sm text-muted-foreground mb-1">Your Earning</p>
                         <p className="text-2xl font-bold text-success">
-                           ${order.orderPrices.deliveryFee.toFixed(2)}
+                           {t.formatAmount(order.orderPrices.deliveryFee)}
                         </p>
                      </div>
                   </div>

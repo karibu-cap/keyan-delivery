@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { getT } from "@/i18n/server-translations";
+import { getServerT } from "@/i18n/server-translations";
 import { ArrowLeft, Store } from "lucide-react";
-import { getLocale } from "next-intl/server";
+
 import Link from "next/link";
 
 export default async function NotFound() {
-    const locale = await getLocale();
-    const t = await getT(locale);
+
+    const t = await getServerT();
 
     return (
         <div className="min-h-screen bg-gray-50">
