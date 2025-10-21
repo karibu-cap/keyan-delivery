@@ -96,7 +96,7 @@ export default function ProductsList({
 
                                    <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
                                         <span className="font-semibold text-foreground text-base">
-                                             ${product.price.toFixed(2)}
+                                             {t.formatAmount(product.price)}
                                         </span>
                                         <span className="hidden sm:inline">•</span>
                                         <span>Stock: {product.stock}</span>

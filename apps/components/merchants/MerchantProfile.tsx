@@ -25,7 +25,6 @@ import { SlideUp } from './animations/TransitionWrappers';
 interface MerchantProfileProps {
     currentMerchant: Merchant;
     allMerchants: Merchant[];
-    locale: string;
 }
 
 const merchantTypeLabels: Record<MerchantType, string> = {
@@ -37,7 +36,6 @@ const merchantTypeLabels: Record<MerchantType, string> = {
 export default function MerchantProfile({
     currentMerchant,
     allMerchants,
-    locale
 }: MerchantProfileProps) {
     const t = useT();
     const [isExitDialogOpen, setIsExitDialogOpen] = useState(false);
@@ -156,11 +154,7 @@ export default function MerchantProfile({
                                         <div>
                                             <p className="text-sm font-medium">{t('Member Since')}</p>
                                             <p className="text-sm text-muted-foreground">
-                                                {new Date(currentMerchant.createdAt).toLocaleDateString(locale, {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric'
-                                                })}
+                                                {t.formatDateTime(currentMerchant.createdAt)}
                                             </p>
                                         </div>
                                     </div>

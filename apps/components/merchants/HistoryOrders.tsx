@@ -17,7 +17,7 @@ import {
      Package,
      User,
      Calendar,
-     DollarSign,
+     WalletIcon,
      Search,
      Filter,
      TrendingUp,
@@ -151,7 +151,7 @@ export default function HistoryOrders({ orders }: HistoryOrdersProps) {
                                         <p className="text-xs text-muted-foreground">{t("Revenue")}</p>
                                    </div>
                                    <p className="text-xl sm:text-2xl font-bold text-primary/60">
-                                        ${stats.totalRevenue.toFixed(2)}
+                                        {t.formatAmount(stats.totalRevenue)}
                                    </p>
                               </CardContent>
                          </Card>
@@ -293,8 +293,8 @@ export default function HistoryOrders({ orders }: HistoryOrdersProps) {
                                                             <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2">
                                                                  <div className="text-right">
                                                                       <div className="flex items-center gap-1 text-xl sm:text-2xl font-bold">
-                                                                           <DollarSign className="w-5 h-5" />
-                                                                           {order.orderPrices.total.toFixed(2)}
+                                                                           <WalletIcon className="w-5 h-5" />
+                                                                           {t.formatAmount(order.orderPrices.total)}
                                                                       </div>
                                                                       <div className="text-xs sm:text-sm text-muted-foreground">
                                                                            {order.items.length} {t("item")}

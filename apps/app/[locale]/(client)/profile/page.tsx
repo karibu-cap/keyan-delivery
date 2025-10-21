@@ -3,14 +3,14 @@ import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
 import Link from "next/link"
 
 import { TABS, UserProfile } from "@/components/client/customer/UserProfile"
-import { getT } from "@/i18n/server-translations"
+import { getServerT } from "@/i18n/server-translations"
 import { prisma } from "@/lib/prisma"
-import { getLocale } from "next-intl/server"
+
 
 export default async function ProfilePage() {
   const token = await getUserTokens();
-  const locale = await getLocale();
-  const t = await getT(locale);
+
+  const t = await getServerT();
 
   if (!token?.decodedToken?.uid) {
     return (

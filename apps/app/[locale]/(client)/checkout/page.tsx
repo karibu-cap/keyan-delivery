@@ -22,16 +22,29 @@ import {
   Package,
   Phone,
   Shield,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import type { LongLat } from "@prisma/client";
 
+// Dynamic import for MapPicker (client-side only)
+const MapPicker = dynamic(() => import("@/components/client/map/MapPicker"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[400px] bg-muted animate-pulse rounded-xl flex items-center justify-center">
+      <p className="text-muted-foreground">Loading map...</p>
+    </div>
+  )
+});
 
 interface DeliveryInfo {
-  address: string;
-  contact: string;
-  notes: string;
+  additionalNotes: string;
+  deliveryContact: string;
+  landmarkName?: string;
+  manualCoordinates?: LongLat;
 }
 
 const EnhancedCheckout = () => {
@@ -40,12 +53,17 @@ const EnhancedCheckout = () => {
   const { cart, clearCart } = useCart();
   const { toast } = useToast();
 
+  // State management
   const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
   const [selectedZone, setSelectedZone] = useState<DeliveryZone | null>(null);
+  const [selectedLandmark, setSelectedLandmark] = useState<string | null>(null);
+  const [manualCoordinates, setManualCoordinates] = useState<LongLat | null>(null);
+  const [showMapPicker, setShowMapPicker] = useState(false);
   const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfo>({
-    address: "",
-    contact: "",
-    notes: "",
+    additionalNotes: "",
+    deliveryContact: "",
+    landmarkName: "",
+    manualCoordinates: undefined,
   });
   const [isLoadingZones, setIsLoadingZones] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,6 +93,20 @@ const EnhancedCheckout = () => {
     fetchDeliveryZones();
   }, []);
 
+  // Reset landmark and delivery info when zone changes
+  useEffect(() => {
+    setSelectedLandmark(null);
+    setManualCoordinates(null);
+    setShowMapPicker(false);
+    setDeliveryInfo({
+      additionalNotes: "",
+      deliveryContact: "",
+      landmarkName: "",
+      manualCoordinates: undefined,
+    });
+  }, [selectedZone]);
+
+  // Empty cart check
   if (cart.items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
@@ -86,9 +118,13 @@ const EnhancedCheckout = () => {
               </div>
             </div>
             <h1 className="mb-2 text-2xl font-bold">{t("Your cart is empty")}</h1>
-            <p className="mb-6 text-muted-foreground">{t("Add items to your cart to proceed with checkout")}</p>
+            <p className="mb-6 text-muted-foreground">
+              {t("Add items to your cart to proceed with checkout")}
+            </p>
             <Link href="/stores">
-              <Button className="bg-primary hover:bg-[#089808]">{t("Start Shopping")}</Button>
+              <Button className="bg-primary hover:bg-[#089808]">
+                {t("Start Shopping")}
+              </Button>
             </Link>
           </div>
         </div>
@@ -96,32 +132,59 @@ const EnhancedCheckout = () => {
     );
   }
 
+  // Calculate totals
   const subtotal = cart.total;
   const deliveryFee = selectedZone?.deliveryFee || 0;
-  const serviceFee = 1.99;
-  const total = subtotal + deliveryFee + serviceFee;
+  const total = subtotal + deliveryFee;
 
+  // Validation
   const canPlaceOrder = () => {
-    if (!selectedZone || !deliveryInfo.address.trim() || !deliveryInfo.contact.trim()) {
-      return false;
-    }
+    if (!selectedZone) return false;
+    if (selectedLandmark === null) return false;
 
+    // If map option selected, require coordinates
+    if (selectedLandmark === 'map' && !manualCoordinates) return false;
+
+    if (!deliveryInfo.additionalNotes.trim()) return false;
+    if (!deliveryInfo.deliveryContact.trim() || deliveryInfo.deliveryContact.length < 9) return false;
     return true;
   };
 
+  // Handle zone selection
+  const handleZoneSelect = (zone: DeliveryZone) => {
+    setSelectedZone(zone);
+  };
+
+  // Handle landmark selection
+  const handleLandmarkSelect = (landmarkName: string | 'none' | 'map') => {
+    setSelectedLandmark(landmarkName);
+
+    if (landmarkName === 'none') {
+      setDeliveryInfo(prev => ({ ...prev, landmarkName: undefined }));
+      setShowMapPicker(false);
+      setManualCoordinates(null);
+    } else if (landmarkName === 'map') {
+      setDeliveryInfo(prev => ({ ...prev, landmarkName: undefined }));
+      setShowMapPicker(true);
+    } else {
+      setDeliveryInfo(prev => ({ ...prev, landmarkName }));
+      setShowMapPicker(false);
+      setManualCoordinates(null);
+    }
+  };
+
+  // Place order
   const handlePlaceOrder = async () => {
     if (!canPlaceOrder()) {
       toast({
         title: t("Please complete all required fields"),
-        description: t("Make sure you've selected a zone and filled in delivery details"),
+        description: t("Make sure you've filled in all delivery details"),
         variant: 'destructive',
       });
       return;
     }
 
     setIsSubmitting(true);
-
-    const deliveryCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
     // Prepare order data
     const orderData = {
@@ -132,19 +195,19 @@ const EnhancedCheckout = () => {
         merchantId: item.product.merchant.id,
       })),
       deliveryInfo: {
-        address: deliveryInfo.address,
-        deliveryContact: deliveryInfo.contact,
-        additionalNotes: deliveryInfo.notes || null,
+        additionalNotes: deliveryInfo.additionalNotes,
+        deliveryContact: deliveryInfo.deliveryContact,
+        landmarkName: deliveryInfo.landmarkName,
+        manualCoordinates: manualCoordinates, // NEW: Include manual coordinates
       },
       orderPrices: {
         subtotal,
-        shipping: serviceFee,
+        shipping: 0,
         discount: 0,
         total,
         deliveryFee,
       },
       deliveryZoneId: selectedZone!.id,
-      deliveryCode,
     };
 
     try {
@@ -161,11 +224,11 @@ const EnhancedCheckout = () => {
 
       toast({
         title: t("Order placed successfully!"),
-        description: t("Your delivery code is: {deliveryCode}", { deliveryCode }),
+        description: t("Wait a few second, you will be redirected to order page."),
         variant: 'default',
       });
 
-      router.push(`/orders`);
+      router.replace(`/orders`);
       clearCart();
 
     } catch (error) {
@@ -180,6 +243,38 @@ const EnhancedCheckout = () => {
     }
   };
 
+  // Get coordinate source display info
+  const getCoordinateSourceInfo = () => {
+    // CASE 1: MANUAL - User dropped pin on map
+    if (selectedLandmark === 'map' && manualCoordinates) {
+      return {
+        icon: "🎯",
+        text: t("Precise location from map pin"),
+        color: "text-green-600",
+        confidence: t("High accuracy - GPS coordinates")
+      };
+    }
+
+    // CASE 2: LANDMARK - User selected a landmark
+    if (deliveryInfo.landmarkName && selectedLandmark !== 'none' && selectedLandmark !== 'map') {
+      return {
+        icon: "🎯",
+        text: t("Precise location from landmark"),
+        color: "text-green-600",
+        confidence: t("High accuracy")
+      };
+    }
+
+    return {
+      icon: "📍",
+      text: t("Approximate zone location"),
+      color: "text-orange-600",
+      confidence: t("Driver will call for directions")
+    };
+  };
+
+  const coordinateInfo = getCoordinateSourceInfo();
+
   return (
     <div className="min-h-screen bg-background pb-8">
       <div className="container mx-auto max-w-7xl px-4 py-8">
@@ -192,20 +287,27 @@ const EnhancedCheckout = () => {
         </Link>
 
         <h1 className="text-4xl font-bold mb-2">{t("Checkout")}</h1>
-        <p className="text-muted-foreground mb-8">{t("Select your delivery zone")}</p>
+        <p className="text-muted-foreground mb-8">
+          {t("Complete your order in a few simple steps")}
+        </p>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Delivery Zone Selection */}
+
+            {/* STEP 1: Delivery Zone Selection */}
             <Card className="p-6 rounded-2xl shadow-card">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
                   <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">{t("Delivery Zone")}</h2>
-                  <p className="text-sm text-muted-foreground">{t("Choose where you want delivery")}</p>
+                  <h2 className="text-xl font-semibold">
+                    {t("Step 1: Delivery Zone")}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {t("Choose your delivery area")}
+                  </p>
                 </div>
               </div>
 
@@ -225,52 +327,41 @@ const EnhancedCheckout = () => {
                     return (
                       <button
                         key={zone.id}
-                        onClick={() => setSelectedZone(zone)}
+                        onClick={() => handleZoneSelect(zone)}
                         className={`relative p-5 border-2 rounded-xl text-left transition-all ${isSelected
-                          ? 'border-primary bg-primary/5 shadow-md'
-                          : 'border-border hover:border-primary/50 hover:shadow-sm'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-primary/50'
                           }`}
                       >
-                        <div className="flex items-start gap-4">
-                          {/* Zone Badge */}
-                          <div
-                            className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0"
-                            style={{ backgroundColor: zone.color }}
-                          >
-                            {zone.code === 'HUB_A' ? 'H' : zone.code[0]}
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            {/* Zone Header */}
-                            <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <h3 className="text-lg font-bold">{zone.name}</h3>
-                                <span
-                                  className="inline-block mt-1 px-3 py-1 rounded-full text-white text-xs font-semibold"
-                                  style={{ backgroundColor: zone.color }}
-                                >
-                                  {zone.code}
-                                </span>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-2xl font-bold">${zone.deliveryFee.toFixed(2)}</p>
-                                <p className="text-xs text-muted-foreground">{t("delivery")}</p>
-                              </div>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span
+                                className="px-3 py-1 rounded-full text-white text-sm font-semibold"
+                                style={{ backgroundColor: zone.color }}
+                              >
+                                {zone.code}
+                              </span>
+                              <h3 className="font-semibold text-lg">{zone.name}</h3>
                             </div>
 
-                            {/* Zone Details */}
-                            <div className="flex flex-wrap gap-4 mb-3 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                               <span className="flex items-center gap-1">
-                                <Clock size={16} />
-                                <strong>{zone.estimatedDeliveryMinutes} min</strong>
+                                <CreditCard className="w-4 h-4" />
+                                {t.formatAmount(zone.deliveryFee)}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-4 h-4" />
+                                {zone.estimatedDeliveryMinutes} min
                               </span>
                             </div>
 
-                            {/* Neighborhoods */}
-                            <div className="mb-2">
-                              <p className="text-xs font-semibold text-muted-foreground mb-2">{t("Areas included")}:</p>
+                            <div>
+                              <p className="text-xs text-muted-foreground mb-1">
+                                {t("Covers")}:
+                              </p>
                               <div className="flex flex-wrap gap-1">
-                                {zone.neighborhoods.slice(0, 6).map((neighborhood, idx) => (
+                                {zone.landmarks.map(e => e.name).slice(0, 6).map((neighborhood, idx) => (
                                   <span
                                     key={idx}
                                     className="px-2 py-1 bg-muted text-foreground rounded text-xs"
@@ -278,16 +369,15 @@ const EnhancedCheckout = () => {
                                     {neighborhood}
                                   </span>
                                 ))}
-                                {zone.neighborhoods.length > 6 && (
+                                {zone.landmarks.map(e => e.name).length > 6 && (
                                   <span className="px-2 py-1 text-muted-foreground text-xs">
-                                    +{zone.neighborhoods.length - 6} more
+                                    +{zone.landmarks.map(e => e.name).length - 6} more
                                   </span>
                                 )}
                               </div>
                             </div>
                           </div>
 
-                          {/* Selection Checkmark */}
                           {isSelected && (
                             <div className="absolute top-4 right-4">
                               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
@@ -303,38 +393,175 @@ const EnhancedCheckout = () => {
               )}
             </Card>
 
-            {/* Delivery Address - Shows after zone selection */}
-            {selectedZone && (
+            {/* STEP 2: Landmark Selection */}
+            {selectedZone && (selectedZone.landmarks && selectedZone.landmarks.length > 0 ? (
               <Card className="p-6 rounded-2xl shadow-card animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
                     <MapPin className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold">{t("Complete Address")}</h2>
-                    <p className="text-sm text-muted-foreground">{t("Street / Details")}</p>
+                    <h2 className="text-xl font-semibold">
+                      {t("Step 2: Choose Location Method")}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {t("How would you like to specify your location?")}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-lg font-semibold"> {t("Our delivery zones")}</p>
+                <div className="space-y-3 max-h-[300px] overflow-y-scroll bg-accent border-2 rounded-xl p-4">
+                  {/* Sort: Popular landmarks first */}
+                  {selectedZone.landmarks
+                    .sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0))
+                    .map((landmark) => (
+                      <button
+                        key={landmark.name}
+                        onClick={() => handleLandmarkSelect(landmark.name)}
+                        className={`w-full p-4 bg-white border-2 rounded-xl text-left transition-all hover:border-primary ${selectedLandmark === landmark.name
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border'
+                          }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xl">
+                              {landmark.category === 'supermarket' && '🏪'}
+                              {landmark.category === 'station' && '⛽'}
+                              {landmark.category === 'market' && '🏛️'}
+                              {landmark.category === 'airport' && '✈️'}
+                              {landmark.category === 'neighborhood' && '🏘️'}
+                              {!landmark.category && '📍'}
+                            </div>
+                            <div>
+                              <p className="font-medium">{landmark.name}</p>
+                              {landmark.isPopular && (
+                                <span className="text-xs text-primary flex items-center gap-1">
+                                  <Star className="w-3 h-3 fill-current" />
+                                  {t("Popular choice")}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {selectedLandmark === landmark.name && (
+                            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                              <Check className="text-white" size={16} />
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                </div>
+                <p className="text-lg font-semibold">{t("Other option")}</p>
+
+                {/* OPTION: Drop pin on map */}
+                <button
+                  onClick={() => handleLandmarkSelect('map')}
+                  className={`w-full p-4 border-2 rounded-xl text-left transition-all hover:border-primary ${selectedLandmark === 'map'
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border'
+                    }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xl">
+                        🗺️
+                      </div>
+                      <div>
+                        <p className="font-medium">{t("Drop pin on map")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("Select your exact location")}
+                        </p>
+                      </div>
+                    </div>
+                    {selectedLandmark === 'map' && (
+                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                        <Check className="text-white" size={16} />
+                      </div>
+                    )}
+                  </div>
+                </button>
+              </Card>
+            ) : (
+              // For zones without landmarks, auto-select "describe location"
+              <div className="hidden">
+                <div>
+                  <p className="text-lg font-semibold">{t("Delivery will coming soon")}</p>
+                </div>
+              </div>
+            ))}
+
+            {/* STEP 2.5: Map Picker - Shows when user selects "Drop pin on map" */}
+            {selectedZone && selectedLandmark === 'map' && showMapPicker && (
+              <Card className="p-6 rounded-2xl shadow-card animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold">
+                      {t("Pin Your Location")}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {t("Tap the map or drag the marker to your exact location")}
+                    </p>
+                  </div>
+                </div>
+
+                <MapPicker
+                  zoneName={selectedZone.name}
+                  zoneColor={selectedZone.color}
+                  zoneGeometry={selectedZone.geometry}
+                  initialCenter={
+                    selectedZone.landmarks && selectedZone.landmarks.length > 0
+                      ? {
+                        lat: selectedZone.landmarks[0].coordinates.lat,
+                        lng: selectedZone.landmarks[0].coordinates.lng
+                      }
+                      : undefined
+                  }
+                  onLocationSelect={(coords) => {
+                    setManualCoordinates(coords);
+                  }}
+                  selectedCoordinates={manualCoordinates || undefined}
+                />
+              </Card>
+            )}
+
+            {/* STEP 3: Delivery Address */}
+            {selectedZone && selectedLandmark !== null && (selectedLandmark !== 'map' || manualCoordinates) && (
+              <Card className="p-6 rounded-2xl shadow-card animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold">
+                      {t("Step 3: Complete Address")}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {t("Provide detailed delivery instructions")}
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="address">{t("Full Address")} *</Label>
-                    <Textarea
-                      id="address"
-                      placeholder={t("Ex: Carrefour Mendong, near the pharmacy\nBlue house with white gate")}
-                      value={deliveryInfo.address}
-                      onChange={(e) => setDeliveryInfo(prev => ({ ...prev, address: e.target.value }))}
-                      className="mt-2"
-                      rows={4}
-                    />
-                  </div>
-
                   {/* Selected Zone Summary */}
                   <div className="p-4 bg-muted rounded-lg">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm text-muted-foreground">{t("Selected zone")}:</p>
+                        <p className="text-sm text-muted-foreground">{t("Delivering to")}:</p>
                         <p className="font-semibold">{selectedZone.name}</p>
+                        {deliveryInfo.landmarkName && selectedLandmark !== 'none' && selectedLandmark !== 'map' && (
+                          <p className="text-sm text-primary">
+                            📍 {selectedZone.landmarks?.find(l => l.name === deliveryInfo.landmarkName)?.name}
+                          </p>
+                        )}
+                        {selectedLandmark === 'map' && manualCoordinates && (
+                          <p className="text-sm text-primary">
+                            🎯 {t("Pin-dropped location")}
+                          </p>
+                        )}
                       </div>
                       <span
                         className="px-3 py-1 rounded-full text-white text-sm font-semibold"
@@ -344,20 +571,60 @@ const EnhancedCheckout = () => {
                       </span>
                     </div>
                   </div>
+
+                  {/* Coordinate Resolution Info */}
+                  <div className={`p-3 rounded-lg border-2 ${(deliveryInfo.landmarkName && selectedLandmark !== 'none') || (selectedLandmark === 'map' && manualCoordinates)
+                    ? 'bg-green-50 border-green-200'
+                    : deliveryInfo.additionalNotes.length > 10
+                      ? 'bg-blue-50 border-blue-200'
+                      : 'bg-orange-50 border-orange-200'
+                    }`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">{coordinateInfo.icon}</span>
+                      <div>
+                        <p className={`text-sm font-medium ${coordinateInfo.color}`}>
+                          {coordinateInfo.text}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {coordinateInfo.confidence}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="address">{t("Full Address")} *</Label>
+                    <Textarea
+                      id="address"
+                      placeholder={"Ex: House #25, blue gate, opposite pharmacy\nNear the big mango tree"}
+                      value={deliveryInfo.additionalNotes}
+                      onChange={(e) => setDeliveryInfo(prev => ({ ...prev, additionalNotes: e.target.value }))}
+                      className="mt-2"
+                      rows={4}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {t("Be specific: house color, landmarks, access instructions")}
+                    </p>
+                  </div>
                 </div>
               </Card>
             )}
 
-            {/* Contact Information */}
-            {selectedZone && (
+            {/* STEP 4: Contact Information */}
+            {selectedZone && selectedLandmark !== null && (selectedLandmark !== 'map' || manualCoordinates) && deliveryInfo.additionalNotes && (
               <Card className="p-6 rounded-2xl shadow-card animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
                     <Phone className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold">{t("Contact Information")}</h2>
-                    <p className="text-sm text-muted-foreground">{t("For delivery updates")}</p>
+                    <h2 className="text-xl font-semibold">
+                      {t("Step 4: Contact Information")}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {t("So we can reach you for delivery")}
+                    </p>
                   </div>
                 </div>
 
@@ -367,57 +634,13 @@ const EnhancedCheckout = () => {
                     <Input
                       id="contact"
                       type="tel"
-                      placeholder="+237 XXX XXX XXX"
-                      value={deliveryInfo.contact}
-                      onChange={(e) => setDeliveryInfo(prev => ({ ...prev, contact: e.target.value }))}
+                      placeholder="+1 XXX XXX XXX"
+                      value={deliveryInfo.deliveryContact}
+                      onChange={(e) => setDeliveryInfo(prev => ({ ...prev, deliveryContact: e.target.value }))}
                       className="mt-2"
+                      required
                     />
                   </div>
-
-                  <div>
-                    <Label htmlFor="notes">{t("Additional Notes (Optional)")}</Label>
-                    <Textarea
-                      id="notes"
-                      placeholder={t("Any special instructions for delivery?")}
-                      value={deliveryInfo.notes}
-                      onChange={(e) => setDeliveryInfo(prev => ({ ...prev, notes: e.target.value }))}
-                      className="mt-2"
-                      rows={2}
-                    />
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* Payment Method */}
-            {selectedZone && (
-              <Card className="p-6 rounded-2xl shadow-card animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold">{t("Payment Method")}</h2>
-                    <p className="text-sm text-muted-foreground">{t("Select payment option")}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start rounded-2xl h-auto p-4 border-primary">
-                    <CreditCard className="w-5 h-5 mr-3" />
-                    <div className="text-left">
-                      <div className="font-medium">{t("Cash on Delivery")}</div>
-                      <div className="text-sm text-muted-foreground">{t("Pay when you receive")}</div>
-                    </div>
-                  </Button>
-
-                  <Button variant="outline" className="w-full justify-start rounded-2xl h-auto p-4" disabled>
-                    <div className="w-5 h-5 mr-3 font-bold text-primary">M</div>
-                    <div className="text-left">
-                      <div className="font-medium">{t("MTN Mobile Money")}</div>
-                      <div className="text-sm text-muted-foreground">{t("Coming soon")}</div>
-                    </div>
-                  </Button>
                 </div>
               </Card>
             )}
@@ -425,28 +648,33 @@ const EnhancedCheckout = () => {
 
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-24">
+            <div className="sticky top-8 space-y-6">
               <Card className="p-6 rounded-2xl shadow-card">
-                <h2 className="text-2xl font-bold mb-6">{t("Order Summary")}</h2>
+                <h2 className="text-xl font-semibold mb-4">{t("Order Summary")}</h2>
 
-                {/* Cart Items */}
-                <div className="space-y-4 mb-6">
+                <div className="space-y-3 mb-4">
                   {cart.items.map((item) => (
                     <div key={item.product.id} className="flex gap-3">
-                      <OptimizedImage
-                        src={item.product.images[0].url || "/icons/ios/542.png"}
-                        alt={item.product.title}
-                        className="w-16 h-16 rounded-2xl object-cover"
-                        width={64}
-                        blurDataURL={item.product.images[0]?.blurDataUrl || undefined}
-                        height={64}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm line-clamp-2">{item.product.title}</h4>
-                        <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                      <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                        {item.product.images?.[0] && (
+                          <OptimizedImage
+                            src={item.product.images[0].url}
+                            alt={item.product.title}
+                            fill
+                            className="object-cover"
+                          />
+                        )}
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {item.product.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("Qty")}: {item.quantity}
+                        </p>
+                        <p className="text-sm font-semibold">
+                          {t.formatAmount(item.price * item.quantity)}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -454,76 +682,56 @@ const EnhancedCheckout = () => {
 
                 <Separator className="my-4" />
 
-                {/* Price Breakdown */}
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-sm">
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
                     <span className="text-muted-foreground">{t("Subtotal")}</span>
-                    <span className="font-medium">${subtotal.toFixed(2)}</span>
+                    <span className="font-medium">{t.formatAmount(subtotal)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {t("Delivery Fee")}
-                      {selectedZone && (
-                        <span className="text-xs ml-1">({selectedZone.code})</span>
-                      )}
-                    </span>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t("Delivery Fee")}</span>
                     <span className="font-medium">
-                      {selectedZone ? `$${deliveryFee.toFixed(2)}` : '-'}
+                      {selectedZone ? t.formatAmount(deliveryFee) : '-'}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{t("Service Fee")}</span>
-                    <span className="font-medium">${serviceFee.toFixed(2)}</span>
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>{t("Total")}</span>
-                    <span className="text-primary">${total.toFixed(2)}</span>
-                  </div>
                 </div>
 
-                {/* Delivery Estimate */}
-                {selectedZone && (
-                  <div className="mb-6 p-3 bg-primary/10 border border-primary/20 rounded-2xl">
-                    <p className="text-sm font-medium flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-primary" />
-                      {t("Estimated delivery")}: <strong>{selectedZone.estimatedDeliveryMinutes} {t("minutes")}</strong>
-                    </p>
-                  </div>
-                )}
+                <Separator className="my-4" />
 
-                {/* Security Badge */}
-                <div className="flex items-center gap-2 p-3 bg-accent rounded-2xl mb-6">
-                  <Shield className="w-5 h-5 text-success" />
-                  <p className="text-sm text-muted-foreground">
-                    {t("Secure delivery with confirmation code")}
-                  </p>
+                <div className="flex justify-between text-lg font-bold">
+                  <span>{t("Total")}</span>
+                  <span className="text-primary">{t.formatAmount(total)}</span>
                 </div>
 
-                {/* Place Order Button */}
                 <Button
-                  size="lg"
-                  className="w-full rounded-2xl shadow-primary"
                   onClick={handlePlaceOrder}
                   disabled={!canPlaceOrder() || isSubmitting}
+                  className="w-full mt-6 bg-primary hover:bg-[#089808]"
+                  size="lg"
                 >
-                  {isSubmitting
-                    ? t("Placing Order...")
-                    : !selectedZone
-                      ? t("Select Delivery Zone")
-                      : !deliveryInfo.address.trim()
-                        ? t("Enter Address")
-                        : !deliveryInfo.contact.trim()
-                          ? t("Enter Phone Number")
-                          : t("Place Order")
-                  }
+                  {isSubmitting ? t("Placing Order...") : t("Place Order")}
                 </Button>
 
-                <p className="text-xs text-center text-muted-foreground mt-4">
-                  {t("By placing an order, you agree to our Terms of Service")}
-                </p>
+                {!canPlaceOrder() && (
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    {!selectedZone && t("Please select a delivery zone")}
+                    {selectedZone && selectedLandmark === null && t("Please choose a location method")}
+                    {selectedZone && selectedLandmark === 'map' && !manualCoordinates && t("Please drop a pin on the map")}
+                    {selectedZone && selectedLandmark !== null && (selectedLandmark !== 'map' || manualCoordinates) && !deliveryInfo.additionalNotes && t("Please enter the specific address")}
+                    {selectedZone && selectedLandmark !== null && (selectedLandmark !== 'map' || manualCoordinates) && deliveryInfo.additionalNotes && !deliveryInfo.deliveryContact && t("Please enter the delivery phone number")}
+                  </p>
+                )}
+              </Card>
+
+              <Card className="p-6 rounded-2xl shadow-card">
+                <div className="flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold mb-1">{t("Secure Checkout")}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {t("Your information is protected and encrypted")}
+                    </p>
+                  </div>
+                </div>
               </Card>
             </div>
           </div>

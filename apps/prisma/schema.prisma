@@ -1,474 +1,496 @@
 generator client {
-    provider      = "prisma-client-js"
-    binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-    provider = "mongodb"
-    url      = env("DATABASE_URL")
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 // --------------------------------Media model------------------------------------
 model Media {
-    id          String     @id @default(auto()) @map("_id") @db.ObjectId
-    createdAt   DateTime   @default(now())
-    fileName    String     @unique(map: "fileName_1")
-    categories  Category[]
-    updatedAt   DateTime   @updatedAt
-    url         String
-    blurDataUrl String?
-    creatorId   String
-    Product     Product?   @relation(fields: [productId], references: [id])
-    productId   String?    @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime   @default(now())
+  fileName    String     @unique(map: "fileName_1")
+  categories  Category[]
+  updatedAt   DateTime   @updatedAt
+  url         String
+  blurDataUrl String?
+  creatorId   String
+  Product     Product?   @relation(fields: [productId], references: [id])
+  productId   String?    @db.ObjectId
 }
 
 // --------------------------------Categories model------------------------------------
 type SeoMetadata {
-    seoTitle       String?
-    seoDescription String?
-    keywords       String[]
+  seoTitle       String?
+  seoDescription String?
+  keywords       String[]
 }
 
 model Category {
-    id               String                 @id @default(auto()) @map("_id") @db.ObjectId
-    name             String
-    slug             String                 @unique(map: "slug_1")
-    description      String?
-    image            Media?                 @relation(fields: [imageId], references: [id])
-    imageId          String?                @db.ObjectId
-    products         CategoriesOnProducts[]
-    seoMetadata      SeoMetadata?
-    parentCategoryId String?                @db.ObjectId
-    parentCategory   Category?              @relation("CategoryParent", fields: [parentCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    subcategories    Category[]             @relation("CategoryParent")
-    createdAt        DateTime               @default(now())
-    updatedAt        DateTime               @updatedAt
+  id               String                 @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  slug             String                 @unique(map: "slug_1")
+  description      String?
+  image            Media?                 @relation(fields: [imageId], references: [id])
+  imageId          String?                @db.ObjectId
+  products         CategoriesOnProducts[]
+  seoMetadata      SeoMetadata?
+  parentCategoryId String?                @db.ObjectId
+  parentCategory   Category?              @relation("CategoryParent", fields: [parentCategoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subcategories    Category[]             @relation("CategoryParent")
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
 }
 
 // --------------------------------Product model------------------------------------
 enum ProductStatus {
-    DRAFT
-    VERIFIED
-    REJECTED
-    WAITING_FOR_REVIEW
+  DRAFT
+  VERIFIED
+  REJECTED
+  WAITING_FOR_REVIEW
 }
 
 enum UserRole {
-    super_admin
-    business_manager
-    customer
-    merchant
-    driver
+  super_admin
+  business_manager
+  customer
+  merchant
+  driver
 }
 
 enum DriverStatus {
-    PENDING
-    APPROVED
-    REJECTED
-    BANNED
+  PENDING
+  APPROVED
+  REJECTED
+  BANNED
 }
 
 enum TransactionType {
-    credit
-    debit
+  credit
+  debit
 }
 
 enum TransactionStatus {
-    PENDING
-    COMPLETED
-    FAILED
+  PENDING
+  COMPLETED
+  FAILED
 }
 
 enum PaymentStatus {
-    INITIALIZATION
-    INITIALIZATION_FAILED
-    COMPLETED
-    PENDING
-    FAILED
+  INITIALIZATION
+  INITIALIZATION_FAILED
+  COMPLETED
+  PENDING
+  FAILED
 }
 
 enum MerchantType {
-    FOOD
-    PHARMACY
-    GROCERY
+  FOOD
+  PHARMACY
+  GROCERY
 }
 
 enum ProductBadge {
-    BEST_SELLER
-    ORGANIC
-    NO_PRESERVATIVES
-    LOW_FAT
-    LOW_SUGAR
-    NON_GMO
-    NEW
-    SALE
+  BEST_SELLER
+  ORGANIC
+  NO_PRESERVATIVES
+  LOW_FAT
+  LOW_SUGAR
+  NON_GMO
+  NEW
+  SALE
 }
 
 enum PromotionType {
-    SPEND_X_SAVE_Y
-    BUY_X_GET_Y_FREE
-    PERCENTAGE_OFF
-    FIXED_AMOUNT_OFF
+  SPEND_X_SAVE_Y
+  BUY_X_GET_Y_FREE
+  PERCENTAGE_OFF
+  FIXED_AMOUNT_OFF
 }
 
 enum ZoneCode {
-    INNER
-    MID
-    OUTER
-    HUB_A
-    HUB_B
-    HUB_C
-    HUB_D
-    HUB_E
+  INNER
+  MID
+  OUTER
+  HUB_A
+  HUB_B
+  HUB_C
+  HUB_D
+  HUB_E
 }
 
 enum ZoneStatus {
-    ACTIVE
-    INACTIVE
-    MAINTENANCE
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
 }
 
 type Inventory {
-    quantity          Int @default(0)
-    lowStockThreshold Int @default(5)
-    stockQuantity     Int @default(0)
+  quantity          Int @default(0)
+  lowStockThreshold Int @default(5)
+  stockQuantity     Int @default(0)
 }
 
 type ProductSeoMetadata {
-    seoTitle       String
-    seoDescription String
-    keywords       String[]
+  seoTitle       String
+  seoDescription String
+  keywords       String[]
+}
+
+type LongLat {
+  lng Float
+  lat Float
 }
 
 model Product {
-    id             String                 @id @default(auto()) @map("_id") @db.ObjectId
-    title          String
-    slug           String                 @unique(map: "slug_1")
-    description    String
-    images         Media[]
-    categories     CategoriesOnProducts[]
-    price          Float
-    compareAtPrice Float?
-    inventory      Inventory?
-    unit           String?
-    status         ProductStatus          @default(DRAFT)
-    visibility     Boolean                @default(true)
-    merchant       Merchant               @relation(fields: [merchantId], references: [id])
-    merchantId     String                 @db.ObjectId
-    metadata       ProductSeoMetadata
-    rating         Float?                 @default(0)
-    reviewCount    Int?                   @default(0)
-    stock          Int?                   @default(0)
-    badges         ProductBadge[]         @default([])
-    weight         Float?
-    weightUnit     String?                @default("lb")
-    createdAt      DateTime               @default(now())
-    updatedAt      DateTime               @updatedAt
-    OrderItem      OrderItem[]
-    userWishlist   Wishlist[]
-    creatorId      String
-    promotions     ProductPromotion[]
-    cartItems      CartItem[]
-    SavedList      SavedList?             @relation(fields: [savedListId], references: [id])
-    savedListId    String?                @db.ObjectId
+  id             String                 @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  slug           String                 @unique(map: "slug_1")
+  description    String
+  images         Media[]
+  categories     CategoriesOnProducts[]
+  price          Float
+  compareAtPrice Float?
+  inventory      Inventory?
+  unit           String?
+  status         ProductStatus          @default(DRAFT)
+  visibility     Boolean                @default(true)
+  merchant       Merchant               @relation(fields: [merchantId], references: [id])
+  merchantId     String                 @db.ObjectId
+  metadata       ProductSeoMetadata
+  rating         Float?                 @default(0)
+  reviewCount    Int?                   @default(0)
+  stock          Int?                   @default(0)
+  badges         ProductBadge[]         @default([])
+  weight         Float?
+  weightUnit     String?                @default("lb")
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  OrderItem      OrderItem[]
+  userWishlist   Wishlist[]
+  creatorId      String
+  promotions     ProductPromotion[]
+  cartItems      CartItem[]
+  SavedList      SavedList?             @relation(fields: [savedListId], references: [id])
+  savedListId    String?                @db.ObjectId
 }
 
 // --------------------------------Delivery Zone model------------------------------------
-model DeliveryZone {
-    id                       String       @id @default(auto()) @map("_id") @db.ObjectId
-    name                     String
-    code                     ZoneCode
-    description              String?
-    deliveryFee              Float
-    geometry                 ZoneGeometry
-    neighborhoods            String[]
-    priority                 Int          @default(0)
-    status                   ZoneStatus   @default(ACTIVE)
-    version                  Int          @default(1)
-    estimatedDeliveryMinutes Int?
-    color                    String?
-    orders                   Order[]
-    createdAt                DateTime     @default(now())
-    updatedAt                DateTime     @updatedAt
+type Landmark {
+  name        String
+  coordinates LongLat
+  category    String? // "supermarket", "station", "market", "restaurant", etc.
+  isPopular   Boolean
+}
 
-    @@index([geometry], map: "geometry_2dsphere")
-    @@index([status])
+model DeliveryZone {
+  id                       String       @id @default(auto()) @map("_id") @db.ObjectId
+  name                     String
+  code                     ZoneCode
+  description              String?
+  deliveryFee              Float
+  geometry                 ZoneGeometry
+  landmarks                Landmark[]
+  priority                 Int          @default(0)
+  status                   ZoneStatus   @default(ACTIVE)
+  version                  Int          @default(1)
+  estimatedDeliveryMinutes Int?
+  minOrderAmount           Float?
+  color                    String?
+  orders                   Order[]
+  createdAt                DateTime     @default(now())
+  updatedAt                DateTime     @updatedAt
+
+  @@index([geometry], map: "geometry_2dsphere")
+  @@index([status])
 }
 
 type ZoneGeometry {
-    type        String // Always "Polygon" for zone boundaries
-    coordinates Json // [[[lng, lat], [lng, lat], ...]] as JSON
+  type        String // Always "Polygon" for zone boundaries
+  coordinates Json // [[[lng, lat], [lng, lat], ...]] as JSON
 }
 
 // --------------------------------Order model------------------------------------
 enum OrderStatus {
-    PENDING
-    ACCEPTED_BY_MERCHANT
-    ACCEPTED_BY_DRIVER
-    REJECTED_BY_MERCHANT
-    REJECTED_BY_DRIVER
-    CANCELED_BY_MERCHANT
-    CANCELED_BY_DRIVER
-    ON_THE_WAY
-    IN_PREPARATION
-    READY_TO_DELIVER
-    COMPLETED
+  PENDING
+  ACCEPTED_BY_MERCHANT
+  ACCEPTED_BY_DRIVER
+  REJECTED_BY_MERCHANT
+  REJECTED_BY_DRIVER
+  CANCELED_BY_MERCHANT
+  CANCELED_BY_DRIVER
+  ON_THE_WAY
+  IN_PREPARATION
+  READY_TO_DELIVER
+  COMPLETED
 }
 
 model OrderItem {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    order     Order    @relation(fields: [orderId], references: [id])
-    orderId   String   @db.ObjectId
-    product   Product  @relation(fields: [productId], references: [id])
-    productId String   @db.ObjectId
-    quantity  Int
-    price     Float
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String   @db.ObjectId
+  quantity  Int
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@unique([orderId, productId])
+  @@unique([orderId, productId])
 }
 
 type OrderPrices {
-    subtotal    Float
-    shipping    Float
-    discount    Float
-    total       Float
-    deliveryFee Float
+  subtotal    Float
+  shipping    Float
+  discount    Float
+  total       Float
+  deliveryFee Float
 }
 
 type DeliveryInfo {
-    address           String
-    additionalNotes   String?
-    // Optional: Store coordinates for driver/tracking purposes
-    location          DeliveryLocation?
-    estimatedDelivery DateTime?
-    deliveryContact   String?
+  additionalNotes      String?
+  location             LongLat
+  estimatedDelivery    DateTime?
+  deliveryContact      String?
+  landmark             Landmark?
+  coordinateSource     CoordinateSource?
+  coordinateConfidence CoordinateConfidence?
 }
 
-type DeliveryLocation {
-    type        String // "Point"
-    coordinates Float[] // [longitude, latitude]
+enum CoordinateSource {
+  LANDMARK
+  GEOCODED
+  ZONE_CENTER
+  MANUAL
+}
+
+enum CoordinateConfidence {
+  HIGH
+  MEDIUM
+  LOW
 }
 
 model Order {
-    id             String        @id @default(auto()) @map("_id") @db.ObjectId
-    deliveryInfo   DeliveryInfo
-    items          OrderItem[]
-    orderPrices    OrderPrices
-    status         OrderStatus   @default(PENDING)
-    createdAt      DateTime      @default(now())
-    updatedAt      DateTime      @updatedAt
-    user           User          @relation(fields: [userId], references: [id])
-    userId         String        @db.ObjectId
-    merchantId     String        @db.ObjectId
-    merchant       Merchant      @relation(fields: [merchantId], references: [id])
-    pickupCode     String?
-    deliveryCode   String?
-    driverId       String?
-    payment        Payment?      @relation(fields: [paymentId], references: [id])
-    paymentId      String?       @db.ObjectId
-    // Delivery zone selected at order placement
-    deliveryZone   DeliveryZone? @relation(fields: [deliveryZoneId], references: [id])
-    deliveryZoneId String?       @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  deliveryInfo   DeliveryInfo
+  items          OrderItem[]
+  orderPrices    OrderPrices
+  status         OrderStatus   @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String        @db.ObjectId
+  merchantId     String        @db.ObjectId
+  merchant       Merchant      @relation(fields: [merchantId], references: [id])
+  pickupCode     String?
+  deliveryCode   String?
+  driverId       String?
+  payment        Payment?      @relation(fields: [paymentId], references: [id])
+  paymentId      String?       @db.ObjectId
+  // Delivery zone selected at order placement
+  deliveryZone   DeliveryZone? @relation(fields: [deliveryZoneId], references: [id])
+  deliveryZoneId String?       @db.ObjectId
 
-    @@index([userId])
-    @@index([merchantId])
-    @@index([deliveryZoneId])
-    @@index([status])
-    @@index([createdAt])
+  @@index([userId])
+  @@index([merchantId])
+  @@index([deliveryZoneId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 // --------------------------------User model------------------------------------
 model User {
-    id               String                @id @default(auto()) @map("_id") @db.ObjectId
-    authId           String                @unique
-    email            String                @unique
-    fullName         String?
-    phone            String?
-    roles            UserRole[]            @default([customer])
-    cni              String?
-    driverDocument   String?
-    preferences      Json?
-    wallet           Wallet?
-    productWishlist  Wishlist[]
-    driverStatus     DriverStatus?
-    orders           Order[]
-    merchantManagers UserMerchantManager[]
-    payments         Payment[]
-    SavedList        SavedList[]
-    createdAt        DateTime?             @default(now())
-    updatedAt        DateTime?             @updatedAt
-    CartItem         CartItem[]
-    pushSubscriptions PushSubscription[]
+  id                String                @id @default(auto()) @map("_id") @db.ObjectId
+  authId            String                @unique
+  email             String                @unique
+  fullName          String?
+  phone             String?
+  roles             UserRole[]            @default([customer])
+  cni               String?
+  driverDocument    String?
+  preferences       Json?
+  wallet            Wallet?
+  productWishlist   Wishlist[]
+  driverStatus      DriverStatus?
+  orders            Order[]
+  merchantManagers  UserMerchantManager[]
+  payments          Payment[]
+  SavedList         SavedList[]
+  createdAt         DateTime?             @default(now())
+  updatedAt         DateTime?             @updatedAt
+  CartItem          CartItem[]
+  pushSubscriptions PushSubscription[]
 }
 
 // --------------------------------push notification model------------------------------------
 model PushSubscription {
-    id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    user       User     @relation(fields: [authId], references: [authId], onDelete: Cascade)
-    authId     String   @unique
-    endpoint   String
-    p256dh     String
-    auth       String
-    userAgent  String?
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User     @relation(fields: [authId], references: [authId], onDelete: Cascade)
+  authId    String   @unique
+  endpoint  String
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@unique([authId, endpoint])
+  @@unique([authId, endpoint])
 }
 
 // --------------------------------Merchant model------------------------------------
 type MerchantAddress {
-    latitude  Float
-    longitude Float
+  latitude  Float
+  longitude Float
 }
 
 model Merchant {
-    id           String                @id @default(auto()) @map("_id") @db.ObjectId
-    businessName String
-    slug         String                @unique(map: "slug_1")
-    phone        String
-    logoUrl      String?
-    bannerUrl    String?
-    isVerified   Boolean               @default(false)
-    merchantType MerchantType          @default(GROCERY)
-    address      MerchantAddress
-    createdAt    DateTime              @default(now())
-    updatedAt    DateTime              @updatedAt
-    products     Product[]
-    managers     UserMerchantManager[]
-    deliveryTime String?
-    rating       Float?
-    order        Order[]
+  id           String                @id @default(auto()) @map("_id") @db.ObjectId
+  businessName String
+  slug         String                @unique(map: "slug_1")
+  phone        String
+  logoUrl      String?
+  bannerUrl    String?
+  isVerified   Boolean               @default(false)
+  merchantType MerchantType          @default(GROCERY)
+  address      MerchantAddress
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  products     Product[]
+  managers     UserMerchantManager[]
+  deliveryTime String?
+  rating       Float?
+  order        Order[]
 }
 
 // --------------------------------Merchant Manager relation------------------------------------
 model UserMerchantManager {
-    id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId     String   @db.ObjectId
-    merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
-    merchantId String   @db.ObjectId
-    assignedAt DateTime @default(now())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String   @db.ObjectId
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId String   @db.ObjectId
+  assignedAt DateTime @default(now())
 
-    @@unique([userId, merchantId])
+  @@unique([userId, merchantId])
 }
 
 // --------------------------------Wallet model------------------------------------
 model Wallet {
-    id           String        @id @default(auto()) @map("_id") @db.ObjectId
-    user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId       String        @unique @db.ObjectId
-    balance      Float         @default(0)
-    currency     String        @default("USD")
-    createdAt    DateTime      @default(now())
-    updatedAt    DateTime      @updatedAt
-    transactions Transaction[]
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String        @unique @db.ObjectId
+  balance      Float         @default(0)
+  currency     String        @default("USD")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
 }
 
 // --------------------------------Transaction model------------------------------------
 model Transaction {
-    id          String            @id @default(auto()) @map("_id") @db.ObjectId
-    wallet      Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
-    walletId    String            @db.ObjectId
-    orderId     String?           @db.ObjectId
-    amount      Float
-    type        TransactionType
-    description String
-    status      TransactionStatus @default(PENDING)
-    createdAt   DateTime          @default(now())
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  wallet      Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId    String            @db.ObjectId
+  orderId     String?           @db.ObjectId
+  amount      Float
+  type        TransactionType
+  description String
+  status      TransactionStatus @default(PENDING)
+  createdAt   DateTime          @default(now())
 }
 
 // --------------------------------Payment model------------------------------------
 
 enum PaymentGateway {
-    STRIPE
-    CASH
+  STRIPE
+  CASH
 }
 
 model Payment {
-    id             String         @id @default(auto()) @map("_id") @db.ObjectId
-    customer       User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
-    customerId     String         @db.ObjectId
-    amountTotal    Float
-    merchantPayout Float
-    driverPayout   Float
-    platformFee    Float
-    gateway        PaymentGateway
-    status         PaymentStatus  @default(PENDING)
-    createdAt      DateTime       @default(now())
-    Order          Order[]
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  customer       User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId     String         @db.ObjectId
+  amountTotal    Float
+  merchantPayout Float
+  driverPayout   Float
+  platformFee    Float
+  gateway        PaymentGateway
+  status         PaymentStatus  @default(PENDING)
+  createdAt      DateTime       @default(now())
+  Order          Order[]
 }
 
 // --------------------------------Relation schemas------------------------------------
 model CategoriesOnProducts {
-    id         String   @id @default(cuid()) @map("_id")
-    product    Product  @relation(fields: [productId], references: [id])
-    productId  String   @db.ObjectId
-    category   Category @relation(fields: [categoryId], references: [id])
-    categoryId String   @db.ObjectId
-    assignedAt DateTime @default(now())
+  id         String   @id @default(cuid()) @map("_id")
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String   @db.ObjectId
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String   @db.ObjectId
+  assignedAt DateTime @default(now())
 
-    @@unique([productId, categoryId])
+  @@unique([productId, categoryId])
 }
 
 model ProductPromotion {
-    id              String        @id @default(auto()) @map("_id") @db.ObjectId
-    product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
-    productId       String        @db.ObjectId
-    type            PromotionType
-    title           String
-    description     String?
-    spendAmount     Float?
-    saveAmount      Float?
-    discountPercent Float?
-    minQuantity     Int?          @default(1)
-    maxDiscount     Float?
-    isActive        Boolean       @default(true)
-    startDate       DateTime?
-    endDate         DateTime?
-    createdAt       DateTime      @default(now())
-    updatedAt       DateTime      @updatedAt
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId       String        @db.ObjectId
+  type            PromotionType
+  title           String
+  description     String?
+  spendAmount     Float?
+  saveAmount      Float?
+  discountPercent Float?
+  minQuantity     Int?          @default(1)
+  maxDiscount     Float?
+  isActive        Boolean       @default(true)
+  startDate       DateTime?
+  endDate         DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-    @@unique([productId, type])
+  @@unique([productId, type])
 }
 
 model CartItem {
-    id             String   @id @default(auto()) @map("_id") @db.ObjectId
-    user           User     @relation(fields: [authId], references: [authId], onDelete: Cascade)
-    authId         String
-    product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-    productId      String   @db.ObjectId
-    quantity       Int      @default(1)
-    selectedWeight Float?
-    priceAtAdd     Float
-    unit           String?
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  user           User     @relation(fields: [authId], references: [authId], onDelete: Cascade)
+  authId         String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId      String   @db.ObjectId
+  quantity       Int      @default(1)
+  selectedWeight Float?
+  priceAtAdd     Float
+  unit           String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-    @@unique([authId, productId])
+  @@unique([authId, productId])
 }
 
 model SavedList {
-    id          String    @id @default(auto()) @map("_id") @db.ObjectId
-    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId      String    @db.ObjectId
-    name        String
-    description String?
-    products    Product[]
-    isDefault   Boolean   @default(false)
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String    @db.ObjectId
+  name        String
+  description String?
+  products    Product[]
+  isDefault   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Wishlist {
-    id         String   @id @default(cuid()) @map("_id")
-    product    Product  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    productId  String   @db.ObjectId
-    user       User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    userId     String   @db.ObjectId
-    assignedAt DateTime @default(now())
+  id         String   @id @default(cuid()) @map("_id")
+  product    Product  @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productId  String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  userId     String   @db.ObjectId
+  assignedAt DateTime @default(now())
 
-    @@unique([productId, userId])
+  @@unique([productId, userId])
 }

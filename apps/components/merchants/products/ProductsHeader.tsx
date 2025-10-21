@@ -1,16 +1,15 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, Package } from "lucide-react";
-import { getT } from "@/i18n/server-translations";
-import { getLocale } from "next-intl/server";
+import { getServerT } from "@/i18n/server-translations";
+
 
 interface ProductsHeaderProps {
      merchantId: string;
 }
 
 export default async function ProductsHeader({ merchantId }: ProductsHeaderProps) {
-     const local = await getLocale();
-     const t = await getT(local);
+     const t = await getServerT();
 
      return (
           <section className="gradient-hero py-8 sm:py-12 lg:py-16 px-4">

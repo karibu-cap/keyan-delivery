@@ -4,7 +4,7 @@
  * 
  * Usage in Server Components:
  * 
- * const t = await getT();
+ * const t = await getServerT();
  * <h1>{t('Welcome to Yetu')}</h1>
  */
 
@@ -22,13 +22,13 @@ function generateKey(text: string): string {
 /**
  * Get inline translation function for server components
  * 
- * @param locale - Optional locale override
  * @param namespace - Optional namespace for grouping
  * @returns Translation function
  */
-export async function getT(locale: string, namespace?: string) {
-    const { getTranslations } = await import('next-intl/server');
-    const t = await getTranslations({ locale: locale, namespace });
+export async function getT() {
+    const { getTranslations, getLocale } = await import('next-intl/server');
+    const locale = await getLocale();
+    const t = await getTranslations({ locale: locale });
 
     return (text: string, values?: Record<string, unknown>) => {
         const key = generateKey(text);
@@ -56,13 +56,13 @@ export async function getT(locale: string, namespace?: string) {
 /**
  * Get inline translation function for server components
  * 
- * @param locale - Optional locale override
  * @param namespace - Optional namespace for grouping
  * @returns Translation function
  */
-export async function getTRich(locale: string, namespace?: string) {
-    const { getTranslations } = await import('next-intl/server');
-    const t = await getTranslations({ locale: locale, namespace });
+export async function getTRich() {
+    const { getTranslations, getLocale } = await import('next-intl/server');
+    const locale = await getLocale();
+    const t = await getTranslations({ locale: locale });
 
     return (text: string, values?: Record<string, unknown>) => {
         const key = generateKey(text);
@@ -87,13 +87,37 @@ export async function getTRich(locale: string, namespace?: string) {
     };
 }
 
+export async function getFormatter() {
+    const { getFormatter, getLocale } = await import('next-intl/server');
+    const locale = await getLocale();
+    const formatter = await getFormatter({ locale: locale });
+
+    return (amount: number) => formatter.number(amount, { style: 'currency', currency: 'KES' });
+}
+
+export async function getFormatterDateTime() {
+    const { getFormatter, getLocale } = await import('next-intl/server');
+    const locale = await getLocale();
+    const formatter = await getFormatter({ locale: locale });
+
+    return (date: Date, displayTime: boolean = false) => formatter.dateTime(date, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: displayTime ? 'numeric' : undefined,
+        minute: displayTime ? 'numeric' : undefined,
+    });
+}
+
 
 /**
  * Convenience function that returns both t and t.rich
  */
-export async function getServerT(locale: string, namespace?: string) {
-    const t = await getT(locale, namespace);
-    const rich = await getTRich(locale, namespace);
+export async function getServerT() {
+    const t = await getT();
+    const rich = await getTRich();
+    const formatAmount = await getFormatter();
+    const formatDateTime = await getFormatterDateTime();
 
-    return Object.assign(t, { rich });
+    return Object.assign(t, { rich, formatAmount, formatDateTime });
 }

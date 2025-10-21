@@ -11,15 +11,13 @@ import { useRouter } from "next/navigation"
 
 export default function CartPage() {
     const t = useT()
-    const { cart, updateQuantity, removeItem } = useCart()
+    const { cart, updateQuantity, removeItem, clearCart } = useCart()
     const router = useRouter()
 
-    const deliveryFee = 0
-    const serviceFee = 0
     const total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0)
 
-    const finalTotal = total + deliveryFee + serviceFee
+    const finalTotal = total
 
     if (cart.items.length === 0) {
         return (
@@ -58,8 +56,10 @@ export default function CartPage() {
                         {t("Continue Shopping")}
                     </Button>
                 </Link>
-
-                <h1 className="mb-6 text-3xl font-bold">{t("Your Cart")}</h1>
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-3xl font-bold">{t("Your Cart")}</h1>
+                    <Button variant="destructive" onClick={() => clearCart()}>{t("Clear Cart")}</Button>
+                </div>
 
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Cart Items */}
@@ -115,7 +115,7 @@ export default function CartPage() {
 
                                                     <div className="flex items-center gap-4">
                                                         <span className="font-bold text-primary">
-                                                            ${(item.price * item.quantity).toFixed(2)}
+                                                            {t.formatAmount(item.price * item.quantity)}
                                                         </span>
                                                         <Button
                                                             size="icon"
@@ -144,21 +144,13 @@ export default function CartPage() {
                                 <div className="space-y-3 border-b pb-4">
                                     <div className="flex justify-between text-sm">
                                         <span className="text-muted-foreground">{t("Subtotal", { count: totalItems })} {t("items")}</span>
-                                        <span className="font-medium">${total.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">{t("Delivery Fee")}</span>
-                                        <span className="font-medium">${deliveryFee.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">{t("Service Fee")}</span>
-                                        <span className="font-medium">${serviceFee.toFixed(2)}</span>
+                                        <span className="font-medium">{t.formatAmount(total)}</span>
                                     </div>
                                 </div>
 
                                 <div className="flex justify-between py-4 text-lg font-bold">
                                     <span>{t("Total")}</span>
-                                    <span className="text-primary">${finalTotal.toFixed(2)}</span>
+                                    <span className="text-primary">{t.formatAmount(finalTotal)}</span>
                                 </div>
 
                                 <Button

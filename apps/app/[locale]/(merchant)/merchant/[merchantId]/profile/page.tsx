@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
-import { getLocale } from 'next-intl/server';
 import MerchantProfile from '@/components/merchants/MerchantProfile';
 import { getMerchantWithUser } from '@/lib/actions/server/merchants';
 
@@ -20,7 +19,7 @@ interface PageProps {
 
 export default async function MerchantProfilePage({ params }: PageProps) {
     const { merchantId } = await params;
-    const locale = await getLocale();
+
 
     const tokens = await getUserTokens();
     const authId = tokens?.decodedToken.uid;
@@ -39,7 +38,6 @@ export default async function MerchantProfilePage({ params }: PageProps) {
         <MerchantProfile
             currentMerchant={userMerchant.merchant}
             allMerchants={userMerchant.user.merchantManagers.map(m => m.merchant)}
-            locale={locale}
         />
     );
 }

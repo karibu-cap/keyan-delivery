@@ -4,7 +4,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wallet, TrendingUp, TrendingDown, Clock } from 'lucide-react';
 import { useT } from '@/hooks/use-inline-translation';
-import { format } from 'date-fns';
 
 interface WalletBalanceProps {
     wallet: {
@@ -23,13 +22,6 @@ interface WalletBalanceProps {
 export default function WalletBalance({ wallet, stats }: WalletBalanceProps) {
     const t = useT();
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: wallet.currency,
-        }).format(amount);
-    };
-
     return (
         <div className="container mx-auto max-w-7xl px-4 -mt-8 pb-12">
             <div className="grid gap-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
@@ -44,10 +36,10 @@ export default function WalletBalance({ wallet, stats }: WalletBalanceProps) {
                     <CardContent>
                         <div className="space-y-2">
                             <p className="text-4xl font-bold">
-                                {formatCurrency(wallet.balance)}
+                                {t.formatAmount(wallet.balance)}
                             </p>
                             <p className="text-sm opacity-90">
-                                {t('Last updated')}: {format(new Date(wallet.updatedAt), 'dd MMM yyyy')}
+                                {t('Last updated')}: {t.formatDateTime(wallet.updatedAt)}
                             </p>
                         </div>
                     </CardContent>
@@ -63,7 +55,7 @@ export default function WalletBalance({ wallet, stats }: WalletBalanceProps) {
                     </CardHeader>
                     <CardContent>
                         <p className="text-2xl font-bold text-primary/60">
-                            {formatCurrency(stats?.totalCredit || 0)}
+                            {t.formatAmount(stats?.totalCredit || 0)}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                             {stats?.completedTransactions || 0} {t('completed transactions')}
@@ -81,7 +73,7 @@ export default function WalletBalance({ wallet, stats }: WalletBalanceProps) {
                     </CardHeader>
                     <CardContent>
                         <p className="text-2xl font-bold text-red-600">
-                            {formatCurrency(stats?.totalDebit || 0)}
+                            {t.formatAmount(stats?.totalDebit || 0)}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                             {t('All time expenses')}
@@ -102,7 +94,7 @@ export default function WalletBalance({ wallet, stats }: WalletBalanceProps) {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">
-                                        {formatCurrency(stats.pendingAmount)}
+                                        {t.formatAmount(stats.pendingAmount)}
                                     </p>
                                     <p className="text-xs text-muted-foreground mt-1">
                                         {t('Awaiting confirmation')}

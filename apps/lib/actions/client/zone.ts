@@ -1,3 +1,5 @@
+import type { LatLng } from "leaflet";
+
 export interface DeliveryZone {
   id: string;
   name: string;
@@ -5,8 +7,16 @@ export interface DeliveryZone {
   deliveryFee: number;
   estimatedDeliveryMinutes: number;
   color: string;
-  neighborhoods: string[];
   description: string;
+  geometry: {
+    coordinates: number[][][];
+  };
+  landmarks: Array<{
+    name: string;
+    coordinates: LatLng;
+    category?: string;
+    isPopular: boolean;
+  }>;
 }
 
 /**

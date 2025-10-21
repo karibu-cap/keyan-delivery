@@ -320,7 +320,6 @@ async function seedDatabase() {
 
     console.info(`✅ Created ${merchantRecords.length} merchants`);
 
-    // Seed Delivery Zones (Yaoundé-based)
     const deliveryZonesData = [
       {
         name: "Zone Centre-Ville",
@@ -330,16 +329,71 @@ async function seedDatabase() {
         minOrderAmount: null,
         color: "#10b981",
         priority: 3,
-        neighborhoods: [
-          "Mendong",
-          "Bastos",
-          "Byem Assi Ecole",
-          "Centre Ville",
-          "Omnisport",
-          "Quartier du Lac",
-          "Nlongkak"
+        landmarks: [
+          {
+            name: "Mendong",
+            coordinates: {
+              lng: 11.5170,
+              lat: 3.8634
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Bastos",
+            coordinates: {
+              lng: 11.5050,
+              lat: 3.8700
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Byem Assi Ecole",
+            coordinates: {
+              lng: 11.5120,
+              lat: 3.8580
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Centre Ville",
+            coordinates: {
+              lng: 11.5180,
+              lat: 3.8667
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Omnisport",
+            coordinates: {
+              lng: 11.5200,
+              lat: 3.8720
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Quartier du Lac",
+            coordinates: {
+              lng: 11.5140,
+              lat: 3.8650
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Nlongkak",
+            coordinates: {
+              lng: 11.5090,
+              lat: 3.8610
+            },
+            category: "neighborhood",
+            isPopular: false
+          }
         ],
-        // Simple polygon around central Yaoundé
         geometry: {
           type: "Polygon",
           coordinates: [
@@ -361,17 +415,98 @@ async function seedDatabase() {
         minOrderAmount: 15,
         color: "#3b82f6",
         priority: 2,
-        neighborhoods: [
-          "Melen",
-          "Nkolndongo",
-          "Essos",
-          "Nkol Eton",
-          "Mokolo",
-          "Ngoa Ekelle",
-          "Briqueterie",
-          "Elig Essono",
-          "Biyem Assi",
-          "Emana"
+        // NEW: Add landmarks
+        landmarks: [
+          {
+            name: "Melen",
+            coordinates: {
+              lng: 11.5000,
+              lat: 3.8600
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Nkolndongo",
+            coordinates: {
+              lng: 11.5100,
+              lat: 3.8550
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Essos",
+            coordinates: {
+              lng: 11.5200,
+              lat: 3.8750
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Nkol Eton",
+            coordinates: {
+              lng: 11.5050,
+              lat: 3.8650
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Mokolo",
+            coordinates: {
+              lng: 11.5150,
+              lat: 3.8700
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Ngoa Ekelle",
+            coordinates: {
+              lng: 11.5080,
+              lat: 3.8620
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Briqueterie",
+            coordinates: {
+              lng: 11.5180,
+              lat: 3.8680
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Elig Essono",
+            coordinates: {
+              lng: 11.5020,
+              lat: 3.8580
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Biyem Assi",
+            coordinates: {
+              lng: 11.4980,
+              lat: 3.8540
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Emana",
+            coordinates: {
+              lng: 11.5220,
+              lat: 3.8780
+            },
+            category: "neighborhood",
+            isPopular: false
+          }
         ],
         geometry: {
           type: "Polygon",
@@ -394,16 +529,89 @@ async function seedDatabase() {
         minOrderAmount: 25,
         color: "#f59e0b",
         priority: 1,
-        neighborhoods: [
-          "Ekounou",
-          "Emombo",
-          "Nkolbisson",
-          "Simbock",
-          "Mvog Ada",
-          "Odza",
-          "Nkomo",
-          "Mballa 2",
-          "Nsimeyong"
+        // NEW: Add landmarks
+        landmarks: [
+          {
+            name: "Ekounou",
+            coordinates: {
+              lng: 11.5400,
+              lat: 3.8900
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Emombo",
+            coordinates: {
+              lng: 11.4700,
+              lat: 3.8500
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Nkolbisson",
+            coordinates: {
+              lng: 11.4600,
+              lat: 3.8700
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Simbock",
+            coordinates: {
+              lng: 11.5500,
+              lat: 3.8800
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Mvog Ada",
+            coordinates: {
+              lng: 11.5100,
+              lat: 3.9000
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Odza",
+            coordinates: {
+              lng: 11.5300,
+              lat: 3.8950
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Nkomo",
+            coordinates: {
+              lng: 11.4800,
+              lat: 3.8600
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Mballa 2",
+            coordinates: {
+              lng: 11.5600,
+              lat: 3.8850
+            },
+            category: "neighborhood",
+            isPopular: false
+          },
+          {
+            name: "Nsimeyong",
+            coordinates: {
+              lng: 11.5200,
+              lat: 3.9050
+            },
+            category: "neighborhood",
+            isPopular: false
+          }
         ],
         geometry: {
           type: "Polygon",
@@ -426,10 +634,34 @@ async function seedDatabase() {
         minOrderAmount: 20,
         color: "#8b5cf6",
         priority: 2,
-        neighborhoods: [
-          "Nsimalen",
-          "Aéroport",
-          "Zone Aéroportuaire"
+        landmarks: [
+          {
+            name: "Nsimalen",
+            coordinates: {
+              lng: 11.5530,
+              lat: 3.7220
+            },
+            category: "neighborhood",
+            isPopular: true
+          },
+          {
+            name: "Aéroport",
+            coordinates: {
+              lng: 11.5535,
+              lat: 3.7236
+            },
+            category: "airport",
+            isPopular: true
+          },
+          {
+            name: "Zone Aéroportuaire",
+            coordinates: {
+              lng: 11.5600,
+              lat: 3.7300
+            },
+            category: "neighborhood",
+            isPopular: false
+          }
         ],
         geometry: {
           type: "Polygon",
@@ -452,10 +684,10 @@ async function seedDatabase() {
           data: {
             name: zone.name,
             code: zone.code,
-            description: `Delivery zone covering ${zone.neighborhoods.join(', ')}`,
+            description: `Delivery zone covering ${zone.landmarks.map(l => l.name).join(', ')}`,
             deliveryFee: zone.deliveryFee,
-            geometry: zone.geometry, // Json type
-            neighborhoods: zone.neighborhoods,
+            geometry: zone.geometry,
+            landmarks: zone.landmarks,
             priority: zone.priority,
             status: ZoneStatus.ACTIVE,
             version: 1,
@@ -634,7 +866,6 @@ async function seedDatabase() {
         .map(async () => {
           const randomUser = faker.helpers.arrayElement(userRecords) as { id: string }
           const randomZone = faker.helpers.arrayElement(deliveryZoneRecords)
-          const randomNeighborhood = faker.helpers.arrayElement(randomZone.neighborhoods)
 
           const orderItems = Array(faker.number.int({ min: 1, max: 3 }))
             .fill(null)
@@ -658,15 +889,12 @@ async function seedDatabase() {
               merchantId: faker.helpers.arrayElement(merchantRecords).id,
               deliveryZoneId: randomZone.id,
               deliveryInfo: {
-                address: `${faker.location.streetAddress()}, ${randomNeighborhood}, Yaoundé`,
-                additionalNotes: Math.random() > 0.5 ? faker.lorem.sentence() : null,
+                additionalNotes: `${faker.location.streetAddress()}, Yaoundé`,
                 location: {
-                  type: "Point",
-                  coordinates: [
-                    faker.location.longitude({ min: 11.45, max: 11.58 }), // Yaoundé longitude
-                    faker.location.latitude({ min: 3.82, max: 3.91 }) // Yaoundé latitude
-                  ]
-                }
+                  lng: deliveryZonesData[0].landmarks[0].coordinates.lng, // Yaoundé longitude
+                  lat: deliveryZonesData[0].landmarks[0].coordinates.lat // Yaoundé latitude
+                },
+                landmark: deliveryZonesData[0].landmarks[0],
               },
               orderPrices: {
                 subtotal,

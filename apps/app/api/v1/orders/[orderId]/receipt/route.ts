@@ -181,15 +181,9 @@ export async function GET(
       <div class="section">
         <div class="section-title">Delivery Information</div>
         <div class="info-row">
-          <span class="label">Address:</span>
-          <span>${order.deliveryInfo.address}</span>
+          <span class="label">Notes:</span>
+          <span>${order.deliveryInfo.additionalNotes}</span>
         </div>
-        ${order.deliveryInfo.additionalNotes ? `
-          <div class="info-row">
-            <span class="label">Notes:</span>
-            <span>${order.deliveryInfo.additionalNotes}</span>
-          </div>
-        ` : ""}
       </div>
 
       <div class="section">

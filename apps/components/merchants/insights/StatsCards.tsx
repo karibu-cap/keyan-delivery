@@ -1,7 +1,7 @@
 'use client';
 
 import { useT } from '@/hooks/use-inline-translation';
-import { TrendingUp, TrendingDown, ShoppingBag, DollarSign, CheckCircle, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, ShoppingBag, WalletIcon, CheckCircle, BarChart3 } from 'lucide-react';
 
 interface Stats {
     totalRevenue: number;
@@ -23,9 +23,9 @@ export default function StatsCards({ stats }: StatsCardsProps) {
     const cards = [
         {
             title: t('Total Revenue'),
-            value: `$${stats.totalRevenue.toFixed(2)}`,
+            value: t.formatAmount(stats.totalRevenue),
             change: stats.revenueChange,
-            icon: DollarSign,
+            icon: WalletIcon,
             bgColor: 'bg-blue-500',
         },
         {
@@ -45,7 +45,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         },
         {
             title: t('Average Order Value'),
-            value: `$${stats.averageOrderValue.toFixed(2)}`,
+            value: t.formatAmount(stats.averageOrderValue),
             change: stats.avgOrderChange,
             icon: BarChart3,
             bgColor: 'bg-orange-500',

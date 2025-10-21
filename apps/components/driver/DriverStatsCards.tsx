@@ -2,6 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { useDriverOrders } from "@/hooks/use-driver-orders";
+import { useT } from "@/hooks/use-inline-translation";
 import { useWallet } from "@/hooks/use-wallet";
 import {
     Package,
@@ -11,12 +12,9 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 
-interface DriverStatsCardsProps {
-}
 
-export function DriverStatsCards({
-}: DriverStatsCardsProps) {
-
+export function DriverStatsCards() {
+    const t = useT()
     const { balance, refreshWallet } = useWallet();
     const { availableOrders, inProgressOrders, completedOrders } = useDriverOrders();
 
@@ -69,7 +67,7 @@ export function DriverStatsCards({
                     <div>
                         <p className="text-sm text-muted-foreground">Wallet Balance</p>
                         <p className="text-2xl font-bold text-primary">
-                            ${balance.toFixed(2)}
+                            {t.formatAmount(balance)}
                         </p>
                     </div>
                 </div>

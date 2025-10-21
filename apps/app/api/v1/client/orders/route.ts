@@ -1,9 +1,10 @@
+import { resolveDeliveryCoordinates, validateCoordinatesInZones } from '@/lib/actions/server/delivery-zones';
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { notifyMerchantNewOrder } from '@/lib/notifications/push-service';
 import { prisma } from '@/lib/prisma';
-import { OrderItem } from '@prisma/client';
-import { getLocale } from 'next-intl/server';
+import { OrderStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
       deliveryInfo,
       orderPrices,
       deliveryCode,
-      deliveryZoneId // NEW: Delivery zone ID
+      deliveryZoneId
     } = body;
 
     // Validate required fields
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!deliveryInfo || !deliveryInfo.address || !deliveryInfo.deliveryContact) {
+    if (!deliveryInfo || !deliveryInfo.deliveryContact) {
       return NextResponse.json(
         { success: false, error: 'Delivery information is required' },
         { status: 400 }
@@ -74,6 +75,12 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
+
+    console.log('🔍 Resolving coordinates for order...');
+    console.log('Zone ID:', deliveryZoneId);
+    console.log('Address:', deliveryInfo.additionalNote);
+    console.log('Landmark Name:', deliveryInfo.landmarkName);
+    console.log('Manual Coordinates:', deliveryInfo.manualCoordinates);
 
     if (deliveryZone.status !== 'ACTIVE') {
       return NextResponse.json(
@@ -117,10 +124,43 @@ export async function POST(request: NextRequest) {
       }
     }
 
+
+    if (deliveryInfo.manualCoordinates) {
+      console.log('📍 Validating manual coordinates...');
+
+      const isInZone = await validateCoordinatesInZones(deliveryInfo.manualCoordinates);
+
+      if (!isInZone) {
+        console.error('❌ Manual coordinates outside all delivery zones!');
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Selected location is outside our delivery zones. Please select a location within the highlighted area.'
+          },
+          { status: 400 }
+        );
+      }
+
+      console.log('✅ Manual coordinates validated - within zone');
+    }
+
     // Generate codes if not provided
     const finalDeliveryCode = deliveryCode || Math.random().toString(36).substring(2, 8).toUpperCase();
+    const resolvedCoordinates = await resolveDeliveryCoordinates(
+      deliveryZoneId,
+      deliveryInfo.additionalNote,
+      deliveryInfo.landmarkName,
+      deliveryInfo.manualCoordinates
+    );
 
-    // NEW: Calculate estimated delivery time based on zone
+    console.log('✅ Coordinates resolved:', {
+      coordinates: resolvedCoordinates.coordinates,
+      source: resolvedCoordinates.source,
+      confidence: resolvedCoordinates.confidence,
+      landmark: resolvedCoordinates.landmark
+    });
+
+    // Calculate estimated delivery time
     const estimatedDelivery = deliveryZone.estimatedDeliveryMinutes
       ? new Date(Date.now() + deliveryZone.estimatedDeliveryMinutes * 60 * 1000)
       : null;
@@ -130,33 +170,26 @@ export async function POST(request: NextRequest) {
       data: {
         userId: user.id,
         merchantId: items[0].merchantId,
-        deliveryZoneId: deliveryZoneId, // NEW: Link to delivery zone
+        deliveryZoneId: deliveryZoneId,
         deliveryInfo: {
-          address: deliveryInfo.address,
-          location: deliveryInfo.location ? {
-            type: "Point",
-            coordinates: deliveryInfo.location.coordinates
-          } : undefined,
+          additionalNotes: deliveryInfo.additionalNotes,
           deliveryContact: deliveryInfo.deliveryContact,
-          additionalNotes: deliveryInfo.additionalNotes || null,
           estimatedDelivery: estimatedDelivery,
+          location: resolvedCoordinates.coordinates,
+          landmark: resolvedCoordinates.landmark,
+          coordinateSource: resolvedCoordinates.source,
+          coordinateConfidence: resolvedCoordinates.confidence
         },
-        orderPrices: {
-          subtotal: orderPrices.subtotal,
-          shipping: orderPrices.shipping,
-          discount: orderPrices.discount || 0,
-          total: orderPrices.total,
-          deliveryFee: orderPrices.deliveryFee,
-        },
-        deliveryCode: finalDeliveryCode,
-        status: 'PENDING',
         items: {
-          create: items.map((item: OrderItem) => ({
+          create: items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             price: item.price,
           })),
         },
+        orderPrices: orderPrices,
+        status: OrderStatus.PENDING,
+        deliveryCode: finalDeliveryCode,
       },
       include: {
         items: {
@@ -164,19 +197,20 @@ export async function POST(request: NextRequest) {
             product: {
               include: {
                 images: true,
+                merchant: true,
               },
             },
           },
         },
-        deliveryZone: true, // NEW: Include delivery zone in response
-        merchant: {
-          select: {
-            businessName: true,
-            phone: true,
-          }
-        }
+        deliveryZone: true,
       },
     });
+
+    console.log('✅ Order created successfully:', order.id);
+    console.log('📊 Order details:');
+    console.log('  - Coordinate source:', order.deliveryInfo.coordinateSource);
+    console.log('  - Coordinate confidence:', order.deliveryInfo.coordinateConfidence);
+    console.log('  - Location:', order.deliveryInfo.location);
 
     // Update product stock quantities
     for (const item of items) {
@@ -200,12 +234,10 @@ export async function POST(request: NextRequest) {
 
     try {
       console.log('Start notify the partner .......')
-      const locale = await getLocale()
       await notifyMerchantNewOrder(
         order.merchantId,
         order.id,
         order.orderPrices.total,
-        locale,
       );
       console.info('✅ Notification sent to merchant for new order:', order.id);
     } catch (error) {

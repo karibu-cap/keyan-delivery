@@ -5,8 +5,8 @@ import { OptimizedImage } from "@/components/ClsOptimization";
 import { Package } from "lucide-react";
 import Link from "next/link";
 import type { Product } from "@/types/merchant_types";
-import { getT } from "@/i18n/server-translations";
-import { getLocale } from "next-intl/server";
+import { getServerT } from "@/i18n/server-translations";
+
 import { SlideUp, StaggerChildren, StaggerItem } from "./animations/TransitionWrappers";
 
 interface RecentProductsProps {
@@ -15,8 +15,7 @@ interface RecentProductsProps {
 }
 
 export default async function RecentProducts({ products, merchantId }: RecentProductsProps) {
-     const local = await getLocale();
-     const t = await getT(local);
+     const t = await getServerT();
 
      if (!products || products.length === 0) {
           return null;
@@ -78,7 +77,7 @@ export default async function RecentProducts({ products, merchantId }: RecentPro
                                                             </p>
                                                             <div className="flex items-center gap-2 flex-wrap">
                                                                  <span className="font-bold text-sm sm:text-base">
-                                                                      ${product.price.toFixed(2)}
+                                                                      {t.formatAmount(product.price)}
                                                                  </span>
                                                                  <Badge
                                                                       variant={product.status === 'VERIFIED' ? 'default' : 'secondary'}

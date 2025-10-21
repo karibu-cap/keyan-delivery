@@ -113,13 +113,6 @@ export default function TransactionsList({
         }
     };
 
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
-    };
-
     return (
         <Card>
             <CardHeader>
@@ -232,7 +225,7 @@ export default function TransactionsList({
                                             )}
                                         >
                                             {transaction.type === 'credit' ? '+' : '-'}
-                                            {formatCurrency(transaction.amount)}
+                                            {t.formatAmount(transaction.amount)}
                                         </p>
                                     </div>
                                 </div>

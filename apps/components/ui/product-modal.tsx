@@ -20,6 +20,7 @@ import { Badge } from "./badge";
 import { Button } from "./button";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "./dialog";
 import { OptimizedImage } from "../ClsOptimization";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface ProductModalProps {
     product: IProduct | null;
@@ -33,6 +34,7 @@ interface WeightOption {
 }
 
 export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
+    const t = useT();
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [selectedWeight, setSelectedWeight] = useState<number | null>(null);
@@ -165,12 +167,12 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                             <div className="absolute top-4 right-4 space-y-2">
                                 {product.badges?.includes('BEST_SELLER') && (
                                     <Badge variant="bestSeller" className="text-xs shadow-md">
-                                        🏆 Best Seller
+                                        🏆 {t('Best Seller')}
                                     </Badge>
                                 )}
                                 {product.badges?.includes('ORGANIC') && (
                                     <Badge variant="organic" className="text-xs shadow-md block">
-                                        🌿 Organic
+                                        🌿 {t('Organic')}
                                     </Badge>
                                 )}
                                 {savings && (
@@ -217,7 +219,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                 <div className="flex items-start justify-between mb-3">
                                     <Badge variant="inStock" className="text-xs">
                                         <CheckCircle className="w-3 h-3 mr-1" />
-                                        In Stock
+                                        {t('In Stock')}
                                     </Badge>
                                     <Button
                                         variant="ghost"
@@ -241,7 +243,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                     variant="link"
                                     className="text-sm p-0 h-auto text-primary hover:text-primary/80"
                                 >
-                                    Visit {product.merchant.businessName}
+                                    {t('Visit')} {product.merchant.businessName}
                                     <ChevronRight className="w-4 h-4 ml-1" />
                                 </Button>
                             </div>
@@ -264,7 +266,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                         {product.rating.toFixed(1)}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                        ({product.reviewCount} reviews)
+                                        ({product.reviewCount} {t('reviews')})
                                     </span>
                                 </div>
                             )}
@@ -273,16 +275,16 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                             <div className="space-y-3">
                                 <div className="flex items-baseline space-x-3">
                                     <span className="text-4xl font-bold text-gray-900">
-                                        ${currentPrice.toFixed(2)}
+                                        {t.formatAmount(currentPrice)}
                                     </span>
                                     {product.compareAtPrice && (
                                         <>
                                             <span className="text-xl text-gray-400 line-through">
-                                                ${product.compareAtPrice.toFixed(2)}
+                                                {t.formatAmount(product.compareAtPrice)}
                                             </span>
                                             {savings && (
                                                 <Badge variant="destructive" className="text-xs">
-                                                    Save ${savings.amount.toFixed(2)}
+                                                    {t('Save')} {t.formatAmount(savings.amount)}
                                                 </Badge>
                                             )}
                                         </>
@@ -299,7 +301,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                             {weightOptions.length > 0 && (
                                 <div className="space-y-3">
                                     <label className="text-sm font-semibold text-gray-900 block">
-                                        Choose Size:
+                                        {t('Choose Size')}
                                     </label>
                                     <div className="grid grid-cols-2 gap-2">
                                         {weightOptions.map((option) => (
@@ -351,7 +353,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                         </Button>
                                     </div>
                                     <span className="text-sm text-gray-600">
-                                        Total: <span className="font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
+                                        {t('Total')} <span className="font-bold text-gray-900">{t.formatAmount(totalPrice)}</span>
                                     </span>
                                 </div>
                             </div>
@@ -362,7 +364,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                     className="w-full bg-primary hover:bg-primary text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
                                     onClick={handleAddToCart}
                                 >
-                                    Add to Cart • ${totalPrice.toFixed(2)}
+                                    {t('Add to Cart')} • {t.formatAmount(totalPrice)}
                                 </Button>
                             </div>
 
@@ -370,22 +372,22 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                             <div className="grid grid-cols-3 gap-3 pt-4">
                                 <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
                                     <Truck className="w-5 h-5 text-primary mb-2" />
-                                    <span className="text-xs font-medium text-gray-700">Free Delivery</span>
+                                    <span className="text-xs font-medium text-gray-700">{t('Free Delivery')}</span>
                                 </div>
                                 <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
                                     <Shield className="w-5 h-5 text-primary mb-2" />
-                                    <span className="text-xs font-medium text-gray-700">100% Guarantee</span>
+                                    <span className="text-xs font-medium text-gray-700">{t('100% Guarantee')}</span>
                                 </div>
                                 <div className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-lg">
                                     <Package className="w-5 h-5 text-primary mb-2" />
-                                    <span className="text-xs font-medium text-gray-700">Secure Packaging</span>
+                                    <span className="text-xs font-medium text-gray-700">{t('Secure Packaging')}</span>
                                 </div>
                             </div>
 
                             {/* Product Description */}
                             {product.description && (
                                 <div className="pt-4 border-t border-gray-200">
-                                    <h3 className="font-semibold text-gray-900 mb-2">About this product</h3>
+                                    <h3 className="font-semibold text-gray-900 mb-2">{t('About this product')}</h3>
                                     <p className="text-sm text-gray-600 leading-relaxed">
                                         {product.description}
                                     </p>

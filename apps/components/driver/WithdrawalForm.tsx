@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, DollarSign } from "lucide-react";
+import { Loader2, WalletIcon } from "lucide-react";
 
 interface WithdrawalFormProps {
    availableBalance: number;
@@ -107,7 +107,7 @@ export function WithdrawalForm({ availableBalance, onSuccess }: WithdrawalFormPr
       <Card className="rounded-2xl shadow-card">
          <CardHeader>
             <CardTitle className="flex items-center gap-2">
-               <DollarSign className="w-5 h-5 text-primary" />
+               <WalletIcon className="w-5 h-5 text-primary" />
                Withdraw Funds
             </CardTitle>
          </CardHeader>

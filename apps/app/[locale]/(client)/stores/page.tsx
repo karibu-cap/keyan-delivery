@@ -1,9 +1,9 @@
 import { StoresContent } from "@/components/client/stores/StoresContent";
 import { StoresLoading } from "@/components/client/stores/StoresLoading";
-import { getT } from "@/i18n/server-translations";
+import { getServerT } from "@/i18n/server-translations";
 import { fetchMerchants, IMerchant } from "@/lib/actions/server/stores";
 import type { MerchantType } from "@prisma/client";
-import { getLocale } from "next-intl/server";
+
 import { Suspense } from "react";
 
 // Force dynamic rendering for this page
@@ -15,8 +15,8 @@ export const metadata = {
 };
 
 async function getStores(): Promise<IMerchant[]> {
-  const locale = await getLocale();
-  const t = await getT(locale);
+
+  const t = await getServerT();
   try {
     const response = await fetchMerchants({
       limit: 50,

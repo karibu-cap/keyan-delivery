@@ -66,9 +66,9 @@ const Navbar = () => {
       const position = await new Promise<GeolocationPosition>(
         (resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            timeout: 10000,
-            maximumAge: 300000,
-            enableHighAccuracy: false,
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
           });
         }
       );

@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Package, DollarSign, ShoppingBag, Star } from "lucide-react";
-import { getT } from "@/i18n/server-translations";
-import { getLocale } from "next-intl/server";
+import { Package, WalletIcon, ShoppingBag, Star } from "lucide-react";
+import { getServerT } from "@/i18n/server-translations";
+
 import type { DashboardStats } from "@/types/merchant_types";
 import { StaggerChildren, StaggerItem, ScaleIn } from "./animations/TransitionWrappers";
 
@@ -10,8 +10,7 @@ interface StatsCardsProps {
 }
 
 export default async function StatsCards({ stats }: StatsCardsProps) {
-     const local = await getLocale();
-     const t = await getT(local);
+     const t = await getServerT();
 
      const cards = [
           {
@@ -24,9 +23,9 @@ export default async function StatsCards({ stats }: StatsCardsProps) {
           },
           {
                title: t("Monthly Revenue"),
-               value: `$${stats.monthlyRevenue.toLocaleString()}`,
+               value: stats.monthlyRevenue.toLocaleString(),
                subtitle: `${stats.completedOrdersCount} ${t("completed")}`,
-               icon: DollarSign,
+               icon: WalletIcon,
                color: "text-primary/60",
                bgColor: "bg-primary/10 dark:bg-primary",
           },

@@ -43,6 +43,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
 }
 
 @layer base {
@@ -92,8 +96,9 @@
     --shadow-card: 220 10% 20% / 0.08;
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning: hsl(38, 92%, 50%);
+    --warning-foreground: hsl(0, 0%, 100%);
+    --destructive-foreground: hsl(0, 0%, 100%);
   }
 
   /* Orange Theme (Food) */

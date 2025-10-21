@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getT } from "@/i18n/server-translations";
+import { getServerT } from "@/i18n/server-translations";
 import { Package } from "lucide-react";
-import { getLocale } from "next-intl/server";
+
 import Link from "next/link";
 
 /**
  * 404 page for products
  */
 export default async function ProductsNotFound() {
-     const local = await getLocale()
-     const t = await getT(local)
+
+     const t = await getServerT()
      return (
           <div className="min-h-screen bg-background">
 

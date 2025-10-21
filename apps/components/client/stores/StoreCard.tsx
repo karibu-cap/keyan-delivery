@@ -6,7 +6,6 @@ import { useT } from "@/hooks/use-inline-translation";
 import { IMerchant } from "@/lib/actions/server/stores";
 import { MerchantType } from "@prisma/client";
 import {
-    Clock,
     Pill,
     ShoppingBag,
     Star,
@@ -76,7 +75,6 @@ export function StoreCard({ store, index }: StoreCardProps) {
                             <span className="font-medium">
                                 {store.rating?.toFixed(1) || "4.5"}
                             </span>
-                            <span className="text-gray-400">• 500+ ratings</span>
                         </div>
                     </div>
                 </div>
@@ -85,52 +83,6 @@ export function StoreCard({ store, index }: StoreCardProps) {
                         {t("In-store prices")}
                     </Badge>
                 )}
-            </div>
-
-            {/* Delivery Time */}
-            <div className="flex items-center space-x-2 mb-4 bg-primary/5 rounded-lg px-3 py-2">
-                <Clock className="w-4 h-4 text-primary/60" />
-                <span className="text-sm font-medium text-primary/70">
-                    {t("Delivery by")} {store.deliveryTime || "10:30am"}
-                </span>
-            </div>
-
-            {/* Promotional Tags */}
-            <div className="flex flex-wrap gap-2 mb-4">
-                {merchantType === MerchantType.GROCERY && (
-                    <>
-                        <Badge variant="promotional" className="text-xs">
-                            {t("$5 off first order")}
-                        </Badge>
-                        <Badge
-                            variant="outline"
-                            className="text-xs bg-blue-50 text-blue-700 border-blue-200"
-                        >
-                            🚚 {t("Free delivery")}
-                        </Badge>
-                    </>
-                )}
-                {merchantType === MerchantType.FOOD && (
-                    <Badge variant="promotional" className="text-xs">
-                        🔥 {t("10% off orders $25+")}
-                    </Badge>
-                )}
-                {merchantType === MerchantType.PHARMACY && (
-                    <Badge
-                        variant="outline"
-                        className="text-xs bg-purple-50 text-purple-700 border-purple-200"
-                    >
-                        ⚡ {t("Same-day delivery")}
-                    </Badge>
-                )}
-            </div>
-
-            {/* Delivery Fee */}
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-                <span className="text-sm text-gray-600">{t("Delivery fee")}</span>
-                <span className="text-sm font-semibold text-primary/60">
-                    {t("FREE ($0.00)")}
-                </span>
             </div>
 
             {/* Action Buttons */}
