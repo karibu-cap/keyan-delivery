@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import { Input } from "@/components/ui/input";
 import {
      Select,
@@ -7,8 +8,7 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select";
-import { Search } from "lucide-react";
-import { ProductStatus } from "@prisma/client";
+import { Search, Filter } from "lucide-react";
 import { useT } from "@/hooks/use-inline-translation";
 
 interface ProductsFiltersProps {
@@ -22,31 +22,35 @@ export default function ProductsFilters({
      searchQuery,
      statusFilter,
      onSearchChange,
-     onStatusChange
+     onStatusChange,
 }: ProductsFiltersProps) {
-     const t = useT()
+     const t = useT();
+
      return (
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-               <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-4">
+               {/* Search Input */}
+               <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
-                         placeholder="Search products by name or category..."
+                         placeholder={t("Search products...")}
                          value={searchQuery}
                          onChange={(e) => onSearchChange(e.target.value)}
-                         className="pl-10"
+                         className="pl-10 h-10 sm:h-11"
                     />
                </div>
 
+               {/* Status Filter */}
                <Select value={statusFilter} onValueChange={onStatusChange}>
-                    <SelectTrigger className="w-full md:w-48">
+                    <SelectTrigger className="w-full sm:w-[200px] h-10 sm:h-11">
+                         <Filter className="w-4 h-4 mr-2" />
                          <SelectValue placeholder={t("Filter by status")} />
                     </SelectTrigger>
                     <SelectContent>
                          <SelectItem value="ALL">{t("All Status")}</SelectItem>
-                         <SelectItem value={ProductStatus.VERIFIED}>{t("Verified")}</SelectItem>
-                         <SelectItem value={ProductStatus.DRAFT}>{t("Draft")}</SelectItem>
-                         <SelectItem value={ProductStatus.REJECTED}>{t("Rejected")}</SelectItem>
-                         <SelectItem value={ProductStatus.WAITING_FOR_REVIEW}>{t("Waiting for Review")}</SelectItem>
+                         <SelectItem value="VERIFIED">{t("Verified")}</SelectItem>
+                         <SelectItem value="DRAFT">{t("Draft")}</SelectItem>
+                         <SelectItem value="REJECTED">{t("Rejected")}</SelectItem>
+                         <SelectItem value="WAITING_FOR_REVIEW">{t("Waiting for Review")}</SelectItem>
                     </SelectContent>
                </Select>
           </div>

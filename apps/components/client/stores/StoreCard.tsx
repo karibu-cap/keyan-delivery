@@ -136,7 +136,7 @@ export function StoreCard({ store, index }: StoreCardProps) {
             {/* Action Buttons */}
             <div className="flex space-x-2">
                 <Button
-                    className="flex-1 bg-primary hover:bg-primary/90 text-white shadow-sm hover:shadow-md transition-all"
+                    className="flex-1 bg-primary hover:bg-primary text-white shadow-sm hover:shadow-md transition-all"
                     onClick={handleShopNowClick}
                 >
                     {t("Shop now")}

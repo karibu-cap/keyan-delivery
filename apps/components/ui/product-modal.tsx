@@ -359,7 +359,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                             {/* Action Buttons */}
                             <div className="space-y-3 pt-2">
                                 <Button
-                                    className="w-full bg-primary hover:bg-primary/90 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+                                    className="w-full bg-primary hover:bg-primary text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
                                     onClick={handleAddToCart}
                                 >
                                     Add to Cart • ${totalPrice.toFixed(2)}

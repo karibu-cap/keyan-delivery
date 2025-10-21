@@ -20,7 +20,7 @@ export default async function NotFound() {
                         {t("The store you&apos;re looking for doesn&apos;t exist or is currently unavailable.")}
                     </p>
                     <Link href="/stores">
-                        <Button className="bg-primary hover:bg-primary/90">
+                        <Button className="bg-primary hover:bg-primary">
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             {t("Back to Stores")}
                         </Button>

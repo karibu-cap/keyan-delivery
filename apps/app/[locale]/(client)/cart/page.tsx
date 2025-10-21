@@ -162,7 +162,7 @@ export default function CartPage() {
                                 </div>
 
                                 <Button
-                                    className="w-full bg-primary hover:bg-primary/80"
+                                    className="w-full bg-primary hover:bg-primary"
                                     size="lg"
                                     onClick={() => router.push("/checkout")}
                                 >

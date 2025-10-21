@@ -81,7 +81,7 @@ export function HomePageClient() {
                                 <AuthModal redirectTo={ROUTES.newMerchant}>
                                     <Button
                                         size="lg"
-                                        className="w-full bg-primary hover:bg-primary/90 shadow-primary"
+                                        className="w-full bg-primary hover:bg-primary shadow-primary"
                                     >
                                         {t("Apply as Merchant")}
                                     </Button>
@@ -121,7 +121,7 @@ export function HomePageClient() {
                                 <AuthModal redirectTo={isDriver() ? ROUTES.driverDashboard : ROUTES.driverApply}>
                                     <Button
                                         size="lg"
-                                        className="w-full bg-primary hover:bg-primary/90 shadow-primary"
+                                        className="w-full bg-primary hover:bg-primary shadow-primary"
                                     >
                                         {isDriver() ? "Go to driver dashboard" : "Apply as Driver"}
                                     </Button>

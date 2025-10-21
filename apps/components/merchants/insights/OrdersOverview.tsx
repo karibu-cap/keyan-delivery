@@ -35,7 +35,7 @@ export default function OrdersOverview({ breakdown }: OrdersOverviewProps) {
         {
             label: 'Completed',
             value: breakdown.completed,
-            color: 'bg-primary/50',
+            color: 'bg-primary',
             lightColor: 'bg-primary/10',
             textColor: 'text-primary/70',
             icon: CheckCircle,
@@ -97,7 +97,7 @@ export default function OrdersOverview({ breakdown }: OrdersOverviewProps) {
                     {t('Orders Overview')}
                 </h2>
                 <p className="mt-1 text-xs text-gray-500 sm:text-sm">
-                    {t('Status breakdown - {{total}} total orders', { total })}
+                    {t('Status breakdown - {total} total orders', { total: total })}
                 </p>
             </div>
 

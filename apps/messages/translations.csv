@@ -1,8 +1,5 @@
 Category,Key,English,Swahili,File,Line
 "welcome-to-yetu","Welcome to Yetu","","i18n/server-translations.ts",8
-"hello-name","Hello {name}","","hooks/use-inline-translation.ts",16
-"total-amount","Total: {amount}","","hooks/use-inline-translation.ts",19
-"click-linkhere-link","Click <link>here</link>","","hooks/use-inline-translation.ts",22
 "connection-restored","🔗 Connection restored","","components/OfflineSupport.tsx",49
 "connection-lost","📴 Connection lost","","components/OfflineSupport.tsx",56
 "offline","Offline","","components/OfflineSupport.tsx",133
@@ -51,6 +48,9 @@ Category,Key,English,Swahili,File,Line
 "avg-delivery","Avg Delivery","","components/Hero.tsx",183
 "play-slideshow","Play slideshow","","components/Hero.tsx",294
 "pause-slideshow","Pause slideshow","","components/Hero.tsx",294
+"hello-name","Hello {name}","","hooks/use-inline-translation.ts",16
+"total-amount","Total: {amount}","","hooks/use-inline-translation.ts",19
+"click-linkhere-link","Click <link>here</link>","","hooks/use-inline-translation.ts",22
 "new-order","🛒 New order!","","lib/notifications/push-service.ts",151
 "view-order","View order","","lib/notifications/push-service.ts",164
 "your-order-has-been-accepted-by-merchantname","Your order has been accepted by {merchantName}","","lib/notifications/push-service.ts",184
@@ -130,42 +130,6 @@ Category,Key,English,Swahili,File,Line
 "blocked","Blocked","","components/notifications/NotificationPermission.tsx",259
 "enable","Enable","","components/notifications/NotificationPermission.tsx",260
 "notifications-are-blocked-please-enable-them-in-your-browser-settings","Notifications are blocked. Please enable them in your browser settings.","","components/notifications/NotificationPermission.tsx",267
-"total-products","Total Products","","components/merchants/StatsCards.tsx",18
-"active","active","","components/merchants/StatsCards.tsx",21
-"monthly-revenue","Monthly Revenue","","components/merchants/StatsCards.tsx",24
-"completed","completed","","components/merchants/StatsCards.tsx",27
-"orders-today","Orders Today","","components/merchants/StatsCards.tsx",30
-"pending","pending","","components/merchants/StatsCards.tsx",33
-"store-rating","Store Rating","","components/merchants/StatsCards.tsx",36
-"recent-products","Recent Products","","components/merchants/RecentProducts.tsx",24
-"your-latest-products","Your latest products","","components/merchants/RecentProducts.tsx",25
-"view-all-products","View All Products","","components/merchants/RecentProducts.tsx",28
-"stock","Stock:","","components/merchants/RecentProducts.tsx",53
-"success","Success","","components/merchants/OrdersTabs.tsx",42
-"error","Error","","components/merchants/OrdersTabs.tsx",52
-"failed-to-update-order","Failed to update order","","components/merchants/OrdersTabs.tsx",53
-"failed-to-update-order-status","Failed to update order status","","components/merchants/OrdersTabs.tsx",60
-"active-orders","Active Orders","","components/merchants/OrdersTabs.tsx",70
-"history","History","","components/merchants/OrdersTabs.tsx",77
-"notifications","Notifications","","components/merchants/MerchantNotifications.tsx",109
-"no-notifications","No notifications","","components/merchants/MerchantNotifications.tsx",122
-"view-all-notifications","View all notifications","","components/merchants/MerchantNotifications.tsx",168
-"no-order-history","No order history","","components/merchants/HistoryOrders.tsx",21
-"completed-and-cancelled-orders-will-appear-here","Completed and cancelled orders will appear here","","components/merchants/HistoryOrders.tsx",23
-"order","Order","","components/merchants/HistoryOrders.tsx",40
-"customer","Customer","","components/merchants/HistoryOrders.tsx",48
-"welcome-back-to-your-dashboard","Welcome Back To Your Dashboard","","components/merchants/DashboardHeader.tsx",19
-"manage-your-store-products-and-orders","Manage your store, products, and orders","","components/merchants/DashboardHeader.tsx",21
-"insights","Insights","","components/merchants/DashboardHeader.tsx",28
-"add-product","Add Product","","components/merchants/DashboardHeader.tsx",34
-"no-active-orders","No active orders","","components/merchants/ActiveOrders.tsx",55
-"new-orders-will-appear-here","New orders will appear here","","components/merchants/ActiveOrders.tsx",57
-"action-required","Action Required","","components/merchants/ActiveOrders.tsx",89
-"address","Address","","components/merchants/ActiveOrders.tsx",104
-"order-time","Order Time","","components/merchants/ActiveOrders.tsx",128
-"pickup-code","Pickup Code","","components/merchants/ActiveOrders.tsx",131
-"reject","Reject","","components/merchants/ActiveOrders.tsx",205
-"cancel","Cancel","","components/merchants/ActiveOrders.tsx",220
 "account-created","Account created","","components/auth/SignUpForm.tsx",70
 "welcome-your-account-has-been-created-successfully","Welcome! Your account has been created successfully.","","components/auth/SignUpForm.tsx",71
 "an-unexpected-error-occurred","An unexpected error occurred","","components/auth/SignUpForm.tsx",78
@@ -194,13 +158,115 @@ Category,Key,English,Swahili,File,Line
 "enter-your-email-to-reset-your-password","Enter your email to reset your password","","components/auth/ResetPasswordForm.tsx",61
 "send-reset-link","Send Reset Link","","components/auth/ResetPasswordForm.tsx",80
 "back-to-login","Back to login","","components/auth/ResetPasswordForm.tsx",88
+"error","Error","","components/auth/NewPasswordForm.tsx",31
 "passwords-do-not-match","Passwords do not match","","components/auth/NewPasswordForm.tsx",32
+"success","Success","","components/auth/NewPasswordForm.tsx",43
 "password-successfully-reset-you-can-now-login","Password successfully reset! You can now login.","","components/auth/NewPasswordForm.tsx",44
 "failed-to-reset-password-the-link-may-be-expired-or-invalid","Failed to reset password. The link may be expired or invalid.","","components/auth/NewPasswordForm.tsx",51
 "set-new-password","Set New Password","","components/auth/NewPasswordForm.tsx",59
 "new-password","New Password","","components/auth/NewPasswordForm.tsx",64
 "confirm-new-password","Confirm New Password","","components/auth/NewPasswordForm.tsx",72
 "resetting","Resetting...","","components/auth/NewPasswordForm.tsx",80
+"my-stores","My Stores","","components/merchants/StoresList.tsx",38
+"store","store","","components/merchants/StoresList.tsx",41
+"no-stores-found","No stores found","","components/merchants/StoresList.tsx",48
+"current","Current","","components/merchants/StoresList.tsx",89
+"verified","Verified","","components/merchants/StoresList.tsx",104
+"pending","Pending","","components/merchants/StoresList.tsx",109
+"switch-to-this-store","Switch to this store","","components/merchants/StoresList.tsx",121
+"total-products","Total Products","","components/merchants/StatsCards.tsx",18
+"active","active","","components/merchants/StatsCards.tsx",20
+"monthly-revenue","Monthly Revenue","","components/merchants/StatsCards.tsx",26
+"completed","completed","","components/merchants/StatsCards.tsx",28
+"orders-today","Orders Today","","components/merchants/StatsCards.tsx",34
+"store-rating","Store Rating","","components/merchants/StatsCards.tsx",42
+"recent-products","Recent Products","","components/merchants/RecentProducts.tsx",31
+"your-latest-products","Your latest products","","components/merchants/RecentProducts.tsx",33
+"view-all-products","View All Products","","components/merchants/RecentProducts.tsx",39
+"stock","Stock","","components/merchants/RecentProducts.tsx",77
+"failed-to-update-order","Failed to update order","","components/merchants/OrdersTabs.tsx",55
+"failed-to-update-order-status","Failed to update order status","","components/merchants/OrdersTabs.tsx",62
+"active-orders","Active Orders","","components/merchants/OrdersTabs.tsx",76
+"history","History","","components/merchants/OrdersTabs.tsx",91
+"merchant-profile","Merchant Profile","","components/merchants/MerchantProfile.tsx",48
+"manage-your-store-information-and-switch-between-stores","Manage your store information and switch between stores","","components/merchants/MerchantProfile.tsx",50
+"pending-verification","Pending Verification","","components/merchants/MerchantProfile.tsx",101
+"store-information","Store Information","","components/merchants/MerchantProfile.tsx",117
+"phone","Phone","","components/merchants/MerchantProfile.tsx",124
+"not-provided","Not provided","","components/merchants/MerchantProfile.tsx",126
+"location","Location","","components/merchants/MerchantProfile.tsx",134
+"member-since","Member Since","","components/merchants/MerchantProfile.tsx",144
+"rating","Rating","","components/merchants/MerchantProfile.tsx",159
+"delivery-time","Delivery Time","","components/merchants/MerchantProfile.tsx",172
+"exit-merchant-mode","Exit Merchant Mode","","components/merchants/MerchantProfile.tsx",185
+"return-to-customer-mode-to-browse-and-order-from-stores","Return to customer mode to browse and order from stores","","components/merchants/MerchantProfile.tsx",189
+"switch-to-customer-mode","Switch to Customer Mode","","components/merchants/MerchantProfile.tsx",197
+"notifications","Notifications","","components/merchants/MerchantNotifications.tsx",109
+"no-notifications","No notifications","","components/merchants/MerchantNotifications.tsx",122
+"view-all-notifications","View all notifications","","components/merchants/MerchantNotifications.tsx",168
+"total","Total","","components/merchants/HistoryOrders.tsx",115
+"cancelled","Cancelled","","components/merchants/HistoryOrders.tsx",138
+"rejected","Rejected","","components/merchants/HistoryOrders.tsx",138
+"revenue","Revenue","","components/merchants/HistoryOrders.tsx",151
+"search-by-order-id-or-customer","Search by order ID or customer...","","components/merchants/HistoryOrders.tsx",168
+"all-status","All Status","","components/merchants/HistoryOrders.tsx",182
+"sort-by-date","Sort by Date","","components/merchants/HistoryOrders.tsx",195
+"sort-by-amount","Sort by Amount","","components/merchants/HistoryOrders.tsx",196
+"showing","Showing","","components/merchants/HistoryOrders.tsx",205
+"of","of","","components/merchants/HistoryOrders.tsx",205
+"clear-filters","Clear filters","","components/merchants/HistoryOrders.tsx",217
+"no-orders-match-your-filters","No orders match your filters","","components/merchants/HistoryOrders.tsx",230
+"order","Order","","components/merchants/HistoryOrders.tsx",256
+"item","item","","components/merchants/HistoryOrders.tsx",300
+"you-are-about-to-switch-back-to-customer-mode-you-will-be-able-to","You are about to switch back to customer mode. You will be able to:","","components/merchants/ExitMerchantModeDialog.tsx",46
+"browse-and-shop-from-stores","Browse and shop from stores","","components/merchants/ExitMerchantModeDialog.tsx",49
+"view-your-orders-and-cart","View your orders and cart","","components/merchants/ExitMerchantModeDialog.tsx",50
+"manage-your-customer-profile","Manage your customer profile","","components/merchants/ExitMerchantModeDialog.tsx",51
+"you-can-return-to-merchant-mode-anytime-from-your-profile","You can return to merchant mode anytime from your profile.","","components/merchants/ExitMerchantModeDialog.tsx",54
+"cancel","Cancel","","components/merchants/ExitMerchantModeDialog.tsx",60
+"welcome-back-to-your-dashboard","Welcome Back To Your Dashboard","","components/merchants/DashboardHeader.tsx",24
+"manage-your-store-products-and-orders","Manage your store, products, and orders","","components/merchants/DashboardHeader.tsx",27
+"insights","Insights","","components/merchants/DashboardHeader.tsx",39
+"add-product","Add Product","","components/merchants/DashboardHeader.tsx",45
+"no-active-orders","No active orders","","components/merchants/ActiveOrders.tsx",94
+"new-orders-will-appear-here","New orders will appear here","","components/merchants/ActiveOrders.tsx",95
+"action-required","Action Required","","components/merchants/ActiveOrders.tsx",145
+"call","Call","","components/merchants/ActiveOrders.tsx",171
+"order-time","Order Time","","components/merchants/ActiveOrders.tsx",257
+"pickup-code","Pickup Code","","components/merchants/ActiveOrders.tsx",265
+"accept-order","Accept Order","","components/merchants/ActiveOrders.tsx",288
+"start-preparation","Start Preparation","","components/merchants/ActiveOrders.tsx",290
+"mark-ready","Mark Ready","","components/merchants/ActiveOrders.tsx",292
+"reject","Reject","","components/merchants/ActiveOrders.tsx",313
+"available-balance","Available Balance","","components/merchants/wallet/WalletBalance.tsx",39
+"last-updated","Last updated","","components/merchants/wallet/WalletBalance.tsx",48
+"total-earned","Total Earned","","components/merchants/wallet/WalletBalance.tsx",59
+"completed-transactions","completed transactions","","components/merchants/wallet/WalletBalance.tsx",67
+"total-spent","Total Spent","","components/merchants/wallet/WalletBalance.tsx",77
+"all-time-expenses","All time expenses","","components/merchants/wallet/WalletBalance.tsx",85
+"pending-transactions","Pending Transactions","","components/merchants/wallet/WalletBalance.tsx",96
+"awaiting-confirmation","Awaiting confirmation","","components/merchants/wallet/WalletBalance.tsx",106
+"transaction-history","Transaction History","","components/merchants/wallet/TransactionsList.tsx",129
+"type","Type","","components/merchants/wallet/TransactionsList.tsx",137
+"all-types","All Types","","components/merchants/wallet/TransactionsList.tsx",140
+"credit","Credit","","components/merchants/wallet/TransactionsList.tsx",141
+"debit","Debit","","components/merchants/wallet/TransactionsList.tsx",142
+"status","Status","","components/merchants/wallet/TransactionsList.tsx",149
+"failed","Failed","","components/merchants/wallet/TransactionsList.tsx",155
+"no-transactions-found","No transactions found","","components/merchants/wallet/TransactionsList.tsx",166
+"transactions-will-appear-here-once-you-start-receiving-payments","Transactions will appear here once you start receiving payments","","components/merchants/wallet/TransactionsList.tsx",168
+"transactions","transactions","","components/merchants/wallet/TransactionsList.tsx",248
+"previous","Previous","","components/merchants/wallet/TransactionsList.tsx",259
+"next","Next","","components/merchants/wallet/TransactionsList.tsx",298
+"no-products-found","No products found","","components/merchants/products/ProductsList.tsx",33
+"try-adjusting-your-filters","Try adjusting your filters","","components/merchants/products/ProductsList.tsx",36
+"start-by-adding-your-first-product","Start by adding your first product","","components/merchants/products/ProductsList.tsx",37
+"low-stock","Low Stock","","components/merchants/products/ProductsList.tsx",91
+"product-management","Product Management","","components/merchants/products/ProductsHeader.tsx",26
+"manage-your-product-catalog","Manage your product catalog","","components/merchants/products/ProductsHeader.tsx",29
+"filter-by-status","Filter by status","","components/merchants/products/ProductsFilters.tsx",46
+"draft","Draft","","components/merchants/products/ProductsFilters.tsx",51
+"waiting-for-review","Waiting for Review","","components/merchants/products/ProductsFilters.tsx",53
 "most-sold-products","Most sold products","","components/merchants/insights/TopProducts.tsx",27
 "top-10-products","Top 10 products","","components/merchants/insights/TopProducts.tsx",29
 "no-sales-data-available","No sales data available","","components/merchants/insights/TopProducts.tsx",37
@@ -210,26 +276,23 @@ Category,Key,English,Swahili,File,Line
 "completed-orders","Completed Orders","","components/merchants/insights/StatsCards.tsx",39
 "average-order-value","Average Order Value","","components/merchants/insights/StatsCards.tsx",47
 "previous-period","previous period","","components/merchants/insights/StatsCards.tsx",94
-"last-30-days","Last 30 days","","components/merchants/insights/RevenueChart.tsx",35
-"avg-day","Avg/day","","components/merchants/insights/RevenueChart.tsx",42
-"weekdays","Weekdays","","components/merchants/insights/RevenueChart.tsx",99
-"weekends","Weekends","","components/merchants/insights/RevenueChart.tsx",103
+"revenue-evolution","Revenue Evolution","","components/merchants/insights/RevenueChart.tsx",114
+"no-revenue-data","No revenue data","","components/merchants/insights/RevenueChart.tsx",118
+"revenue-will-appear-here-once-you-complete-orders","Revenue will appear here once you complete orders","","components/merchants/insights/RevenueChart.tsx",119
+"week","week","","components/merchants/insights/RevenueChart.tsx",140
+"weeks","weeks","","components/merchants/insights/RevenueChart.tsx",140
+"with-revenue","with revenue","","components/merchants/insights/RevenueChart.tsx",140
+"avg-day","Avg/day","","components/merchants/insights/RevenueChart.tsx",183
+"active-days","Active Days","","components/merchants/insights/RevenueChart.tsx",195
+"weekly-revenue","Weekly Revenue","","components/merchants/insights/RevenueChart.tsx",283
+"hover-to-see-daily-breakdown","Hover to see daily breakdown","","components/merchants/insights/RevenueChart.tsx",287
 "orders-overview","Orders Overview","","components/merchants/insights/OrdersOverview.tsx",97
 "status-breakdown-total-total-orders","Status breakdown - {{total}} total orders","","components/merchants/insights/OrdersOverview.tsx",100
 "success-rate","Success Rate","","components/merchants/insights/OrdersOverview.tsx",142
 "failure-rate","Failure Rate","","components/merchants/insights/OrdersOverview.tsx",148
-"no-products-found","No products found","","components/merchants/products/ProductsList.tsx",33
-"try-adjusting-your-filters","Try adjusting your filters","","components/merchants/products/ProductsList.tsx",36
-"start-by-adding-your-first-product","Start by adding your first product","","components/merchants/products/ProductsList.tsx",37
-"low-stock","Low Stock","","components/merchants/products/ProductsList.tsx",91
-"product-management","Product Management","","components/merchants/products/ProductsHeader.tsx",19
-"manage-your-product-catalog","Manage your product catalog","","components/merchants/products/ProductsHeader.tsx",21
-"filter-by-status","Filter by status","","components/merchants/products/ProductsFilters.tsx",42
-"all-status","All Status","","components/merchants/products/ProductsFilters.tsx",45
-"verified","Verified","","components/merchants/products/ProductsFilters.tsx",46
-"draft","Draft","","components/merchants/products/ProductsFilters.tsx",47
-"rejected","Rejected","","components/merchants/products/ProductsFilters.tsx",48
-"waiting-for-review","Waiting for Review","","components/merchants/products/ProductsFilters.tsx",49
+"no-results-found","No results found","","components/merchants/animations/EmptyStates.tsx",90
+"no-order-history","No order history","","components/merchants/animations/EmptyStates.tsx",97
+"completed-and-cancelled-orders-will-appear-here","Completed and cancelled orders will appear here","","components/merchants/animations/EmptyStates.tsx",98
 "oops-something-went-wrong","Oops! Something went wrong","","components/client/stores/StoresError.tsx",20
 "all-stores","All stores","","components/client/stores/StoresContent.tsx",52
 "grocery","Grocery","","components/client/stores/StoresContent.tsx",53
@@ -240,7 +303,6 @@ Category,Key,English,Swahili,File,Line
 "shop-from-count-stores","Shop from {count} stores","","components/client/stores/StoresContent.tsx",96
 "near-you","near you","","components/client/stores/StoresContent.tsx",97
 "select-category","Select category","","components/client/stores/StoresContent.tsx",140
-"no-stores-found","No stores found","","components/client/stores/StoresContent.tsx",160
 "try-selecting-a-different-store-type","Try selecting a different store type","","components/client/stores/StoresContent.tsx",162
 "in-store-prices","In-store prices","","components/client/stores/StoreDetailContent.tsx",187
 "100-satisfaction-guarantee","100% satisfaction guarantee","","components/client/stores/StoreDetailContent.tsx",196
@@ -316,7 +378,6 @@ Category,Key,English,Swahili,File,Line
 "contact-an-administrator-to-get-access-to-manage-merchants","Contact an administrator to get access to manage merchants","","components/client/customer/UserProfile.tsx",233
 "delivery-addresses","Delivery Addresses","","components/client/customer/UserProfile.tsx",246
 "add-address","Add Address","","components/client/customer/UserProfile.tsx",249
-"phone","Phone","","components/client/customer/UserProfile.tsx",263
 "default","Default","","components/client/customer/UserProfile.tsx",265
 "edit","Edit","","components/client/customer/UserProfile.tsx",273
 "remove","Remove","","components/client/customer/UserProfile.tsx",276
@@ -380,27 +441,18 @@ Category,Key,English,Swahili,File,Line
 "store-not-found","Store Not Found","","app/[locale]/(client)/stores/not-found.tsx",17
 "the-store-you-re-looking-for-doesn-t-exist-or-is-currently-unavailable","The store you're looking for doesn't exist or is currently unavailable.","","app/[locale]/(client)/stores/not-found.tsx",20
 "back-to-stores","Back to Stores","","app/[locale]/(client)/stores/not-found.tsx",25
-"item","item","","app/[locale]/(client)/orders/page.tsx",145
+"authentication-required","Authentication Required","","app/[locale]/(client)/profile/page.tsx",20
+"please-sign-in-to-view-your-orders","Please sign in to view your orders","","app/[locale]/(client)/profile/page.tsx",21
+"user-not-found","User Not Found","","app/[locale]/(client)/profile/page.tsx",65
+"please-contact-support-if-this-issue-persists","Please contact support if this issue persists","","app/[locale]/(client)/profile/page.tsx",66
+"go-home","Go Home","","app/[locale]/(client)/profile/page.tsx",68
 "items","items","","app/[locale]/(client)/orders/page.tsx",145
 "no-orders-yet","No orders yet","","app/[locale]/(client)/orders/page.tsx",204
 "start-shopping-to-place-your-first-order","Start shopping to place your first order","","app/[locale]/(client)/orders/page.tsx",206
-"authentication-required","Authentication Required","","app/[locale]/(client)/orders/page.tsx",268
-"please-sign-in-to-view-your-orders","Please sign in to view your orders","","app/[locale]/(client)/orders/page.tsx",270
-"user-not-found","User Not Found","","app/[locale]/(client)/orders/page.tsx",291
-"please-contact-support-if-this-issue-persists","Please contact support if this issue persists","","app/[locale]/(client)/orders/page.tsx",293
-"go-home","Go Home","","app/[locale]/(client)/orders/page.tsx",296
 "your-orders","Your Orders","","app/[locale]/(client)/orders/page.tsx",314
-"your-cart-is-empty","Your cart is empty","","app/[locale]/(client)/cart/page.tsx",41
-"add-items-from-a-store-to-start-shopping","Add items from a store to start shopping","","app/[locale]/(client)/cart/page.tsx",42
-"continue-shopping","Continue Shopping","","app/[locale]/(client)/cart/page.tsx",58
-"your-cart","Your Cart","","app/[locale]/(client)/cart/page.tsx",62
-"order-summary","Order Summary","","app/[locale]/(client)/cart/page.tsx",142
-"subtotal","Subtotal","","app/[locale]/(client)/cart/page.tsx",146
-"service-fee","Service Fee","","app/[locale]/(client)/cart/page.tsx",154
-"total","Total","","app/[locale]/(client)/cart/page.tsx",160
-"proceed-to-checkout","Proceed to Checkout","","app/[locale]/(client)/cart/page.tsx",169
 "failed-to-load-delivery-zones","Failed to load delivery zones","","app/[locale]/(client)/checkout/page.tsx",66
 "please-refresh-the-page","Please refresh the page","","app/[locale]/(client)/checkout/page.tsx",67
+"your-cart-is-empty","Your cart is empty","","app/[locale]/(client)/checkout/page.tsx",88
 "add-items-to-your-cart-to-proceed-with-checkout","Add items to your cart to proceed with checkout","","app/[locale]/(client)/checkout/page.tsx",89
 "please-complete-all-required-fields","Please complete all required fields","","app/[locale]/(client)/checkout/page.tsx",115
 "make-sure-you-ve-selected-a-zone-and-filled-in-delivery-details","Make sure you've selected a zone and filled in delivery details","","app/[locale]/(client)/checkout/page.tsx",116
@@ -409,6 +461,7 @@ Category,Key,English,Swahili,File,Line
 "order-placed-successfully","Order placed successfully!","","app/[locale]/(client)/checkout/page.tsx",163
 "your-delivery-code-is-deliverycode","Your delivery code is: {deliveryCode}","","app/[locale]/(client)/checkout/page.tsx",164
 "please-try-again","Please try again","","app/[locale]/(client)/checkout/page.tsx",175
+"continue-shopping","Continue shopping","","app/[locale]/(client)/checkout/page.tsx",191
 "checkout","Checkout","","app/[locale]/(client)/checkout/page.tsx",194
 "select-your-delivery-zone","Select your delivery zone","","app/[locale]/(client)/checkout/page.tsx",195
 "delivery-zone","Delivery Zone","","app/[locale]/(client)/checkout/page.tsx",207
@@ -430,6 +483,9 @@ Category,Key,English,Swahili,File,Line
 "pay-when-you-receive","Pay when you receive","","app/[locale]/(client)/checkout/page.tsx",410
 "mtn-mobile-money","MTN Mobile Money","","app/[locale]/(client)/checkout/page.tsx",417
 "coming-soon","Coming soon","","app/[locale]/(client)/checkout/page.tsx",418
+"order-summary","Order Summary","","app/[locale]/(client)/checkout/page.tsx",430
+"subtotal","Subtotal","","app/[locale]/(client)/checkout/page.tsx",460
+"service-fee","Service Fee","","app/[locale]/(client)/checkout/page.tsx",475
 "estimated-delivery","Estimated delivery","","app/[locale]/(client)/checkout/page.tsx",492
 "minutes","minutes","","app/[locale]/(client)/checkout/page.tsx",492
 "secure-delivery-with-confirmation-code","Secure delivery with confirmation code","","app/[locale]/(client)/checkout/page.tsx",501
@@ -439,6 +495,9 @@ Category,Key,English,Swahili,File,Line
 "enter-phone-number","Enter Phone Number","","app/[locale]/(client)/checkout/page.tsx",519
 "place-order","Place Order","","app/[locale]/(client)/checkout/page.tsx",520
 "by-placing-an-order-you-agree-to-our-terms-of-service","By placing an order, you agree to our Terms of Service","","app/[locale]/(client)/checkout/page.tsx",525
+"add-items-from-a-store-to-start-shopping","Add items from a store to start shopping","","app/[locale]/(client)/cart/page.tsx",42
+"your-cart","Your Cart","","app/[locale]/(client)/cart/page.tsx",62
+"proceed-to-checkout","Proceed to Checkout","","app/[locale]/(client)/cart/page.tsx",169
 "merchant-not-found","Merchant Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",21
 "the-merchant-you-re-looking-for-doesn-t-exist-or-you-don-t-have-access-to-it","The merchant you're looking for doesn't exist or you don't have access to it.","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",31
 "go-to-home","Go to Home","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",35
@@ -456,26 +515,28 @@ Category,Key,English,Swahili,File,Line
 "verification-codes","Verification Codes","","app/[locale]/(client)/orders/[orderId]/page.tsx",242
 "delivery-code","Delivery Code","","app/[locale]/(client)/orders/[orderId]/page.tsx",247
 "delivery-information","Delivery Information","","app/[locale]/(client)/orders/[orderId]/page.tsx",263
+"address","Address","","app/[locale]/(client)/orders/[orderId]/page.tsx",270
 "notes","Notes","","app/[locale]/(client)/orders/[orderId]/page.tsx",294
 "merchant","Merchant","","app/[locale]/(client)/orders/[orderId]/page.tsx",320
 "method","Method","","app/[locale]/(client)/orders/[orderId]/page.tsx",349
-"status","Status","","app/[locale]/(client)/orders/[orderId]/page.tsx",353
-"insights-analytics","Insights & Analytics","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",60
-"clients","Clients","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",89
-"new","New","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",99
-"returning","Returning","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",105
-"average-orders-per-customer","Average orders per customer","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",112
-"peak-hours","Peak hours","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",126
-"global-performance","Global performance","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",155
-"completion-rate","Completion rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",160
-"cancellation-rate","Cancellation rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",174
-"pending-orders","pending orders","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",191
+"wallet-transactions","Wallet & Transactions","","app/[locale]/(merchant)/merchant/[merchantId]/wallet/page.tsx",95
+"manage-your-earnings-and-view-transaction-history","Manage your earnings and view transaction history","","app/[locale]/(merchant)/merchant/[merchantId]/wallet/page.tsx",97
 "products-not-found","Products Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",20
 "we-couldn-t-find-the-products-you-re-looking-for","We couldn't find the products you're looking for.","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",30
 "loading-your-products","Loading your products...","","app/[locale]/(merchant)/merchant/[merchantId]/products/loading.tsx",23
 "failed-to-load-products","Failed to Load Products","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",38
 "we-encountered-an-error-while-loading-your-products","We encountered an error while loading your products.","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",40
 "go-back","Go Back","","app/[locale]/(merchant)/merchant/[merchantId]/products/error.tsx",50
+"insights-analytics","Insights & Analytics","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",61
+"last-30-days","Last 30 days","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",70
+"clients","Clients","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",94
+"new","New","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",105
+"returning","Returning","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",111
+"average-orders-per-customer","Average orders per customer","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",118
+"global-performance","Global performance","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",134
+"completion-rate","Completion rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",140
+"cancellation-rate","Cancellation rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",154
+"pending-orders","pending orders","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",171
 "back-to-order-details","Back to Order Details","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",154
 "order-progress","Order Progress","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",184
 "delivery-details","Delivery Details","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",197

@@ -20,7 +20,7 @@ export function StoresError({ error, reset }: StoresErrorProps) {
                         {t("Oops! Something went wrong")}
                     </h2>
                     <p className="text-gray-600 mb-6">{error.message}</p>
-                    <Button onClick={reset} className="bg-primary hover:bg-primary/90">
+                    <Button onClick={reset} className="bg-primary hover:bg-primary">
                         {t("Try again")}
                     </Button>
                 </div>

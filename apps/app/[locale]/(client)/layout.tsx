@@ -1,6 +1,7 @@
 "use client";
 
 import { useThemeColor } from '@/components/theme/ThemeProvider';
+import Navbar from "@/components/Navbar";
 import { useEffect } from 'react';
 
 export default function ClientLayout({
@@ -14,5 +15,9 @@ export default function ClientLayout({
         resetToClientTheme();
     }, [resetToClientTheme]);
 
-    return <>{children}</>;
+    return <>
+        <Navbar />
+
+        {children}
+    </>;
 }

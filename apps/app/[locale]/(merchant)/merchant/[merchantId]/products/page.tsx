@@ -1,4 +1,3 @@
-// app/merchant/[merchantId]/products/page.tsx
 import ProductsContent from "@/components/merchants/products/ProductsContent";
 import ProductsHeader from "@/components/merchants/products/ProductsHeader";
 import { getMerchantProducts } from "@/lib/actions/server/merchants";

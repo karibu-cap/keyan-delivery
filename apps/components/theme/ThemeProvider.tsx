@@ -15,7 +15,6 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [themeColor, setThemeColor] = useState<ThemeColor>('green');
-    console.log(themeColor);
 
     const setMerchantTheme = (type: MerchantType | null) => {
         if (!type) {

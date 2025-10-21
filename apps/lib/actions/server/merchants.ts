@@ -18,6 +18,31 @@ import { getLocale } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
+export async function getMerchantWithUser(merchantId: string, authId: string) {
+    const userMerchant = await prisma.userMerchantManager.findFirst({
+        where: {
+            merchantId,
+            user: {
+                authId,
+            },
+        },
+        include: {
+            merchant: true,
+            user: {
+                include: {
+                    merchantManagers: {
+                        include: {
+                            merchant: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    return userMerchant;
+}
+
 /**
  * Get merchant statistics (complete logic including auth)
  */

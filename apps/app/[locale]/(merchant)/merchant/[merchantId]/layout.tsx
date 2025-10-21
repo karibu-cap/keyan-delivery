@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useMerchant } from '@/hooks/use-merchant-store';
 import { useThemeColor } from '@/components/theme/ThemeProvider';
+import MerchantNavBar from '@/components/merchants/MerchantNavBar';
 
 export default function MerchantLayout({
     children,
@@ -13,27 +14,34 @@ export default function MerchantLayout({
     const params = useParams();
     const { setMerchantTheme } = useThemeColor();
     const merchantId = params.merchantId as string;
-    const { merchant, fetchMerchant, isCached } = useMerchant(merchantId);
+    const { merchantType, fetchMerchantType } = useMerchant(merchantId);
 
     useEffect(() => {
         const loadMerchant = async () => {
             if (!merchantId) return;
 
             // If merchant exists in cache and is valid, use it immediately
-            if (merchant && isCached) {
-                setMerchantTheme(merchant.merchantType);
+            if (merchantType) {
+                setMerchantTheme(merchantType);
                 return;
             }
 
             // Otherwise, fetch from API
-            const fetchedMerchant = await fetchMerchant(merchantId);
+            const fetchedMerchant = await fetchMerchantType(merchantId);
             if (fetchedMerchant) {
-                setMerchantTheme(fetchedMerchant.merchantType);
+                setMerchantTheme(fetchedMerchant);
             }
         };
 
         loadMerchant();
-    }, [merchantId, merchant, isCached, fetchMerchant, setMerchantTheme]);
+    }, [merchantId, merchantType]);
 
-    return <>{children}</>;
+    return (
+        <>
+            <MerchantNavBar />
+            <div className="pt-16 pb-20 md:pb-8">
+                {children}
+            </div>
+        </>
+    );
 }
