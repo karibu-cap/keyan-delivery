@@ -9,14 +9,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+        default: "bg-primary text-primary-foreground hover:bg-primary shadow-sm",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border border-border bg-background hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         // Instacart-specific variants
-        add: "bg-primary text-primary-foreground rounded-full w-10 h-10 p-0 shadow-lg hover:bg-primary/70 hover:shadow-xl transition-all duration-200 hover:scale-105",
+        add: "bg-primary text-primary-foreground rounded-full w-10 h-10 p-0 shadow-lg hover:bg-primary hover:shadow-xl transition-all duration-200 hover:scale-105",
         stepper: "border-2 border-primary text-primary bg-background rounded-md w-8 h-8 p-0 hover:bg-primary hover:text-primary-foreground transition-colors",
         success: "bg-success text-success-foreground hover:bg-success/90 shadow-sm",
         warning: "bg-warning text-warning-foreground hover:bg-warning/90 shadow-sm",

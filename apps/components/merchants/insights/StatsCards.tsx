@@ -40,7 +40,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             value: stats.completedOrders.toString(),
             change: stats.completionRate,
             icon: CheckCircle,
-            bgColor: 'bg-primary/50',
+            bgColor: 'bg-primary',
             suffix: '% taux',
         },
         {

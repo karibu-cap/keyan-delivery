@@ -1,65 +1,88 @@
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Package, DollarSign, TrendingUp, Store } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Package, DollarSign, ShoppingBag, Star } from "lucide-react";
 import { getT } from "@/i18n/server-translations";
 import { getLocale } from "next-intl/server";
 import type { DashboardStats } from "@/types/merchant_types";
+import { StaggerChildren, StaggerItem, ScaleIn } from "./animations/TransitionWrappers";
 
 interface StatsCardsProps {
      stats: DashboardStats;
 }
 
 export default async function StatsCards({ stats }: StatsCardsProps) {
-     const local = await getLocale()
-     const t = await getT(local)
+     const local = await getLocale();
+     const t = await getT(local);
 
-     const statCards = [
+     const cards = [
           {
-               label: t("Total Products"),
-               value: stats.totalProducts.toString(),
+               title: t("Total Products"),
+               value: stats.totalProducts,
+               subtitle: `${stats.activeProductsCount} ${t("active")}`,
                icon: Package,
-               change: `${stats.activeProductsCount} ${t("active")}`
+               color: "text-blue-600",
+               bgColor: "bg-blue-100 dark:bg-blue-900",
           },
           {
-               label: t("Monthly Revenue"),
-               value: `$${stats.monthlyRevenue.toFixed(2)}`,
+               title: t("Monthly Revenue"),
+               value: `$${stats.monthlyRevenue.toLocaleString()}`,
+               subtitle: `${stats.completedOrdersCount} ${t("completed")}`,
                icon: DollarSign,
-               change: `${stats.completedOrdersCount} ${t("completed")}`
+               color: "text-primary/60",
+               bgColor: "bg-primary/10 dark:bg-primary",
           },
           {
-               label: t("Orders Today"),
-               value: stats.ordersToday.toString(),
-               icon: TrendingUp,
-               change: `${stats.pendingCount} ${t("pending")}`
+               title: t("Orders Today"),
+               value: stats.ordersToday,
+               subtitle: `${stats.pendingCount} ${t("pending")}`,
+               icon: ShoppingBag,
+               color: "text-orange-600",
+               bgColor: "bg-orange-100 dark:bg-orange-900",
           },
           {
-               label: t("Store Rating"),
-               value: stats.storeRating.toString(),
-               icon: Store,
-               change: "★"
+               title: t("Store Rating"),
+               value: stats.storeRating.toFixed(1),
+               subtitle: "/ 5.0",
+               icon: Star,
+               color: "text-yellow-600",
+               bgColor: "bg-yellow-100 dark:bg-yellow-900",
           },
      ];
 
      return (
-          <div className="grid md:grid-cols-4 gap-6 mb-8">
-               {statCards.map((stat, index) => (
-                    <Card
-                         key={stat.label}
-                         className="p-6 rounded-2xl shadow-card animate-slide-up"
-                         style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                         <div className="flex items-start justify-between mb-4">
-                              <div className="w-12 h-12 rounded-2xl gradient-hero flex items-center justify-center">
-                                   <stat.icon className="w-6 h-6 text-white" />
-                              </div>
-                              <Badge variant="secondary" className="text-xs">
-                                   {stat.change}
-                              </Badge>
-                         </div>
-                         <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                         <div className="text-sm text-muted-foreground">{stat.label}</div>
-                    </Card>
-               ))}
-          </div>
+          <StaggerChildren staggerDelay={0.1} className="space-y-4">
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                    {cards.map((card, index) => {
+                         const Icon = card.icon;
+                         return (
+                              <StaggerItem key={index}>
+                                   <ScaleIn delay={index * 0.05}>
+                                        <Card key={index} className="rounded-2xl shadow-card hover:shadow-card-hover transition-shadow">
+                                             <CardContent className="p-4 sm:p-6">
+                                                  <div className="flex items-start justify-between">
+                                                       <div className="flex-1 min-w-0">
+                                                            <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-1 truncate">
+                                                                 {card.title}
+                                                            </p>
+                                                            <div className="flex items-baseline gap-2">
+                                                                 <h3 className="text-2xl sm:text-3xl font-bold truncate">
+                                                                      {card.value}
+                                                                 </h3>
+                                                                 <p className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                                                                      {card.subtitle}
+                                                                 </p>
+                                                            </div>
+                                                       </div>
+                                                       <div className={`p-2 sm:p-3 rounded-lg ${card.bgColor} flex-shrink-0`}>
+                                                            <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${card.color}`} />
+                                                       </div>
+                                                  </div>
+                                             </CardContent>
+                                        </Card>
+                                   </ScaleIn>
+                              </StaggerItem>
+                         );
+                    })}
+               </div>
+          </StaggerChildren>
      );
 }

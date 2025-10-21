@@ -1,5 +1,4 @@
 import { FontOptimizer } from "@/components/ClsOptimization";
-import Navbar from "@/components/Navbar";
 import { OfflineIndicator, OfflineNetworkErrorBoundary, OfflineProvider } from "@/components/OfflineSupport";
 import { Toaster } from "@/components/ui/toaster";
 import { routing } from "@/i18n/routing";
@@ -93,7 +92,6 @@ export default async function RootLayout({
                                    <OfflineProvider>
                                         <OfflineNetworkErrorBoundary>
                                              <ErrorBoundary>
-                                                  <Navbar />
                                                   {children}
                                                   <Toaster />
                                                   <OfflineIndicator />

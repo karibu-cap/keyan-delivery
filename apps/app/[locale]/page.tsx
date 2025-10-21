@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import { HomePageClient } from "@/components/home/HomePageClient";
+import Navbar from "@/components/Navbar";
 import { Suspense } from "react";
 
 // Enable revalidation every hour
@@ -16,8 +17,9 @@ export const revalidate = 3600;
 export default async function HomePage() {
      return (
           <div className="min-h-screen bg-background">
+               <Navbar />
                <Suspense fallback={<div className="h-screen bg-background animate-pulse" />}>
-                    <Hero/>
+                    <Hero />
                </Suspense>
                <HomePageClient />
           </div>

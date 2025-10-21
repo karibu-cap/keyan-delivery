@@ -37,7 +37,7 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
          case DriverStatus.APPROVED:
             return {
                icon: CheckCircle,
-               color: "bg-primary/50 hover:bg-primary/60",
+               color: "bg-primary hover:bg-primary",
                text: "Active Driver",
                showCount: true,
             };

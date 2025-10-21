@@ -39,12 +39,12 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
     const { toast } = useToast()
     const [currentUser, setCurrentUser] = useState<User>(user);
     const [isEditing, setIsEditing] = useState(false);
-    const { addMerchant } = useMerchantStore();
+    const { addMerchantType } = useMerchantStore();
 
 
     useEffect(() => {
         user.merchantManagers.forEach((manager) => {
-            addMerchant(manager.merchant);
+            addMerchantType(manager.merchantId, manager.merchant.merchantType);
         });
     }, [user]);
 

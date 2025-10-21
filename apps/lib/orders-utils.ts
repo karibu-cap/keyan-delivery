@@ -267,43 +267,45 @@ export function formatDistance(distanceKm: number): string {
 
 // app/merchant/[merchantId]/lib/orderUtils.ts
 import {
-  CheckCircle,
-  ChefHat,
-  Clock,
-  Package,
-  Truck,
-  XCircle
+    CheckCircle,
+    ChefHat,
+    Clock,
+    Package,
+    Truck,
+    XCircle
 } from "lucide-react"
 
 
 export function getStatusIcon(status: string) {
-  const statusIcons: Record<string, any> = {
-    PENDING: Clock,
-    ACCEPTED_BY_MERCHANT: CheckCircle,
-    IN_PREPARATION: ChefHat,
-    READY_TO_DELIVER: Package,
-    ACCEPTED_BY_DRIVER: Truck,
-    ON_THE_WAY: Truck,
-    COMPLETED: CheckCircle,
-  };
+    const statusIcons: Record<string, any> = {
+        PENDING: Clock,
+        ACCEPTED_BY_MERCHANT: CheckCircle,
+        IN_PREPARATION: ChefHat,
+        READY_TO_DELIVER: Package,
+        ACCEPTED_BY_DRIVER: Truck,
+        ON_THE_WAY: Truck,
+        COMPLETED: CheckCircle,
+    };
 
-  return statusIcons[status] || XCircle;
+    return statusIcons[status] || XCircle;
 }
 
-export function getNextStatus(currentStatus: OrderStatus): OrderStatus | null {
-  const statusFlow: Record<string, OrderStatus> = {
-    PENDING: OrderStatus.ACCEPTED_BY_MERCHANT,
-    ACCEPTED_BY_MERCHANT: OrderStatus.IN_PREPARATION,
-    IN_PREPARATION: OrderStatus.READY_TO_DELIVER,
-  };
 
-  return statusFlow[currentStatus] || null;
+
+export function getNextStatus(currentStatus: OrderStatus): OrderStatus | null {
+    const statusFlow: Record<string, OrderStatus> = {
+        PENDING: OrderStatus.ACCEPTED_BY_MERCHANT,
+        ACCEPTED_BY_MERCHANT: OrderStatus.IN_PREPARATION,
+        IN_PREPARATION: OrderStatus.READY_TO_DELIVER,
+    };
+
+    return statusFlow[currentStatus] || null;
 }
 
 export function canReject(status: OrderStatus): boolean {
-  return status === OrderStatus.PENDING;
+    return status === OrderStatus.PENDING;
 }
 
 export function canCancel(status: OrderStatus): boolean {
-  return [OrderStatus.ACCEPTED_BY_MERCHANT, OrderStatus.IN_PREPARATION].some((e) => e === status);
+    return [OrderStatus.ACCEPTED_BY_MERCHANT, OrderStatus.IN_PREPARATION].some((e) => e === status);
 }

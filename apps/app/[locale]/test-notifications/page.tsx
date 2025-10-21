@@ -141,7 +141,7 @@ export default function TestNotifications() {
 
                 <button
                     onClick={requestPermission}
-                    className="w-full px-4 py-3 bg-primary/60 text-white rounded hover:bg-primary/70"
+                    className="w-full px-4 py-3 bg-primary text-white rounded hover:bg-primary"
                 >
                     2. Request Permission
                 </button>
