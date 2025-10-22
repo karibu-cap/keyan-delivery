@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { DriverOrderPage } from "@/components/driver/DriverOrderPage";
-import { DriverLoadingState } from "@/components/driver/DriverLoadingState";
+import { Skeleton } from "@/components/ui/skeleton";
 import { OrderStatus } from "@prisma/client";
 import { useToast } from "@/hooks/use-toast";
 import { useDriverOrders } from "@/hooks/use-driver-orders";
@@ -75,7 +75,22 @@ export default function OrderDetailPage() {
     };
 
     if (loading) {
-        return <DriverLoadingState />;
+        return (
+            <div className="min-h-screen bg-background">
+                <div className="container mx-auto px-4 py-6 space-y-6">
+                    {/* Header skeleton */}
+                    <Skeleton className="h-10 w-32" />
+                    {/* Order header skeleton */}
+                    <Skeleton className="h-32 w-full rounded-2xl" />
+                    {/* Map skeleton */}
+                    <Skeleton className="h-[400px] w-full rounded-2xl" />
+                    {/* Order items skeleton */}
+                    <Skeleton className="h-40 w-full rounded-2xl" />
+                    {/* Actions skeleton */}
+                    <Skeleton className="h-32 w-full rounded-2xl" />
+                </div>
+            </div>
+        );
     }
 
     if (!order) {

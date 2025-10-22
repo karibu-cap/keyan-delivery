@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       const orders = await prisma.order.findMany({
          where: {
             status: OrderStatus.COMPLETED,
-            driverId: token.decodedToken.uid,
+            driverId: user.id,
          },
          include: {
             items: {
