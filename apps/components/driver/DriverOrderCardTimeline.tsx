@@ -17,40 +17,7 @@ import { useDriverOrders } from "@/hooks/use-driver-orders";
 import { useWallet } from "@/hooks/use-wallet";
 import { useT } from "@/hooks/use-inline-translation";
 import { cn } from "@/lib/utils";
-
-interface Order {
-    id: string;
-    status: OrderStatus;
-    createdAt: Date;
-    pickupCode: string | null;
-    deliveryCode: string | null;
-    orderPrices: {
-        total: number;
-        deliveryFee: number;
-    };
-    deliveryInfo: {
-        address: string;
-        delivery_latitude: number;
-        delivery_longitude: number;
-        deliveryContact: string | null;
-        additionalNotes?: string | null;
-    };
-    merchant: {
-        businessName: string;
-        address: {
-            latitude: number;
-            longitude: number;
-        };
-    };
-    items: Array<{
-        id: string;
-        quantity: number;
-        price: number;
-        product: {
-            title: string;
-        };
-    }>;
-}
+import { Order } from '@/lib/models/order';
 
 interface DriverOrderCardTimelineProps {
     order: Order;

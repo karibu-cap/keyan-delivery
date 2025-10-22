@@ -7,9 +7,8 @@ import { prisma } from "@/lib/prisma";
  * Get order tracking information including driver's current location
  * Accessible by both driver and customer
  */
-export async function GET(
+export async function POST(
     request: NextRequest,
-    { params }: { params: { orderId: string } }
 ) {
    try {
 
@@ -35,7 +34,10 @@ export async function GET(
             );
         }
 
-        const { orderId } = params;
+
+
+       const body = await request.json();
+       const { orderId } = body;
 
         // Fetch order with tracking information
         const order = await prisma.order.findUnique({

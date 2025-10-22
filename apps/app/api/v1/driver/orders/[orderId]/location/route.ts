@@ -4,13 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 
 /**
- * PATCH /api/v1/driver/orders/[orderId]/location
+ * POST /api/v1/driver/orders/[orderId]/location
  * Update driver's current location for an order
  * Used for real-time tracking
  */
-export async function PATCH(
-    request: NextRequest,
-    { params }: { params: { orderId: string } }
+export async function POST(
+    request: NextRequest
 ) {
     try {
         const token = await getUserTokens();
@@ -35,9 +34,8 @@ export async function PATCH(
             );
         }
 
-        const { orderId } = params;
         const body = await request.json();
-        const { latitude, longitude } = body;
+        const { latitude, longitude, orderId } = body;
 
         // Validate coordinates
         if (

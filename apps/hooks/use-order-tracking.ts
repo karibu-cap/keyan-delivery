@@ -66,7 +66,13 @@ export function useOrderTracking({
         if (!enabled || isUnmountedRef.current) return;
 
         try {
-            const response = await fetch(`/api/v1/orders/${orderId}/tracking`);
+            const response = await fetch(`/api/v1/orders/${orderId}/tracking`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ orderId }),
+            });
             const result = await response.json();
 
             if (!response.ok) {
@@ -97,11 +103,11 @@ export function useOrderTracking({
         async (latitude: number, longitude: number) => {
             try {
                 const response = await fetch(`/api/v1/driver/orders/${orderId}/location`, {
-                    method: "PATCH",
+                    method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ latitude, longitude }),
+                    body: JSON.stringify({ latitude, longitude, orderId }),
                 });
 
                 const result = await response.json();
