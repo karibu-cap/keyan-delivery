@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
             status: {
                in: [OrderStatus.ACCEPTED_BY_DRIVER, OrderStatus.ON_THE_WAY]
             },
-            driverId: token.decodedToken.uid,
+            driverId: user.id,
          },
          include: {
             items: {

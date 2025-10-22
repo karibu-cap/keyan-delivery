@@ -180,7 +180,7 @@ export async function POST(
         // Update order status
         const updatedOrder = await prisma.order.update({
             where: { id: orderId },
-            data: { status: newStatus, driverId: token.decodedToken.uid },
+            data: { status: newStatus, driverId: user.id },
             include: {
                 items: {
                     include: {
