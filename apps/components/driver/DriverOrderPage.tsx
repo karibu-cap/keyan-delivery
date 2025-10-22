@@ -10,6 +10,7 @@ import {
     ArrowLeft, MapPin, Store, Package, WalletIcon, Phone, MessageSquare,
     CheckCircle, Truck, AlertCircle, User, Navigation
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -239,59 +240,60 @@ export function DriverOrderPage({
                             </div>
                         </div>
                     </div>
-
-                    {/* Stats Cards - 3 cards overlapping hero */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-
-                        {/* Distance to Merchant */}
-                        <Card className="p-4 rounded-xl shadow-card border-2 border-blue-200 dark:border-blue-800 hover:shadow-lg transition-all">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center">
-                                    <Store className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-xs text-muted-foreground">Distance to Merchant</p>
-                                    <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                                        {typeof merchantDistance === 'number' ? `${merchantDistance.toFixed(1)} km` : merchantDistance}
-                                    </p>
-                                </div>
-                            </div>
-                        </Card>
-
-                        {/* Distance to Client */}
-                        <Card className="p-4 rounded-xl shadow-card border-2 border-purple-200 dark:border-purple-800 hover:shadow-lg transition-all">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-950 flex items-center justify-center">
-                                    <MapPin className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-xs text-muted-foreground">Distance to Client</p>
-                                    <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                                        {typeof deliveryDistance === 'number' ? `${deliveryDistance.toFixed(1)} km` : deliveryDistance}
-                                    </p>
-                                </div>
-                            </div>
-                        </Card>
-
-                        {/* Earnings */}
-                        <Card className="p-4 rounded-xl shadow-card border-2 border-green-200 dark:border-green-800 hover:shadow-lg transition-all">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center">
-                                    <WalletIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-xs text-muted-foreground">Your Earnings</p>
-                                    <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                                        {t.formatAmount(order.orderPrices.deliveryFee)}
-                                    </p>
-                                </div>
-                            </div>
-                        </Card>
-                    </div>
                 </div>
             </section>
 
-            <div className="container mx-auto px-4 py-8 max-w-7xl -mt-8 space-y-6">
+            {/* Stats Cards - 3 cards overlapping hero */}
+            <div className="container mx-auto max-w-7xl px-4 -mt-8 pb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Distance to Merchant */}
+                    <Card className="p-6 rounded-2xl shadow-card">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                                <Store className="w-6 h-6 text-blue-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Distance to Merchant</p>
+                                <p className="text-2xl font-bold">
+                                    {typeof merchantDistance === 'number' ? `${merchantDistance.toFixed(1)} km` : merchantDistance}
+                                </p>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Distance to Client */}
+                    <Card className="p-6 rounded-2xl shadow-card">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center">
+                                <MapPin className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Distance to Client</p>
+                                <p className="text-2xl font-bold">
+                                    {typeof deliveryDistance === 'number' ? `${deliveryDistance.toFixed(1)} km` : deliveryDistance}
+                                </p>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Earnings */}
+                    <Card className="p-6 rounded-2xl shadow-card bg-gradient-to-br from-primary/10 to-primary/5">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
+                                <WalletIcon className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground">Your Earnings</p>
+                                <p className="text-2xl font-bold text-primary">
+                                    {t.formatAmount(order.orderPrices.deliveryFee)}
+                                </p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            </div>
+
+            <div className="container mx-auto px-4 max-w-7xl space-y-6">
                 {/* Main Grid - 2 columns */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left Column - Map, Merchant, Client, Items */}
@@ -300,9 +302,9 @@ export function DriverOrderPage({
                         <Card className="p-6 rounded-2xl shadow-card">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
-                                    <h2 className="text-xl font-semibold">Navigation Map</h2>
+                                    <h2 className="text-xl font-semibold">{t("Navigation Map")}</h2>
                                     <p className="text-sm text-muted-foreground mt-1">
-                                        Track your route in real-time
+                                        {t("Track your route in real time")}
                                     </p>
                                 </div>
                                 <Button
@@ -312,7 +314,7 @@ export function DriverOrderPage({
                                     className="gap-2"
                                 >
                                     <Navigation className="w-4 h-4" />
-                                    <span className="hidden sm:inline">Google Maps</span>
+                                    <span className="hidden sm:inline">{t("Google Maps")}</span>
                                 </Button>
                             </div>
 
@@ -341,10 +343,10 @@ export function DriverOrderPage({
                         <Card className="p-6 rounded-2xl shadow-card border-2 border-blue-200 dark:border-blue-800">
                             <div className="flex items-center gap-2 mb-4">
                                 <Store className="w-5 h-5 text-blue-600" />
-                                <h3 className="text-lg font-semibold">Merchant Information</h3>
+                                <h3 className="text-lg font-semibold">{t("Merchant Information")}</h3>
                             </div>
 
-                            <div className="flex items-start gap-4">
+                            <div className="flex flex-col sm:flex-row items-start gap-4">
                                 {/* Merchant Image */}
                                 <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-100 dark:bg-blue-950 flex-shrink-0">
                                     {order.merchant.bannerUrl ? (
@@ -362,47 +364,47 @@ export function DriverOrderPage({
                                     )}
                                 </div>
 
-                                <div className="flex-1">
+                                <div className="flex-1 w-full">
                                     <h4 className="font-semibold text-lg">{order.merchant.businessName}</h4>
                                     {order.merchant.address.latitude && order.merchant.address.longitude && (
-                                        <p className="text-sm text-muted-foreground mt-1">
+                                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                                             {merchantStreet}
                                         </p>
                                     )}
                                     {order.merchant.phone && (
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Phone Number</p>
-                                            <p className="font-medium">{order.merchant.phone}</p>
+                                        <div className="mt-2">
+                                            <p className="text-sm text-muted-foreground">{t("Phone Number")}</p>
+                                            <p className="font-medium text-sm">{order.merchant.phone}</p>
                                         </div>
                                     )}
                                     {order.merchant.phone && (
-                                        <div className="flex items-center gap-2 mt-3">
+                                        <div className="flex flex-wrap items-center gap-2 mt-3">
                                             <Button
                                                 onClick={() => openPhone(order.merchant.phone!)}
                                                 size="sm"
                                                 variant="outline"
-                                                className="gap-2"
+                                                className="gap-1 flex-1 sm:flex-none min-w-[80px]"
                                             >
                                                 <Phone className="w-4 h-4" />
-                                                Call
+                                                <span className="text-xs sm:text-sm">{t("Call")}</span>
                                             </Button>
                                             <Button
                                                 onClick={() => openSMS(order.merchant.phone!)}
                                                 size="sm"
                                                 variant="outline"
-                                                className="gap-2"
+                                                className="gap-1 flex-1 sm:flex-none min-w-[80px]"
                                             >
                                                 <MessageSquare className="w-4 h-4" />
-                                                SMS
+                                                <span className="text-xs sm:text-sm">{t("SMS")}</span>
                                             </Button>
                                             <Button
                                                 onClick={() => openWhatsApp(order.merchant.phone!)}
                                                 size="sm"
                                                 variant="outline"
-                                                className="gap-2 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900"
+                                                className="gap-1 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 flex-1 sm:flex-none min-w-[100px]"
                                             >
-                                                <MessageSquare className="w-4 h-4 text-green-600" />
-                                                WhatsApp
+                                                <WhatsAppIcon className="w-4 h-4 text-green-600" />
+                                                <span className="text-xs sm:text-sm">{t("WhatsApp")}</span>
                                             </Button>
                                         </div>
                                     )}
@@ -414,56 +416,56 @@ export function DriverOrderPage({
                         <Card className="p-6 rounded-2xl shadow-card border-2 border-purple-200 dark:border-purple-800">
                             <div className="flex items-center gap-2 mb-4">
                                 <User className="w-5 h-5 text-purple-600" />
-                                <h3 className="text-lg font-semibold">Client Information</h3>
+                                <h3 className="text-lg font-semibold">{t("Client Information")}</h3>
                             </div>
 
                             <div className="space-y-3">
                                 {order.deliveryInfo.deliveryContactName && (
                                     <div>
-                                        <p className="text-sm text-muted-foreground">Name</p>
-                                        <p className="font-semibold">{order.deliveryInfo.deliveryContactName}</p>
+                                        <p className="text-sm text-muted-foreground">{t("Name")}</p>
+                                        <p className="font-semibold text-sm sm:text-base">{order.deliveryInfo.deliveryContactName}</p>
                                     </div>
                                 )}
 
                                 <div>
-                                    <p className="text-sm text-muted-foreground">Delivery Address</p>
-                                    <p className="font-medium">{deliveryStreet || order.deliveryInfo.address}</p>
+                                    <p className="text-sm text-muted-foreground">{t("Delivery Address")}</p>
+                                    <p className="font-medium text-sm sm:text-base line-clamp-3">{deliveryStreet || order.deliveryInfo.address}</p>
                                 </div>
 
                                 {order.deliveryInfo.deliveryContact && (
                                     <>
                                         <div>
-                                            <p className="text-sm text-muted-foreground">Phone Number</p>
-                                            <p className="font-medium">{order.deliveryInfo.deliveryContact}</p>
+                                            <p className="text-sm text-muted-foreground">{t("Phone Number")}</p>
+                                            <p className="font-medium text-sm">{order.deliveryInfo.deliveryContact}</p>
                                         </div>
 
-                                        <div className="flex items-center gap-2 pt-2">
+                                        <div className="flex flex-wrap items-center gap-2 pt-2">
                                             <Button
                                                 onClick={() => openPhone(order.deliveryInfo.deliveryContact!)}
                                                 size="sm"
                                                 variant="outline"
-                                                className="gap-2"
+                                                className="gap-1 flex-1 sm:flex-none min-w-[80px]"
                                             >
                                                 <Phone className="w-4 h-4" />
-                                                Call
+                                                <span className="text-xs sm:text-sm">Call</span>
                                             </Button>
                                             <Button
                                                 onClick={() => openSMS(order.deliveryInfo.deliveryContact!)}
                                                 size="sm"
                                                 variant="outline"
-                                                className="gap-2"
+                                                className="gap-1 flex-1 sm:flex-none min-w-[80px]"
                                             >
                                                 <MessageSquare className="w-4 h-4" />
-                                                SMS
+                                                <span className="text-xs sm:text-sm">SMS</span>
                                             </Button>
                                             <Button
                                                 onClick={() => openWhatsApp(order.deliveryInfo.deliveryContact!)}
                                                 size="sm"
                                                 variant="outline"
-                                                className="gap-2 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900"
+                                                className="gap-1 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 flex-1 sm:flex-none min-w-[100px]"
                                             >
-                                                <MessageSquare className="w-4 h-4 text-green-600" />
-                                                WhatsApp
+                                                <WhatsAppIcon className="w-4 h-4 text-green-600" />
+                                                <span className="text-xs sm:text-sm">WhatsApp</span>
                                             </Button>
                                         </div>
                                     </>
@@ -472,7 +474,7 @@ export function DriverOrderPage({
                                 {order.deliveryInfo.additionalNotes && (
                                     <div className="pt-3 border-t">
                                         <p className="text-sm text-muted-foreground">Additional Notes</p>
-                                        <p className="text-sm mt-1">{order.deliveryInfo.additionalNotes}</p>
+                                        <p className="text-sm mt-1 line-clamp-3">{order.deliveryInfo.additionalNotes}</p>
                                     </div>
                                 )}
                             </div>
