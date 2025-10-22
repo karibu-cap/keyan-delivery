@@ -288,6 +288,9 @@ model Order {
   pickupCode     String?
   deliveryCode   String?
   driverId       String?
+  // Driver's current location for real-time tracking
+  driverCurrentLocation Json?
+  driverLocationUpdatedAt DateTime?
   payment        Payment?      @relation(fields: [paymentId], references: [id])
   paymentId      String?       @db.ObjectId
   // Delivery zone selected at order placement

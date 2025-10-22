@@ -115,28 +115,29 @@ export function DriverPendingStatus() {
     };
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-8">
-                <div className="max-w-6xl mx-auto space-y-8">
-                    {/* Header Card */}
-                    <Card className="p-8 rounded-2xl shadow-card text-center">
-                        <div className="flex justify-center mb-4">
-                            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-                                <Clock className="w-8 h-8 text-yellow-600" />
-                            </div>
+        <div className="min-h-screen">
+            {/* Hero Section with Red Gradient */}
+            <section className="gradient-hero py-8 sm:py-12 lg:py-16 px-4">
+                <div className="container mx-auto max-w-4xl">
+                    <div className="text-white text-center">
+                        {/* Animated Icon */}
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-4 animate-pulse">
+                            <Clock className="w-10 h-10 text-white animate-spin" style={{ animationDuration: '3s' }} />
                         </div>
-                        <h1 className="text-3xl font-bold mb-4">Application Under Review</h1>
-                        <p className="text-lg text-muted-foreground mb-6">
-                            Your driver application is currently being reviewed by our team.
+                        {/* Header Title */}
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                            Application Under Review
+                        </h1>
+                        <p className="text-sm sm:text-base text-white/90">
+                            Your driver application is currently being reviewed by our team
                         </p>
-                        <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg max-w-2xl mx-auto">
-                            <p className="text-sm text-yellow-800">
-                                Please wait while our administrators review your application.
-                                You will receive a notification once your account is approved or if any additional information is needed.
-                            </p>
-                        </div>
-                    </Card>
+                    </div>
+                </div>
+            </section>
 
+            {/* Content Section */}
+            <div className="container mx-auto px-4 py-18 max-w-4xl -mt-8">
+                <div className="space-y-6">
                     {/* Document Management Tabs */}
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                         <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-2 rounded-2xl">

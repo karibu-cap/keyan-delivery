@@ -36,7 +36,7 @@ export function WithdrawalForm({ availableBalance, onSuccess }: WithdrawalFormPr
       if (withdrawalAmount > availableBalance) {
          toast({
             title: "Insufficient balance",
-            description: `You only have $${availableBalance.toFixed(2)} available`,
+            description: `You only have KES ${availableBalance.toFixed(2)} available`,
             variant: "destructive",
          });
          return;

@@ -67,17 +67,23 @@ export function DriverOrderCard({
     const t = useT()
     const [pickupCode, setPickupCode] = useState("");
     const [deliveryCode, setDeliveryCode] = useState("");
+    const [isAccepting, setIsAccepting] = useState(false);
+    const [isStarting, setIsStarting] = useState(false);
+    const [isCompleting, setIsCompleting] = useState(false);
     const router = useRouter();
 
     const { refreshOrders } = useDriverOrders();
     const { refreshWallet } = useWallet();
 
-    const { loading, acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
+    const { acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
         redirectOnComplete: false,
         onOrderUpdate: () => {
             // Refresh orders after successful action
             setPickupCode("");
             setDeliveryCode("");
+            setIsAccepting(false);
+            setIsStarting(false);
+            setIsCompleting(false);
             refreshOrders();
             refreshWallet();
         }
@@ -88,15 +94,41 @@ export function DriverOrderCard({
     };
 
     const handleAcceptOrder = async () => {
-        if (!pickupCode.trim()) return;
-        await acceptOrder(order.id, pickupCode);
-        setPickupCode("");
+        if (!pickupCode.trim() || isAccepting) return;
+        setIsAccepting(true);
+        try {
+            await acceptOrder(order.id, pickupCode);
+            setPickupCode("");
+        } catch (error) {
+            console.error('Error accepting order:', error);
+        } finally {
+            setIsAccepting(false);
+        }
+    };
+
+    const handleStartDelivery = async () => {
+        if (isStarting) return;
+        setIsStarting(true);
+        try {
+            await startDelivery(order.id);
+        } catch (error) {
+            console.error('Error starting delivery:', error);
+        } finally {
+            setIsStarting(false);
+        }
     };
 
     const handleCompleteDelivery = async () => {
-        if (!deliveryCode.trim()) return;
-        await completeDelivery(order.id, deliveryCode);
-        setDeliveryCode("");
+        if (!deliveryCode.trim() || isCompleting) return;
+        setIsCompleting(true);
+        try {
+            await completeDelivery(order.id, deliveryCode);
+            setDeliveryCode("");
+        } catch (error) {
+            console.error('Error completing delivery:', error);
+        } finally {
+            setIsCompleting(false);
+        }
     };
     return (
         <Card className="p-6 rounded-2xl shadow-card hover:shadow-lg transition-all flex flex-col h-full">
@@ -207,24 +239,24 @@ export function DriverOrderCard({
                         <Button
                             className="w-full rounded-2xl"
                             onClick={handleAcceptOrder}
-                            disabled={loading || !pickupCode.trim()}
+                            disabled={isAccepting || !pickupCode.trim()}
                         >
-                            {loading ? "Processing..." : "Accept Order"}
+                            {isAccepting ? "Processing..." : "Accept Order"}
                         </Button>
                     ) : (
                         <>
                             {order.status === OrderStatus.ACCEPTED_BY_DRIVER && (
                                 <Button
                                     className="w-full rounded-2xl"
-                                    onClick={() => startDelivery(order.id)}
-                                    disabled={loading}
+                                    onClick={handleStartDelivery}
+                                    disabled={isStarting}
                                 >
-                                    {loading ? (
+                                    {isStarting ? (
                                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                                     ) : (
                                         <Truck className="w-4 h-4 mr-2" />
                                     )}
-                                    Start Delivery
+                                    {isStarting ? "Starting..." : "Start Delivery"}
                                 </Button>
                             )}
 
@@ -232,9 +264,9 @@ export function DriverOrderCard({
                                 <Button
                                     className="w-full rounded-2xl"
                                     onClick={handleCompleteDelivery}
-                                    disabled={loading || !deliveryCode.trim()}
+                                    disabled={isCompleting || !deliveryCode.trim()}
                                 >
-                                    {loading ? "Processing..." : "Complete Delivery"}
+                                    {isCompleting ? "Processing..." : "Complete Delivery"}
                                 </Button>
                             )}
                         </>

@@ -875,6 +875,7 @@ async function seedDatabase() {
                 productId: randomProduct.id,
                 quantity: faker.number.int({ min: 1, max: 5 }),
                 price: randomProduct.price,
+                images: unsplashImages,
               }
             })
 

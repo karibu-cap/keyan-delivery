@@ -2,44 +2,12 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { DriverStatus, OrderStatus } from "@prisma/client";
+import { DriverStatus } from "@prisma/client";
+import { Order } from "@/lib/models/order";
 import { fetchDriverAvailableOrders, fetchDriverCompletedOrders, fetchDriverInProgressOrders } from "@/lib/actions/client/driver";
 import { useAuthStore } from "@/hooks/auth-store";
 import { fetchOrderDetails } from '@/lib/actions/client/orders';
 
-interface Order {
-    id: string;
-    status: OrderStatus;
-    createdAt: Date;
-    pickupCode: string | null;
-    deliveryCode: string | null;
-    orderPrices: {
-        total: number;
-        deliveryFee: number;
-    };
-    deliveryInfo: {
-        address: string;
-        delivery_latitude: number;
-        delivery_longitude: number;
-        deliveryContact: string | null;
-        additionalNotes?: string | null;
-    };
-    merchant: {
-        businessName: string;
-        address: {
-            latitude: number;
-            longitude: number;
-        };
-    };
-    items: Array<{
-        id: string;
-        quantity: number;
-        price: number;
-        product: {
-            title: string;
-        };
-    }>;
-}
 
 interface DriverOrdersState {
     availableOrders: Order[];
