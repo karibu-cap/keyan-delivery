@@ -1,10 +1,14 @@
-const CACHE_NAME = 'Yetu-delivery-v1';
-const RUNTIME_CACHE = 'Yetu-runtime-v1';
+const CACHE_NAME = 'Yetu-delivery-v2';
+const RUNTIME_CACHE = 'Yetu-runtime-v2';
+const MAP_TILES_CACHE = 'Yetu-map-tiles-v1';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
     '/',
     '/manifest.json',
+    // Leaflet CSS and JS
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
 ];
 
 // Install event - cache static assets
@@ -31,7 +35,7 @@ self.addEventListener('activate', event => {
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
+                    if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE && cacheName !== MAP_TILES_CACHE) {
                         console.info('[SW] Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
@@ -39,6 +43,101 @@ self.addEventListener('activate', event => {
             );
         }).then(() => {
             return self.clients.claim();
+        })
+    );
+});
+
+// Fetch event - implement caching strategies
+self.addEventListener('fetch', event => {
+    const { request } = event;
+    const url = new URL(request.url);
+
+    // Cache strategy for OpenStreetMap tiles (Cache First with expiration)
+    if (url.hostname.includes('tile.openstreetmap.org')) {
+        event.respondWith(
+            caches.open(MAP_TILES_CACHE).then(cache => {
+                return cache.match(request).then(cachedResponse => {
+                    if (cachedResponse) {
+                        // Check if cached tile is older than 7 days
+                        const cachedDate = new Date(cachedResponse.headers.get('date'));
+                        const now = new Date();
+                        const daysSinceCached = (now - cachedDate) / (1000 * 60 * 60 * 24);
+                        
+                        if (daysSinceCached < 7) {
+                            return cachedResponse;
+                        }
+                    }
+
+                    // Fetch from network and cache
+                    return fetch(request).then(response => {
+                        // Only cache successful responses
+                        if (response.status === 200) {
+                            cache.put(request, response.clone());
+                        }
+                        return response;
+                    }).catch(() => {
+                        // Return cached version if network fails
+                        return cachedResponse || new Response('Offline - Map tile unavailable', {
+                            status: 503,
+                            statusText: 'Service Unavailable'
+                        });
+                    });
+                });
+            })
+        );
+        return;
+    }
+
+    // Cache strategy for Leaflet resources (Cache First)
+    if (url.hostname.includes('unpkg.com') && url.pathname.includes('leaflet')) {
+        event.respondWith(
+            caches.match(request).then(cachedResponse => {
+                return cachedResponse || fetch(request).then(response => {
+                    return caches.open(CACHE_NAME).then(cache => {
+                        cache.put(request, response.clone());
+                        return response;
+                    });
+                });
+            })
+        );
+        return;
+    }
+
+    // Network First strategy for API calls
+    if (url.pathname.startsWith('/api/')) {
+        event.respondWith(
+            fetch(request).then(response => {
+                // Cache successful GET requests
+                if (request.method === 'GET' && response.status === 200) {
+                    const responseClone = response.clone();
+                    caches.open(RUNTIME_CACHE).then(cache => {
+                        cache.put(request, responseClone);
+                    });
+                }
+                return response;
+            }).catch(() => {
+                // Fallback to cache for GET requests
+                if (request.method === 'GET') {
+                    return caches.match(request);
+                }
+                return new Response('Offline', { status: 503 });
+            })
+        );
+        return;
+    }
+
+    // Default: Network First, fallback to cache
+    event.respondWith(
+        fetch(request).then(response => {
+            if (response.status === 200) {
+                const responseClone = response.clone();
+                caches.open(RUNTIME_CACHE).then(cache => {
+                    cache.put(request, responseClone);
+                });
+            }
+            return response;
+        }).catch(() => {
+            return caches.match(request);
         })
     );
 });

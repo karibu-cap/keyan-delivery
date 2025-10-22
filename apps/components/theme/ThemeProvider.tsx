@@ -3,11 +3,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { MerchantType } from '@prisma/client';
 
-type ThemeColor = 'green' | 'orange' | 'blue';
+type ThemeColor = 'green' | 'orange' | 'blue' | 'red';
 
 interface ThemeContextType {
     themeColor: ThemeColor;
     setMerchantTheme: (type: MerchantType | null) => void;
+    setDriverTheme: () => void;
     resetToClientTheme: () => void;
 }
 
@@ -31,6 +32,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setThemeColor(themeMap[type]);
     };
 
+    const setDriverTheme = () => {
+        setThemeColor('red');
+    };
+
     const resetToClientTheme = () => {
         setThemeColor('green');
     };
@@ -40,7 +45,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }, [themeColor]);
 
     return (
-        <ThemeContext.Provider value={{ themeColor, setMerchantTheme, resetToClientTheme }}>
+        <ThemeContext.Provider value={{ themeColor, setMerchantTheme, setDriverTheme, resetToClientTheme }}>
             {children}
         </ThemeContext.Provider>
     );

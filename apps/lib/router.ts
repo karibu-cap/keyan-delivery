@@ -36,6 +36,10 @@ export const ROUTES = {
   driverDashboard: '/driver/dashboard',
   driverOrderDetails: (id: string) => `/driver/order/${id}`,
   driverEarnings: '/driver/earnings',
+  driverWallet: '/driver/wallet',
+  driverWalletWithdrawal: '/driver/wallet/withdrawal',
+  driverInsights: '/driver/insights',
+  driverProfile: '/driver/profile',
 
 
   // Admin routes
