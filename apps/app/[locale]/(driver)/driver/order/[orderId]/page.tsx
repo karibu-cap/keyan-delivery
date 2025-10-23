@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Order } from "@/lib/models/order";
 import { useToast } from "@/hooks/use-toast";
 import { useDriverOrders } from "@/hooks/use-driver-orders";
+import ErrorState from "@/components/driver/ErrorState";
 
 export default function OrderDetailPage() {
     const params = useParams();
@@ -14,27 +15,39 @@ export default function OrderDetailPage() {
     const { fetchOrderDetails, error, loading } = useDriverOrders();
     const { toast } = useToast();
     const [order, setOrder] = useState<Order | null>(null);
+    const [isRetrying, setIsRetrying] = useState(false);
+    const [hasError, setHasError] = useState(false);
 
     const orderId = params.orderId as string;
 
     useEffect(() => {
         if (orderId) {
             const loadData = async () => {
-                // Fetch order details from API
-                const response = await fetchOrderDetails(orderId);
-                setOrder(response);
+                try {
+                    // Fetch order details from API
+                    const response = await fetchOrderDetails(orderId);
+                    setOrder(response);
+                    setHasError(false);
+                } catch (err) {
+                    setHasError(true);
+                }
             };
             loadData();
-            if (error) {
-                toast({
-                    title: "Error",
-                    description: error,
-                    variant: "destructive",
-                });
-                router.back();
-            }
         }
-    }, [error, fetchOrderDetails, orderId, router, toast]);
+    }, [fetchOrderDetails, orderId]);
+
+    const handleRetry = async () => {
+        setIsRetrying(true);
+        setHasError(false);
+        try {
+            const response = await fetchOrderDetails(orderId);
+            setOrder(response);
+        } catch (err) {
+            setHasError(true);
+        } finally {
+            setIsRetrying(false);
+        }
+    };
 
     const handleBack = () => {
         const locale = params.locale as string;
@@ -53,7 +66,20 @@ export default function OrderDetailPage() {
         router.push(`/${locale}/driver/dashboard?tab=${tab}`);
     };
 
-    if (loading) {
+    // Show error state if fetch failed
+    if (hasError && !loading) {
+        return (
+            <ErrorState
+                title="Failed to Load Order"
+                message="We couldn't load this order. Please check your internet connection and try again."
+                onRetry={handleRetry}
+                showBackButton={true}
+                isRetrying={isRetrying}
+            />
+        );
+    }
+
+    if (loading || !order) {
         return (
             <div className="min-h-screen">
                 {/* Hero Skeleton */}
@@ -98,24 +124,6 @@ export default function OrderDetailPage() {
                         <div className="lg:col-span-1">
                             <Skeleton className="h-60 rounded-2xl" />
                         </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (!order) {
-        return (
-            <div className="min-h-screen bg-background">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="text-center">
-                        <h1 className="text-2xl font-bold mb-4">Order not found</h1>
-                        <button
-                            onClick={handleBack}
-                            className="text-primary hover:underline"
-                        >
-                            Go back
-                        </button>
                     </div>
                 </div>
             </div>

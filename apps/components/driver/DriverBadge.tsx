@@ -24,11 +24,16 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
       return null;
    }
 
-   const handleClick = () => {
+   const handleClick = (status: DriverStatus) => {
       if (onClick) {
          onClick();
       } else {
-         router.push(ROUTES.driverDashboard);
+         if (status === DriverStatus.APPROVED) {
+            router.push(ROUTES.driverDashboard);
+         }
+         if (status === DriverStatus.PENDING || status === DriverStatus.REJECTED || status === DriverStatus.BANNED) {
+            router.push(ROUTES.driverPending);
+         }
       }
    };
 
@@ -72,12 +77,19 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
       }
    };
 
+   useEffect(() => {
+      const load = async () => {
+         await fetchDriverAvailableOrders();
+      };
+      load();
+   }, [fetchDriverAvailableOrders])
+
    const config = getStatusConfig();
    const StatusIcon = config.icon;
 
    return (
       <Button
-         onClick={handleClick}
+         onClick={() => handleClick(user.driverStatus || DriverStatus.BANNED)}
          variant="ghost"
          className="relative flex items-center gap-2 h-auto px-3 py-2"
       >

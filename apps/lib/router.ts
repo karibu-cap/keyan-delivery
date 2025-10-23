@@ -40,6 +40,7 @@ export const ROUTES = {
   driverWalletWithdrawal: '/driver/wallet/withdrawal',
   driverInsights: '/driver/insights',
   driverProfile: '/driver/profile',
+  driverPending: '/driver/pending',
 
 
   // Admin routes

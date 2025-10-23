@@ -1,5 +1,5 @@
 // File: /components/driver/DriverWalletBalance.tsx
-// Driver wallet balance component with withdrawal button
+// Driver wallet balance component with withdrawal button and animated stats
 
 "use client";
 
@@ -10,6 +10,7 @@ import { useT } from '@/hooks/use-inline-translation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/router';
+import AnimatedStatsCard from './AnimatedStatsCard';
 
 interface DriverWalletBalanceProps {
     wallet: {
@@ -30,7 +31,7 @@ export default function DriverWalletBalance({ wallet, stats }: DriverWalletBalan
         <div className="container mx-auto max-w-7xl px-4 -mt-8 pb-12">
             <div className="grid gap-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
                 {/* Main Balance with Withdrawal Button */}
-                <Card className="md:col-span-2 bg-gradient-to-br from-red-600 to-red-700 text-white shadow-lg">
+                <Card className="md:col-span-2 bg-gradient-to-br from-red-600 to-red-700 text-white shadow-lg animate-in fade-in slide-in-from-bottom-4">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between text-white">
                             <div className="flex items-center gap-2">
@@ -64,41 +65,27 @@ export default function DriverWalletBalance({ wallet, stats }: DriverWalletBalan
                     </CardContent>
                 </Card>
 
-                {/* Total Earned */}
-                <Card className="shadow-card">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
-                            <TrendingUp className="w-4 h-4 text-green-500" />
-                            {t('Total Earned')}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-bold text-green-600">
-                            KES {(stats?.totalEarned || 0).toFixed(2)}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            {stats?.completedTransactions || 0} {t('completed transactions')}
-                        </p>
-                    </CardContent>
-                </Card>
+                {/* Total Earned - Animated */}
+                <AnimatedStatsCard
+                    title={t('Total Earned')}
+                    value={`KES ${(stats?.totalEarned || 0).toFixed(2)}`}
+                    icon={TrendingUp}
+                    color="text-green-600"
+                    bgColor="bg-green-50 dark:bg-green-950/20"
+                    borderColor="border-green-200 dark:border-green-800"
+                    animationDelay={100}
+                />
 
-                {/* Total Spent */}
-                <Card className="shadow-card">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
-                            <TrendingDown className="w-4 h-4 text-red-500" />
-                            {t('Total Spent')}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-bold text-red-600">
-                            KES {(stats?.totalSpent || 0).toFixed(2)}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            {t('All time expenses')}
-                        </p>
-                    </CardContent>
-                </Card>
+                {/* Total Spent - Animated */}
+                <AnimatedStatsCard
+                    title={t('Total Spent')}
+                    value={`KES ${(stats?.totalSpent || 0).toFixed(2)}`}
+                    icon={TrendingDown}
+                    color="text-red-600"
+                    bgColor="bg-red-50 dark:bg-red-950/20"
+                    borderColor="border-red-200 dark:border-red-800"
+                    animationDelay={200}
+                />
             </div>
         </div>
     );

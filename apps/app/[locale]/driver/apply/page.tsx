@@ -9,7 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 import { uploadDriverDocuments } from "@/lib/actions/client/driver";
 import { ROUTES } from "@/lib/router";
 import { fileToBase64 } from "@/lib/utils/client/base_64";
-import { renderPDFPreview } from "@/lib/utils/client/pdf-preview";
 import { ArrowLeft, Camera, CheckCircle, FileText, Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -44,51 +43,28 @@ export default function DriverApplicationPage() {
          }
 
          // Validate file type
-         const validTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+         const validTypes = ["image/jpeg", "image/jpg", "image/png"];
          if (!validTypes.includes(file.type)) {
             toast({
                title: "Invalid file type",
-               description: "Please upload a JPEG, PNG, or PDF file",
+               description: "Please upload a JPEG, PNG file",
                variant: "destructive",
             });
             return;
          }
-
-         if (file.type === "application/pdf") {
-            // Handle PDF files with custom preview
+         // Handle image files with regular FileReader
+         const reader = new FileReader();
+         reader.onloadend = () => {
             if (type === "cni") {
                setCniFile(file);
-               // Generate PDF preview
-               renderPDFPreview(file).then((preview) => {
-                  setCniPreview(preview || "");
-               }).catch((error) => {
-                  console.error("Error generating PDF preview:", error);
-                  setCniPreview("");
-               });
+               setCniPreview(reader.result as string);
             } else {
                setLicenseFile(file);
-               // Generate PDF preview
-               renderPDFPreview(file).then((preview) => {
-                  setLicensePreview(preview || "");
-               }).catch((error) => {
-                  console.error("Error generating PDF preview:", error);
-                  setLicensePreview("");
-               });
+               setLicensePreview(reader.result as string);
             }
-         } else {
-            // Handle image files with regular FileReader
-            const reader = new FileReader();
-            reader.onloadend = () => {
-               if (type === "cni") {
-                  setCniFile(file);
-                  setCniPreview(reader.result as string);
-               } else {
-                  setLicenseFile(file);
-                  setLicensePreview(reader.result as string);
-               }
-            };
-            reader.readAsDataURL(file);
-         }
+         };
+         reader.readAsDataURL(file);
+
       }
    };
 
@@ -120,7 +96,7 @@ export default function DriverApplicationPage() {
                description: "Your driver application is under review. We'll notify you once it's approved.",
                variant: "default",
             });
-            router.push(ROUTES.driverDashboard);
+            router.push(ROUTES.driverPending);
          } else {
             throw new Error(result.error || "Failed to submit application");
          }
@@ -140,11 +116,11 @@ export default function DriverApplicationPage() {
 
          <div className="container mx-auto max-w-4xl px-4 py-8">
             <Link
-               href="/profile"
+               href="/"
                className="inline-flex items-center text-foreground mb-6 hover:text-primary transition-colors"
             >
                <ArrowLeft className="w-4 h-4 mr-2" />
-               Back to Profile
+               Back to Dashboard
             </Link>
 
             <div className="mb-8">
@@ -177,7 +153,7 @@ export default function DriverApplicationPage() {
                         </li>
                         <li className="flex items-start gap-2">
                            <span className="text-primary mt-1">•</span>
-                           <span>Accepted formats: JPEG, PNG, PDF (max 5MB each)</span>
+                           <span>Accepted formats: JPEG, PNG (max 1MB each)</span>
                         </li>
                      </ul>
                   </div>
@@ -213,7 +189,7 @@ export default function DriverApplicationPage() {
                            <Input
                               id="cni"
                               type="file"
-                              accept="image/jpeg,image/jpg,image/png,application/pdf"
+                              accept="image/jpeg,image/jpg,image/png"
                               onChange={(e) => handleFileChange(e, "cni")}
                               className="hidden"
                            />
@@ -224,11 +200,9 @@ export default function DriverApplicationPage() {
                            >
                               {cniFile ? (
                                  <>
-                                    {cniFile.type === "application/pdf" ? (
-                                       <FileText className="w-12 h-12 text-primary" />
-                                    ) : (
-                                       <Camera className="w-12 h-12 text-primary" />
-                                    )}
+
+                                    <Camera className="w-12 h-12 text-primary" />
+
                                     <div>
                                        <p className="font-medium">{cniFile.name}</p>
                                        <p className="text-sm opacity-80">
@@ -247,7 +221,7 @@ export default function DriverApplicationPage() {
                                           Click to upload CNI
                                        </p>
                                        <p className="text-sm text-muted-foreground">
-                                          JPEG, PNG or PDF (max 5MB)
+                                          JPEG, PNG (max 5MB)
                                        </p>
                                     </div>
                                  </>
@@ -285,7 +259,7 @@ export default function DriverApplicationPage() {
                            <Input
                               id="license"
                               type="file"
-                              accept="image/jpeg,image/jpg,image/png,application/pdf"
+                              accept="image/jpeg,image/jpg,image/png"
                               onChange={(e) => handleFileChange(e, "license")}
                               className="hidden"
                            />
@@ -296,11 +270,8 @@ export default function DriverApplicationPage() {
                            >
                               {licenseFile ? (
                                  <>
-                                    {licenseFile.type === "application/pdf" ? (
-                                       <FileText className="w-12 h-12 text-primary" />
-                                    ) : (
-                                       <Camera className="w-12 h-12 text-primary" />
-                                    )}
+                                    <Camera className="w-12 h-12 text-primary" />
+
                                     <div>
                                        <p className="font-medium">{licenseFile.name}</p>
                                        <p className="text-sm opacity-80">
@@ -319,7 +290,7 @@ export default function DriverApplicationPage() {
                                           Click to upload Driver&apos;s License
                                        </p>
                                        <p className="text-sm text-muted-foreground">
-                                          JPEG, PNG or PDF (max 5MB)
+                                          JPEG, PNG (max 1MB)
                                        </p>
                                     </div>
                                  </>

@@ -55,7 +55,11 @@ export async function POST(
         // Verify order belongs to this driver
         const order = await prisma.order.findUnique({
             where: { id: orderId },
-            select: { driverId: true, status: true },
+            select: {
+                driverId: true,
+                status: true,
+                driverStartDeliveryLocation: true,
+            },
         });
 
         if (!order) {
@@ -72,20 +76,33 @@ export async function POST(
             );
         }
 
+        // Prepare update data
+        const updateData: any = {
+            driverCurrentLocation: {
+                latitude,
+                longitude,
+                timestamp: new Date().toISOString(),
+            },
+            driverLocationUpdatedAt: new Date(),
+        };
+
+        // Only update driverStartDeliveryLocation if it doesn't exist
+        if (!order.driverStartDeliveryLocation) {
+            updateData.driverStartDeliveryLocation = {
+                latitude,
+                longitude,
+                timestamp: new Date().toISOString(),
+            };
+        }
+
         // Update driver location
         const updatedOrder = await prisma.order.update({
             where: { id: orderId },
-            data: {
-                driverCurrentLocation: {
-                    latitude,
-                    longitude,
-                    timestamp: new Date().toISOString(),
-                },
-                driverLocationUpdatedAt: new Date(),
-            },
+            data: updateData,
             select: {
                 id: true,
                 driverCurrentLocation: true,
+                driverStartDeliveryLocation: true,
                 driverLocationUpdatedAt: true,
             },
         });

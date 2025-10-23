@@ -1,13 +1,11 @@
 // File: /app/[locale]/(driver)/driver/dashboard/page.tsx
 // Driver dashboard with futuristic design and real-time data hydration
-
-"use client";
+"use client"
 
 import { DriverStatus } from "@prisma/client";
 import { useAuthStore } from "@/hooks/auth-store";
 import { DriverPendingStatus } from "@/components/driver/DriverPendingStatus";
 import { DriverRejectedStatus } from "@/components/driver/DriverRejectedStatus";
-import DriverDashboardClient from "@/components/driver/DriverDashboardClient";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
@@ -74,5 +72,5 @@ export default function DriverDashboard() {
       return <DriverRejectedStatus />;
    }
 
-   return <DriverDashboardClient />;
+   return <DriverPendingStatus />;
 }

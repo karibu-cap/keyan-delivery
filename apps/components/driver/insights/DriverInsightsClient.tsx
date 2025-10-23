@@ -14,6 +14,7 @@ import DriverStatsCards from './DriverStatsCards';
 import DriverEarningsChart from './DriverEarningsChart';
 import DriverDeliveriesOverview from './DriverDeliveriesOverview';
 import DriverPerformanceCard from './DriverPerformanceCard';
+import ErrorState from '../ErrorState';
 
 type DateRange = {
     from: Date;
@@ -31,6 +32,8 @@ export default function DriverInsightsClient() {
     });
     const [analytics, setAnalytics] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [isRetrying, setIsRetrying] = useState(false);
 
     // Period presets
     const periods: Record<PeriodType, { label: string; getRange: () => DateRange }> = {
@@ -75,14 +78,21 @@ export default function DriverInsightsClient() {
             if (!date?.from || !date?.to) return;
             
             setLoading(true);
+            setError(null);
             try {
                 const response = await fetch(
                     `/api/v1/driver/analytics?from=${date.from.toISOString()}&to=${date.to.toISOString()}`
                 );
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch analytics');
+                }
+                
                 const data = await response.json();
                 setAnalytics(data);
-            } catch (error) {
-                console.error('Failed to fetch analytics:', error);
+            } catch (err) {
+                console.error('Failed to fetch analytics:', err);
+                setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
             } finally {
                 setLoading(false);
             }
@@ -90,6 +100,44 @@ export default function DriverInsightsClient() {
 
         fetchAnalytics();
     }, [date]);
+
+    const handleRetry = async () => {
+        setIsRetrying(true);
+        setError(null);
+        setLoading(true);
+        
+        try {
+            const response = await fetch(
+                `/api/v1/driver/analytics?from=${date.from.toISOString()}&to=${date.to.toISOString()}`
+            );
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch analytics');
+            }
+            
+            const data = await response.json();
+            setAnalytics(data);
+        } catch (err) {
+            console.error('Failed to fetch analytics:', err);
+            setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
+        } finally {
+            setLoading(false);
+            setIsRetrying(false);
+        }
+    };
+
+    // Show error state if fetch failed
+    if (error && !loading && !analytics) {
+        return (
+            <ErrorState
+                title="Failed to Load Analytics"
+                message="We couldn't load your insights data. Please check your internet connection and try again."
+                onRetry={handleRetry}
+                showBackButton={true}
+                isRetrying={isRetrying}
+            />
+        );
+    }
 
     return (
         <div className="min-h-screen">

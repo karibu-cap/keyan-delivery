@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Upload, FileText, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { fileToBase64 } from "@/lib/utils/client/base_64";
-import { renderPDFPreview } from "@/lib/utils/client/pdf-preview";
 
 export interface UploadedDocument {
     file: File;
@@ -28,7 +27,7 @@ interface DocumentUploadProps {
 export function DocumentUpload({
     label,
     id,
-    accept = "image/jpeg,image/jpg,image/png,application/pdf",
+    accept = "image/jpeg,image/jpg,image/png",
     existingFile = null,
     existingPreview = "",
     onFileChange,
@@ -53,11 +52,11 @@ export function DocumentUpload({
         }
 
         // Validate file type
-        const validTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+        const validTypes = ["image/jpeg", "image/jpg", "image/png"];
         if (!validTypes.includes(selectedFile.type)) {
             toast({
                 title: "Invalid file type",
-                description: "Please upload a JPEG, PNG, or PDF file",
+                description: "Please upload a JPEG, PNG file",
                 variant: "destructive",
             });
             return;
@@ -65,18 +64,13 @@ export function DocumentUpload({
 
         try {
             let previewUrl = "";
-
-            if (selectedFile.type === "application/pdf") {
-                // Handle PDF files with custom preview
-                previewUrl = await renderPDFPreview(selectedFile) || "";
-            } else {
                 // Handle image files with regular FileReader
                 previewUrl = await new Promise<string>((resolve) => {
                     const reader = new FileReader();
                     reader.onloadend = () => resolve(reader.result as string);
                     reader.readAsDataURL(selectedFile);
                 });
-            }
+
 
             const base64 = await fileToBase64(selectedFile);
 
@@ -146,11 +140,7 @@ export function DocumentUpload({
                 >
                     {file ? (
                         <>
-                            {file.type === "application/pdf" ? (
-                                <FileText className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-primary" />
-                            ) : (
                                 <Camera className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-primary" />
-                            )}
                             <div className="space-y-1">
                                 <p className="font-medium text-sm sm:text-base truncate max-w-full">{file.name}</p>
                                 <p className="text-xs sm:text-sm opacity-80">
@@ -179,7 +169,7 @@ export function DocumentUpload({
                                     Click to upload {label.toLowerCase()}
                                 </p>
                                 <p className="text-xs sm:text-sm text-muted-foreground">
-                                    JPEG, PNG or PDF (max 5MB)
+                                    JPEG, PNG (max 5MB)
                                 </p>
                             </div>
                         </>

@@ -273,6 +273,16 @@ enum CoordinateConfidence {
   LOW
 }
 
+type DriverLocation {
+  latitude  Float
+  longitude Float
+  timestamp String
+}
+
+type DriverStatusHistory {
+  status OrderStatus
+  timestamp String
+}
 model Order {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
   deliveryInfo   DeliveryInfo
@@ -289,8 +299,16 @@ model Order {
   deliveryCode   String?
   driverId       String?
   // Driver's current location for real-time tracking
-  driverCurrentLocation Json?
+  driverCurrentLocation DriverLocation?
+  // Driver's position when he accept the order
+  // Format: { latitude: number, longitude: number, timestamp: Date}
+  driverStartDeliveryLocation DriverLocation?
   driverLocationUpdatedAt DateTime?
+  // Driver's status history during delivery
+  // Format: [{ status: OrderStatus, timestamp: Date,}]
+  driverStatusHistories DriverStatusHistory[]
+  driverTotalDistanceInKilometers Float?
+  onTimeDelivery Boolean?
   payment        Payment?      @relation(fields: [paymentId], references: [id])
   paymentId      String?       @db.ObjectId
   // Delivery zone selected at order placement

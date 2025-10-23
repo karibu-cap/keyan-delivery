@@ -10,12 +10,24 @@ import { Package, Truck, CheckCircle2, TrendingUp } from 'lucide-react';
 import { useDriverOrders } from '@/hooks/use-driver-orders';
 import DriverOrdersList from './DriverOrdersList';
 import DriverStatsGrid from './DriverStatsGrid';
+import ErrorState from './ErrorState';
 
 export default function DriverDashboardClient() {
     const { availableOrders, inProgressOrders, completedOrders, loading, error, refreshOrders } = useDriverOrders();
     const [activeTab, setActiveTab] = useState('available');
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isRetrying, setIsRetrying] = useState(false);
     const previousCountsRef = React.useRef({ available: 0, active: 0, completed: 0 });
+
+    const handleRetry = async () => {
+        setIsRetrying(true);
+        setIsInitialLoad(true);
+        await refreshOrders();
+        setTimeout(() => {
+            setIsInitialLoad(false);
+            setIsRetrying(false);
+        }, 1000);
+    };
 
     // Auto-refresh data every 30 seconds (silent refresh, no skeleton)
     useEffect(() => {
@@ -56,6 +68,19 @@ export default function DriverDashboardClient() {
 
         previousCountsRef.current = currentCounts;
     }, [availableOrders.length, inProgressOrders.length, completedOrders.length, isInitialLoad]);
+
+    // Show error state if initial load failed
+    if (error && isInitialLoad && !loading) {
+        return (
+            <ErrorState
+                title="Failed to Load Dashboard"
+                message="We couldn't load your orders. Please check your internet connection and try again."
+                onRetry={handleRetry}
+                showBackButton={false}
+                isRetrying={isRetrying}
+            />
+        );
+    }
 
     return (
         <div className="min-h-screen">
