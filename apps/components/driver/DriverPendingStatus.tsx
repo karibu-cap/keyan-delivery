@@ -6,51 +6,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthStore } from "@/hooks/auth-store";
 import { useToast } from "@/hooks/use-toast";
 import { updateDriverDocuments } from "@/lib/actions/client/driver";
-import { buildExistingDocuments, DocumentInfo } from "@/lib/utils/documents";
 import { Clock, FileText, Upload } from "lucide-react";
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import type { DocumentData } from "./DocumentGrid";
 import type { UploadedDocument } from "./DocumentUpload";
 import { DocumentUpload } from "./DocumentUpload";
-
-// Dynamically import DocumentGrid to avoid SSR issues
-const DocumentGrid = dynamic(() => import("./DocumentGrid").then(mod => ({ default: mod.DocumentGrid })), {
-    ssr: false,
-    loading: () => (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            {[1, 2].map((i) => (
-                <div key={i} className="p-4 rounded-2xl shadow-card bg-gray-50 animate-pulse">
-                    <div className="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
-                    <div className="space-y-2">
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                        <div className="flex gap-2">
-                            <div className="h-8 bg-gray-200 rounded flex-1"></div>
-                            <div className="h-8 bg-gray-200 rounded flex-1"></div>
-                        </div>
-                    </div>
-                </div>
-            ))}
-        </div>
-    )
-});
+import DriverDocumentsPreview from "./profile/DriverDocumentsPreview";
 
 export function DriverPendingStatus() {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [cniDocument, setCniDocument] = useState<UploadedDocument | null>(null);
     const [licenseDocument, setLicenseDocument] = useState<UploadedDocument | null>(null);
-    const [existingDocuments, setExistingDocuments] = useState<DocumentInfo[]>([]);
+    // const [existingDocuments, setExistingDocuments] = useState<DocumentInfo[]>([]);
     const [activeTab, setActiveTab] = useState("documents");
-    const { reloadCurrentUser, user } = useAuthStore();
-
-    // Rebuild existing documents when user data changes
-    useEffect(() => {
-        if (user) {
-            setExistingDocuments(buildExistingDocuments(user));
-        }
-    }, [user]);
+    const { user } = useAuthStore();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -74,8 +43,6 @@ export function DriverPendingStatus() {
             if (cniBase64 || licenseBase64) {
                 const result = await updateDriverDocuments({ cniBase64, licenseBase64 });
                 if (result.success) {
-                    await reloadCurrentUser();
-                    // Reset to first tab to show updated documents
                     setActiveTab("documents");
                     toast({
                         title: "Documents updated!",
@@ -96,21 +63,6 @@ export function DriverPendingStatus() {
             });
         } finally {
             setIsSubmitting(false);
-        }
-    };
-
-    const handleViewDocument = (document: DocumentData) => {
-        if (document.url) {
-            window.open(document.url, "_blank");
-        }
-    };
-
-    const handleDownloadDocument = (document: DocumentData) => {
-        if (document.url) {
-            const link = window.document.createElement("a");
-            link.href = document.url;
-            link.download = document.name;
-            link.click();
         }
     };
 
@@ -140,35 +92,33 @@ export function DriverPendingStatus() {
                 <div className="space-y-6">
                     {/* Document Management Tabs */}
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                        <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-2 rounded-2xl">
-                            <TabsTrigger value="documents" className="rounded-2xl">
+                        <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/50 backdrop-blur-sm rounded-xl p-1">
+                            <TabsTrigger
+                                value="documents"
+                                className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
+                            >
                                 <FileText className="w-4 h-4 mr-2" />
-                                Your Documents
+                                <span className="hidden sm:inline">Your Documents</span>
+                                {/* <span className="ml-2 px-2 py-0.5 rounded-full bg-background/20 text-xs font-semibold">
+                                    {availableOrders.length}
+                                </span> */}
                             </TabsTrigger>
-                            <TabsTrigger value="update" className="rounded-2xl">
+                            <TabsTrigger
+                                value="update"
+                                className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
+                            >
                                 <Upload className="w-4 h-4 mr-2" />
-                                Update Documents
+                                <span className="hidden sm:inline">Update Documents</span>
+                                {/* <span className="ml-2 px-2 py-0.5 rounded-full bg-background/20 text-xs font-semibold">
+                                    {inProgressOrders.length}
+                                </span> */}
                             </TabsTrigger>
                         </TabsList>
 
                         {/* Documents Preview Tab */}
                         <TabsContent value="documents" className="space-y-6">
-                            <Card className="p-6 rounded-2xl shadow-card">
-                                <h2 className="text-xl font-semibold mb-4">Submitted Documents</h2>
-                                {existingDocuments.length > 0 ? (
-                                    <DocumentGrid
-                                        documents={existingDocuments}
-                                        onViewDocument={handleViewDocument}
-                                        onDownloadDocument={handleDownloadDocument}
-                                        columns={2}
-                                    />
-                                ) : (
-                                    <div className="text-center py-12">
-                                        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                        <p className="text-muted-foreground">No documents found. Please upload your documents in the Update tab.</p>
-                                    </div>
-                                )}
-                            </Card>
+                            {user?.id && (
+                                <DriverDocumentsPreview driverId={user?.id} />)}
                         </TabsContent>
 
                         {/* Update Documents Tab */}
@@ -189,7 +139,7 @@ export function DriverPendingStatus() {
                                             <li>• Valid national ID card (CNI)</li>
                                             <li>• Valid driver's license</li>
                                             <li>• Documents must be clear and readable</li>
-                                            <li>• Accepted formats: JPEG, PNG, PDF (max 5MB each)</li>
+                                            <li>• Accepted formats: JPEG, PNG, (max 1MB each)</li>
                                         </ul>
                                     </div>
 

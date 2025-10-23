@@ -69,18 +69,14 @@ export async function GET() {
             where: {
                 driverId: driver.id,
             },
-            select: {
-                status: true,
-                createdAt: true,
-            },
         });
 
         const totalDeliveries = allOrders.length;
         const completedDeliveries = allOrders.filter(o => o.status === OrderStatus.COMPLETED).length;
         const completionRate = totalDeliveries > 0 ? (completedDeliveries / totalDeliveries) * 100 : 0;
 
-        // Calculate on-time rate (mock for now - would need actual delivery time data)
-        const onTimeDeliveries = Math.floor(completedDeliveries * 0.94); // 94% on-time rate
+        // Calculate on-time rate ()
+        const onTimeDeliveries = Math.floor(allOrders.filter(element => { element.onTimeDelivery == true }).length * completedDeliveries / 100);
         const onTimeRate = completedDeliveries > 0 ? (onTimeDeliveries / completedDeliveries) * 100 : 0;
 
         // Mock rating (would need actual rating system)

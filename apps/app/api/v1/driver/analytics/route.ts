@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { OrderStatus } from '@prisma/client';
+import { calculateDeliveryTime } from '@/lib/utils/distance';
 
 export async function GET(request: NextRequest) {
     try {
@@ -51,7 +52,20 @@ export async function GET(request: NextRequest) {
                     gte: from,
                     lte: to,
                 },
-            }
+            },
+            select: {
+                id: true,
+                status: true,
+                createdAt: true,
+                driverStatusHistories: true,
+                driverTotalDistanceInKilometers: true,
+                onTimeDelivery: true,
+                orderPrices: {
+                    select: {
+                        deliveryFee: true,
+                    },
+                },
+            },
         });
 
         // Fetch orders for previous period
@@ -132,6 +146,55 @@ export async function GET(request: NextRequest) {
             ? (completedDeliveries / totalDeliveries) * 100 
             : 0;
 
+        // Calculate real distance and delivery time from tracking history
+        let totalDistance = 0;
+        let totalDeliveryTime = 0;
+        let ordersWithTracking = 0;
+        let onTimeDeliveries = 0;
+
+        orders.forEach(async order => {
+            if (order.driverTotalDistanceInKilometers) {
+                const driverStatusHistory = order.driverStatusHistories;
+               
+                    const distance = order.driverTotalDistanceInKilometers;
+                    totalDistance += distance;
+
+                    // Calculate delivery time for completed orders
+                    if (order.status === OrderStatus.COMPLETED) {
+                        const deliveryTime = calculateDeliveryTime(driverStatusHistory);
+                        totalDeliveryTime += deliveryTime;
+                        ordersWithTracking++;
+
+                        if (order.onTimeDelivery === true) {
+                            onTimeDeliveries ++
+                        }
+                    }
+                
+            }
+        });
+
+        // orders.forEach(async order => {
+        //     if (order.driverTrackingHistory && Array.isArray(order.driverTrackingHistory)) {
+        //         const trackingHistory = order.driverTrackingHistory as any[];
+        //         if (trackingHistory.length >= 2) {
+        //             // Calculate distance for this order
+        //             const distance = await calculateTotalDistance(trackingHistory);
+        //             totalDistance += distance;
+
+        //             // Calculate delivery time for completed orders
+        //             if (order.status === OrderStatus.COMPLETED) {
+        //                 const deliveryTime = calculateDeliveryTime(trackingHistory);
+        //                 totalDeliveryTime += deliveryTime;
+        //                 ordersWithTracking++;
+        //             }
+        //         }
+        //     }
+        // });
+
+        const avgDeliveryTime = ordersWithTracking > 0 
+            ? Math.round(totalDeliveryTime / ordersWithTracking) 
+            : 0;
+
         const analytics = {
             totalDeliveries,
             completedDeliveries,
@@ -150,10 +213,10 @@ export async function GET(request: NextRequest) {
             },
             dailyData,
             completionRate,
-            avgDeliveryTime: 25, // Mock data - would need to calculate from actual delivery times
-            totalDistance: totalDeliveries * 5.5, // Mock data - would need actual GPS tracking
-            onTimeDeliveries: Math.floor(completedDeliveries * 0.9), // Mock data
-            avgRating: 4.5, // Mock data - would need actual ratings
+            avgDeliveryTime,
+            totalDistance: parseFloat(totalDistance.toFixed(2)),
+            onTimeDeliveries: onTimeDeliveries,
+            avgRating: 4.5, // Mock - would need actual ratings system
         };
 
         return NextResponse.json(analytics);

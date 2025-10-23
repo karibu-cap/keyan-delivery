@@ -12,10 +12,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import DriverProfileStats from './DriverProfileStats';
 import DriverDocumentsPreview from './DriverDocumentsPreview';
-import ThemeToggle from './ThemeToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import ExitDriverModeDialog from './ExitDriverModeDialog';
 import { useRouter } from 'next/navigation';
 import { User as DbUser } from '@prisma/client';
+import { ROUTES } from '@/lib/router';
+import { useAuthStore } from '@/hooks/auth-store';
 
 interface DriverProfileClientProps {
     driver: DbUser;
@@ -32,6 +34,7 @@ interface PerformanceStats {
 export default function DriverProfileClient({ driver }: DriverProfileClientProps) {
     const t = useT();
     const router = useRouter();
+    const {logout} = useAuthStore();
     const [showExitDialog, setShowExitDialog] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [performanceStats, setPerformanceStats] = useState<PerformanceStats | null>(null);
@@ -54,8 +57,8 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
     }, []);
 
     const handleLogout = async () => {
-        // Implement logout logic
-        router.push('/sign-in');
+        await logout()
+        router.push(ROUTES.signIn);
     };
 
     const handleDeleteAccount = async () => {
@@ -144,17 +147,17 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                 {/* Documents Preview */}
                 <DriverDocumentsPreview driverId={driver.id} />
 
-                {/* Theme & Preferences */}
+                {/* Language Preferences */}
                 <Card className="p-6 rounded-2xl shadow-card">
-                    <h2 className="text-xl font-semibold mb-6">{t('Appearance')}</h2>
+                    <h2 className="text-xl font-semibold mb-6">{t('Language Preferences')}</h2>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="font-medium">{t('Theme')}</p>
+                            <p className="font-medium">{t('Language')}</p>
                             <p className="text-sm text-muted-foreground">
-                                {t('Choose your preferred theme')}
+                                {t('Choose your preferred language')}
                             </p>
                         </div>
-                        <ThemeToggle />
+                        <LanguageSwitcher />
                     </div>
                 </Card>
 

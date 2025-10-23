@@ -18,7 +18,7 @@ export default function WithdrawalPageClient({ balance }: WithdrawalPageClientPr
     const router = useRouter();
 
     return (
-        <div className="container mx-auto max-w-7xl">
+        <div className="min-h-screen">
             {/* Hero Section with Red Gradient */}
             <section className="gradient-hero py-8 sm:py-12 lg:py-16 px-4">
                 <div className="container mx-auto max-w-7xl">

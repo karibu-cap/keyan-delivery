@@ -69,19 +69,6 @@ Category,Key,English,Swahili,File,Line
 "an-order-is-ready-at-merchantname","An order is ready at ${merchantName","","lib/notifications/push-service.ts",244
 "accepter","Accepter","","lib/notifications/push-service.ts",258
 "view-details","View details","","lib/notifications/push-service.ts",262
-"best-seller","Best Seller","","components/ui/product-modal.tsx",170
-"organic","Organic","","components/ui/product-modal.tsx",175
-"in-stock","In Stock","","components/ui/product-modal.tsx",222
-"visit","Visit","","components/ui/product-modal.tsx",246
-"reviews","reviews","","components/ui/product-modal.tsx",269
-"save","Save","","components/ui/product-modal.tsx",287
-"choose-size","Choose Size","","components/ui/product-modal.tsx",304
-"total","Total","","components/ui/product-modal.tsx",356
-"add-to-cart","Add to Cart","","components/ui/product-modal.tsx",367
-"free-delivery","Free Delivery","","components/ui/product-modal.tsx",375
-"100-guarantee","100% Guarantee","","components/ui/product-modal.tsx",379
-"secure-packaging","Secure Packaging","","components/ui/product-modal.tsx",383
-"about-this-product","About this product","","components/ui/product-modal.tsx",390
 "configuration-error","Configuration error","","components/notifications/NotificationPermission.tsx",60
 "vapid-key-not-configured-please-contact-support","VAPID key not configured. Please contact support.","","components/notifications/NotificationPermission.tsx",61
 "notification-activation-failed","Notification activation failed","","components/notifications/NotificationPermission.tsx",73
@@ -104,6 +91,19 @@ Category,Key,English,Swahili,File,Line
 "blocked","Blocked","","components/notifications/NotificationPermission.tsx",259
 "enable","Enable","","components/notifications/NotificationPermission.tsx",260
 "notifications-are-blocked-please-enable-them-in-your-browser-settings","Notifications are blocked. Please enable them in your browser settings.","","components/notifications/NotificationPermission.tsx",267
+"best-seller","Best Seller","","components/ui/product-modal.tsx",170
+"organic","Organic","","components/ui/product-modal.tsx",175
+"in-stock","In Stock","","components/ui/product-modal.tsx",222
+"visit","Visit","","components/ui/product-modal.tsx",246
+"reviews","reviews","","components/ui/product-modal.tsx",269
+"save","Save","","components/ui/product-modal.tsx",287
+"choose-size","Choose Size","","components/ui/product-modal.tsx",304
+"total","Total","","components/ui/product-modal.tsx",356
+"add-to-cart","Add to Cart","","components/ui/product-modal.tsx",367
+"free-delivery","Free Delivery","","components/ui/product-modal.tsx",375
+"100-guarantee","100% Guarantee","","components/ui/product-modal.tsx",379
+"secure-packaging","Secure Packaging","","components/ui/product-modal.tsx",383
+"about-this-product","About this product","","components/ui/product-modal.tsx",390
 "my-stores","My Stores","","components/merchants/StoresList.tsx",42
 "store","store","","components/merchants/StoresList.tsx",45
 "no-stores-found","No stores found","","components/merchants/StoresList.tsx",52
@@ -215,26 +215,28 @@ Category,Key,English,Swahili,File,Line
 "terms-of-service","Terms of Service","","components/home/HomePageClient.tsx",233
 "privacy-policy","Privacy Policy","","components/home/HomePageClient.tsx",234
 "all-rights-reserved","All rights reserved.","","components/home/HomePageClient.tsx",240
-"available-balance","Available Balance","","components/driver/DriverWalletBalance.tsx",38
-"last-updated","Last updated","","components/driver/DriverWalletBalance.tsx",49
-"withdraw-funds","Withdraw Funds","","components/driver/DriverWalletBalance.tsx",60
-"total-earned","Total Earned","","components/driver/DriverWalletBalance.tsx",72
-"completed-transactions","completed transactions","","components/driver/DriverWalletBalance.tsx",80
-"total-spent","Total Spent","","components/driver/DriverWalletBalance.tsx",90
-"all-time-expenses","All time expenses","","components/driver/DriverWalletBalance.tsx",98
+"error-loading-data","Error Loading Data","","components/driver/ErrorState.tsx",43
+"we-encountered-an-error-while-loading-your-data-please-check-your-internet-connection-and-try-again","We encountered an error while loading your data. Please check your internet connection and try again.","","components/driver/ErrorState.tsx",47
+"retrying","Retrying...","","components/driver/ErrorState.tsx",58
+"back-to-dashboard","Back to Dashboard","","components/driver/ErrorState.tsx",69
+"available-balance","Available Balance","","components/driver/DriverWalletBalance.tsx",39
+"last-updated","Last updated","","components/driver/DriverWalletBalance.tsx",50
+"withdraw-funds","Withdraw Funds","","components/driver/DriverWalletBalance.tsx",61
+"total-earned","Total Earned","","components/driver/DriverWalletBalance.tsx",70
+"total-spent","Total Spent","","components/driver/DriverWalletBalance.tsx",81
 "transaction-history","Transaction History","","components/driver/DriverTransactionsList.tsx",126
 "no-transactions-found","No transactions found","","components/driver/DriverTransactionsList.tsx",132
 "transactions-will-appear-here-once-you-start-receiving-payments","Transactions will appear here once you start receiving payments","","components/driver/DriverTransactionsList.tsx",134
-"navigation-map","Navigation Map","","components/driver/DriverOrderPage.tsx",305
-"track-your-route-in-real-time","Track your route in real time","","components/driver/DriverOrderPage.tsx",307
-"google-maps","Google Maps","","components/driver/DriverOrderPage.tsx",317
-"merchant-information","Merchant Information","","components/driver/DriverOrderPage.tsx",346
-"phone-number","Phone Number","","components/driver/DriverOrderPage.tsx",376
-"sms","SMS","","components/driver/DriverOrderPage.tsx",398
-"whatsapp","WhatsApp","","components/driver/DriverOrderPage.tsx",407
-"client-information","Client Information","","components/driver/DriverOrderPage.tsx",419
-"name","Name","","components/driver/DriverOrderPage.tsx",425
-"delivery-address","Delivery Address","","components/driver/DriverOrderPage.tsx",431
+"navigation-map","Navigation Map","","components/driver/DriverOrderPage.tsx",321
+"track-your-route-in-real-time","Track your route in real time","","components/driver/DriverOrderPage.tsx",323
+"google-maps","Google Maps","","components/driver/DriverOrderPage.tsx",333
+"merchant-information","Merchant Information","","components/driver/DriverOrderPage.tsx",362
+"phone-number","Phone Number","","components/driver/DriverOrderPage.tsx",392
+"sms","SMS","","components/driver/DriverOrderPage.tsx",414
+"whatsapp","WhatsApp","","components/driver/DriverOrderPage.tsx",423
+"client-information","Client Information","","components/driver/DriverOrderPage.tsx",435
+"name","Name","","components/driver/DriverOrderPage.tsx",441
+"delivery-address","Delivery Address","","components/driver/DriverOrderPage.tsx",447
 "account-created","Account created","","components/auth/SignUpForm.tsx",70
 "welcome-your-account-has-been-created-successfully","Welcome! Your account has been created successfully.","","components/auth/SignUpForm.tsx",71
 "an-unexpected-error-occurred","An unexpected error occurred","","components/auth/SignUpForm.tsx",78
@@ -269,6 +271,17 @@ Category,Key,English,Swahili,File,Line
 "new-password","New Password","","components/auth/NewPasswordForm.tsx",64
 "confirm-new-password","Confirm New Password","","components/auth/NewPasswordForm.tsx",72
 "resetting","Resetting...","","components/auth/NewPasswordForm.tsx",80
+"no-products-found","No products found","","components/merchants/products/ProductsList.tsx",33
+"try-adjusting-your-filters","Try adjusting your filters","","components/merchants/products/ProductsList.tsx",36
+"start-by-adding-your-first-product","Start by adding your first product","","components/merchants/products/ProductsList.tsx",37
+"low-stock","Low Stock","","components/merchants/products/ProductsList.tsx",91
+"product-management","Product Management","","components/merchants/products/ProductsHeader.tsx",25
+"manage-your-product-catalog","Manage your product catalog","","components/merchants/products/ProductsHeader.tsx",28
+"filter-by-status","Filter by status","","components/merchants/products/ProductsFilters.tsx",46
+"draft","Draft","","components/merchants/products/ProductsFilters.tsx",51
+"waiting-for-review","Waiting for Review","","components/merchants/products/ProductsFilters.tsx",53
+"completed-transactions","completed transactions","","components/merchants/wallet/WalletBalance.tsx",61
+"all-time-expenses","All time expenses","","components/merchants/wallet/WalletBalance.tsx",79
 "pending-transactions","Pending Transactions","","components/merchants/wallet/WalletBalance.tsx",90
 "awaiting-confirmation","Awaiting confirmation","","components/merchants/wallet/WalletBalance.tsx",100
 "type","Type","","components/merchants/wallet/TransactionsList.tsx",130
@@ -280,15 +293,6 @@ Category,Key,English,Swahili,File,Line
 "transactions","transactions","","components/merchants/wallet/TransactionsList.tsx",241
 "previous","Previous","","components/merchants/wallet/TransactionsList.tsx",252
 "next","Next","","components/merchants/wallet/TransactionsList.tsx",291
-"no-products-found","No products found","","components/merchants/products/ProductsList.tsx",33
-"try-adjusting-your-filters","Try adjusting your filters","","components/merchants/products/ProductsList.tsx",36
-"start-by-adding-your-first-product","Start by adding your first product","","components/merchants/products/ProductsList.tsx",37
-"low-stock","Low Stock","","components/merchants/products/ProductsList.tsx",91
-"product-management","Product Management","","components/merchants/products/ProductsHeader.tsx",25
-"manage-your-product-catalog","Manage your product catalog","","components/merchants/products/ProductsHeader.tsx",28
-"filter-by-status","Filter by status","","components/merchants/products/ProductsFilters.tsx",46
-"draft","Draft","","components/merchants/products/ProductsFilters.tsx",51
-"waiting-for-review","Waiting for Review","","components/merchants/products/ProductsFilters.tsx",53
 "most-sold-products","Most sold products","","components/merchants/insights/TopProducts.tsx",27
 "top-10-products","Top 10 products","","components/merchants/insights/TopProducts.tsx",29
 "no-sales-data-available","No sales data available","","components/merchants/insights/TopProducts.tsx",37
@@ -318,31 +322,34 @@ Category,Key,English,Swahili,File,Line
 "light","Light","","components/driver/profile/ThemeToggle.tsx",47
 "dark","Dark","","components/driver/profile/ThemeToggle.tsx",48
 "system","System","","components/driver/profile/ThemeToggle.tsx",49
+"document-downloaded-successfully","Document downloaded successfully!","","components/driver/profile/ImageDocumentPreview.tsx",54
+"you-ve-downloaded-successfully-the-document","You've downloaded successfully the document.","","components/driver/profile/ImageDocumentPreview.tsx",55
+"failed-to-download-image","Failed to download image","","components/driver/profile/ImageDocumentPreview.tsx",60
+"make-sure-you-are-connected-and-retry","Make sure you are connected and retry","","components/driver/profile/ImageDocumentPreview.tsx",61
 "exit-driver-mode","Exit Driver Mode?","","components/driver/profile/ExitDriverModeDialog.tsx",44
 "you-can-return-to-driver-mode-anytime-from-your-profile","You can return to driver mode anytime from your profile.","","components/driver/profile/ExitDriverModeDialog.tsx",57
-"earnings-this-month","Earnings This Month","","components/driver/profile/DriverProfileStats.tsx",74
-"average-rating","Average Rating","","components/driver/profile/DriverProfileStats.tsx",102
-"profile-settings","Profile & Settings","","components/driver/profile/DriverProfileClient.tsx",80
-"manage-your-account-and-preferences","Manage your account and preferences","","components/driver/profile/DriverProfileClient.tsx",83
-"personal-information","Personal Information","","components/driver/profile/DriverProfileClient.tsx",100
-"appearance","Appearance","","components/driver/profile/DriverProfileClient.tsx",155
-"theme","Theme","","components/driver/profile/DriverProfileClient.tsx",158
-"choose-your-preferred-theme","Choose your preferred theme","","components/driver/profile/DriverProfileClient.tsx",160
-"performance-overview","Performance Overview","","components/driver/profile/DriverProfileClient.tsx",171
-"total-deliveries","Total Deliveries","","components/driver/profile/DriverProfileClient.tsx",200
-"completion-rate","Completion Rate","","components/driver/profile/DriverProfileClient.tsx",208
-"on-time-rate","On-time Rate","","components/driver/profile/DriverProfileClient.tsx",216
-"failed-to-load-performance-stats","Failed to load performance stats","","components/driver/profile/DriverProfileClient.tsx",223
-"account-actions","Account Actions","","components/driver/profile/DriverProfileClient.tsx",230
-"logout","Logout","","components/driver/profile/DriverProfileClient.tsx",250
-"delete-account","Delete Account","","components/driver/profile/DriverProfileClient.tsx",260
-"documents","Documents","","components/driver/profile/DriverDocumentsPreview.tsx",34
-"id-card","ID Card","","components/driver/profile/DriverDocumentsPreview.tsx",40
-"approved","Approved","","components/driver/profile/DriverDocumentsPreview.tsx",53
-"driver-license","Driver License","","components/driver/profile/DriverDocumentsPreview.tsx",67
-"total-earnings","Total Earnings","","components/driver/insights/DriverStatsCards.tsx",55
-"avg-earnings","Avg. Earnings","","components/driver/insights/DriverStatsCards.tsx",64
-"vs-previous-period","vs previous period","","components/driver/insights/DriverStatsCards.tsx",111
+"earnings-this-month","Earnings This Month","","components/driver/profile/DriverProfileStats.tsx",44
+"average-rating","Average Rating","","components/driver/profile/DriverProfileStats.tsx",60
+"profile-settings","Profile & Settings","","components/driver/profile/DriverProfileClient.tsx",77
+"manage-your-account-and-preferences","Manage your account and preferences","","components/driver/profile/DriverProfileClient.tsx",80
+"personal-information","Personal Information","","components/driver/profile/DriverProfileClient.tsx",97
+"language-preferences","Language Preferences","","components/driver/profile/DriverProfileClient.tsx",152
+"language","Language","","components/driver/profile/DriverProfileClient.tsx",155
+"choose-your-preferred-language","Choose your preferred language","","components/driver/profile/DriverProfileClient.tsx",157
+"performance-overview","Performance Overview","","components/driver/profile/DriverProfileClient.tsx",168
+"total-deliveries","Total Deliveries","","components/driver/profile/DriverProfileClient.tsx",197
+"completion-rate","Completion Rate","","components/driver/profile/DriverProfileClient.tsx",205
+"on-time-rate","On-time Rate","","components/driver/profile/DriverProfileClient.tsx",213
+"failed-to-load-performance-stats","Failed to load performance stats","","components/driver/profile/DriverProfileClient.tsx",220
+"account-actions","Account Actions","","components/driver/profile/DriverProfileClient.tsx",227
+"logout","Logout","","components/driver/profile/DriverProfileClient.tsx",247
+"delete-account","Delete Account","","components/driver/profile/DriverProfileClient.tsx",257
+"documents","Documents","","components/driver/profile/DriverDocumentsPreview.tsx",50
+"no-documents-uploaded-yet","No documents uploaded yet","","components/driver/profile/DriverDocumentsPreview.tsx",77
+"id-card","ID Card","","components/driver/profile/DriverDocumentsPreview.tsx",85
+"driver-license","Driver License","","components/driver/profile/DriverDocumentsPreview.tsx",100
+"total-earnings","Total Earnings","","components/driver/insights/DriverStatsCards.tsx",36
+"avg-earnings","Avg. Earnings","","components/driver/insights/DriverStatsCards.tsx",44
 "performance-metrics","Performance Metrics","","components/driver/insights/DriverPerformanceCard.tsx",43
 "avg-delivery-time","Avg. Delivery Time","","components/driver/insights/DriverPerformanceCard.tsx",74
 "min","min","","components/driver/insights/DriverPerformanceCard.tsx",75
@@ -351,14 +358,14 @@ Category,Key,English,Swahili,File,Line
 "km","km","","components/driver/insights/DriverPerformanceCard.tsx",91
 "distance-covered-during-period","Distance covered during period","","components/driver/insights/DriverPerformanceCard.tsx",95
 "on-time-deliveries","On-time deliveries","","components/driver/insights/DriverPerformanceCard.tsx",104
-"last-7-days","Last 7 days","","components/driver/insights/DriverInsightsClient.tsx",38
-"last-30-days","Last 30 days","","components/driver/insights/DriverInsightsClient.tsx",42
-"last-90-days","Last 90 days","","components/driver/insights/DriverInsightsClient.tsx",46
-"this-month","This month","","components/driver/insights/DriverInsightsClient.tsx",50
-"last-month","Last month","","components/driver/insights/DriverInsightsClient.tsx",54
-"this-year","This year","","components/driver/insights/DriverInsightsClient.tsx",61
-"insights-analytics","Insights & Analytics","","components/driver/insights/DriverInsightsClient.tsx",104
-"track-your-performance-and-earnings","Track your performance and earnings","","components/driver/insights/DriverInsightsClient.tsx",107
+"last-7-days","Last 7 days","","components/driver/insights/DriverInsightsClient.tsx",41
+"last-30-days","Last 30 days","","components/driver/insights/DriverInsightsClient.tsx",45
+"last-90-days","Last 90 days","","components/driver/insights/DriverInsightsClient.tsx",49
+"this-month","This month","","components/driver/insights/DriverInsightsClient.tsx",53
+"last-month","Last month","","components/driver/insights/DriverInsightsClient.tsx",57
+"this-year","This year","","components/driver/insights/DriverInsightsClient.tsx",64
+"insights-analytics","Insights & Analytics","","components/driver/insights/DriverInsightsClient.tsx",152
+"track-your-performance-and-earnings","Track your performance and earnings","","components/driver/insights/DriverInsightsClient.tsx",155
 "earnings-evolution","Earnings Evolution","","components/driver/insights/DriverEarningsChart.tsx",37
 "no-earnings-data","No earnings data","","components/driver/insights/DriverEarningsChart.tsx",47
 "earnings-will-appear-here-once-you-complete-deliveries","Earnings will appear here once you complete deliveries","","components/driver/insights/DriverEarningsChart.tsx",50
@@ -577,6 +584,8 @@ Category,Key,English,Swahili,File,Line
 "your-cart","Your Cart","","app/[locale]/(client)/cart/page.tsx",60
 "clear-cart","Clear Cart","","app/[locale]/(client)/cart/page.tsx",61
 "proceed-to-checkout","Proceed to Checkout","","app/[locale]/(client)/cart/page.tsx",161
+"wallet-transactions","Wallet & Transactions","","app/[locale]/(driver)/driver/wallet/page.tsx",193
+"manage-your-earnings-and-view-transaction-history","Manage your earnings and view transaction history","","app/[locale]/(driver)/driver/wallet/page.tsx",196
 "merchant-not-found","Merchant Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",21
 "the-merchant-you-re-looking-for-doesn-t-exist-or-you-don-t-have-access-to-it","The merchant you're looking for doesn't exist or you don't have access to it.","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",31
 "go-to-home","Go to Home","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",35
@@ -584,8 +593,6 @@ Category,Key,English,Swahili,File,Line
 "loading-your-dashboard","Loading your dashboard...","","app/[locale]/(merchant)/merchant/[merchantId]/loading.tsx",23
 "something-went-wrong","Something went wrong","","app/[locale]/(merchant)/merchant/[merchantId]/error.tsx",39
 "we-encountered-an-error-while-loading-your-dashboard","We encountered an error while loading your dashboard.","","app/[locale]/(merchant)/merchant/[merchantId]/error.tsx",41
-"wallet-transactions","Wallet & Transactions","","app/[locale]/(driver)/driver/wallet/page.tsx",192
-"manage-your-earnings-and-view-transaction-history","Manage your earnings and view transaction history","","app/[locale]/(driver)/driver/wallet/page.tsx",195
 "the-store-you-apos-re-looking-for-doesn-apos-t-exist-or-is-currently-unavailable","The store you&apos;re looking for doesn&apos;t exist or is currently unavailable.","","app/[locale]/(client)/stores/[slug]/not-found.tsx",20
 "back-to-orders","Back to Orders","","app/[locale]/(client)/orders/[orderId]/page.tsx",122
 "placed-on","Placed on","","app/[locale]/(client)/orders/[orderId]/page.tsx",133

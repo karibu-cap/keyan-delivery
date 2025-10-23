@@ -1,5 +1,6 @@
 import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
 import { prisma } from "@/lib/prisma";
+import { calculateTotalDistance } from "@/lib/utils/distance";
 import { DriverStatus, OrderStatus, PaymentStatus, TransactionStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -52,6 +53,7 @@ export async function POST(
             where: { id: orderId },
             include: {
                 payment: true,
+                merchant: true
             },
         });
 
@@ -65,6 +67,7 @@ export async function POST(
         let newStatus: OrderStatus;
         let responseMessage: string;
         let earnings: number | undefined;
+        let driverTotalDistanceInKilometers: number  = 0;
 
         // Handle different actions
         switch (action) {
@@ -104,6 +107,18 @@ export async function POST(
 
                 newStatus = OrderStatus.ON_THE_WAY;
                 responseMessage = "Order status updated to on the way";
+
+                driverTotalDistanceInKilometers = await calculateTotalDistance({
+                    start: {
+                        lat: order.driverStartDeliveryLocation?.latitude,
+                        lng: order.driverStartDeliveryLocation?.longitude
+                    },
+                    end: {
+                        lat: order.merchant.address.latitude,
+                        lng: order.merchant.address.longitude,
+                    }
+                })
+
                 break;
 
             case OrderStatus.COMPLETED:
@@ -168,6 +183,18 @@ export async function POST(
                         status: TransactionStatus.COMPLETED,
                     },
                 });
+
+                driverTotalDistanceInKilometers = await calculateTotalDistance({
+                    start: {
+                        lat: order.driverStartDeliveryLocation?.latitude,
+                        lng: order.driverStartDeliveryLocation?.longitude
+                    },
+                    end: {
+                        lat: order.deliveryInfo.location.lat,
+                        lng: order.deliveryInfo.location.lat,
+                    }
+                }) + (order.driverTotalDistanceInKilometers ?? 0);
+
                 break;
 
             default:
@@ -176,11 +203,17 @@ export async function POST(
                     { status: 400 }
                 );
         }
+        const driverStatusHistories = Array.isArray(order.driverStatusHistories)
+            ? order.driverStatusHistories
+            : [];
+        order?.driverStatusHistories;
+
+        driverStatusHistories.push({ status: newStatus, timestamp: new Date().toISOString(), })
 
         // Update order status
         const updatedOrder = await prisma.order.update({
             where: { id: orderId },
-            data: { status: newStatus, driverId: user.id },
+            data: { status: newStatus, driverId: user.id, driverStatusHistories, driverTotalDistanceInKilometers },
             include: {
                 items: {
                     include: {

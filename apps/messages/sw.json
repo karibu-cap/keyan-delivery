@@ -721,5 +721,17 @@
   "documents": "Documents",
   "id-card": "ID Card",
   "approved": "Approved",
-  "driver-license": "Driver License"
+  "driver-license": "Driver License",
+  "error-loading-data": "Hitilafu ya kupakia data",
+  "we-encountered-an-error-while-loading-your-data-please-check-your-internet-connection-and-try-again": "Tulikutana na kosa wakati wa kupakia data yako. Tafadhali angalia muunganisho wako wa mtandao na ujaribu tena.",
+  "retrying": "Kujaribu tena ...",
+  "back-to-dashboard": "Back to Dashboard",
+  "language-preferences": "Upendeleo wa lugha",
+  "language": "Language",
+  "choose-your-preferred-language": "Chagua lugha unayopendelea",
+  "no-documents-uploaded-yet": "Hakuna hati zilizopakiwa bado",
+  "document-downloaded-successfully": "Hati imepakuliwa kwa mafanikio!",
+  "you-ve-downloaded-successfully-the-document": "Umepakua kwa mafanikio hati hiyo.",
+  "failed-to-download-image": "Imeshindwa kupakua picha",
+  "make-sure-you-are-connected-and-retry": "Hakikisha umeunganishwa na kujaribu tena"
 }

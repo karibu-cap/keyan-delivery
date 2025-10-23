@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { prisma } from '@/lib/prisma';
 import WithdrawalPageClient from '@/components/driver/WithdrawalPageClient';
+import { ROUTES } from '@/lib/router';
 
 export const metadata = {
     title: 'Withdraw Funds',
@@ -32,7 +33,7 @@ export default async function WithdrawalPage() {
     const authId = tokens?.decodedToken.uid;
 
     if (!authId) {
-        redirect('/sign-in');
+        redirect(ROUTES.signIn);
     }
 
     // Get user
@@ -42,7 +43,7 @@ export default async function WithdrawalPage() {
     });
 
     if (!user) {
-        redirect('/sign-in');
+        redirect(ROUTES.signIn);
     }
 
     // Get wallet data

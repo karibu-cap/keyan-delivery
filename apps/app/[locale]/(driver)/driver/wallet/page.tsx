@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { TransactionType, TransactionStatus } from '@prisma/client';
 import DriverWalletBalance from '@/components/driver/DriverWalletBalance';
 import DriverTransactionsList from '@/components/driver/DriverTransactionsList';
+import { ROUTES } from '@/lib/router';
 
 export const metadata = {
     title: 'Wallet & Transactions',
@@ -139,7 +140,7 @@ export default async function DriverWalletPage({ params, searchParams }: PagePro
     const authId = tokens?.decodedToken.uid;
 
     if (!authId) {
-        redirect('/sign-in');
+        redirect(ROUTES.signIn);
     }
 
     // Get user
@@ -149,7 +150,7 @@ export default async function DriverWalletPage({ params, searchParams }: PagePro
     });
 
     if (!user) {
-        redirect('/sign-in');
+        redirect(ROUTES.signIn);
     }
 
     // Get wallet data
@@ -181,7 +182,7 @@ export default async function DriverWalletPage({ params, searchParams }: PagePro
     const transactionsData = transactionsResponse.ok ? transactionsResponse.data : null;
 
     return (
-        <div className="container mx-auto max-w-7xl">
+        <div className="min-h-screen">
             {/* Hero Section with Red Gradient */}
             <section className="gradient-hero py-8 sm:py-12 lg:py-16 px-4">
                 <div className="container mx-auto max-w-7xl">

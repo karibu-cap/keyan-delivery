@@ -44,10 +44,10 @@ export const driverApplicationSchema = z.object({
     message: 'Files must be smaller than 5MB',
 }).refine((data) => {
     // Validate file types
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     return validTypes.includes(data.cni.type) && validTypes.includes(data.driverDocument.type);
 }, {
-    message: 'Files must be JPEG, PNG, or PDF',
+    message: 'Files must be JPEG, PNG',
 });
 
 export type UserSchemaType = z.infer<typeof userSchema>

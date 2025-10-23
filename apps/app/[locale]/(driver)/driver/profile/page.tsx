@@ -7,6 +7,7 @@ import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import DriverProfileClient from '@/components/driver/profile/DriverProfileClient';
 import { prisma } from '@/lib/prisma';
 import { email } from 'zod';
+import { ROUTES } from '@/lib/router';
 
 export const metadata = {
     title: 'Profile | Driver Dashboard',
@@ -16,14 +17,6 @@ export const metadata = {
 async function getDriverProfile(authId: string) {
     const user = await prisma.user.findUnique({
         where: { authId },
-        // select: {
-        //     id: true,
-        //     fullName: true,
-        //     email: true,
-        //     phone: true,
-        //     createdAt: true,
-        //     // Add driver-specific fields if they exist in your schema
-        // },
     });
 
     return user;
@@ -35,13 +28,13 @@ export default async function DriverProfilePage() {
     const authId = tokens?.decodedToken.uid;
     
     if (!authId) {
-        redirect('/sign-in');
+        redirect(ROUTES.signIn);
     }
 
     const driver = await getDriverProfile(authId);
 
     if (!driver) {
-        redirect('/sign-in');
+        redirect(ROUTES.signIn);
     }
 
     return <DriverProfileClient driver={driver} />;

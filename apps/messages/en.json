@@ -721,5 +721,17 @@
   "documents": "Documents",
   "id-card": "ID Card",
   "approved": "Approved",
-  "driver-license": "Driver License"
+  "driver-license": "Driver License",
+  "error-loading-data": "Error Loading Data",
+  "we-encountered-an-error-while-loading-your-data-please-check-your-internet-connection-and-try-again": "We encountered an error while loading your data. Please check your internet connection and try again.",
+  "retrying": "Retrying...",
+  "back-to-dashboard": "Back to Dashboard",
+  "language-preferences": "Language Preferences",
+  "language": "Language",
+  "choose-your-preferred-language": "Choose your preferred language",
+  "no-documents-uploaded-yet": "No documents uploaded yet",
+  "document-downloaded-successfully": "Document downloaded successfully!",
+  "you-ve-downloaded-successfully-the-document": "You've downloaded successfully the document.",
+  "failed-to-download-image": "Failed to download image",
+  "make-sure-you-are-connected-and-retry": "Make sure you are connected and retry"
 }

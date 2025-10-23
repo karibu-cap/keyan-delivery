@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { getServerT } from '@/i18n/server-translations';
 import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import DriverInsightsClient from '@/components/driver/insights/DriverInsightsClient';
+import { ROUTES } from '@/lib/router';
 
 export const metadata = {
     title: 'Insights & Analytics | Driver Dashboard',
@@ -16,7 +17,7 @@ export default async function DriverInsightsPage() {
     const authId = tokens?.decodedToken.uid;
     
     if (!authId) {
-        redirect('/sign-in');
+        redirect(ROUTES.signIn);
     }
 
     return <DriverInsightsClient />;

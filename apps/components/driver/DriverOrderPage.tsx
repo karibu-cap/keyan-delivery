@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OrderStatus } from "@prisma/client";
 import { useOrderStatus } from "@/hooks/use-order-status";
-import { calculateDistanceInKm } from "@/lib/utils/client/distances";
+import { calculateRouteDistance } from "@/lib/utils/routing";
 import { reverseGeocode } from "@/lib/utils/client/geo_coding";
 import { useDriverOrders } from "@/hooks/use-driver-orders";
 import { useWallet } from "@/hooks/use-wallet";
@@ -153,26 +153,42 @@ export function DriverOrderPage({
         }
     }, [order.merchant.address.latitude, order.merchant.address.longitude]);
 
-    // Calculate distances
+    // Calculate distances using OSRM routing with fallback
     useEffect(() => {
-        setMerchantDistance(currentLocation
-            ? calculateDistanceInKm(
-                currentLocation.latitude,
-                currentLocation.longitude,
-                order.merchant.address.latitude,
-                order.merchant.address.longitude
-            )
-            : "N/A");
+        const calculateDistances = async () => {
+            if (!currentLocation) {
+                setMerchantDistance("N/A");
+                setDeliveryDistance("N/A");
+                return;
+            }
 
-        setDeliveryDistance(currentLocation
-            ? calculateDistanceInKm(
-                currentLocation.latitude,
-                currentLocation.longitude,
-                order.deliveryInfo.delivery_latitude,
-                order.deliveryInfo.delivery_longitude
-            )
-            : "N/A");
-    }, []);
+            try {
+                // Calculate distance to merchant
+                const merchantRoute = await calculateRouteDistance(
+                    currentLocation.latitude,
+                    currentLocation.longitude,
+                    order.merchant.address.latitude,
+                    order.merchant.address.longitude
+                );
+                setMerchantDistance(merchantRoute.distance.toFixed(2));
+
+                // Calculate distance to client
+                const deliveryRoute = await calculateRouteDistance(
+                    currentLocation.latitude,
+                    currentLocation.longitude,
+                    order.deliveryInfo.delivery_latitude,
+                    order.deliveryInfo.delivery_longitude
+                );
+                setDeliveryDistance(deliveryRoute.distance.toFixed(2));
+            } catch (error) {
+                console.error("Failed to calculate distances:", error);
+                setMerchantDistance("N/A");
+                setDeliveryDistance("N/A");
+            }
+        };
+
+        calculateDistances();
+    }, [currentLocation, order.merchant.address.latitude, order.merchant.address.longitude, order.deliveryInfo.delivery_latitude, order.deliveryInfo.delivery_longitude]);
 
 
     // Contact actions
