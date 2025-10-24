@@ -1110,5 +1110,9 @@
   "no-products-yet": "Hakuna bidhaa bado",
   "this-merchant-hasn-t-received-any-orders": "Mfanyabiashara huyu hajapata maagizo yoyote",
   "back-to-drivers": "Rudi kwa madereva",
-  "delivery-history": "Historia ya utoaji"
+  "delivery-history": "Historia ya utoaji",
+  "visit": "Ziara",
+  "back-online": "Nyuma mkondoni",
+  "make-sure-you-are-connected-and-retry": "Hakikisha umeunganishwa na kujaribu tena",
+  "you-don-t-have-permission-to-access-this-page-only-members-of-this-merchant-can-access": "Huna ruhusa ya kufikia ukurasa huu. Washiriki tu wa mfanyabiashara huyu ndiye anayeweza kupata."
 }
