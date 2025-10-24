@@ -1,4 +1,5 @@
 import { verifySession } from "@/lib/auth-server";
+import { notifyClientOrderStatusChange } from "@/lib/notifications/push-service";
 import { prisma } from "@/lib/prisma";
 import { calculateTotalDistance } from "@/lib/utils/distance";
 import { DriverStatus, OrderStatus, PaymentStatus, TransactionStatus } from "@prisma/client";
@@ -222,6 +223,13 @@ export async function POST(
                 },
                 merchant: true,
             },
+        });
+
+        await notifyClientOrderStatusChange({
+            newStatus,
+            orderId,
+            userId: token.user.id,
+            merchantName: updatedOrder.merchant.businessName
         });
 
         return NextResponse.json({

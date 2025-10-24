@@ -88,7 +88,7 @@ export default function DriverDocumentsPreview({ driverId }: DriverDocumentsPrev
                                     id: 'cni',
                                     name: t('ID Card'),
                                     url: documents.cni,
-                                        status: DriverStatus.APPROVED ? 'approved' : DriverStatus.PENDING ? 'pending' : DriverStatus.REJECTED ? 'rejected' : 'banned',
+                                    status: documents.driverStatus === DriverStatus.APPROVED ? 'approved' : documents.driverStatus === DriverStatus.PENDING ? 'pending' : documents.driverStatus === DriverStatus.REJECTED ? 'rejected' : 'banned',
                                 }}
                             />
                         </div>
@@ -103,7 +103,7 @@ export default function DriverDocumentsPreview({ driverId }: DriverDocumentsPrev
                                     id: 'driverDocument',
                                     name: t('Driver License'),
                                     url: documents.driverDocument,
-                                        status: DriverStatus.APPROVED ? 'approved' : DriverStatus.PENDING ? 'pending' : DriverStatus.REJECTED ? 'rejected' : 'banned',
+                                    status: documents.driverStatus === DriverStatus.APPROVED ? 'approved' : documents.driverStatus === DriverStatus.PENDING ? 'pending' : documents.driverStatus === DriverStatus.REJECTED ? 'rejected' : 'banned',
                                 }}
                             />
                         </div>

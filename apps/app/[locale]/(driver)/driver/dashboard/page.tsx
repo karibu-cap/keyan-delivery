@@ -1,22 +1,20 @@
-"use client";
+// File: /app/[locale]/(driver)/driver/dashboard/page.tsx
+// Driver dashboard - Server Component with metadata
 
-import { DriverStatus } from "@prisma/client";
-import { useAuthStore } from "@/hooks/use-auth-store";
-import { DriverPendingStatus } from "@/components/driver/DriverPendingStatus";
-import { DriverRejectedStatus } from "@/components/driver/DriverRejectedStatus";
+import { Metadata } from 'next';
 import DriverDashboardClient from "@/components/driver/DriverDashboardClient";
 
-export default function DriverDashboard() {
-   const { user } = useAuthStore();
-   // Display if status is PENDING
-   if (user?.driverStatus === DriverStatus.PENDING) {
-      return <DriverPendingStatus />;
-   }
+export const metadata: Metadata = {
+   title: 'Dashboard | Yetu Driver',
+   description: 'Manage your deliveries, track earnings, and view available orders on your driver dashboard.',
+   keywords: ['driver dashboard', 'deliveries', 'orders', 'earnings', 'yetu driver'],
+   openGraph: {
+      title: 'Driver Dashboard | Yetu',
+      description: 'Manage your deliveries and track your earnings',
+      type: 'website',
+   },
+};
 
-   // Display if status is REJECTED or BANNED
-   if (user?.driverStatus === DriverStatus.REJECTED || user?.driverStatus === DriverStatus.BANNED) {
-      return <DriverRejectedStatus />;
-   }
-
+export default function DriverDashboardPage() {
    return <DriverDashboardClient />;
 }

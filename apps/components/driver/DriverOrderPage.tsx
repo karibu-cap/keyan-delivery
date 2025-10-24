@@ -28,6 +28,8 @@ import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Order } from "@/lib/models/order";
+import LocationPermissionCard from "./LocationPermissionCard";
+import AnimatedStatsCard from "./AnimatedStatsCard";
 
 // Dynamically import the tracking map
 const DriverTrackingMap = dynamic(
@@ -65,6 +67,8 @@ export function DriverOrderPage({
     const [deliveryStreet, setDeliveryStreet] = useState<string | null>(null);
     const [merchantDistance, setMerchantDistance] = useState<string | number | null>(null);
     const [deliveryDistance, setDeliveryDistance] = useState<string | number | null>(null);
+    const [hasLocationPermission, setHasLocationPermission] = useState(false);
+    const [isCheckingPermission, setIsCheckingPermission] = useState(true);
 
     const { refreshOrders } = useDriverOrders();
     const { refreshWallet } = useWallet();
@@ -81,9 +85,57 @@ export function DriverOrderPage({
 
     const { updateDriverLocation } = useOrderTracking({ orderId: order.id });
 
+    // Check GPS permission on mount
+    useEffect(() => {
+        const checkPermission = async () => {
+            if (!navigator.geolocation) {
+                setIsCheckingPermission(false);
+                return;
+            }
+
+            try {
+                // Try to get permission status if supported
+                if ('permissions' in navigator) {
+                    const result = await navigator.permissions.query({ name: 'geolocation' });
+                    
+                    if (result.state === 'granted') {
+                        setHasLocationPermission(true);
+                    }
+                    
+                    // Listen for permission changes
+                    result.addEventListener('change', () => {
+                        setHasLocationPermission(result.state === 'granted');
+                    });
+                }
+            } catch (error) {
+                console.error('Error checking permission:', error);
+            } finally {
+                setIsCheckingPermission(false);
+            }
+        };
+
+        checkPermission();
+    }, []);
+
+    // Handle permission granted
+    const handlePermissionGranted = (position: GeolocationPosition) => {
+        console.log('Location permission granted:', position);
+        setHasLocationPermission(true);
+        setCurrentLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+        });
+    };
+
+    // Handle permission denied
+    const handlePermissionDenied = () => {
+        console.log('Location permission denied');
+        setHasLocationPermission(false);
+    };
+
     // Get current location and update server
     useEffect(() => {
-        if (!navigator.geolocation) return;
+        if (!navigator.geolocation || !hasLocationPermission) return;
 
         let watchId: number | null = null;
 
@@ -263,57 +315,57 @@ export function DriverOrderPage({
             <div className="container mx-auto max-w-7xl px-4 -mt-8 pb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Distance to Merchant */}
-                    <Card className="p-6 rounded-2xl shadow-card">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-                                <Store className="w-6 h-6 text-blue-600" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Distance to Merchant</p>
-                                <p className="text-2xl font-bold">
-                                    {typeof merchantDistance === 'number' ? `${merchantDistance.toFixed(1)} km` : merchantDistance}
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
+                    <AnimatedStatsCard
+                        title="Distance to Merchant"
+                        value={typeof merchantDistance === 'number' ? `${merchantDistance.toFixed(1)} km` : merchantDistance || 'N/A'}
+                        icon={Store}
+                        color="text-blue-600"
+                        bgColor="bg-blue-50 dark:bg-blue-950/20"
+                        borderColor="border-blue-200 dark:border-blue-800"
+                        animationDelay={0}
+                    />
 
                     {/* Distance to Client */}
-                    <Card className="p-6 rounded-2xl shadow-card">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center">
-                                <MapPin className="w-6 h-6 text-purple-600" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Distance to Client</p>
-                                <p className="text-2xl font-bold">
-                                    {typeof deliveryDistance === 'number' ? `${deliveryDistance.toFixed(1)} km` : deliveryDistance}
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
+                    <AnimatedStatsCard
+                        title="Distance to Client"
+                        value={typeof deliveryDistance === 'number' ? `${deliveryDistance.toFixed(1)} km` : deliveryDistance || 'N/A'}
+                        icon={MapPin}
+                        color="text-purple-600"
+                        bgColor="bg-purple-50 dark:bg-purple-950/20"
+                        borderColor="border-purple-200 dark:border-purple-800"
+                        animationDelay={100}
+                    />
 
                     {/* Earnings */}
-                    <Card className="p-6 rounded-2xl shadow-card bg-gradient-to-br from-primary/10 to-primary/5">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
-                                <WalletIcon className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Your Earnings</p>
-                                <p className="text-2xl font-bold text-primary">
-                                    {t.formatAmount(order.orderPrices.deliveryFee)}
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
+                    <AnimatedStatsCard
+                        title="Your Earnings"
+                        value={t.formatAmount(order.orderPrices.deliveryFee)}
+                        icon={WalletIcon}
+                        color="text-red-600"
+                        bgColor="bg-red-50 dark:bg-red-950/20"
+                        borderColor="border-red-200 dark:border-red-800"
+                        animationDelay={200}
+                    />
                 </div>
             </div>
 
             <div className="container mx-auto px-4 max-w-7xl space-y-6">
-                {/* Main Grid - 2 columns */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column - Map, Merchant, Client, Items */}
-                    <div className="lg:col-span-2 space-y-6">
+                {/* Show GPS permission card if permission not granted */}
+                {isCheckingPermission ? (
+                    <div className="flex items-center justify-center py-12">
+                        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+                    </div>
+                ) : !hasLocationPermission ? (
+                    <LocationPermissionCard
+                        onPermissionGranted={handlePermissionGranted}
+                        onPermissionDenied={handlePermissionDenied}
+                    />
+                ) : (
+                    <>
+                        {/* Main Grid - 2 columns */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Left Column - Map, Merchant, Client, Items */}
+                            <div className="lg:col-span-2 space-y-6">
                         {/* Map Section */}
                         <Card className="p-6 rounded-2xl shadow-card">
                             <div className="flex items-center justify-between mb-4">
@@ -646,6 +698,8 @@ export function DriverOrderPage({
                         </Card>
                     </div>
                 </div>
+                    </>
+                )}
             </div>
         </div>
     );

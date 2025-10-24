@@ -41,11 +41,11 @@ export function DocumentUpload({
         const selectedFile = e.target.files?.[0];
         if (!selectedFile) return;
 
-        // Validate file size (max 5MB)
-        if (selectedFile.size > 5 * 1024 * 1024) {
+        // Validate file size (max 1MB)
+        if (selectedFile.size > 1 * 1024 * 1024) {
             toast({
                 title: "File too large",
-                description: "Please upload a file smaller than 5MB",
+                description: "Please upload a file smaller than 1MB",
                 variant: "destructive",
             });
             return;
@@ -169,7 +169,7 @@ export function DocumentUpload({
                                     Click to upload {label.toLowerCase()}
                                 </p>
                                 <p className="text-xs sm:text-sm text-muted-foreground">
-                                    JPEG, PNG (max 5MB)
+                                    JPEG, PNG (max 1MB)
                                 </p>
                             </div>
                         </>

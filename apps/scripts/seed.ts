@@ -6,6 +6,7 @@ import { prisma } from '../lib/prisma.js'
 
 // Verify env is loaded
 console.info('Database URL exists:', !!env.DATABASE_URL)
+console.info(env.DATABASE_URL)
 
 const creatorId = 'D6o7bZwXeQbrtNfDQIgTIeJv6v02'
 

@@ -8,15 +8,15 @@ import { NextResponse } from 'next/server';
 export async function GET() {
     try {
         const session = await getSession();
-        const authId = session?.user.id;
+        const id = session?.user.id;
 
-        if (!authId) {
+        if (!id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // Get driver documents from database
         const user = await prisma.user.findUnique({
-            where: { id: authId },
+            where: { id: id },
             select: {
                 cni: true,
                 driverDocument: true,
@@ -31,6 +31,7 @@ export async function GET() {
         return NextResponse.json({
             cni: user.cni,
             driverDocument: user.driverDocument,
+            driverStatus: user.driverStatus,
         });
     } catch (error) {
         console.error('Error fetching driver documents:', error);
