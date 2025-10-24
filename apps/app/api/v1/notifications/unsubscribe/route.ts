@@ -4,33 +4,24 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
     try {
-        const token = await verifySession();
+        const body = await request.json();
+        const { endpoint, userId } = body;
 
-        if (!token?.user.id) {
+        if (!endpoint || !userId) {
             return NextResponse.json(
-                { success: false, error: 'Unauthorized' },
-                { status: 401 }
+                { success: false, error: 'Endpoint and userId are required' },
+                { status: 400 }
             );
         }
 
         const user = await prisma.user.findUnique({
-            where: { id: token.user.id },
+            where: { id: userId },
         });
 
         if (!user) {
             return NextResponse.json(
                 { success: false, error: 'User not found' },
                 { status: 404 }
-            );
-        }
-
-        const body = await request.json();
-        const { endpoint } = body;
-
-        if (!endpoint) {
-            return NextResponse.json(
-                { success: false, error: 'Endpoint is required' },
-                { status: 400 }
             );
         }
 

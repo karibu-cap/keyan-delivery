@@ -6,7 +6,6 @@ import { routing } from './i18n/routing';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-const UN_AUTH_PUBLIC_PATHS = ['/reset-password', '/sign-in', '/sign-up'];
 const PUBLIC_PATHS = [
   '/',
   '/stores',

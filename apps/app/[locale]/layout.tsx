@@ -10,9 +10,12 @@ import { notFound } from "next/navigation";
 import "./globals.css";
 import ServicesWorkerRegistration from "@/components/notifications/ServiceWorkerRegistration";
 import NotificationHandler from "@/components/notifications/NotificationHandler";
+import { NotificationClientWrapper } from "@/components/notifications/NotificationClientWrapper";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { AuthModalProvider } from "@/components/auth/AuthModal";
+import { getSession } from "@/lib/auth-server";
+// Your auth solution
 
 const geistSans = Geist({
      variable: "--font-geist-sans",
@@ -56,6 +59,11 @@ export default async function RootLayout({
           notFound();
      }
 
+     // Get authentication state
+     const session = await getSession();
+     const isAuthenticated = !!session?.user;
+     const userId = session?.user?.id;
+
      return (
           <html>
                <head>
@@ -78,32 +86,36 @@ export default async function RootLayout({
                     {/* Font preloading for CLS prevention */}
                     <link rel="preconnect" href="https://fonts.googleapis.com" />
                     <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
                </head>
                <body
                     className={`${geistSans.variable} ${geistMono.variable} antialiased`}
                >
-
                     <ServicesWorkerRegistration />
                     <NotificationHandler />
+
                     <ThemeProvider>
                          <NextIntlClientProvider>
                               <AuthModalProvider>
-                                   <FontOptimizer>
-                                        <OfflineProvider>
-                                             <OfflineNetworkErrorBoundary>
-                                                  <ErrorBoundary>
-                                                       {children}
-                                                       <Toaster />
-                                                       <OfflineIndicator />
-                                                  </ErrorBoundary>
-                                             </OfflineNetworkErrorBoundary>
-                                        </OfflineProvider>
-                                   </FontOptimizer>
+                                   <NotificationClientWrapper
+                                        isAuthenticated={isAuthenticated}
+                                        userId={userId}
+                                   >
+
+                                        <FontOptimizer>
+                                             <OfflineProvider>
+                                                  <OfflineNetworkErrorBoundary>
+                                                       <ErrorBoundary>
+                                                            {children}
+                                                            <Toaster />
+                                                            <OfflineIndicator />
+                                                       </ErrorBoundary>
+                                                  </OfflineNetworkErrorBoundary>
+                                             </OfflineProvider>
+                                        </FontOptimizer>
+                                   </NotificationClientWrapper>
                               </AuthModalProvider>
                          </NextIntlClientProvider>
                     </ThemeProvider>
-
                </body>
           </html>
      );
