@@ -59,7 +59,7 @@ export function SignUpForm({ onToggleForm, onSuccess, redirectUrl }: SignUpFormP
     try {
       await signUp({
         ...data,
-      })
+      }, redirectUrl)
       toast({
         title: t("Account created"),
         description: t("Welcome! Your account has been created successfully."),

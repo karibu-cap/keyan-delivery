@@ -13,7 +13,6 @@ interface SignUpData {
   password: string;
   name: string;
   phone?: string;
-  callbackUrl?: string;
 }
 
 interface AuthState {
@@ -29,7 +28,7 @@ interface AuthState {
 
   // Auth methods
   signIn: (email: string, password: string, callbackUrl?: string) => Promise<void>;
-  signUp: (data: SignUpData) => Promise<void>;
+  signUp: (data: SignUpData, callbackUrl?: string) => Promise<void>;
   signInWithGoogle: (redirectUrl?: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
@@ -106,7 +105,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      signUp: async (data) => {
+      signUp: async (data, callbackUrl?: string) => {
         try {
           set({ loading: true, error: null });
 
@@ -115,7 +114,7 @@ export const useAuthStore = create<AuthState>()(
             password: data.password,
             name: data.name,
             phone: data.phone,
-            callbackURL: data.callbackUrl || ROUTES.home
+            callbackURL: callbackUrl || ROUTES.home
           });
 
           if (response.error) {
