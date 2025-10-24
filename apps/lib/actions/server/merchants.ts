@@ -56,7 +56,7 @@ export async function getMerchantStats(merchantId: string): Promise<NextResponse
             );
         }
 
-        // Find user by Firebase UID
+        // Find user by UID
         const user = await prisma.user.findUnique({
             where: { id: token.user.id }
         });
@@ -317,7 +317,7 @@ export async function createMerchantApplication(applicationData: {
             );
         }
 
-        // Find user by Firebase UID
+        // Find user by UID
         const user = await prisma.user.findUnique({
             where: {
                 id: token.user.id,
@@ -433,7 +433,7 @@ export async function getMerchantProducts(
             );
         }
 
-        // Find user by Firebase UID
+        // Find user by UID
         const user = await prisma.user.findUnique({
             where: { id: token.user.id }
         });
@@ -514,7 +514,7 @@ export async function getMerchantOrders(
             );
         }
 
-        // Find user by Firebase UID
+        // Find user by UID
         const user = await prisma.user.findUnique({
             where: {
                 id: token.user.id,
@@ -612,7 +612,7 @@ export async function getMerchantById(merchantId: string): Promise<NextResponse>
             );
         }
 
-        // Find user by Firebase UID
+        // Find user by UID
         const user = await prisma.user.findUnique({
             where: { id: token.user.id }
         });
@@ -655,7 +655,7 @@ export async function updateOrderStatus(
             );
         }
 
-        // Find user by Firebase UID
+        // Find user by UID
         const user = await prisma.user.findUnique({
             where: {
                 id: token.user.id,
@@ -794,7 +794,7 @@ export async function getMerchantProductBySlug(
             );
         }
 
-        // Find user by Firebase UID
+        // Find user by UID
         const user = await prisma.user.findUnique({
             where: {
                 id: token.user.id,

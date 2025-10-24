@@ -26,7 +26,7 @@ export const POST = async (request: NextRequest) => {
          );
       }
 
-      // Find wallet by user Firebase UID
+      // Find wallet by user UID
       const wallet = await prisma.wallet.findUnique({
          where: {
             userId: user.id,
