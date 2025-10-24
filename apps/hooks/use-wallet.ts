@@ -29,7 +29,7 @@ export const useWallet = create(
 
             try {
                const response = await getUserWallet(user.id);
-               const data = await response;
+               const data = await response.data;
 
                if (data.success) {
                   set({

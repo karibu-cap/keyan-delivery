@@ -35,15 +35,15 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
 
     // Calculate estimated delivery time based on distance
     useEffect(() => {
-        if (trackingData?.driverLocation && trackingData?.deliveryLocation) {
+        if (trackingData?.driverCurrentLocation && trackingData?.deliveryInfo) {
             // Simple estimation: assume 30 km/h average speed
             const R = 6371; // Earth's radius in km
-            const dLat = ((trackingData.deliveryLocation.latitude - trackingData.driverLocation.latitude) * Math.PI) / 180;
-            const dLon = ((trackingData.deliveryLocation.longitude - trackingData.driverLocation.longitude) * Math.PI) / 180;
+            const dLat = ((trackingData.deliveryInfo.location.lat - trackingData.driverCurrentLocation.latitude) * Math.PI) / 180;
+            const dLon = ((trackingData.deliveryInfo.location.lng - trackingData.driverCurrentLocation.longitude) * Math.PI) / 180;
             const a =
                 Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos((trackingData.driverLocation.latitude * Math.PI) / 180) *
-                Math.cos((trackingData.deliveryLocation.latitude * Math.PI) / 180) *
+                Math.cos((trackingData.driverCurrentLocation.latitude * Math.PI) / 180) *
+                Math.cos((trackingData.deliveryInfo.location.lat * Math.PI) / 180) *
                 Math.sin(dLon / 2) *
                 Math.sin(dLon / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
@@ -153,39 +153,39 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
                     <div className="relative w-full h-[400px] rounded-2xl overflow-hidden">
                         <DriverTrackingMap
                             driverLocation={
-                                trackingData.driverLocation
+                                trackingData.driverCurrentLocation
                                     ? {
-                                        latitude: (trackingData.driverLocation as any).latitude,
-                                        longitude: (trackingData.driverLocation as any).longitude,
+                                        latitude: trackingData.driverCurrentLocation.latitude,
+                                        longitude: trackingData.driverCurrentLocation.longitude,
                                     }
                                     : null
                             }
                             merchantLocation={
-                                trackingData.merchantLocation
+                                trackingData.merchant.address
                                     ? {
-                                        latitude: trackingData.merchantLocation.latitude,
-                                        longitude: trackingData.merchantLocation.longitude,
-                                        name: trackingData.merchantLocation.name,
+                                        latitude: trackingData.merchant.address.latitude,
+                                        longitude: trackingData.merchant.address.longitude,
+                                        name: trackingData.merchant.businessName,
                                     }
                                     : null
                             }
                             deliveryLocation={{
-                                latitude: trackingData.deliveryLocation.latitude,
-                                longitude: trackingData.deliveryLocation.longitude,
-                                address: trackingData.deliveryLocation.address,
+                                latitude: trackingData.deliveryInfo.location.lat,
+                                longitude: trackingData.deliveryInfo.location.lng,
+                                address: trackingData.deliveryInfo.address,
                             }}
                         />
                     </div>
 
                     {/* Location Info */}
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {trackingData.merchantLocation && (
+                        {trackingData.merchant.address && (
                             <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg">
                                 <Package className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-orange-900">Pickup</p>
                                     <p className="text-xs text-orange-700 truncate">
-                                        {trackingData.merchantLocation.name}
+                                        {trackingData.merchant.businessName}
                                     </p>
                                 </div>
                             </div>
@@ -195,7 +195,7 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-green-900">Delivery</p>
                                 <p className="text-xs text-green-700 truncate">
-                                    {trackingData.deliveryLocation.address}
+                                    {trackingData.deliveryInfo.address}
                                 </p>
                             </div>
                         </div>

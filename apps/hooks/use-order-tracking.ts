@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { OrderStatus } from "@prisma/client";
+import { Order } from "@/lib/models/order";
 
 interface DriverLocation {
     latitude: number;
@@ -9,22 +10,6 @@ interface DriverLocation {
     timestamp?: string;
 }
 
-interface TrackingData {
-    orderId: string;
-    status: OrderStatus;
-    driverLocation: DriverLocation | null;
-    driverLocationUpdatedAt: Date | null;
-    deliveryLocation: {
-        latitude: number;
-        longitude: number;
-        address: string;
-    };
-    merchantLocation: {
-        latitude: number;
-        longitude: number;
-        name: string;
-    } | null;
-}
 
 interface UseOrderTrackingOptions {
     orderId: string;
@@ -41,7 +26,7 @@ export function useOrderTracking({
     enabled = true,
     onError,
 }: UseOrderTrackingOptions) {
-    const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
+    const [trackingData, setTrackingData] = useState<Order | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
