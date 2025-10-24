@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find user by Firebase UID
+    // Find user by UID
     const user = await prisma.user.findUnique({
       where: {
         id: token.user.id,

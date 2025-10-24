@@ -8,7 +8,7 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json('Invalid data: email and id are required', { status: 400 })
   }
 
-  // Find user by Firebase UID
+  // Find user by UID
   const user = await prisma.user.findUnique({
     where: {
       id: data.id,
