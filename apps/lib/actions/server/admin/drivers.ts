@@ -39,7 +39,6 @@ export async function getDrivers(filters?: {
             orderBy: { createdAt: "desc" },
             select: {
                 id: true,
-                true,
                 name: true,
                 email: true,
                 phone: true,
@@ -90,7 +89,6 @@ export async function getDriverDetails(driverId: string) {
     const driver = await prisma.user.findUnique({
         where: { id: driverId },
         select: {
-            id: true,
             id: true,
             name: true,
             email: true,

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { getMessageTemplates } from '@/lib/actions/server/admin/messaging';
+import { getMessageTemplates } from '@/lib/actions/client/admin/messaging';
 import { useT } from '@/hooks/use-inline-translation';
 import {
     FileText,
@@ -14,7 +14,7 @@ import {
     Sparkles,
     Loader2,
 } from 'lucide-react';
-import { MessageChannel } from '@/lib/actions/server/admin/messaging';
+import { MessageChannel } from '@/types/messaging';
 
 interface TemplateSelectorProps {
     onSelect: (template: any) => void;

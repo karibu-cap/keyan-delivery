@@ -6,10 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Check, X, Eye, EyeOff, Store } from "lucide-react";
 import { useState } from "react";
 import {
-    approveProduct,
-    rejectProduct,
-    toggleProductVisibility,
-} from "@/lib/actions/server/admin/products";
+    updateProduct,
+} from "@/lib/actions/client/admin/products";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -28,7 +26,7 @@ export function ProductHeader({ product }: ProductHeaderProps) {
     const handleApprove = async () => {
         setLoading(true);
         try {
-            const result = await approveProduct(product.id);
+            const result = await updateProduct(product.id, 'approve');
             if (result.success) {
                 toast({
                     title: t("Product approved"),
@@ -56,7 +54,7 @@ export function ProductHeader({ product }: ProductHeaderProps) {
     const handleReject = async () => {
         setLoading(true);
         try {
-            await rejectProduct(product.id);
+            await updateProduct(product.id, 'reject');
             toast({
                 title: t("Product rejected"),
                 description: t("The product has been rejected and hidden."),
@@ -77,7 +75,7 @@ export function ProductHeader({ product }: ProductHeaderProps) {
     const handleToggleVisibility = async () => {
         setLoading(true);
         try {
-            await toggleProductVisibility(product.id);
+            await updateProduct(product.id, 'toggleVisibility');
             toast({
                 title: t("Visibility updated"),
                 description: t("Product visibility has been toggled."),

@@ -24,13 +24,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-    approveProduct,
-    rejectProduct,
+    bulkProducts,
     deleteProduct,
-    toggleProductVisibility,
-    bulkApproveProducts,
-    bulkRejectProducts,
-} from "@/lib/actions/server/admin/products";
+} from "@/lib/actions/client/admin/products";
 import { useToast } from "@/hooks/use-toast";
 import {
     AlertDialog,
@@ -52,6 +48,7 @@ import {
 } from "@/components/ui/pagination";
 import { OptimizedImage } from "@/components/ClsOptimization";
 import { useT } from "@/hooks/use-inline-translation";
+import { updateProduct } from "@/lib/actions/client/admin/products";
 
 interface Product {
     id: string;
@@ -90,7 +87,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
     const handleApprove = async (productId: string) => {
         setLoading(productId);
         try {
-            const result = await approveProduct(productId);
+            const result = await updateProduct(productId, 'approve');
             if (result.success) {
                 toast({
                     title: t("Product approved"),
@@ -118,7 +115,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
     const handleReject = async (productId: string) => {
         setLoading(productId);
         try {
-            await rejectProduct(productId);
+            await updateProduct(productId, 'reject');
             toast({
                 title: t("Product rejected"),
                 description: t("The product has been rejected."),
@@ -168,7 +165,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
     const handleToggleVisibility = async (productId: string) => {
         setLoading(productId);
         try {
-            await toggleProductVisibility(productId);
+            await updateProduct(productId, 'toggleVisibility');
             toast({
                 title: t("Visibility updated"),
                 description: t("Product visibility has been toggled."),
@@ -189,7 +186,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
         if (selectedProducts.length === 0) return;
         setLoading("bulk");
         try {
-            const result = await bulkApproveProducts(selectedProducts);
+            const result = await bulkProducts(selectedProducts, 'approve');
             toast({
                 title: t("Bulk approval complete"),
                 description: `${result.successful} products approved successfully${result.failed > 0 ? `, ${result.failed} failed` : ""}.`,
@@ -211,7 +208,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
         if (selectedProducts.length === 0) return;
         setLoading("bulk");
         try {
-            await bulkRejectProducts(selectedProducts);
+            await bulkProducts(selectedProducts, 'reject');
             toast({
                 title: t("Bulk rejection complete"),
                 description: t(`${selectedProducts.length} products rejected.`),

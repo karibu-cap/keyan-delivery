@@ -3,11 +3,10 @@
 import { AuthModal } from "@/components/auth/AuthModal";
 import { SearchWithTypeahead } from "@/components/client/search/SearchWithTypeahead";
 import { DriverBadge } from "@/components/driver/DriverBadge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ProductModal } from "@/components/ui/product-modal";
-import { useAuthStore } from "@/hooks/auth-store";
+import { useAuthStore } from "@/hooks/use-auth-store";
 import { useCart } from "@/hooks/use-cart";
 import { useT } from "@/hooks/use-inline-translation";
 import { IProduct } from "@/lib/actions/server/stores";

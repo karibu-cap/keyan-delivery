@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/hooks/use-auth-store";
 import { useDriverOrders } from "@/hooks/use-driver-orders";
+import { fetchDriverAvailableOrders } from "@/lib/actions/client/driver";
 import { ROUTES } from "@/lib/router";
 import { DriverStatus, UserRole } from "@prisma/client";
 import { AlertCircle, CheckCircle, Truck, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface DriverBadgeProps {
    onClick?: () => void;

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
+import { getSession } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/v1/driver/orders/[orderId]/location
@@ -12,9 +12,9 @@ export async function POST(
     request: NextRequest
 ) {
     try {
-        const token = await getUserTokens();
+        const session = await getSession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!session?.user) {
             return NextResponse.json(
                 { success: false, message: "Unauthorized" },
                 { status: 401 }
@@ -23,10 +23,10 @@ export async function POST(
 
         // Get user from database
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid },
+            where: { id: session.user.id },
             select: { id: true, roles: true },
         });
-       
+
         if (!user || !user.roles.includes(UserRole.driver)) {
             return NextResponse.json(
                 { success: false, message: "Only drivers can update location" },

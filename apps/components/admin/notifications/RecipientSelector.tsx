@@ -12,11 +12,12 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { getAllMerchants, RecipientType } from '@/lib/actions/server/admin/messaging';
+import { getAllMerchants } from '@/lib/actions/client/admin/merchants';
 import { MerchantType } from '@prisma/client';
 import { useT } from '@/hooks/use-inline-translation';
 import { Users, Search, Store, CheckCircle, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { RecipientType } from '@/types/messaging';
 
 interface RecipientSelectorProps {
     recipientType: RecipientType;

@@ -23,7 +23,7 @@ import { ArrowLeft, Camera, Loader2, MapPin, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function VerifyMerchantPage() {
+function VerifyMerchantPage() {
     const t = useT();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);

@@ -1,30 +1,17 @@
-// File: /app/[locale]/(driver)/driver/dashboard/page.tsx
-// Driver dashboard with futuristic design and real-time data hydration
 "use client"
 
 import { DriverStatus } from "@prisma/client";
-import { useAuthStore } from "@/hooks/auth-store";
+import { useAuthStore } from "@/hooks/use-auth-store";
 import { DriverPendingStatus } from "@/components/driver/DriverPendingStatus";
 import { DriverRejectedStatus } from "@/components/driver/DriverRejectedStatus";
-import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 
 export default function DriverDashboard() {
-   const { user, reloadCurrentUser } = useAuthStore();
-   const [isLoadingUser, setIsLoadingUser] = useState(true);
-   
-   useEffect(() => {
-      const loadUser = async () => {
-         setIsLoadingUser(true);
-         await reloadCurrentUser();
-         setIsLoadingUser(false);
-      };
-      loadUser();
-   }, [reloadCurrentUser]);
+   const { user } = useAuthStore();
 
    // Show skeleton while loading user data
-   if (isLoadingUser) {
+   if (!user) {
       return (
          <div className="min-h-screen">
             {/* Hero Skeleton */}

@@ -15,13 +15,12 @@ export async function checkIsAdmin() {
         }
 
         const user = await prisma.user.findUnique({
-            where: { id: token.user.id: },
+            where: { id: token.user.id },
             select: {
                 id: true,
-                id: true,
+                roles: true,
                 email: true,
                 name: true,
-                roles: true,
             },
         });
 

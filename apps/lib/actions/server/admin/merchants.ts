@@ -244,3 +244,33 @@ export async function getMerchantStats(merchantId: string) {
         productStats,
     };
 }
+
+// Get all merchants for recipient selection
+export async function getAllMerchants() {
+    await requireAdmin();
+
+    const merchants = await prisma.merchant.findMany({
+        select: {
+            id: true,
+            businessName: true,
+            merchantType: true,
+            isVerified: true,
+            phone: true,
+            managers: {
+                select: {
+                    user: {
+                        select: {
+                            email: true,
+                            name: true,
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            businessName: 'asc',
+        },
+    });
+
+    return merchants;
+}

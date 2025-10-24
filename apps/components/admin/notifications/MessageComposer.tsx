@@ -22,9 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
     sendMessage,
-    MessageChannel,
-    RecipientType,
-} from '@/lib/actions/server/admin/messaging';
+} from '@/lib/actions/client/admin/messaging';
 import { useToast } from '@/hooks/use-toast';
 import { useT } from '@/hooks/use-inline-translation';
 import {
@@ -41,6 +39,7 @@ import { MerchantType } from '@prisma/client';
 import { RecipientSelector } from './RecipientSelector';
 import { MessagePreview } from './MessagePreview';
 import { TemplateSelector } from './TemplateSelector';
+import { RecipientType, MessageChannel } from '@/types/messaging';
 
 interface MessageComposerProps {
     merchantStats: {

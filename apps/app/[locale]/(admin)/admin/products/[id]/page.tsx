@@ -11,11 +11,11 @@ import { ProductHeader } from "@/components/admin/products/ProductHeader";
 export default async function ProductDetailPage({
     params,
 }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }) {
     let data;
     try {
-        data = await getProductDetails(params.id);
+        data = await getProductDetails((await params).id);
     } catch (error) {
         notFound();
     }

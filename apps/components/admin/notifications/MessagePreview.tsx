@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Bell, Mail, MessageSquare, Smartphone } from 'lucide-react';
 import { useT } from '@/hooks/use-inline-translation';
-import { MessageChannel } from '@/lib/actions/server/admin/messaging';
+import { MessageChannel } from '@/types/messaging';
 
 interface MessagePreviewProps {
     title: string;

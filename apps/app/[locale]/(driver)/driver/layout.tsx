@@ -1,6 +1,3 @@
-// File: /app/[locale]/(driver)/driver/layout.tsx
-// Driver layout with red-600 theme and navigation
-
 "use client";
 
 import { useEffect } from 'react';

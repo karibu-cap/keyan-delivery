@@ -2,13 +2,13 @@
 // Driver wallet page with balance, stats, and withdrawal button
 
 import { redirect } from 'next/navigation';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { getServerT } from '@/i18n/server-translations';
 import { prisma } from '@/lib/prisma';
 import { TransactionType, TransactionStatus } from '@prisma/client';
 import DriverWalletBalance from '@/components/driver/DriverWalletBalance';
 import DriverTransactionsList from '@/components/driver/DriverTransactionsList';
 import { ROUTES } from '@/lib/router';
+import { getSession } from '@/lib/auth-server';
 
 export const metadata = {
     title: 'Wallet & Transactions',
@@ -136,21 +136,20 @@ export default async function DriverWalletPage({ params, searchParams }: PagePro
     const search = await searchParams;
     const t = await getServerT();
 
-    const tokens = await getUserTokens();
-    const authId = tokens?.decodedToken.uid;
+    const session = await getSession();
 
-    if (!authId) {
-        redirect(ROUTES.signIn);
+    if (!session?.user) {
+        redirect(ROUTES.signIn({ redirect: ROUTES.driverWallet }));
     }
 
     // Get user
     const user = await prisma.user.findUnique({
-        where: { authId },
+        where: { id: session.user.id },
         select: { id: true },
     });
 
     if (!user) {
-        redirect(ROUTES.signIn);
+        redirect(ROUTES.signIn({ redirect: ROUTES.driverWallet }));
     }
 
     // Get wallet data

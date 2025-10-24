@@ -9,7 +9,6 @@ import { useT } from '@/hooks/use-inline-translation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
 import DriverProfileStats from './DriverProfileStats';
 import DriverDocumentsPreview from './DriverDocumentsPreview';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -17,7 +16,7 @@ import ExitDriverModeDialog from './ExitDriverModeDialog';
 import { useRouter } from 'next/navigation';
 import { User as DbUser } from '@prisma/client';
 import { ROUTES } from '@/lib/router';
-import { useAuthStore } from '@/hooks/auth-store';
+import { useAuthStore } from '@/hooks/use-auth-store';
 
 interface DriverProfileClientProps {
     driver: DbUser;
@@ -34,7 +33,7 @@ interface PerformanceStats {
 export default function DriverProfileClient({ driver }: DriverProfileClientProps) {
     const t = useT();
     const router = useRouter();
-    const {logout} = useAuthStore();
+    const { logout } = useAuthStore();
     const [showExitDialog, setShowExitDialog] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [performanceStats, setPerformanceStats] = useState<PerformanceStats | null>(null);
@@ -58,7 +57,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
 
     const handleLogout = async () => {
         await logout()
-        router.push(ROUTES.signIn);
+        router.push(ROUTES.signIn({ redirect: '/' }));
     };
 
     const handleDeleteAccount = async () => {
@@ -96,7 +95,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                         <User className="w-5 h-5 text-primary" />
                         {t('Personal Information')}
                     </h2>
-                    
+
                     <div className="flex flex-col sm:flex-row items-start gap-6">
                         {/* Profile Photo */}
                         {/* <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
@@ -119,7 +118,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                         <div className="flex-1 space-y-4">
                             <div>
                                 <p className="text-sm text-muted-foreground">{t('Full Name')}</p>
-                                <p className="text-lg font-semibold">{driver.fullName || t('Not provided')}</p>
+                                <p className="text-lg font-semibold">{driver.name || t('Not provided')}</p>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -137,7 +136,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                                     {driver.createdAt && (new Date(driver.createdAt).toLocaleDateString('en-US', {
                                         month: 'long',
                                         year: 'numeric',
-                                    }) )}
+                                    }))}
                                 </p>
                             </div>
                         </div>
@@ -167,7 +166,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                         <TrendingUp className="w-5 h-5 text-primary" />
                         {t('Performance Overview')}
                     </h2>
-                    
+
                     {loadingStats ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {[1, 2, 3, 4].map((i) => (
@@ -190,7 +189,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                                     {performanceStats.totalReviews} {t('reviews')}
                                 </p>
                             </div>
-                            
+
                             <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Package className="w-5 h-5 text-blue-600" />
@@ -198,7 +197,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                                 </div>
                                 <p className="text-2xl font-bold">{performanceStats.totalDeliveries}</p>
                             </div>
-                            
+
                             <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/20">
                                 <div className="flex items-center gap-2 mb-2">
                                     <TrendingUp className="w-5 h-5 text-green-600" />
@@ -206,7 +205,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                                 </div>
                                 <p className="text-2xl font-bold">{performanceStats.completionRate}%</p>
                             </div>
-                            
+
                             <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/20">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Star className="w-5 h-5 text-purple-600" />
@@ -225,7 +224,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                 {/* Account Actions */}
                 <Card className="p-6 rounded-2xl shadow-card">
                     <h2 className="text-xl font-semibold mb-6">{t('Account Actions')}</h2>
-                    
+
                     <div className="space-y-3">
                         {/* Switch to Client */}
                         <Button

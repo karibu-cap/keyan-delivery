@@ -1,51 +1,10 @@
 import { sendNotificationToUser } from '@/lib/notifications/push-service';
 import { prisma } from '@/lib/prisma';
-import { MerchantType } from '@prisma/client';
+import { MessageChannel, MessageData, RecipientType } from '@/types/messaging';
 import { revalidatePath } from 'next/cache';
 import { requireAdmin } from './admin-guard';
 
 
-// Message types
-export enum MessageChannel {
-    PUSH,
-    SMS,
-    EMAIL,
-    ALL,
-}
-export enum RecipientType {
-    ALL,
-    SPECIFIC,
-    BY_TYPE,
-    VERIFIED,
-    UNVERIFIED,
-}
-
-export interface MessageData {
-    channel: MessageChannel;
-    recipientType: RecipientType;
-    specificMerchantIds?: string[];
-    merchantType?: MerchantType;
-    title: string;
-    body: string;
-    url?: string;
-    priority?: 'low' | 'normal' | 'high';
-}
-
-export interface MessageHistory {
-    id: string;
-    channel: MessageChannel;
-    recipientType: RecipientType;
-    recipientCount: number;
-    title: string;
-    body: string;
-    sentAt: Date;
-    sentBy: string;
-    deliveryStatus: {
-        sent: number;
-        delivered: number;
-        failed: number;
-    };
-}
 
 
 // Get merchant managers based on recipient type
@@ -313,36 +272,6 @@ export async function getMessageTemplates() {
             channel: MessageChannel.ALL,
         },
     ];
-}
-
-// Get all merchants for recipient selection
-export async function getAllMerchants() {
-    await requireAdmin();
-
-    const merchants = await prisma.merchant.findMany({
-        select: {
-            id: true,
-            businessName: true,
-            merchantType: true,
-            isVerified: true,
-            phone: true,
-            managers: {
-                select: {
-                    user: {
-                        select: {
-                            email: true,
-                            name: true,
-                        },
-                    },
-                },
-            },
-        },
-        orderBy: {
-            businessName: 'asc',
-        },
-    });
-
-    return merchants;
 }
 
 // Get merchant statistics

@@ -22,3 +22,12 @@ export const deleteMerchant = async (merchantId: string) => {
     const data = await result.json();
     return data;
 }
+
+
+export const getAllMerchants = async () => {
+    const result = await fetch(`/api/admin/merchants`, {
+        method: "GET",
+    })
+    const data = await result.json();
+    return data;
+}

@@ -108,7 +108,7 @@ export async function getProductDetails(productId: string) {
     return { product };
 }
 
-export async function approveProduct(productId: string) {
+export async function updateProduct(productId: string, productAction: 'approve' | 'reject' | 'toggleVisibility') {
     await requireAdmin();
 
     const product = await prisma.product.findUnique({
@@ -118,6 +118,7 @@ export async function approveProduct(productId: string) {
             images: true,
             price: true,
             merchantId: true,
+            visibility: true
         },
     });
 
@@ -125,6 +126,21 @@ export async function approveProduct(productId: string) {
         return {
             success: false,
             error: "Product not found",
+        };
+    }
+
+    if (productAction === 'reject') {
+        await prisma.product.update({
+            where: { id: productId },
+            data: {
+                status: ProductStatus.REJECTED,
+                visibility: false,
+            },
+        });
+        revalidatePath(`/admin/products/${productId}`);
+        revalidatePath("/admin/merchants");
+        return {
+            success: true,
         };
     }
 
@@ -150,52 +166,35 @@ export async function approveProduct(productId: string) {
         };
     }
 
-    await prisma.product.update({
-        where: { id: productId },
-        data: {
-            status: ProductStatus.VERIFIED,
-            visibility: true,
-        },
-    });
-
-    // Check if merchant now has 5+ active products for auto-verification
-    const activeProductsCount = await prisma.product.count({
-        where: {
-            merchantId: product.merchantId,
-            status: ProductStatus.VERIFIED,
-            visibility: true,
-        },
-    });
-
-    if (activeProductsCount >= 5) {
-        await prisma.merchant.update({
-            where: { id: product.merchantId },
-            data: { isVerified: true },
+    if (productAction === 'toggleVisibility') {
+        await prisma.product.update({
+            where: { id: productId },
+            data: { visibility: !product.visibility },
         });
     }
+
+    // Check if merchant now has 5+ active products for auto-verification
+    if (productAction === 'approve') {
+        const activeProductsCount = await prisma.product.count({
+            where: {
+                merchantId: product.merchantId,
+                status: ProductStatus.VERIFIED,
+                visibility: true,
+            },
+        });
+
+        if (activeProductsCount >= 5) {
+            await prisma.merchant.update({
+                where: { id: product.merchantId },
+                data: { isVerified: true },
+            });
+        }
+    }
+
 
     revalidatePath("/admin/products");
     revalidatePath(`/admin/products/${productId}`);
     revalidatePath("/admin/merchants");
-
-    return { success: true };
-}
-
-export async function rejectProduct(productId: string, reason?: string) {
-    await requireAdmin();
-
-    await prisma.product.update({
-        where: { id: productId },
-        data: {
-            status: ProductStatus.REJECTED,
-            visibility: false,
-        },
-    });
-
-    // TODO: Send rejection notification to merchant with reason
-
-    revalidatePath("/admin/products");
-    revalidatePath(`/admin/products/${productId}`);
 
     return { success: true };
 }
@@ -238,62 +237,29 @@ export async function deleteProduct(productId: string) {
     return { success: true };
 }
 
-export async function toggleProductVisibility(productId: string) {
+export async function bulkProducts(productIds: string[], action: 'approve' | 'reject') {
     await requireAdmin();
 
-    const product = await prisma.product.findUnique({
-        where: { id: productId },
-        select: { visibility: true },
-    });
-
-    if (!product) {
-        return {
-            success: false,
-            error: "Product not found",
-        };
+    if (action === 'approve') {
+        await prisma.product.updateMany({
+            where: { id: { in: productIds } },
+            data: {
+                status: ProductStatus.VERIFIED,
+                visibility: true,
+            },
+        });
     }
 
-    await prisma.product.update({
-        where: { id: productId },
-        data: { visibility: !product.visibility },
-    });
+    if (action === 'reject') {
+        await prisma.product.updateMany({
+            where: { id: { in: productIds } },
+            data: {
+                status: ProductStatus.REJECTED,
+                visibility: false,
+            },
+        });
+    }
 
-    revalidatePath("/admin/products");
-    revalidatePath(`/admin/products/${productId}`);
-
-    return { success: true };
-}
-
-export async function bulkApproveProducts(productIds: string[]) {
-    await requireAdmin();
-
-    const results = await Promise.allSettled(
-        productIds.map((id) => approveProduct(id))
-    );
-
-    const successful = results.filter((r) => r.status === "fulfilled").length;
-    const failed = results.filter((r) => r.status === "rejected").length;
-
-    revalidatePath("/admin/products");
-
-    return {
-        success: true,
-        successful,
-        failed,
-        total: productIds.length,
-    };
-}
-
-export async function bulkRejectProducts(productIds: string[]) {
-    await requireAdmin();
-
-    await prisma.product.updateMany({
-        where: { id: { in: productIds } },
-        data: {
-            status: ProductStatus.REJECTED,
-            visibility: false,
-        },
-    });
 
     revalidatePath("/admin/products");
 
@@ -301,4 +267,5 @@ export async function bulkRejectProducts(productIds: string[]) {
         success: true,
         total: productIds.length,
     };
+
 }
