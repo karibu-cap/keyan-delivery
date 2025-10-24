@@ -1114,5 +1114,12 @@
   "visit": "Ziara",
   "back-online": "Nyuma mkondoni",
   "make-sure-you-are-connected-and-retry": "Hakikisha umeunganishwa na kujaribu tena",
-  "you-don-t-have-permission-to-access-this-page-only-members-of-this-merchant-can-access": "Huna ruhusa ya kufikia ukurasa huu. Washiriki tu wa mfanyabiashara huyu ndiye anayeweza kupata."
+  "you-don-t-have-permission-to-access-this-page-only-members-of-this-merchant-can-access": "Huna ruhusa ya kufikia ukurasa huu. Washiriki tu wa mfanyabiashara huyu ndiye anayeweza kupata.",
+  "active-you-receive-notifications": "Hai - unapokea arifa",
+  "inactive-enable-to-receive-alerts": "Haifanyi kazi - Wezesha kupokea arifu",
+  "auto-managed-subscribes-on-login": "🤖 Inasimamiwa kiotomatiki (inasajili kwenye kuingia)",
+  "manual-control": "Udhibiti wa mwongozo",
+  "disabled": "🚫 Walemavu",
+  "auto-mode-notifications-will-automatically-subscribe-when-you-login-and-unsubscribe-when-you-logout": "💡 Njia ya Auto: Arifa zitasajili kiatomati unapoingia na kujiondoa wakati unapoingia.",
+  "stay-updated-enable-notifications-to-get-real-time-order-alerts": "Kaa kusasishwa! Wezesha arifa kupata arifu za mpangilio wa wakati halisi."
 }
