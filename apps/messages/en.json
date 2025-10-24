@@ -840,7 +840,7 @@
   "supermarkets-stores": "Supermarkets & Stores",
   "medical-health": "Medical & Health",
   "search-merchants": "Search merchants...",
-  "selected": "Selected",
+  "selected": "selected",
   "clear-all": "Clear all",
   "loading-merchants": "Loading merchants...",
   "no-merchants-found-matching-query": "No merchants found matching \"{query}\"",
