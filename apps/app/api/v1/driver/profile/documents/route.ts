@@ -1,14 +1,14 @@
 // app/api/v1/driver/profile/documents/route.ts
 // API endpoint to fetch driver documents (CNI and driver license)
 
-import { NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
-        const tokens = await getUserTokens();
-        const authId = tokens?.decodedToken.uid;
+        const session = await getSession();
+        const authId = session?.user.id;
 
         if (!authId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -16,7 +16,7 @@ export async function GET() {
 
         // Get driver documents from database
         const user = await prisma.user.findUnique({
-            where: { authId },
+            where: { id: authId },
             select: {
                 cni: true,
                 driverDocument: true,

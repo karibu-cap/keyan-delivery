@@ -1,12 +1,12 @@
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
+import { verifySession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
         }
 
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid },
+            where: { id: token.user.id },
         });
 
         if (!user) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
         const existingSubscription = await prisma.pushSubscription.findFirst({
             where: {
-                authId: user.authId,
+                id: user.id,
             },
         });
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
         const newSubscription = await prisma.pushSubscription.create({
             data: {
-                authId: user.authId,
+                userId: user.id,
                 endpoint: subscription.endpoint,
                 p256dh: subscription.keys.p256dh,
                 auth: subscription.keys.auth,

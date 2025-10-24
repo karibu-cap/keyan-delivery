@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/hooks/auth-store";
 import { useToast } from "@/hooks/use-toast";
 import { uploadDriverDocuments } from "@/lib/actions/client/driver";
 import { ROUTES } from "@/lib/router";
@@ -19,7 +18,6 @@ export default function DriverApplicationPage() {
    const { toast } = useToast();
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [cniFile, setCniFile] = useState<File | null>(null);
-   const { reloadCurrentUser } = useAuthStore();
    const [licenseFile, setLicenseFile] = useState<File | null>(null);
 
 
@@ -89,7 +87,7 @@ export default function DriverApplicationPage() {
          const result = await uploadDriverDocuments(cniBase64, licenseBase64);
 
          if (result.success) {
-            await reloadCurrentUser();
+            router.refresh()
 
             toast({
                title: "Application submitted!",

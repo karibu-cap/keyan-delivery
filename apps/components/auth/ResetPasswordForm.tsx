@@ -1,11 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
@@ -14,10 +9,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { useToast } from '@/hooks/use-toast'
-import { AuthCard } from './AuthCard'
-import { useAuthStore } from '@/hooks/auth-store'
+import { Input } from '@/components/ui/input'
+import { useAuthStore } from '@/hooks/use-auth-store'
 import { useT } from '@/hooks/use-inline-translation'
+import { useToast } from '@/hooks/use-toast'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+import { AuthCard } from './AuthCard'
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -31,7 +31,7 @@ interface ResetPasswordFormProps {
 
 export function ResetPasswordForm({ onBack }: ResetPasswordFormProps) {
   const { toast } = useToast()
-  const { resetPassword, loading, error } = useAuthStore()
+  const {  loading, error } = useAuthStore()
   const t = useT()
 
   const form = useForm<FormData>({
@@ -43,7 +43,7 @@ export function ResetPasswordForm({ onBack }: ResetPasswordFormProps) {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await resetPassword(data.email)
+      // await resetPassword(data.email)
       toast({
         title: t("Password reset email sent"),
         description: t("Check your email for further instructions"),

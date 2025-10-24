@@ -15,7 +15,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
         messages,
         timeZone: 'Africa/Nairobi',
         now: new Date(),
-        // Fallback for missing keys in development
         onError: (error) => {
             if (process.env.NODE_ENV === 'development') {
                 console.error({ message: '[i18n] Translation error:', error });

@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { getServerT } from '@/i18n/server-translations';
 import { prisma } from '@/lib/prisma';
 import {
@@ -11,6 +10,8 @@ import WalletBalance from '@/components/merchants/wallet/WalletBalance';
 import { TransactionType, TransactionStatus } from '@prisma/client';
 import TransactionsList from '@/components/merchants/wallet/TransactionsList';
 import { SlideUp } from '@/components/merchants/animations/TransitionWrappers';
+import { ROUTES } from '@/lib/router';
+import { getSession } from '@/lib/auth-server';
 
 export const metadata = {
     title: 'Wallet & Transactions',
@@ -29,12 +30,12 @@ interface PageProps {
     }>;
 }
 
-async function verifyMerchantAccess(merchantId: string, authId: string) {
+async function verifyMerchantAccess(merchantId: string, id: string) {
     const userMerchant = await prisma.userMerchantManager.findFirst({
         where: {
             merchantId,
             user: {
-                authId,
+                id,
             },
         },
     });
@@ -48,16 +49,17 @@ export default async function MerchantWalletPage({ params, searchParams }: PageP
 
     const t = await getServerT();
 
-    const tokens = await getUserTokens();
-    const authId = tokens?.decodedToken.uid;
 
-    if (!authId) {
-        redirect('/sign-in');
+    const session = await getSession();
+
+    if (!session?.user) {
+        redirect(ROUTES.signIn({ redirect: ROUTES.merchantWallet(merchantId) }));
     }
 
-    const hasAccess = await verifyMerchantAccess(merchantId, authId);
+
+    const hasAccess = await verifyMerchantAccess(merchantId, session.user.id);
     if (!hasAccess) {
-        redirect('/profile');
+        redirect(ROUTES.merchantUnauthorized(merchantId));
     }
 
     // Get wallet data

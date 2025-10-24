@@ -1,32 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-/**
- * Hook to detect online/offline status
- * Useful for showing offline indicators and managing cache strategies
- */
-export function useOnlineStatus() {
-    const [isOnline, setIsOnline] = useState(
-        typeof window !== "undefined" ? navigator.onLine : true
-    );
-
-    useEffect(() => {
-        const handleOnline = () => setIsOnline(true);
-        const handleOffline = () => setIsOnline(false);
-
-        window.addEventListener("online", handleOnline);
-        window.addEventListener("offline", handleOffline);
-
-        return () => {
-            window.removeEventListener("online", handleOnline);
-            window.removeEventListener("offline", handleOffline);
-        };
-    }, []);
-
-    return isOnline;
-}
-
 /**
  * Preload map tiles for a specific area
  * Useful for caching tiles before going offline
@@ -38,7 +11,7 @@ export async function preloadMapTiles(
     radius: number = 2
 ) {
     const tiles: string[] = [];
-    
+
     // Calculate tile coordinates
     const tileX = Math.floor((centerLng + 180) / 360 * Math.pow(2, zoomLevel));
     const tileY = Math.floor(
@@ -78,7 +51,7 @@ export async function clearOldMapTiles() {
     try {
         const cache = await caches.open('Yetu-map-tiles-v1');
         const requests = await cache.keys();
-        
+
         let deletedCount = 0;
         for (const request of requests) {
             const response = await cache.match(request);
@@ -86,7 +59,7 @@ export async function clearOldMapTiles() {
                 const cachedDate = new Date(response.headers.get('date') || 0);
                 const now = new Date();
                 const daysSinceCached = (now.getTime() - cachedDate.getTime()) / (1000 * 60 * 60 * 24);
-                
+
                 // Delete tiles older than 30 days
                 if (daysSinceCached > 30) {
                     await cache.delete(request);
@@ -94,7 +67,7 @@ export async function clearOldMapTiles() {
                 }
             }
         }
-        
+
         console.log(`Cleared ${deletedCount} old map tiles`);
         return { success: true, deletedCount };
     } catch (error) {
@@ -113,7 +86,7 @@ export async function getCacheStorageInfo() {
             const usage = estimate.usage || 0;
             const quota = estimate.quota || 0;
             const percentUsed = quota > 0 ? (usage / quota) * 100 : 0;
-            
+
             return {
                 usage: (usage / 1024 / 1024).toFixed(2) + ' MB',
                 quota: (quota / 1024 / 1024).toFixed(2) + ' MB',

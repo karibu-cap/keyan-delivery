@@ -1,15 +1,15 @@
 // app/api/v1/driver/profile/stats/route.ts
 // API endpoint to fetch driver profile statistics
 
-import { NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { OrderStatus } from '@prisma/client';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
-        const tokens = await getUserTokens();
-        const authId = tokens?.decodedToken.uid;
+        const session = await getSession();
+        const authId = session?.user.id;
 
         if (!authId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -17,7 +17,7 @@ export async function GET() {
 
         // Get driver from authId
         const driver = await prisma.user.findUnique({
-            where: { authId },
+            where: { id: authId },
             select: { id: true },
         });
 
@@ -52,7 +52,7 @@ export async function GET() {
         });
 
         // Calculate earnings this month
-        const earningsThisMonth = ordersThisMonth.reduce((sum, order) => 
+        const earningsThisMonth = ordersThisMonth.reduce((sum, order) =>
             sum + (order.orderPrices?.deliveryFee || 0), 0
         );
 
@@ -88,7 +88,7 @@ export async function GET() {
             earningsThisMonth,
             activeDays,
             avgRating,
-            
+
             // Performance overview
             rating: avgRating,
             totalReviews,

@@ -1,6 +1,6 @@
 
+import { verifySession } from '@/lib/auth-server';
 import { invalidateMerchantCache } from '@/lib/cache';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { notifyClientOrderStatusChange, notifyDriverOrderReady } from '@/lib/notifications/push-service';
 import { prisma } from '@/lib/prisma';
 import { generateSlug } from '@/lib/utils';
@@ -17,12 +17,12 @@ import { MerchantType, OrderStatus, ProductStatus, UserRole } from '@prisma/clie
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
-export async function getMerchantWithUser(merchantId: string, authId: string) {
+export async function getMerchantWithUser(merchantId: string, id: string) {
     const userMerchant = await prisma.userMerchantManager.findFirst({
         where: {
             merchantId,
             user: {
-                authId,
+                id,
             },
         },
         include: {
@@ -47,9 +47,9 @@ export async function getMerchantWithUser(merchantId: string, authId: string) {
  */
 export async function getMerchantStats(merchantId: string): Promise<NextResponse> {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -58,7 +58,7 @@ export async function getMerchantStats(merchantId: string): Promise<NextResponse
 
         // Find user by Firebase UID
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid }
+            where: { id: token.user.id }
         });
 
         if (!user) {
@@ -308,9 +308,9 @@ export async function createMerchantApplication(applicationData: {
     bannerUrl?: string;
 }): Promise<NextResponse> {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -320,7 +320,7 @@ export async function createMerchantApplication(applicationData: {
         // Find user by Firebase UID
         const user = await prisma.user.findUnique({
             where: {
-                authId: token.decodedToken.uid,
+                id: token.user.id,
             },
         });
 
@@ -424,9 +424,9 @@ export async function getMerchantProducts(
     }
 ): Promise<NextResponse> {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -435,7 +435,7 @@ export async function getMerchantProducts(
 
         // Find user by Firebase UID
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid }
+            where: { id: token.user.id }
         });
 
         if (!user) {
@@ -505,9 +505,9 @@ export async function getMerchantOrders(
     type: "active" | "history" = "active"
 ): Promise<NextResponse> {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -516,7 +516,9 @@ export async function getMerchantOrders(
 
         // Find user by Firebase UID
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid }
+            where: {
+                id: token.user.id,
+            },
         });
 
         if (!user) {
@@ -563,7 +565,7 @@ export async function getMerchantOrders(
                 user: {
                     select: {
                         id: true,
-                        fullName: true,
+                        name: true,
                         phone: true,
                         email: true,
                     },
@@ -601,9 +603,9 @@ export async function getMerchantOrders(
  */
 export async function getMerchantById(merchantId: string): Promise<NextResponse> {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -612,7 +614,7 @@ export async function getMerchantById(merchantId: string): Promise<NextResponse>
 
         // Find user by Firebase UID
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid }
+            where: { id: token.user.id }
         });
 
         if (!user) {
@@ -644,9 +646,9 @@ export async function updateOrderStatus(
     merchantId: string
 ): Promise<NextResponse> {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -656,7 +658,7 @@ export async function updateOrderStatus(
         // Find user by Firebase UID
         const user = await prisma.user.findUnique({
             where: {
-                authId: token.decodedToken.uid,
+                id: token.user.id,
             },
         });
 
@@ -739,7 +741,7 @@ export async function updateOrderStatus(
             console.info('✅Start notification-');
             // 1. Notify client for status change
             await notifyClientOrderStatusChange({
-                authId: updatedOrder.user.authId,
+                userId: updatedOrder.user.id,
                 orderId,
                 newStatus,
                 merchantName: updatedOrder.merchant.businessName
@@ -783,9 +785,9 @@ export async function getMerchantProductBySlug(
     productSlug: string
 ): Promise<NextResponse> {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -795,7 +797,7 @@ export async function getMerchantProductBySlug(
         // Find user by Firebase UID
         const user = await prisma.user.findUnique({
             where: {
-                authId: token.decodedToken.uid,
+                id: token.user.id,
             },
         });
 

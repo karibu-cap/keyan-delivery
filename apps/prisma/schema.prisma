@@ -9,6 +9,7 @@ datasource db {
 }
 
 // --------------------------------Media model------------------------------------
+
 model Media {
   id          String     @id @default(auto()) @map("_id") @db.ObjectId
   createdAt   DateTime   @default(now())
@@ -23,6 +24,7 @@ model Media {
 }
 
 // --------------------------------Categories model------------------------------------
+
 type SeoMetadata {
   seoTitle       String?
   seoDescription String?
@@ -46,6 +48,7 @@ model Category {
 }
 
 // --------------------------------Product model------------------------------------
+
 enum ProductStatus {
   DRAFT
   VERIFIED
@@ -179,6 +182,7 @@ model Product {
 }
 
 // --------------------------------Delivery Zone model------------------------------------
+
 type Landmark {
   name        String
   coordinates LongLat
@@ -214,6 +218,7 @@ type ZoneGeometry {
 }
 
 // --------------------------------Order model------------------------------------
+
 enum OrderStatus {
   PENDING
   ACCEPTED_BY_MERCHANT
@@ -323,11 +328,12 @@ model Order {
 }
 
 // --------------------------------User model------------------------------------
+
 model User {
   id                String                @id @default(auto()) @map("_id") @db.ObjectId
-  authId            String                @unique
   email             String                @unique
-  fullName          String?
+  emailVerified     Boolean               @default(false)
+  image             String?
   phone             String?
   roles             UserRole[]            @default([customer])
   cni               String?
@@ -344,13 +350,72 @@ model User {
   updatedAt         DateTime?             @updatedAt
   CartItem          CartItem[]
   pushSubscriptions PushSubscription[]
+
+  accounts     Account[]
+  sessions     Session[]
+  verification Verification[]
+  name         String
+
+  @@map("user")
+}
+
+model Account {
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String    @db.ObjectId
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  expiresAt             DateTime?
+  password              String?
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@map("account")
+}
+
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("session")
+}
+
+model Verification {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  value      String
+  expiresAt  DateTime
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     String?  @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([identifier, value])
+  @@map("verification")
 }
 
 // --------------------------------push notification model------------------------------------
+
 model PushSubscription {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      User     @relation(fields: [authId], references: [authId], onDelete: Cascade)
-  authId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique @db.ObjectId
   endpoint  String
   p256dh    String
   auth      String
@@ -358,10 +423,11 @@ model PushSubscription {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([authId, endpoint])
+  @@unique([userId, endpoint])
 }
 
 // --------------------------------Merchant model------------------------------------
+
 type MerchantAddress {
   latitude  Float
   longitude Float
@@ -387,6 +453,7 @@ model Merchant {
 }
 
 // --------------------------------Merchant Manager relation------------------------------------
+
 model UserMerchantManager {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -399,6 +466,7 @@ model UserMerchantManager {
 }
 
 // --------------------------------Wallet model------------------------------------
+
 model Wallet {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -411,6 +479,7 @@ model Wallet {
 }
 
 // --------------------------------Transaction model------------------------------------
+
 model Transaction {
   id          String            @id @default(auto()) @map("_id") @db.ObjectId
   wallet      Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
@@ -445,6 +514,7 @@ model Payment {
 }
 
 // --------------------------------Relation schemas------------------------------------
+
 model CategoriesOnProducts {
   id         String   @id @default(cuid()) @map("_id")
   product    Product  @relation(fields: [productId], references: [id])
@@ -479,8 +549,8 @@ model ProductPromotion {
 
 model CartItem {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  user           User     @relation(fields: [authId], references: [authId], onDelete: Cascade)
-  authId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String   @db.ObjectId
   product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId      String   @db.ObjectId
   quantity       Int      @default(1)
@@ -490,7 +560,7 @@ model CartItem {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  @@unique([authId, productId])
+  @@unique([userId, productId])
 }
 
 model SavedList {

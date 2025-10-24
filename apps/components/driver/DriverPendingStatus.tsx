@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuthStore } from "@/hooks/auth-store";
+import { useAuthStore } from "@/hooks/use-auth-store";
 import { useToast } from "@/hooks/use-toast";
 import { updateDriverDocuments } from "@/lib/actions/client/driver";
 import { Clock, FileText, Upload } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { UploadedDocument } from "./DocumentUpload";
 import { DocumentUpload } from "./DocumentUpload";
 import DriverDocumentsPreview from "./profile/DriverDocumentsPreview";
@@ -137,7 +137,7 @@ export function DriverPendingStatus() {
                                         <h3 className="font-medium text-blue-900 mb-2">Document Requirements</h3>
                                         <ul className="text-sm text-blue-800 space-y-1">
                                             <li>• Valid national ID card (CNI)</li>
-                                            <li>• Valid driver's license</li>
+                                            <li>• {"Valid driver's license"}</li>
                                             <li>• Documents must be clear and readable</li>
                                             <li>• Accepted formats: JPEG, PNG, (max 1MB each)</li>
                                         </ul>
@@ -197,7 +197,7 @@ export function DriverPendingStatus() {
                                 </div>
                                 <div>
                                     <p className="font-medium">Notification</p>
-                                    <p className="text-muted-foreground">You'll receive an email notification with the results</p>
+                                    <p className="text-muted-foreground">{"You'll receive an email notification with the results"}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">

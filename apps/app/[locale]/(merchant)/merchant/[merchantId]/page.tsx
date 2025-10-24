@@ -5,10 +5,12 @@ import StatsCards from "@/components/merchants/StatsCards";
 import { getMerchantOrders, getMerchantProducts } from "@/lib/actions/server/merchants";
 import type { Order, Product } from "@/types/merchant_types";
 import { OrderStatus, ProductStatus } from "@prisma/client";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { OrdersTabsSkeleton, RecentProductsSkeleton, StatsCardsSkeleton } from "./loading";
 import { generateMerchantMetadata } from "@/lib/metadata";
+import { getSession } from "@/lib/auth-server";
+import { ROUTES } from "@/lib/router";
 
 
 // Enable ISR with on-demand revalidation
@@ -84,7 +86,13 @@ function calculateStats(data: Awaited<ReturnType<typeof getDashboardData>>) {
 }
 
 export default async function MerchantDashboardPage({ params }: { params: Promise<{ merchantId: string }> }) {
+     const session = await getSession();
      const _params = await params;
+
+
+     if (!session?.user) {
+          redirect(ROUTES.signIn({ redirect: ROUTES.merchantDashboard(_params.merchantId) }));
+     }
      const data = await getDashboardData(_params.merchantId);
      const stats = calculateStats(data);
 

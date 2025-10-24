@@ -1,12 +1,12 @@
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
+import { verifySession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
         }
 
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid },
+            where: { id: token.user.id },
         });
 
         if (!user) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
         await prisma.pushSubscription.deleteMany({
             where: {
-                authId: user.authId,
+                id: user.id,
                 endpoint: endpoint,
             },
         });
@@ -56,9 +56,9 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -66,7 +66,7 @@ export async function DELETE(request: NextRequest) {
         }
 
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid },
+            where: { id: token.user.id },
         });
 
         if (!user) {
@@ -77,7 +77,7 @@ export async function DELETE(request: NextRequest) {
         }
 
         const result = await prisma.pushSubscription.deleteMany({
-            where: { authId: user.authId },
+            where: { id: user.id },
         });
 
         return NextResponse.json({

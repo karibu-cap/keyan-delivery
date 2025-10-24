@@ -137,8 +137,8 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                         <Label htmlFor="name">{t("Full Name")}</Label>
                                         <Input
                                             id="name"
-                                            value={currentUser?.fullName || ''}
-                                            onChange={(e) => setCurrentUser({ ...currentUser, fullName: e.target.value })}
+                                            value={currentUser?.name || ''}
+                                            onChange={(e) => setCurrentUser({ ...currentUser, name: e.target.value })}
                                             disabled={!isEditing}
                                         />
                                     </div>

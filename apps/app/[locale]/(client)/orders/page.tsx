@@ -5,14 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getServerT } from "@/i18n/server-translations"
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
 import { formatOrderId } from "@/lib/orders-utils"
 import { prisma } from "@/lib/prisma"
 import { OrderItem, OrderStatus, Prisma } from "@prisma/client"
 
 import { OptimizedImage } from "@/components/ClsOptimization"
+import { getSession } from "@/lib/auth-server"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { Suspense } from "react"
+import { ROUTES } from "@/lib/router"
 
 type IOrder = Prisma.OrderGetPayload<{
      include: {
@@ -176,7 +178,6 @@ function OrdersSkeleton() {
 
 // Orders list component
 async function OrdersList({ userId }: { userId: string }) {
-
      const t = await getServerT()
      const orders = await getOrders(userId)
      const { active, history } = categorizeOrders(orders)
@@ -256,30 +257,17 @@ async function OrdersList({ userId }: { userId: string }) {
 
 // Main page component
 export default async function OrdersPage() {
-     const token = await getUserTokens()
+
+     const session = await getSession();
+
+     if (!session?.user) {
+          redirect(ROUTES.signIn({ redirect: ROUTES.orders }));
+     }
 
      const t = await getServerT()
 
-     if (!token?.decodedToken?.uid) {
-          return (
-               <div className="min-h-screen bg-background">
-                    <main className="container mx-auto px-4 py-6">
-                         <div className="py-16 text-center">
-                              <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
-                              <p className="mb-6 text-muted-foreground">
-                                   {t("Please sign in to view your orders")}
-                              </p>
-                              <Link href="/sign-in">
-                                   <Button className="bg-primary hover:bg-[#089808]">{t("Sign In")}</Button>
-                              </Link>
-                         </div>
-                    </main>
-               </div>
-          )
-     }
-
      const user = await prisma.user.findUnique({
-          where: { authId: token.decodedToken.uid },
+          where: { id: session.user.id },
           select: { id: true },
      })
 

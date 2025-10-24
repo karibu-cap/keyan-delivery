@@ -1,22 +1,24 @@
 "use client"
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useAuthStore } from '@/hooks/use-auth-store'
+import { AnimatePresence, motion } from 'framer-motion'
+import { AlertCircle } from 'lucide-react'
+import { useState } from 'react'
 import { ResetPasswordForm } from './ResetPasswordForm'
 import { SignInForm } from './SignInForm'
 import { SignUpForm } from './SignUpForm'
-import { useAuthStore } from '@/hooks/auth-store'
 
 interface AuthFormProps {
   isLogin: boolean
   isResetting: boolean
+  redirect?: string
 }
 
 export function AuthForm(props: AuthFormProps) {
   const [isLogin, setIsLogin] = useState(props.isLogin)
   const [isResetting, setIsResetting] = useState(props.isResetting)
   const { error, setError, setLoading } = useAuthStore()
+  // const router = useRouter();
 
   const toggleForm = (value: boolean) => {
     setIsLogin(value)
@@ -26,6 +28,10 @@ export function AuthForm(props: AuthFormProps) {
   const toggleResetPassword = () => {
     setIsResetting(!isResetting)
   }
+
+  // const onSuccess = () => {
+  //   router.push(props.redirect || '/');
+  // }
 
   return (
     <div className="flex flex-col max-w-md mx-auto">
@@ -53,9 +59,10 @@ export function AuthForm(props: AuthFormProps) {
         ) : isLogin ? (
           <SignInForm
             onToggleForm={() => { toggleForm(false); setError(null); setLoading(false); }}
+            redirectUrl={props.redirect}
           />
         ) : (
-          <SignUpForm onToggleForm={() => { toggleForm(true); setError(null); setLoading(false); }} />
+          <SignUpForm onToggleForm={() => { toggleForm(true); setError(null); setLoading(false); }} redirectUrl={props.redirect} />
         )}
       </AnimatePresence>
     </div>

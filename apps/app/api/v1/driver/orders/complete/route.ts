@@ -1,13 +1,13 @@
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
+import { verifySession } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
 import { DriverStatus, OrderStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
    try {
-      const token = await getUserTokens();
+      const token = await verifySession();
 
-      if (!token?.decodedToken?.uid) {
+      if (!token?.user.id) {
          return NextResponse.json(
             { success: false, error: "Unauthorized" },
             { status: 401 }
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
       // Verify user is an approved driver
       const user = await prisma.user.findUnique({
-         where: { authId: token.decodedToken.uid },
+         where: { id: token.user.id },
       });
 
       if (!user || user.driverStatus !== DriverStatus.APPROVED) {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
             { success: false, error: "You must be an approved driver to view orders" },
             { status: 403 }
          );
-      } 
+      }
 
       // Get orders ready for delivery
       const orders = await prisma.order.findMany({

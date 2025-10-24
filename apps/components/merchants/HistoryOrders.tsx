@@ -57,7 +57,7 @@ export default function HistoryOrders({ orders }: HistoryOrdersProps) {
                filtered = filtered.filter(
                     (order) =>
                          order.id.toLowerCase().includes(query) ||
-                         order.user.fullName?.toLowerCase().includes(query)
+                         order.user.name?.toLowerCase().includes(query)
                );
           }
 
@@ -269,7 +269,7 @@ export default function HistoryOrders({ orders }: HistoryOrdersProps) {
                                                                       <div className="flex items-center gap-2">
                                                                            <User className="w-4 h-4 flex-shrink-0" />
                                                                            <span className="font-medium truncate">
-                                                                                {order.user.fullName}
+                                                                                {order.user.name}
                                                                            </span>
                                                                       </div>
                                                                       <div className="flex items-center gap-2">

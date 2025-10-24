@@ -51,10 +51,10 @@ export default function OrderDetailPage() {
 
     const handleBack = () => {
         const locale = params.locale as string;
-        
+
         // Determine which tab to navigate to based on order status
         let tab = 'orders'; // default
-        
+
         if (order) {
             if (order.status === 'ACCEPTED_BY_DRIVER' || order.status === 'ON_THE_WAY') {
                 tab = 'deliveries';
@@ -62,7 +62,7 @@ export default function OrderDetailPage() {
                 tab = 'completed';
             }
         }
-        
+
         router.push(`/${locale}/driver/dashboard?tab=${tab}`);
     };
 

@@ -1,11 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { motion } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
@@ -14,27 +9,30 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { useToast } from '@/hooks/use-toast'
-import { GoogleIcon } from './components/Google'
-import { useRouter } from 'next/navigation'
-import { AuthCard } from './AuthCard'
-import { useAuthStore } from '@/hooks/auth-store'
-import { ROUTES } from '@/lib/router'
-import { signInSchema, SignInSchemaType } from '@/lib/validation/user'
+import { Input } from '@/components/ui/input'
+import { useAuthStore } from '@/hooks/use-auth-store'
 import { useT } from '@/hooks/use-inline-translation'
+import { useToast } from '@/hooks/use-toast'
+import { signInSchema, SignInSchemaType } from '@/lib/validation/user'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { motion } from 'framer-motion'
+import { Loader2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { AuthCard } from './AuthCard'
+import { GoogleIcon } from './components/Google'
 
 
 interface SignInFormProps {
   onToggleForm(): void
-  redirectTo?: string
+  onSuccess?: () => void
+  redirectUrl?: string
 }
 
-export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
+export function SignInForm({ onToggleForm, onSuccess, redirectUrl }: SignInFormProps) {
   const t = useT()
 
-  const router = useRouter()
   const { toast } = useToast()
-  const { signIn, signInWithGoogle, loading, error } = useAuthStore()
+  const { signIn, signInWithGoogle, loading, error, isAuthenticated } = useAuthStore()
 
   const form = useForm<SignInSchemaType>({
     resolver: zodResolver(signInSchema),
@@ -48,11 +46,9 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
 
     try {
       await signIn(data.email, data.password)
-      toast({
-        title: t("Welcome back!"),
-        description: t("You have successfully logged in"),
-      })
-      router.replace(redirectTo || ROUTES.home)
+      if (isAuthenticated()) {
+        onSuccess?.()
+      }
     } catch (err) {
       console.error(err)
       form.setError('root', {
@@ -64,12 +60,10 @@ export function SignInForm({ onToggleForm, redirectTo }: SignInFormProps) {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle()
-      toast({
-        title: t("Welcome!"),
-        description: t("You have successfully signed in with Google"),
-      })
-      router.replace(redirectTo || ROUTES.home)
+      await signInWithGoogle(redirectUrl)
+      if (isAuthenticated()) {
+        onSuccess?.()
+      }
     } catch (err) {
       console.error(err)
     }

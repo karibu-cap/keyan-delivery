@@ -312,7 +312,7 @@ export async function fetchMerchants({
         managers: {
           include: {
             user: {
-              select: { fullName: true, phone: true }
+              select: { name: true, phone: true }
             }
           }
         }

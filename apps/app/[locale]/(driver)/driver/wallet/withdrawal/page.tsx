@@ -2,10 +2,10 @@
 // Driver withdrawal page with MTN Kenya form
 
 import { redirect } from 'next/navigation';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { prisma } from '@/lib/prisma';
 import WithdrawalPageClient from '@/components/driver/WithdrawalPageClient';
 import { ROUTES } from '@/lib/router';
+import { getSession } from '@/lib/auth-server';
 
 export const metadata = {
     title: 'Withdraw Funds',
@@ -29,21 +29,20 @@ async function getDriverWallet(userId: string) {
 }
 
 export default async function WithdrawalPage() {
-    const tokens = await getUserTokens();
-    const authId = tokens?.decodedToken.uid;
+    const session = await getSession();
 
-    if (!authId) {
-        redirect(ROUTES.signIn);
+    if (!session?.user) {
+        redirect(ROUTES.signIn({ redirect: ROUTES.driverWalletWithdrawal }));
     }
 
     // Get user
     const user = await prisma.user.findUnique({
-        where: { authId },
+        where: { id: session.user.id },
         select: { id: true },
     });
 
     if (!user) {
-        redirect(ROUTES.signIn);
+        redirect(ROUTES.signIn({ redirect: ROUTES.driverWalletWithdrawal }));
     }
 
     // Get wallet data

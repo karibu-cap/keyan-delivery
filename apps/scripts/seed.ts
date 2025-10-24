@@ -144,7 +144,7 @@ async function seedDatabase() {
     )
 
     // Seed Users first
-    const userRecords = await Promise.all(Array(20)
+    const userRecords = await Promise.all(Array(5)
       .fill(null)
       .map(async (_, index) => {
         const roles = index < 5
@@ -164,9 +164,9 @@ async function seedDatabase() {
 
         return prisma.user.create({
           data: {
-            authId: faker.string.alphanumeric(28).toLowerCase(),
+            id: faker.database.mongodbObjectId(),
             email,
-            fullName: faker.person.fullName(),
+            name: faker.person.fullName(),
             phone: faker.phone.number(),
             roles: roles as UserRole[],
             cni: isDriver ? faker.string.alphanumeric(12).toUpperCase() : null,

@@ -6,13 +6,14 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronRight, Pause, Pill, Play, ShoppingBag, Store } from 'lucide-react'
 import Link from "next/link"
 import { useEffect, useState } from 'react'
-import { AuthModal } from './auth/AuthModal'
+import { useAuthModal } from './auth/AuthModal'
 import { OptimizedImage } from './ClsOptimization'
 
 export default function DynamicHeroCarousel() {
      const [currentIndex, setCurrentIndex] = useState(0)
      const [isPaused, setIsPaused] = useState(false)
      const t = useT()
+     const { openModal } = useAuthModal()
      const merchantTypes = [
           {
                type: 'grocery',
@@ -159,15 +160,14 @@ export default function DynamicHeroCarousel() {
                                         transition={{ delay: 0.3, duration: 0.5 }}
                                         className="flex w-full justify-center"
                                    >
-                                        <AuthModal redirectTo={ROUTES.newMerchant}>
-                                             <motion.button
-                                                  className={`bg-white/90 backdrop-blur-sm border-2 border-white/60 ${current.textColor} hover:bg-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 inline-flex items-center justify-center gap-2`}
-                                                  whileHover={{ scale: 1.02 }}
-                                                  whileTap={{ scale: 0.98 }}
-                                             >
-                                                  {t('Become a Merchant')}
-                                             </motion.button>
-                                        </AuthModal>
+                                        <motion.button
+                                             className={`bg-white/90 backdrop-blur-sm border-2 border-white/60 ${current.textColor} hover:bg-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 inline-flex items-center justify-center gap-2`}
+                                             whileHover={{ scale: 1.02 }}
+                                             whileTap={{ scale: 0.98 }}
+                                             onClick={() => openModal(ROUTES.newMerchant)}
+                                        >
+                                             {t('Become a Merchant')}
+                                        </motion.button>
                                    </motion.div>
 
                                    {/* A4: Stats */}
@@ -343,15 +343,14 @@ export default function DynamicHeroCarousel() {
                                                   <ChevronRight className="w-5 h-5" />
                                              </motion.button>
                                         </Link>
-                                        <AuthModal redirectTo={ROUTES.newMerchant}>
-                                             <motion.button
-                                                  className={`bg-white/90 backdrop-blur-sm border-2 border-white/60 ${current.textColor} hover:bg-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 inline-flex items-center justify-center gap-2`}
-                                                  whileHover={{ scale: 1.05 }}
-                                                  whileTap={{ scale: 0.95 }}
-                                             >
-                                                  {t('Become a Merchant')}
-                                             </motion.button>
-                                        </AuthModal>
+                                        <motion.button
+                                             className={`bg-white/90 backdrop-blur-sm border-2 border-white/60 ${current.textColor} hover:bg-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 inline-flex items-center justify-center gap-2`}
+                                             whileHover={{ scale: 1.05 }}
+                                             whileTap={{ scale: 0.95 }}
+                                             onClick={() => openModal(ROUTES.newMerchant)}
+                                        >
+                                             {t('Become a Merchant')}
+                                        </motion.button>
                                    </motion.div>
 
                                    {/* Stats */}

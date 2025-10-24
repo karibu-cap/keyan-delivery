@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
+import { getSession } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * GET /api/v1/orders/[orderId]/tracking
@@ -10,22 +10,22 @@ import { prisma } from "@/lib/prisma";
 export async function POST(
     request: NextRequest,
 ) {
-   try {
+    try {
 
-      const token = await getUserTokens();
-      
-       if (!token?.decodedToken?.uid) {
-          return NextResponse.json(
-             { success: false, message: "Unauthorized" },
-             { status: 401 }
-          );
-       }
+        const session = await getSession();
 
-       // Get user from database
-       const user = await prisma.user.findUnique({
-          where: { authId: token.decodedToken.uid },
-          select: { id: true },
-       });
+        if (!session?.user) {
+            return NextResponse.json(
+                { success: false, message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        // Get user from database
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { id: true },
+        });
 
         if (!user) {
             return NextResponse.json(
@@ -36,8 +36,8 @@ export async function POST(
 
 
 
-       const body = await request.json();
-       const { orderId } = body;
+        const body = await request.json();
+        const { orderId } = body;
 
         // Fetch order with tracking information
         const order = await prisma.order.findUnique({

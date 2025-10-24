@@ -39,17 +39,17 @@ export interface NotificationPayload {
  * Send a push notification to a specific user
  */
 export async function sendNotificationToUser(
-    authId: string,
+    userId: string,
     payload: NotificationPayload
 ): Promise<{ success: boolean; errors?: string[] }> {
     try {
         // Get all subscriptions for the user
         const subscriptions = await prisma.pushSubscription.findMany({
-            where: { authId },
+            where: { userId },
         });
 
         if (subscriptions.length === 0) {
-            console.info(`No push subscriptions found for user ${authId}`);
+            console.info(`No push subscriptions found for user ${userId}`);
             return { success: false, errors: ['No subscriptions found'] };
         }
         // Send notification to all subscriptions
@@ -92,8 +92,6 @@ export async function sendNotificationToUser(
 
         const successCount = results.filter((result) => result.status === 'fulfilled').length;
 
-        console.info(`Sent ${successCount}/${subscriptions.length} notifications to user ${authId}`);
-
         return {
             success: successCount > 0,
             errors: errors.length > 0 ? errors : undefined,
@@ -108,15 +106,15 @@ export async function sendNotificationToUser(
  * Send a notification to multiple users
  */
 export async function sendNotificationToUsers(
-    authIds: string[],
+    userIds: string[],
     payload: NotificationPayload
 ): Promise<{ success: boolean; results: Record<string, boolean> }> {
     const results: Record<string, boolean> = {};
 
     await Promise.all(
-        authIds.map(async (authId) => {
-            const result = await sendNotificationToUser(authId, payload);
-            results[authId] = result.success;
+        userIds.map(async (id) => {
+            const result = await sendNotificationToUser(id, payload);
+            results[id] = result.success;
         })
     );
 
@@ -143,7 +141,7 @@ export async function notifyMerchantNewOrder(
     });
     const t = await getServerT();
 
-    const authIds = merchantManagers.map((m) => m.user.authId);
+    const userIds = merchantManagers.map((m) => m.user.id);
 
 
     const payload: NotificationPayload = {
@@ -165,14 +163,14 @@ export async function notifyMerchantNewOrder(
         ],
         requireInteraction: true,
     };
-    return await sendNotificationToUsers(authIds, payload);
+    return await sendNotificationToUsers(userIds, payload);
 }
 
 /**
  * Send a notification for order status change (CLIENT)
  */
 export async function notifyClientOrderStatusChange(props: {
-    authId: string,
+    userId: string,
     orderId: string,
     newStatus: string,
     merchantName?: string
@@ -211,7 +209,7 @@ export async function notifyClientOrderStatusChange(props: {
         ],
     };
 
-    return await sendNotificationToUser(props.authId, payload);
+    return await sendNotificationToUser(props.userId, payload);
 }
 
 /**
@@ -232,9 +230,9 @@ export async function notifyDriverOrderReady(
         },
     });
 
-    const authIds = availableDrivers.map((d) => d.authId);
+    const userIds = availableDrivers.map((d) => d.id);
 
-    if (authIds.length === 0) {
+    if (userIds.length === 0) {
         console.info('No available drivers found');
         return { success: false, results: {} };
     }
@@ -265,5 +263,5 @@ export async function notifyDriverOrderReady(
         requireInteraction: true,
     };
 
-    return await sendNotificationToUsers(authIds, payload);
+    return await sendNotificationToUsers(userIds, payload);
 }

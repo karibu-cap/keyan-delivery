@@ -1,11 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { motion } from 'framer-motion'
-import { Loader2, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
@@ -14,20 +9,24 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { useToast } from '@/hooks/use-toast'
-import { GoogleIcon } from './components/Google'
-import { AuthCard } from './AuthCard'
-import { useAuthStore } from '@/hooks/auth-store'
-import { signUpSchema, SignUpSchemaType } from '@/lib/validation/user'
-import { UserRole } from '@prisma/client'
-import { useState } from 'react'
-import { ROUTES } from '@/lib/router'
-import { useRouter } from 'next/navigation'
+import { Input } from '@/components/ui/input'
+import { useAuthStore } from '@/hooks/use-auth-store'
 import { useT } from '@/hooks/use-inline-translation'
+import { useToast } from '@/hooks/use-toast'
+import { signUpSchema, SignUpSchemaType } from '@/lib/validation/user'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { UserRole } from '@prisma/client'
+import { motion } from 'framer-motion'
+import { Loader2, Package } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { AuthCard } from './AuthCard'
+import { GoogleIcon } from './components/Google'
 
 interface SignUpFormProps {
   onToggleForm(): void
-  redirectTo?: string
+  onSuccess?: () => void
+  redirectUrl?: string
 }
 
 const roleOptions = [
@@ -39,22 +38,20 @@ const roleOptions = [
   },
 ]
 
-export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
+export function SignUpForm({ onToggleForm, onSuccess, redirectUrl }: SignUpFormProps) {
   const t = useT()
 
   const { toast } = useToast()
-  const router = useRouter()
   const { signUp, signInWithGoogle, loading, error } = useAuthStore()
   const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.customer)
 
   const form = useForm<SignUpSchemaType>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      fullName: '',
+      name: '',
       email: '',
       password: '',
       phone: '',
-      role: UserRole.customer,
     },
   })
 
@@ -62,15 +59,12 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
     try {
       await signUp({
         ...data,
-        role: selectedRole,
-        cni: '',
-        driverDocument: '',
       })
       toast({
         title: t("Account created"),
         description: t("Welcome! Your account has been created successfully."),
       })
-      router.replace(redirectTo || ROUTES.home)
+      onSuccess?.()
     } catch (err) {
       console.error({ message: err })
       form.setError('root', {
@@ -81,12 +75,12 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
   }
 
   const handleGoogleSignIn = async () => {
-    await signInWithGoogle()
+    await signInWithGoogle(redirectUrl)
     toast({
       title: t("Welcome!"),
       description: t("You have successfully signed in with Google"),
     })
-    router.replace(redirectTo || ROUTES.home)
+    onSuccess?.()
   }
 
   return (
@@ -128,7 +122,7 @@ export function SignUpForm({ onToggleForm, redirectTo }: SignUpFormProps) {
 
           <FormField
             control={form.control}
-            name="fullName"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("Full Name *")}</FormLabel>

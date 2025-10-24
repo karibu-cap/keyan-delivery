@@ -1,10 +1,10 @@
 // File: /app/api/v1/driver/withdrawal/route.ts
 // API endpoint for driver withdrawal requests to MTN Kenya
 
-import { NextRequest, NextResponse } from "next/server";
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
+import { getSession } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
-import { TransactionType, TransactionStatus, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/v1/driver/withdrawal
@@ -12,9 +12,9 @@ import { TransactionType, TransactionStatus, UserRole } from "@prisma/client";
  */
 export async function POST(request: NextRequest) {
     try {
-        const token = await getUserTokens();
+        const session = await getSession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!session?.user) {
             return NextResponse.json(
                 { success: false, message: "Unauthorized" },
                 { status: 401 }
@@ -23,9 +23,9 @@ export async function POST(request: NextRequest) {
 
         // Get user from database
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid },
-            select: { 
-                id: true, 
+            where: { id: session.user.id },
+            select: {
+                id: true,
                 roles: true,
                 wallet: {
                     select: {
@@ -64,9 +64,9 @@ export async function POST(request: NextRequest) {
         // Check sufficient balance
         if (amount > user.wallet.balance) {
             return NextResponse.json(
-                { 
-                    success: false, 
-                    message: `Insufficient balance. Available: KES ${user.wallet.balance.toFixed(2)}` 
+                {
+                    success: false,
+                    message: `Insufficient balance. Available: KES ${user.wallet.balance.toFixed(2)}`
                 },
                 { status: 400 }
             );
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
         const phoneRegex = /^(\+254|254|0)[17]\d{8}$/;
         const cleanedNumber = mtnNumber.replace(/\s/g, "");
-        
+
         if (!phoneRegex.test(cleanedNumber)) {
             return NextResponse.json(
                 { success: false, message: "Invalid Kenyan MTN number format" },

@@ -152,7 +152,7 @@ export default function ActiveOrders({
                                                                  <div className="flex items-center gap-2 text-sm">
                                                                       <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                                                                       <span className="font-medium truncate">
-                                                                           {order.user.fullName}
+                                                                           {order.user.name}
                                                                       </span>
                                                                  </div>
 

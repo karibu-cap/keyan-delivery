@@ -1,10 +1,10 @@
 "use client";
 
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import { useAuthStore } from "@/hooks/auth-store";
+import { useAuthStore } from "@/hooks/use-auth-store";
 import { getUserWallet } from "@/lib/actions/client/user";
 import { Wallet } from "@prisma/client";
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface WalletState {
    balance: number;
@@ -16,19 +16,19 @@ interface WalletState {
 
 export const useWallet = create(
    persist<WalletState>(
-      (set, ) => ({
+      (set,) => ({
          balance: 0,
          wallet: null,
          loading: false,
          error: null,
          refreshWallet: async () => {
             const { user } = useAuthStore.getState();
-            if (!user?.authId) return;
+            if (!user?.id) return;
 
             set({ loading: true, error: null });
 
             try {
-               const response = await getUserWallet(user.authId);
+               const response = await getUserWallet(user.id);
                const data = await response;
 
                if (data.success) {
@@ -56,7 +56,7 @@ export const useWallet = create(
 );
 // Auto-refresh when user changes
 useAuthStore.subscribe((state) => {
-   if (state.user?.authId) {
+   if (state.user?.id) {
       useWallet.getState().refreshWallet();
    }
 });

@@ -1,12 +1,12 @@
 "use client";
 
+import { useAuthStore } from "@/hooks/use-auth-store";
+import { fetchDriverAvailableOrders, fetchDriverCompletedOrders, fetchDriverInProgressOrders } from "@/lib/actions/client/driver";
+import { fetchOrderDetails } from '@/lib/actions/client/orders';
+import type { Order } from "@/lib/models/order";
+import { DriverStatus } from "@prisma/client";
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { DriverStatus } from "@prisma/client";
-import { Order } from "@/lib/models/order";
-import { fetchDriverAvailableOrders, fetchDriverCompletedOrders, fetchDriverInProgressOrders } from "@/lib/actions/client/driver";
-import { useAuthStore } from "@/hooks/auth-store";
-import { fetchOrderDetails } from '@/lib/actions/client/orders';
 
 
 interface DriverOrdersState {

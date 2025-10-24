@@ -3,20 +3,19 @@
 
 import { redirect } from 'next/navigation';
 import { getServerT } from '@/i18n/server-translations';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import DriverProfileClient from '@/components/driver/profile/DriverProfileClient';
 import { prisma } from '@/lib/prisma';
-import { email } from 'zod';
 import { ROUTES } from '@/lib/router';
+import { getSession } from '@/lib/auth-server';
 
 export const metadata = {
     title: 'Profile | Driver Dashboard',
     description: 'Manage your driver profile and settings',
 };
 
-async function getDriverProfile(authId: string) {
+async function getDriverProfile(userId: string) {
     const user = await prisma.user.findUnique({
-        where: { authId },
+        where: { id: userId },
     });
 
     return user;
@@ -24,17 +23,16 @@ async function getDriverProfile(authId: string) {
 
 export default async function DriverProfilePage() {
     const t = await getServerT();
-    const tokens = await getUserTokens();
-    const authId = tokens?.decodedToken.uid;
-    
-    if (!authId) {
-        redirect(ROUTES.signIn);
+    const session = await getSession();
+
+    if (!session?.user) {
+        redirect(ROUTES.signIn({ redirect: ROUTES.driverProfile }));
     }
 
-    const driver = await getDriverProfile(authId);
+    const driver = await getDriverProfile(session.user.id);
 
     if (!driver) {
-        redirect(ROUTES.signIn);
+        redirect(ROUTES.signIn({ redirect: ROUTES.driverProfile }));
     }
 
     return <DriverProfileClient driver={driver} />;

@@ -49,7 +49,7 @@ export async function addToCartAction(
     productId: string,
     quantity: number,
     price: number,
-    authId?: string
+    userId?: string
 ): Promise<{ success: boolean; error?: string }> {
     try {
         const cartId = await getOrCreateCartId();
@@ -75,16 +75,16 @@ export async function addToCartAction(
         }
 
         // For demo purposes, we'll use a guest cart system with cartId
-        // In a real app, you'd use authenticated authId
-        const effectiveauthId = authId || cartId;
+        // In a real app, you'd use authenticated userId
+        const effectiveuserId = userId || cartId;
 
-        console.info("111", effectiveauthId, cartId)
+        console.info("111", effectiveuserId, cartId)
 
         // Check if item already exists in cart
         const existingItem = await prisma.cartItem.findUnique({
             where: {
-                authId_productId: {
-                    authId: effectiveauthId,
+                userId_productId: {
+                    userId: effectiveuserId,
                     productId: validatedData.productId,
                 },
             },
@@ -104,7 +104,7 @@ export async function addToCartAction(
             // Add new item
             await prisma.cartItem.create({
                 data: {
-                    authId: effectiveauthId,
+                    userId: effectiveuserId,
                     productId: validatedData.productId,
                     quantity: validatedData.quantity,
                     priceAtAdd: validatedData.price,
@@ -126,13 +126,13 @@ export async function addToCartAction(
 export async function updateCartItemAction(
     productId: string,
     quantity: number,
-    authId?: string
+    userId?: string
 ): Promise<{ success: boolean; error?: string }> {
     try {
         const cartId = await getOrCreateCartId();
 
         if (quantity <= 0) {
-            return removeFromCartAction(productId, authId);
+            return removeFromCartAction(productId, userId);
         }
 
         // Validate input
@@ -151,13 +151,13 @@ export async function updateCartItemAction(
         }
 
         // For demo purposes, we'll use a guest cart system with cartId
-        const effectiveauthId = authId || cartId;
+        const effectiveuserId = userId || cartId;
 
         // Find and update the cart item
         const existingItem = await prisma.cartItem.findUnique({
             where: {
-                authId_productId: {
-                    authId: effectiveauthId,
+                userId_productId: {
+                    userId: effectiveuserId,
                     productId: validatedData.productId,
                 },
             },
@@ -187,19 +187,19 @@ export async function updateCartItemAction(
 
 export async function removeFromCartAction(
     productId: string,
-    authId?: string
+    userId?: string
 ): Promise<{ success: boolean; error?: string }> {
     try {
         const cartId = await getOrCreateCartId();
 
         // For demo purposes, we'll use a guest cart system with cartId
-        const effectiveauthId = authId || cartId;
+        const effectiveuserId = userId || cartId;
 
         // Find the cart item
         const existingItem = await prisma.cartItem.findUnique({
             where: {
-                authId_productId: {
-                    authId: effectiveauthId,
+                userId_productId: {
+                    userId: effectiveuserId,
                     productId: productId,
                 },
             },
@@ -223,15 +223,15 @@ export async function removeFromCartAction(
     }
 }
 
-export async function getCartAction(authId?: string): Promise<{ success: boolean; data?: Cart; error?: string }> {
+export async function getCartAction(userId?: string): Promise<{ success: boolean; data?: Cart; error?: string }> {
     try {
         const cartId = await getOrCreateCartId();
 
         // For demo purposes, we'll use a guest cart system with cartId
-        const effectiveauthId = authId || cartId;
+        const effectiveuserId = userId || cartId;
 
         const cartItems = await prisma.cartItem.findMany({
-            where: { authId: effectiveauthId },
+            where: { userId: effectiveuserId },
             include: {
                 product: {
                     include: {
@@ -283,15 +283,15 @@ export async function getCartAction(authId?: string): Promise<{ success: boolean
     }
 }
 
-export async function clearCartAction(authId?: string): Promise<{ success: boolean; error?: string }> {
+export async function clearCartAction(userId?: string): Promise<{ success: boolean; error?: string }> {
     try {
         const cartId = await getOrCreateCartId();
 
         // For demo purposes, we'll use a guest cart system with cartId
-        const effectiveauthId = authId || cartId;
+        const effectiveuserId = userId || cartId;
 
         await prisma.cartItem.deleteMany({
-            where: { authId: effectiveauthId },
+            where: { userId: effectiveuserId },
         });
 
         revalidatePath('/cart');

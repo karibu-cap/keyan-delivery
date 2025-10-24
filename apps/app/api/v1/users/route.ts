@@ -4,14 +4,14 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const POST = async (request: NextRequest) => {
   const data = await request.json()
-  if (!data.email || !data.authId) {
-    return NextResponse.json('Invalid data: email and authId are required', { status: 400 })
+  if (!data.email || !data.id) {
+    return NextResponse.json('Invalid data: email and id are required', { status: 400 })
   }
 
   // Find user by Firebase UID
   const user = await prisma.user.findUnique({
     where: {
-      authId: data.authId,
+      id: data.id,
     },
   });
 
@@ -37,8 +37,8 @@ export const POST = async (request: NextRequest) => {
     // Prepare user data
     const userData: Partial<User> = {
       email: data.email,
-      authId: data.authId,
-      fullName: data.fullName || null,
+      id: data.id,
+      name: data.name || null,
       phone: data.phone || null,
       roles: userRoles,
     }
