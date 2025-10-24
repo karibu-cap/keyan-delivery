@@ -8,8 +8,8 @@ import { Card } from '@/components/ui/card';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DriverOrderCardGlass } from './DriverOrderCardGlass';
-import { OrderStatus } from '@prisma/client';
 import { Order } from '@/lib/models/order';
+import { useT } from '@/hooks/use-inline-translation';
 
 interface DriverOrdersListProps {
     orders: Order[];
@@ -79,13 +79,14 @@ function EmptyState({ title, description, icon: Icon = AlertCircle }: {
 
 // Error state component
 function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) {
+    const t = useT();
     return (
         <Card className="shadow-card border-destructive/50 animate-in fade-in zoom-in-95 duration-300">
             <div className="p-12 text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-destructive/10 mb-4">
                     <AlertCircle className="w-8 h-8 text-destructive" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2 text-destructive">Error Loading Orders</h3>
+                <h3 className="text-lg font-semibold mb-2 text-destructive">{t("Error Loading Orders")}</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                     {error}
                 </p>
@@ -95,7 +96,7 @@ function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) 
                     className="gap-2"
                 >
                     <RefreshCw className="w-4 h-4" />
-                    Try Again
+                    {t("Try Again")}
                 </Button>
             </div>
         </Card>

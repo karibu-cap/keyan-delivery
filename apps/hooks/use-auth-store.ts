@@ -3,6 +3,7 @@
 import { getUserById } from '@/lib/actions/client';
 import { getUser, signIn, signOut, signUp } from '@/lib/auth-client';
 import { ROUTES } from '@/lib/router';
+import { updateUserCookie, clearUserCookie } from '@/lib/utils/user-cookie';
 import type { User } from '@prisma/client';
 import { User as BetterAuthUser } from 'better-auth';
 import { create } from 'zustand';
@@ -65,6 +66,9 @@ export const useAuthStore = create<AuthState>()(
               user: user,
               lastOnlineSync: Date.now(),
             });
+
+            // Update user cookie for middleware access
+            await updateUserCookie();
           }
 
         } catch (error) {
@@ -98,6 +102,9 @@ export const useAuthStore = create<AuthState>()(
             user: user,
             lastOnlineSync: Date.now(),
           });
+
+          // Update user cookie for middleware access
+          await updateUserCookie();
         } catch (error: any) {
           set({ error: error.message });
         } finally {
@@ -127,6 +134,9 @@ export const useAuthStore = create<AuthState>()(
             user: user,
             lastOnlineSync: Date.now(),
           });
+
+          // Update user cookie for middleware access
+          await updateUserCookie();
         } catch (error: any) {
           set({ error: error.message });
           throw error;
@@ -139,7 +149,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ loading: true, error: null });
 
-          const { error } = await signIn.social({
+          const { error, data } = await signIn.social({
             provider: 'google',
             callbackURL: redirectUrl || ROUTES.home,
           });
@@ -148,6 +158,21 @@ export const useAuthStore = create<AuthState>()(
             throw new Error(error.message);
           }
 
+          const authUser = await getUser();
+
+          if (!authUser) {
+            throw new Error('Failed to get user');
+          }
+          const user = await getUserById(authUser?.id);
+
+          set({
+            authUser: authUser,
+            user: user,
+            lastOnlineSync: Date.now(),
+          });
+
+          // Update user cookie for middleware access
+          await updateUserCookie();
         } catch (error: any) {
           console.error('Google sign-in error:', error);
           set({ error: error.message || 'Unexpected error occurred' });
@@ -161,7 +186,14 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ loading: true, error: null });
           await signOut();
-          set({ authUser: null });
+          
+          // Clear user cookie on logout
+          await clearUserCookie();
+          
+          set({
+            authUser: null,
+            user: null,
+           });
         } catch (error: any) {
           set({ error: error.message });
         } finally {
@@ -191,6 +223,7 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         authUser: state.authUser,
+        user: state.user,
         lastOnlineSync: state.lastOnlineSync,
       }),
     }

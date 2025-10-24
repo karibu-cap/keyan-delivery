@@ -3,7 +3,6 @@
 
 "use client";
 
-import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Package, Truck, CheckCircle2, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';

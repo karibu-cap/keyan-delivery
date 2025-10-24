@@ -9,7 +9,7 @@ import { ROUTES } from "@/lib/router";
 import { DriverStatus, UserRole } from "@prisma/client";
 import { AlertCircle, CheckCircle, Truck, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface DriverBadgeProps {
    onClick?: () => void;
@@ -17,32 +17,41 @@ interface DriverBadgeProps {
 
 export function DriverBadge({ onClick }: DriverBadgeProps) {
    const router = useRouter();
-   const { user } = useAuthStore();
+   const { user, refreshSession } = useAuthStore();
    const { availableOrders } = useDriverOrders();
 
-   if (!user?.roles?.includes(UserRole.driver)) {
-      return null;
-   }
+   const [config, setConfig] = useState(() => ({
+      icon: Truck,
+      color: "bg-gray-400 hover:bg-gray-500",
+      text: "Driver",
+      showCount: false,
+   }));
+
+   const [StatusIcon, setStatusIcon] = useState(() => Truck);
 
    const handleClick = (status: DriverStatus) => {
-      if (onClick) {
-         onClick();
-      } else {
-         if (status === DriverStatus.APPROVED) {
+      if (onClick) return onClick();
+
+      switch (status) {
+         case DriverStatus.APPROVED:
             router.push(ROUTES.driverDashboard);
-         }
-         if (status === DriverStatus.PENDING || status === DriverStatus.REJECTED || status === DriverStatus.BANNED) {
-            router.push(ROUTES.driverPending);
-         }
+            break;
+         case DriverStatus.PENDING:
+         case DriverStatus.REJECTED:
+         case DriverStatus.BANNED:
+            router.push(ROUTES.driverReview);
+            break;
+         default:
+            break;
       }
    };
 
    const getStatusConfig = () => {
-      switch (user.driverStatus) {
+      switch (user?.driverStatus) {
          case DriverStatus.APPROVED:
             return {
                icon: CheckCircle,
-               color: "bg-primary hover:bg-primary",
+               color: "bg-primary hover:bg-primary/90",
                text: "Active Driver",
                showCount: true,
             };
@@ -80,16 +89,25 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
    useEffect(() => {
       const load = async () => {
          await fetchDriverAvailableOrders();
+         await refreshSession();
       };
       load();
-   }, [fetchDriverAvailableOrders])
+   }, [fetchDriverAvailableOrders, refreshSession])
 
-   const config = getStatusConfig();
-   const StatusIcon = config.icon;
+   useEffect(() => {
+      const statusConfig = getStatusConfig();
+      setConfig(statusConfig);
+      setStatusIcon(statusConfig.icon);
+   }, [user?.driverStatus]);
+
+
+   if (!user?.roles?.includes(UserRole.driver)) return null;
 
    return (
       <Button
-         onClick={() => handleClick(user.driverStatus || DriverStatus.BANNED)}
+         onClick={() =>
+            handleClick(user?.driverStatus || DriverStatus.BANNED)
+         }
          variant="ghost"
          className="relative flex items-center gap-2 h-auto px-3 py-2"
       >
@@ -100,11 +118,6 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
          <div className="flex flex-col items-start">
             <span className="text-xs font-medium">Driver dashboard</span>
             <span className="text-xs text-muted-foreground">{config.text}</span>
-            {/* {config.showCount && !loading && (
-               <span className="text-xs text-muted-foreground">
-                  {pendingOrdersCount} {pendingOrdersCount === 1 ? "order" : "orders"}
-               </span>
-            )} */}
          </div>
 
          {config.showCount && availableOrders.length > 0 && (
