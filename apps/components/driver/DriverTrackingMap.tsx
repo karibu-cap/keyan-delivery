@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MapPin, Navigation, ZoomIn, ZoomOut, WifiOff } from "lucide-react";
+import { Navigation, ZoomIn, ZoomOut, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useOnlineStatus, preloadMapTiles } from "@/lib/utils/offline";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { Badge } from "@/components/ui/badge";
+import { preloadMapTiles } from "@/lib/utils/offline";
 
 interface DriverTrackingMapProps {
     // Driver's current location
@@ -12,21 +13,21 @@ interface DriverTrackingMapProps {
         latitude: number;
         longitude: number;
     } | null;
-    
+
     // Merchant location (pickup point)
     merchantLocation: {
         latitude: number;
         longitude: number;
         name: string;
     } | null;
-    
+
     // Client/delivery location
     deliveryLocation: {
         latitude: number;
         longitude: number;
         address: string;
     };
-    
+
     // Callback when map is ready
     onMapReady?: () => void;
 }
@@ -77,8 +78,8 @@ export default function DriverTrackingMap({
                 const initialCenter: [number, number] = driverLocation
                     ? [driverLocation.latitude, driverLocation.longitude]
                     : merchantLocation
-                    ? [merchantLocation.latitude, merchantLocation.longitude]
-                    : [deliveryLocation.latitude, deliveryLocation.longitude];
+                        ? [merchantLocation.latitude, merchantLocation.longitude]
+                        : [deliveryLocation.latitude, deliveryLocation.longitude];
 
                 // Initialize map
                 const map = L.map(mapContainerRef.current!, {
@@ -101,7 +102,7 @@ export default function DriverTrackingMap({
                 if (driverLocation || merchantLocation || deliveryLocation) {
                     const centerLat = driverLocation?.latitude || merchantLocation?.latitude || deliveryLocation.latitude;
                     const centerLng = driverLocation?.longitude || merchantLocation?.longitude || deliveryLocation.longitude;
-                    
+
                     // Preload tiles in background (don't await)
                     preloadMapTiles(centerLat, centerLng, 14, 3).catch(err => {
                         console.warn('Failed to preload map tiles:', err);
@@ -296,8 +297,8 @@ export default function DriverTrackingMap({
         const origin = driverLocation
             ? `${driverLocation.latitude},${driverLocation.longitude}`
             : merchantLocation
-            ? `${merchantLocation.latitude},${merchantLocation.longitude}`
-            : "";
+                ? `${merchantLocation.latitude},${merchantLocation.longitude}`
+                : "";
 
         const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
         window.open(url, "_blank");

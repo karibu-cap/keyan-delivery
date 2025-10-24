@@ -7,7 +7,7 @@ export async function GET(req: Request, props: { params: Promise<{ id: string }>
         const params = await props.params
         const user = await prisma.user.findUnique({
             where: {
-                authId: params.id,
+                id: params.id,
             },
             include: {
                 merchantManagers: {

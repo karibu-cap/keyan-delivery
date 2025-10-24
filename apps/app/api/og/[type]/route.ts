@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ type:
     const params = await props.params;
     try {
         const { searchParams } = new URL(request.url);
-        const id = searchParams.get('id');
+        const id:= searchParams.get('id');
         const locale = searchParams.get('locale') || 'en';
 
         if (!id) {

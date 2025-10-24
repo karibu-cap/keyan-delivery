@@ -1,5 +1,5 @@
 import { resolveDeliveryCoordinates, validateCoordinatesInZones } from '@/lib/actions/server/delivery-zones';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
+import { verifySession } from '@/lib/auth-server';
 import { notifyMerchantNewOrder } from '@/lib/notifications/push-service';
 import { prisma } from '@/lib/prisma';
 import { OrderStatus } from '@prisma/client';
@@ -8,10 +8,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const token = await getUserTokens();
+    const token = await verifySession();
 
-
-    if (!token?.decodedToken?.uid) {
+    if (!token?.user.id) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
@@ -21,7 +20,7 @@ export async function POST(request: NextRequest) {
     // Find user by Firebase UID
     const user = await prisma.user.findUnique({
       where: {
-        authId: token.decodedToken.uid,
+        id: token.user.id,
       },
     });
 

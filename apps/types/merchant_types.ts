@@ -26,7 +26,7 @@ export interface Order {
   };
   items: OrderItem[];
   user: {
-    fullName: string;
+    name: string;
     phone: string;
   };
   deliveryInfo: {

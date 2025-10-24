@@ -1,13 +1,13 @@
 import { addToCartAction, getCartAction, removeFromCartAction, updateCartItemAction } from '@/lib/actions/server/cart-actions';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
+import { verifySession } from '@/lib/auth-server';
 import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/cart - Fetch user's cart
 export async function GET() {
   try {
-    const token = await getUserTokens();
+    const session = await verifySession();
 
-    const response = await getCartAction(token?.decodedToken?.uid);
+    const response = await getCartAction(session?.user.id);
     return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching cart:', error);
@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = await getUserTokens();
+    const token = await verifySession();
 
-    const userId = token?.decodedToken?.uid;
+    const userId = token?.user.id;
 
     // Get product to verify it exists and get current price
     const response = await addToCartAction(productId, quantity, price, userId);
@@ -60,7 +60,7 @@ export async function DELETE(
   request: NextRequest,
 ) {
   try {
-    const token = await getUserTokens();
+    const token = await verifySession();
     const { productId } = await request.json();
 
     if (!productId) {
@@ -70,7 +70,7 @@ export async function DELETE(
       );
     }
 
-    const response = await removeFromCartAction(productId, token?.decodedToken?.uid);
+    const response = await removeFromCartAction(productId, token?.user.id);
 
     return NextResponse.json(response);
   } catch (error) {
@@ -96,9 +96,9 @@ export async function PATCH(
       );
     }
 
-    const token = await getUserTokens();
+    const token = await verifySession();
 
-    const response = await updateCartItemAction(productId, quantity, token?.decodedToken?.uid);
+    const response = await updateCartItemAction(productId, quantity, token?.user.id);
 
 
     return NextResponse.json(response);

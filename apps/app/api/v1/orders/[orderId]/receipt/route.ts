@@ -1,4 +1,4 @@
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
+import { verifySession } from "@/lib/auth-server"
 import { formatOrderId } from "@/lib/orders-utils"
 import { prisma } from "@/lib/prisma"
 import jsPDF from 'jspdf'
@@ -11,9 +11,9 @@ export async function GET(
   try {
     const params = await props.params
     // Authenticate user
-    const token = await getUserTokens()
+    const token = await verifySession()
 
-    if (!token?.decodedToken?.uid) {
+    if (!token?.user.id) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -22,8 +22,8 @@ export async function GET(
 
     // Find user
     const user = await prisma.user.findUnique({
-      where: { authId: token.decodedToken.uid },
-      select: { id: true, fullName: true, email: true },
+      where: { id: token.user.id },
+      select: { id: true, name: true, email: true },
     })
 
     if (!user) {
@@ -150,7 +150,7 @@ export async function GET(
         <div class="section-title">Customer Information</div>
         <div class="info-row">
           <span class="label">Name:</span>
-          <span>${user.fullName || "N/A"}</span>
+          <span>${user.name || "N/A"}</span>
         </div>
         <div class="info-row">
           <span class="label">Email:</span>
@@ -285,7 +285,7 @@ export async function GET(
 
     pdf.setFontSize(11)
     pdf.setTextColor(0, 0, 0)
-    pdf.text(`Name: ${user.fullName || "N/A"}`, margin, yPosition)
+    pdf.text(`Name: ${user.name || "N/A"}`, margin, yPosition)
     yPosition += lineHeight
     pdf.text(`Email: ${user.email || "N/A"}`, margin, yPosition)
     yPosition += lineHeight * 2

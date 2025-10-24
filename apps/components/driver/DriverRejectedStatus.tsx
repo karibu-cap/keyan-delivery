@@ -1,14 +1,14 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { useAuthStore } from "@/hooks/use-auth-store";
 import { DriverStatus } from "@prisma/client";
 import { XCircle, AlertTriangle } from "lucide-react";
-import { useAuthStore } from "@/hooks/auth-store";
 
 export function DriverRejectedStatus() {
     const { user } = useAuthStore();
     const isBanned = user?.driverStatus === DriverStatus.BANNED;
-    
+
     return (
         <div className="min-h-screen">
             {/* Hero Section with Red Gradient */}

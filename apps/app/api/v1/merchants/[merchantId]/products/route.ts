@@ -1,6 +1,6 @@
 import { getMerchantProducts } from '@/lib/actions/server/merchants';
+import { verifySession } from '@/lib/auth-server';
 import { invalidateProductCache } from '@/lib/cache';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import { prisma } from '@/lib/prisma';
 import { generateSlug } from '@/lib/utils';
 import { ProductStatus } from '@prisma/client';
@@ -40,9 +40,9 @@ export async function GET(request: NextRequest, props: { params: Promise<{ merch
 export async function POST(request: NextRequest, props: { params: Promise<{ merchantId: string }> }) {
     try {
         const params = await props.params;
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: 'Unauthorized' },
                 { status: 401 }
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ merc
         }
 
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid },
+            where: { id: token.user.id },
             include: {
                 merchantManagers: true
             }
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ merc
                             url: image.url,
                             fileName: image.fileName || `product-image-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                             blurDataUrl: image.blurDataUrl,
-                            creatorId: user.authId,
+                            creatorId: user.id,
                         }))
                 } : undefined,
                 categories: categoryIds && categoryIds.length > 0 ? {

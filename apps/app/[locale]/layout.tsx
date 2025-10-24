@@ -12,6 +12,7 @@ import ServicesWorkerRegistration from "@/components/notifications/ServiceWorker
 import NotificationHandler from "@/components/notifications/NotificationHandler";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { AuthModalProvider } from "@/components/auth/AuthModal";
 
 const geistSans = Geist({
      variable: "--font-geist-sans",
@@ -56,7 +57,7 @@ export default async function RootLayout({
      }
 
      return (
-          <html lang={locale}>
+          <html>
                <head>
                     <link rel="manifest" href="/manifest.json" />
                     <meta name="theme-color" content="#10b981" />
@@ -87,18 +88,19 @@ export default async function RootLayout({
                     <NotificationHandler />
                     <ThemeProvider>
                          <NextIntlClientProvider>
-
-                              <FontOptimizer>
-                                   <OfflineProvider>
-                                        <OfflineNetworkErrorBoundary>
-                                             <ErrorBoundary>
-                                                  {children}
-                                                  <Toaster />
-                                                  <OfflineIndicator />
-                                             </ErrorBoundary>
-                                        </OfflineNetworkErrorBoundary>
-                                   </OfflineProvider>
-                              </FontOptimizer>
+                              <AuthModalProvider>
+                                   <FontOptimizer>
+                                        <OfflineProvider>
+                                             <OfflineNetworkErrorBoundary>
+                                                  <ErrorBoundary>
+                                                       {children}
+                                                       <Toaster />
+                                                       <OfflineIndicator />
+                                                  </ErrorBoundary>
+                                             </OfflineNetworkErrorBoundary>
+                                        </OfflineProvider>
+                                   </FontOptimizer>
+                              </AuthModalProvider>
                          </NextIntlClientProvider>
                     </ThemeProvider>
 

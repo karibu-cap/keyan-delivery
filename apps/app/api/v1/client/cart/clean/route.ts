@@ -1,13 +1,13 @@
 import { clearCartAction } from "@/lib/actions/server/cart-actions";
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
+import { verifySession } from "@/lib/auth-server";
 import { NextResponse } from "next/server";
 
 
 export async function DELETE() {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        const response = await clearCartAction(token?.decodedToken?.uid);
+        const response = await clearCartAction(token?.user.id);
 
         return NextResponse.json(response);
     } catch (error) {

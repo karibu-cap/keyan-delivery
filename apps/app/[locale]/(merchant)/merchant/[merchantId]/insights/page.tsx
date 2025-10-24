@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { Calendar, TrendingUp, Users } from 'lucide-react';
 import { getServerT } from '@/i18n/server-translations';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import type { MerchantAnalytics } from '@/types/merchant_analytics';
 import OrdersOverview from '@/components/merchants/insights/OrdersOverview';
 import RevenueChart from '@/components/merchants/insights/RevenueChart';
@@ -12,17 +11,19 @@ import TopProducts from '@/components/merchants/insights/TopProducts';
 import { getMerchantAnalytics } from '@/lib/actions/server/merchants';
 import StatsCards from '@/components/merchants/insights/StatsCards';
 import { SlideUp } from '@/components/merchants/animations/TransitionWrappers';
+import { getSession } from '@/lib/auth-server';
+import { ROUTES } from '@/lib/router';
 
 export const metadata = {
     title: 'Insights & Analytics | Merchant Dashboard',
     description: 'Analysez les performances de votre commerce',
 };
 
-async function getMerchantByUser(authId: string) {
+async function getMerchantByUser(userId: string) {
     const userMerchant = await prisma.userMerchantManager.findFirst({
         where: {
             user: {
-                authId,
+                id: userId,
             },
         },
         include: {
@@ -33,19 +34,21 @@ async function getMerchantByUser(authId: string) {
     return userMerchant;
 }
 
-export default async function MerchantInsightsPage() {
+export default async function MerchantInsightsPage({ params }: { params: Promise<{ merchantId: string }> }) {
+    const merchantId = (await params).merchantId;
+
 
     const t = await getServerT();
-    const tokens = await getUserTokens();
-    const authId = tokens?.decodedToken.uid;
-    if (!authId) {
-        redirect('/sign-in');
+    const session = await getSession();
+
+    if (!session?.user) {
+        redirect(ROUTES.signIn({ redirect: ROUTES.merchantInsights(merchantId) }));
     }
 
-    const userMerchant = await getMerchantByUser(authId);
+    const userMerchant = await getMerchantByUser(session.user.id);
 
     if (!userMerchant) {
-        redirect('/merchant/new-merchant');
+        redirect('/new-merchant');
     }
 
     const analytics: MerchantAnalytics = await getMerchantAnalytics(userMerchant.merchantId, 30);

@@ -1,12 +1,12 @@
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
+import { verifySession } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const token = await getUserTokens();
+        const token = await verifySession();
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { success: false, error: "Unauthorized" },
                 { status: 401 }
@@ -20,9 +20,8 @@ export async function POST(request: NextRequest) {
         const transactions = await prisma.transaction.findMany({
             where: {
                 walletId: walletId
-             },
+            },
         });
-        console.log('transactions \n\n\n ', transactions)
 
         if (transactions.length === 0) {
             return NextResponse.json(

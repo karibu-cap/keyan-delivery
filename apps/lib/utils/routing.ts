@@ -1,4 +1,3 @@
-// lib/utils/routing.ts
 // OSRM routing utilities with cache and fallback to straight-line distance
 
 import { calculateDistance } from './distance';
@@ -31,7 +30,7 @@ function getCacheKey(
     const roundedLng1 = Math.round(lng1 * 100000) / 100000;
     const roundedLat2 = Math.round(lat2 * 100000) / 100000;
     const roundedLng2 = Math.round(lng2 * 100000) / 100000;
-    
+
     return `${roundedLat1},${roundedLng1}-${roundedLat2},${roundedLng2}`;
 }
 
@@ -66,7 +65,7 @@ export async function calculateRouteDistance(
     // Check cache first
     const cacheKey = getCacheKey(lat1, lng1, lat2, lng2);
     const cached = routeCache.get(cacheKey);
-    
+
     if (cached && isCacheValid(cached)) {
         return {
             distance: cached.distance,
@@ -79,42 +78,42 @@ export async function calculateRouteDistance(
         // Build OSRM request URL
         // Format: /route/v1/driving/{longitude},{latitude};{longitude},{latitude}
         const url = `${OSRM_BASE_URL}/${lng1},${lat1};${lng2},${lat2}?overview=false&alternatives=false&steps=false`;
-        
+
         // Make request with timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
-        
+
         const response = await fetch(url, {
             signal: controller.signal,
             headers: {
                 'User-Agent': 'Yetu-Delivery-App/1.0',
             },
         });
-        
+
         clearTimeout(timeoutId);
-        
+
         if (!response.ok) {
             throw new Error(`OSRM API error: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) {
             throw new Error('No route found');
         }
-        
+
         // Extract distance (meters) and duration (seconds)
         const route = data.routes[0];
         const distanceKm = route.distance / 1000; // Convert to km
         const durationMinutes = Math.round(route.duration / 60); // Convert to minutes
-        
+
         // Cache the result
         routeCache.set(cacheKey, {
             distance: distanceKm,
             duration: durationMinutes,
             timestamp: Date.now(),
         });
-        
+
         return {
             distance: distanceKm,
             duration: durationMinutes,
@@ -122,20 +121,20 @@ export async function calculateRouteDistance(
         };
     } catch (error) {
         console.warn('OSRM routing failed, falling back to straight-line distance:', error);
-        
+
         // Fallback to straight-line distance
         const straightLineDistance = calculateDistance(lat1, lng1, lat2, lng2);
-        
+
         // Estimate duration based on average speed (30 km/h in city)
         const estimatedDuration = Math.round((straightLineDistance / 30) * 60);
-        
+
         // Cache the fallback result (shorter cache time)
         routeCache.set(cacheKey, {
             distance: straightLineDistance,
             duration: estimatedDuration,
             timestamp: Date.now(),
         });
-        
+
         return {
             distance: straightLineDistance,
             duration: estimatedDuration,
@@ -161,31 +160,31 @@ export async function calculateMultiWaypointRoute(
     if (waypoints.length < 2) {
         return { distance: 0, duration: 0, method: 'straight-line' };
     }
-    
+
     let totalDistance = 0;
     let totalDuration = 0;
     let usedStraightLine = false;
-    
+
     // Calculate distance between each consecutive pair of waypoints
     for (let i = 0; i < waypoints.length - 1; i++) {
         const from = waypoints[i];
         const to = waypoints[i + 1];
-        
+
         const result = await calculateRouteDistance(
             from.lat,
             from.lng,
             to.lat,
             to.lng
         );
-        
+
         totalDistance += result.distance;
         totalDuration += result.duration;
-        
+
         if (result.method === 'straight-line') {
             usedStraightLine = true;
         }
     }
-    
+
     return {
         distance: totalDistance,
         duration: totalDuration,
@@ -226,7 +225,7 @@ export function getRouteCacheStats(): {
     const now = Date.now();
     let validEntries = 0;
     let expiredEntries = 0;
-    
+
     for (const value of routeCache.values()) {
         if (now - value.timestamp < CACHE_DURATION) {
             validEntries++;
@@ -234,7 +233,7 @@ export function getRouteCacheStats(): {
             expiredEntries++;
         }
     }
-    
+
     return {
         size: routeCache.size,
         validEntries,

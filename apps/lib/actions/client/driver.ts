@@ -61,7 +61,47 @@ export async function fetchDriverInProgressOrders() {
 };
 
 export async function fetchDriverCompletedOrders() {
-   const response = await fetch("/api/v1/driver/orders/complete");
-   return await response.json();
+    const response = await fetch("/api/v1/driver/orders/complete");
+    return await response.json();
 };
+
+export async function approveDriver(driverId: string) {
+    const result = await fetch(`/api/v1/admin/drivers/${driverId}/approve`, {
+        method: "PATCH",
+    });
+
+    return result.json();
+}
+
+export async function rejectDriver(driverId: string) {
+    const result = await fetch(`/api/v1/admin/drivers/${driverId}/reject`, {
+        method: "PATCH",
+    });
+
+    return result.json();
+}
+
+export async function banDriver(driverId: string) {
+    const result = await fetch(`/api/v1/admin/drivers/${driverId}/ban`, {
+        method: "PATCH",
+    });
+
+    return result.json();
+}
+
+export async function unbanDriver(driverId: string) {
+    const result = await fetch(`/api/v1/admin/drivers/${driverId}/unban`, {
+        method: "PATCH",
+    });
+
+    return result.json();
+}
+
+export async function deleteDriver(driverId: string) {
+    const result = await fetch(`/api/v1/admin/drivers/${driverId}/delete`, {
+        method: "DELETE",
+    });
+
+    return result.json();
+}
 

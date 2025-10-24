@@ -1,21 +1,21 @@
 "use server";
 
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils";
+import { verifySession } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { notifyClientOrderStatusChange } from "../notifications/push-service";
 
 export async function acceptOrder(orderId: string, pickupCode: string) {
    try {
-      const token = await getUserTokens();
+      const token = await verifySession();
 
-      if (!token?.decodedToken?.uid) {
+      if (!token?.user.id) {
          return { success: false, error: "Unauthorized" };
       }
 
       // Verify user is approved driver
       const user = await prisma.user.findUnique({
-         where: { authId: token.decodedToken.uid },
+         where: { id: token.user.id },
       });
 
       if (!user || user.driverStatus !== "APPROVED") {
@@ -59,7 +59,7 @@ export async function acceptOrder(orderId: string, pickupCode: string) {
 
       try {
          await notifyClientOrderStatusChange({
-            authId: updatedOrder.user.authId,
+            userId: updatedOrder.user.id,
             orderId: updatedOrder.id,
             newStatus: OrderStatus.ACCEPTED_BY_DRIVER,
          });
@@ -79,10 +79,10 @@ export async function acceptOrder(orderId: string, pickupCode: string) {
 
 export async function updateOrderToOnTheWay(orderId: string) {
    try {
-      const token = await getUserTokens();
+      const token = await verifySession();
 
 
-      if (!token?.decodedToken?.uid) {
+      if (!token?.user.id) {
          return { success: false, error: "Unauthorized" };
       }
 
@@ -115,15 +115,15 @@ export async function updateOrderToOnTheWay(orderId: string) {
 
 export async function completeDelivery(orderId: string, deliveryCode: string) {
    try {
-      const token = await getUserTokens();
+      const token = await verifySession();
 
-      if (!token?.decodedToken?.uid) {
+      if (!token?.user.id) {
          return { success: false, error: "Unauthorized" };
       }
 
       // Verify user is approved driver
       const user = await prisma.user.findUnique({
-         where: { authId: token.decodedToken.uid },
+         where: { id: token.user.id },
       });
 
       if (!user || user.driverStatus !== "APPROVED") {

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { getServerT } from "@/i18n/server-translations"
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
 import { formatOrderId } from "@/lib/orders-utils"
 import { prisma } from "@/lib/prisma"
 import { ROUTES } from "@/lib/router"
@@ -14,8 +13,9 @@ import { OrderStatus } from "@prisma/client"
 import { PhoneIcon } from "lucide-react"
 
 import { OptimizedImage } from "@/components/ClsOptimization"
+import { getSession } from "@/lib/auth-server"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 
 
 
@@ -74,30 +74,15 @@ function canTrackOrder(status: OrderStatus): boolean {
 export default async function OrderDetailPage(props: { params: Promise<{ orderId: string }> }) {
      const params = await props.params;
 
-     const token = await getUserTokens()
+     const session = await getSession();
 
+     if (!session?.user) {
+          redirect(ROUTES.signIn({ redirect: ROUTES.order(params.orderId) }));
+     }
      const t = await getServerT()
 
-     if (!token?.decodedToken?.uid) {
-          return (
-               <div className="min-h-screen bg-background">
-                    <main className="container mx-auto px-4 py-6">
-                         <div className="py-16 text-center">
-                              <h2 className="mb-2 text-2xl font-bold">{t("Authentication Required")}</h2>
-                              <p className="mb-6 text-muted-foreground">
-                                   {t("Please sign in to view your orders")}
-                              </p>
-                              <Link href="/sign-in">
-                                   <Button className="bg-primary hover:bg-[#089808]">{t("Sign In")}</Button>
-                              </Link>
-                         </div>
-                    </main>
-               </div>
-          )
-     }
-
      const user = await prisma.user.findUnique({
-          where: { authId: token.decodedToken.uid },
+          where: { id: session.user.id },
           select: { id: true },
      })
 

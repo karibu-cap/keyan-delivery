@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
-import { getUserTokens } from '@/lib/firebase-client/server-firebase-utils';
 import MerchantProfile from '@/components/merchants/MerchantProfile';
 import { getMerchantWithUser } from '@/lib/actions/server/merchants';
+import { getSession } from '@/lib/auth-server';
+import { ROUTES } from '@/lib/router';
 
 export const metadata = {
     title: 'Merchant Profile',
@@ -20,18 +21,16 @@ interface PageProps {
 export default async function MerchantProfilePage({ params }: PageProps) {
     const { merchantId } = await params;
 
+    const session = await getSession();
 
-    const tokens = await getUserTokens();
-    const authId = tokens?.decodedToken.uid;
-
-    if (!authId) {
-        redirect('/sign-in');
+    if (!session?.user) {
+        redirect(ROUTES.signIn({ redirect: ROUTES.merchantProfile(merchantId) }));
     }
 
-    const userMerchant = await getMerchantWithUser(merchantId, authId);
+    const userMerchant = await getMerchantWithUser(merchantId, session.user.id);
 
     if (!userMerchant) {
-        redirect('/profile');
+        redirect('/unauthorized');
     }
 
     return (

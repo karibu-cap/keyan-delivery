@@ -1,10 +1,8 @@
-import { authMiddleware, redirectToHome, redirectToLogin } from 'next-firebase-auth-edge';
+import { getSessionCookie } from 'better-auth/cookies';
 import createIntlMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
-import { clientConfig, serverConfig } from './auth_config';
 import { locales } from './i18n/config';
 import { routing } from './i18n/routing';
-import { getUserTokens } from './lib/firebase-client/server-firebase-utils';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -26,7 +24,7 @@ const PUBLIC_PATHS = [
 
 function hasLocale(path: string) {
   const localePattern = locales.join('|');
-  return (new RegExp(`^/(${localePattern})(/|$)`).test(path));
+  return new RegExp(`^/(${localePattern})(/|$)`).test(path);
 }
 
 function removeLocaleFromPath(path: string) {
@@ -35,142 +33,54 @@ function removeLocaleFromPath(path: string) {
   return path.replace(regex, '/');
 }
 
+function isProtectedPath(pathname: string): boolean {
+  return !PUBLIC_PATHS.some((path) => typeof path === 'string' ? pathname === path : path.test(pathname));
+}
+
 export async function middleware(request: NextRequest) {
-  return authMiddleware(request, {
-    loginPath: '/api/login',
-    logoutPath: '/api/logout',
-    refreshTokenPath: '/api/refresh-token',
-    apiKey: clientConfig.apiKey,
-    cookieName: serverConfig.cookieName,
-    cookieSignatureKeys: serverConfig.cookieSignatureKeys,
-    cookieSerializeOptions: {
-      path: '/',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
-      maxAge: 12 * 60 * 60 * 24,
-    },
-    serviceAccount: serverConfig.serviceAccount,
-    enableMultipleCookies: true,
-    enableCustomToken: false,
-    debug: true,
-    checkRevoked: true,
-    authorizationHeaderName: 'Authorization',
-    handleValidToken: async ({ decodedToken }, headers) => {
-      const pathname = request.nextUrl.pathname;
+  const pathname = request.nextUrl.pathname;
+  const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
 
-      // Assume locales are optional 2-letter prefixes like /en/, /fr/, etc. (case-insensitive)
-      const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
+  // Skip middleware for API routes and static files
+  if (
+    basePath.startsWith('/api') ||
+    basePath.startsWith('/_next') ||
+    basePath.startsWith('/_vercel') ||
+    basePath.match(/\.(ico|png|jpg|jpeg|svg|css|js|woff|woff2|ttf)$/)
+  ) {
+    return NextResponse.next();
+  }
 
-      // Check if token is expired (though authMiddleware typically invalidates expired tokens; this is redundant but preserved)
-      if (decodedToken.exp < Date.now() / 1000) {
-        if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? basePath === path : path.test(basePath))) {
-          return applyIntl(request); // Apply i18n for public paths
-        }
-        return redirectToLogin(request, {
-          path: '/sign-in',
-          publicPaths: PUBLIC_PATHS,
-        });
-      }
-
-      // Redirect authenticated users from unauth public paths
-      if (UN_AUTH_PUBLIC_PATHS.includes(basePath)) {
-        return redirectToHome(request);
-      }
-
-      // For valid tokens on protected paths, apply i18n and propagate auth headers for token caching
-      return applyIntl(request, headers);
-    },
-    handleInvalidToken: async (reason) => {
-      console.info('Missing or malformed credentials', { reason });
-
-      const pathname = request.nextUrl.pathname;
-      const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
-      if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? basePath === path : path.test(basePath))) {
-        return applyIntl(request); // Apply i18n for public paths
-      }
-
-      return redirectToLogin(request, {
-        path: '/sign-in',
-        publicPaths: PUBLIC_PATHS,
-      });
-    },
-    handleError: async (error) => {
-      console.error('Unhandled authentication error', { error });
-
-      const errorString = String(error);
-      const isFetchError = errorString.includes('fetch failed') ||
-        errorString.includes('INTERNAL_ERROR') ||
-        errorString.includes('network');
-
-      if (isFetchError) {
-        console.warn('Network error detected, allowing access to public paths');
-        const token = await getUserTokens()
-
-        const pathname = request.nextUrl.pathname;
-        const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
-        if (PUBLIC_PATHS.some((path) => typeof path === 'string' ? basePath === path : path.test(basePath))) {
-          return applyIntl(request); // Apply i18n for public paths
-        }
-        if (token?.decodedToken.email_verified == true || (token?.decodedToken.exp ?? 0) > Date.now() / 1000) {
-          return applyIntl(request);
-        }
-      }
-
-      return redirectToLogin(request, {
-        path: '/sign-in',
-        publicPaths: PUBLIC_PATHS,
-      });
-    },
+  const sessionCookie = getSessionCookie(request, {
+    cookiePrefix: "yetu"
   });
+
+  if (isProtectedPath(basePath)) {
+    if (!sessionCookie) {
+      const locale = hasLocale(pathname) ? pathname.split('/')[1] : '';
+      const redirectUrl = new URL(
+        locale ? `/${locale}/sign-in` : '/sign-in',
+        request.url
+      );
+      redirectUrl.searchParams.set('redirect', basePath);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  // Redirect authenticated users away from auth pages
+  if (sessionCookie && ['/sign-in', '/sign-up'].includes(basePath)) {
+    const redirectTo = request.nextUrl.searchParams.get('redirect') || '/';
+    const locale = hasLocale(pathname) ? pathname.split('/')[1] : '';
+    const redirectUrl = new URL(
+      locale ? `/${locale}${redirectTo}` : redirectTo,
+      request.url
+    );
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  return intlMiddleware(request);
 }
 
-// Helper to apply intlMiddleware and merge with auth headers where needed
-function applyIntl(request: NextRequest, authHeaders?: Headers) {
-  // If auth middleware wants to redirect (e.g., to login), apply intl to that redirect
-
-  if (authHeaders) {
-    // Extract the redirect path from auth response
-    const redirectUrl = new URL(request.headers.get('location') || request.nextUrl.href);
-    // Create a new request with the redirect path to let intl middleware handle locale
-    const redirectRequest = new NextRequest(redirectUrl, request);
-    const intlResponse = intlMiddleware(redirectRequest);
-    // Return the intl response which will add locale to the redirect path
-    return intlResponse;
-  }
-
-  // Normal flow: apply intl middleware
-  const intlResponse = intlMiddleware(request);
-  // If i18n redirects (e.g., adding locale to URL like /stores -> /en/stores)
-  if (intlResponse.status === 307 || intlResponse.status === 308 || intlResponse.redirected) {
-
-    return intlResponse;
-  }
-
-  // If i18n rewrites the URL
-  if (intlResponse.headers.has('x-middleware-rewrite')) {
-
-    const rewriteUrl = new URL(intlResponse.headers.get('x-middleware-rewrite')!);
-    return NextResponse.rewrite(rewriteUrl, {
-      request: { headers: authHeaders },
-      headers: intlResponse.headers,
-    });
-  }
-
-  // For normal processing, propagate auth headers
-  return NextResponse.next({
-    request: { headers: authHeaders },
-    headers: intlResponse.headers,
-  });
-}
-
-
-// Keep your matcher (it already excludes general API/trpc but includes specific auth APIs)
 export const config = {
-  matcher: [
-    '/api/refresh-token',
-    '/api/login',
-    '/api/logout',
-    '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
-  ],
+  matcher: ['/((?!api/auth|_next|_vercel|.*\\..*).*)'],
 };

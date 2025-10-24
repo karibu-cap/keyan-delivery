@@ -1,17 +1,20 @@
 'use client';
 
-import { useAuthStore } from "@/hooks/auth-store";
+import { useAuthStore } from "@/hooks/use-auth-store";
 import { useT } from "@/hooks/use-inline-translation";
 import { ROUTES } from "@/lib/router";
 import { Car, Clock, Shield, ShoppingBag, Store, Zap } from "lucide-react";
 import Link from "next/link";
-import { AuthModal } from "../auth/AuthModal";
+import { useAuthModal } from "../auth/AuthModal";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
+import { UserRole } from "@prisma/client";
 
 export function HomePageClient() {
-    const { isDriver } = useAuthStore();
+    const { user } = useAuthStore();
+    const { openModal } = useAuthModal();
     const t = useT();
+    const isDriver = user?.driverStatus === "APPROVED" && user?.roles.some(role => role === UserRole.driver);
 
     const features = [
         {
@@ -78,14 +81,13 @@ export function HomePageClient() {
                                         <span>{t("Analytics & insights")}</span>
                                     </li>
                                 </ul>
-                                <AuthModal redirectTo={ROUTES.newMerchant}>
-                                    <Button
-                                        size="lg"
-                                        className="w-full bg-primary hover:bg-primary shadow-primary"
-                                    >
-                                        {t("Apply as Merchant")}
-                                    </Button>
-                                </AuthModal>
+                                <Button
+                                    size="lg"
+                                    className="w-full bg-primary hover:bg-primary shadow-primary"
+                                    onClick={() => openModal(ROUTES.newMerchant)}
+                                >
+                                    {t("Apply as Merchant")}
+                                </Button>
 
                             </div>
                         </Card>
@@ -118,14 +120,13 @@ export function HomePageClient() {
                                         <span>{t("24/7 support team")}</span>
                                     </li>
                                 </ul>
-                                <AuthModal redirectTo={isDriver() ? ROUTES.driverDashboard : ROUTES.driverApply}>
-                                    <Button
-                                        size="lg"
-                                        className="w-full bg-primary hover:bg-primary shadow-primary"
-                                    >
-                                        {isDriver() ? "Go to driver dashboard" : "Apply as Driver"}
-                                    </Button>
-                                </AuthModal>
+                                <Button
+                                    size="lg"
+                                    className="w-full bg-primary hover:bg-primary shadow-primary"
+                                    onClick={() => openModal(isDriver ? ROUTES.driverDashboard : ROUTES.driverApply)}
+                                >
+                                    {isDriver ? "Go to driver dashboard" : "Apply as Driver"}
+                                </Button>
                             </div>
                         </Card>
                     </div>
@@ -181,14 +182,13 @@ export function HomePageClient() {
                                 {t("Browse Stores")}
                             </Link>
                         </Button>
-                        <AuthModal redirectTo={ROUTES.newMerchant}>
-                            <Button
-                                size="lg"
-                                className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
-                            >
-                                {t("Partner With Us")}
-                            </Button>
-                        </AuthModal>
+                        <Button
+                            size="lg"
+                            className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
+                            onClick={() => openModal(ROUTES.newMerchant)}
+                        >
+                            {t("Partner With Us")}
+                        </Button>
                     </div>
                 </div>
             </section>
@@ -221,7 +221,7 @@ export function HomePageClient() {
                         <div>
                             <h4 className="font-semibold mb-4">{t("For Partners")}</h4>
                             <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li><Link href="/merchant/new-merchant" className="hover:text-primary transition-colors">{t("Become a Merchant")}</Link></li>
+                                <li><Link href="/new-merchant" className="hover:text-primary transition-colors">{t("Become a Merchant")}</Link></li>
                                 <li><Link href="/driver/new-driver" className="hover:text-primary transition-colors">{t("Become a Driver")}</Link></li>
                             </ul>
                         </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { ArrowLeftIcon, MapPinIcon, UserIcon } from "@/components/Icons"
+import { ProtectedClientPage } from "@/components/auth/ProtectedClientPage"
 import { OrderStatusBadge } from "@/components/client/orders/OrderStatusBadge"
 import { OrderTimeline } from "@/components/client/orders/OrderTimeline"
 import { Button } from "@/components/ui/button"
@@ -53,7 +54,7 @@ interface OrderTrackingData {
      updatedAt: string
 }
 
-export default function OrderTrackPage() {
+function OrderVerifyComponent() {
      const params = useParams()
      const orderId = params.orderId as string
 
@@ -268,4 +269,12 @@ export default function OrderTrackPage() {
                </main>
           </div>
      )
+}
+
+export default function OrderTrackPage() {
+
+     return <ProtectedClientPage>
+          <OrderVerifyComponent />
+     </ProtectedClientPage>
+
 }

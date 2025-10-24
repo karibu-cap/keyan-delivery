@@ -1,4 +1,4 @@
-import { getUserTokens } from "@/lib/firebase-client/server-firebase-utils"
+import { verifySession } from "@/lib/auth-server"
 import { prisma } from "@/lib/prisma"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -9,9 +9,9 @@ export async function GET(
     try {
         const params = await props.params
         // Authenticate user
-        const token = await getUserTokens()
+        const token = await verifySession()
 
-        if (!token?.decodedToken?.uid) {
+        if (!token?.user.id) {
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 }
@@ -20,7 +20,7 @@ export async function GET(
 
         // Find user
         const user = await prisma.user.findUnique({
-            where: { authId: token.decodedToken.uid },
+            where: { id: token.user.id },
             select: { id: true },
         })
 

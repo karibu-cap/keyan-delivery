@@ -1,4 +1,3 @@
-// apps/app/lib/router.ts
 export const ROUTES = {
   // Public routes
   home: '/',
@@ -13,8 +12,8 @@ export const ROUTES = {
 
 
   // Auth routes
-  signIn: '/sign-in',
-  signup: '/sign-up',
+  signIn: ({ redirect }: { redirect?: string }) => `/sign-in${redirect ? `?redirect=${redirect}` : ''}`,
+  signup: ({ redirect }: { redirect?: string }) => `/sign-up${redirect ? `?redirect=${redirect}` : ''}`,
   profile: '/profile',
 
   // Customer routes
@@ -24,12 +23,12 @@ export const ROUTES = {
 
   // Merchant routes
   merchantDashboard: (id: string) => `/merchant/${id}`,
-  merchantProducts: '/merchant/products',
-  merchantProductNew: '/merchant/products/new',
-  merchantProductEdit: (id: string) => `/merchant/products/${id}/edit`,
-  merchantOrders: '/merchant/orders',
-  merchantStats: '/merchant/stats',
-  merchantSettings: '/merchant/settings',
+  merchantProductNew: '/merchant/new',
+  merchantProductEdit: (id: string) => `/merchant/${id}/products`,
+  merchantWallet: (id: string) => `/merchant/${id}/wallet`,
+  merchantProfile: (id: string) => `/merchant/${id}/profile`,
+  merchantInsights: (id: string) => `/merchant/${id}/insights`,
+  merchantUnauthorized: (id: string) => `/merchant/${id}/unauthorized`,
 
   // Driver routes
   driverApply: '/driver/apply',
@@ -46,9 +45,20 @@ export const ROUTES = {
   // Admin routes
   adminDashboard: '/admin',
   adminMerchants: '/admin/merchants',
+  adminMerchant: (id: string) => `/admin/merchants/${id}`,
   adminProducts: '/admin/products',
+  adminProduct: (id: string) => `/admin/products/${id}`,
+  adminDrivers: '/admin/drivers',
+  adminDriver: (id: string) => `/admin/drivers/${id}`,
   adminOrders: '/admin/orders',
   adminUsers: '/admin/users',
+  adminZones: '/admin/zones',
+  adminZone: (id: string) => `/admin/zones/${id}`,
+  adminInsights: '/admin/insights',
+  adminNotifications: '/admin/notifications',
+  adminSettings: '/admin/settings',
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
+
+

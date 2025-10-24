@@ -1,13 +1,13 @@
 "use client";
 
-import { AuthModal } from "@/components/auth/AuthModal";
+import { AuthModal, useAuthModal } from "@/components/auth/AuthModal";
 import { SearchWithTypeahead } from "@/components/client/search/SearchWithTypeahead";
 import { DriverBadge } from "@/components/driver/DriverBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ProductModal } from "@/components/ui/product-modal";
-import { useAuthStore } from "@/hooks/auth-store";
+import { useAuthStore } from "@/hooks/use-auth-store";
 import { useCart } from "@/hooks/use-cart";
 import { useT } from "@/hooks/use-inline-translation";
 import { IProduct } from "@/lib/actions/server/stores";
@@ -27,6 +27,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface LocationState {
   address: string;
@@ -36,6 +37,7 @@ interface LocationState {
 
 const Navbar = () => {
   const t = useT();
+  const { openModal } = useAuthModal();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -46,9 +48,11 @@ const Navbar = () => {
     error: null,
   });
 
+
   const router = useRouter();
 
-  const { user, logout } = useAuthStore();
+  const { logout, authUser, isAuthenticated } = useAuthStore();
+
   const { cart } = useCart();
 
   // Geolocation: Get user's current location
@@ -260,21 +264,20 @@ const Navbar = () => {
             <DriverBadge />
 
             {/* User Menu */}
-            {!user ? (
-              <AuthModal>
-                <Button variant="ghost" className="hidden sm:flex">
-                  <User className="w-5 h-5 mr-2" />
-                  {t("Sign In")}
-                </Button>
-              </AuthModal>
+            {!isAuthenticated() ? (
+              <Button variant="ghost" className="hidden sm:flex" onClick={() => openModal(ROUTES.signIn({ redirect: ROUTES.home }))}>
+                <User className="w-5 h-5 mr-2" />
+                {t("Sign In")}
+              </Button>
             ) : (
               <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" className="hidden sm:flex">
-                    <User className="w-5 h-5 mr-2" />
-                    {t("Profile")}
-                    <ChevronDown className="w-4 h-4 ml-1" />
-                  </Button>
+                  <div onClick={() => setIsPopoverOpen(true)} className="cursor-pointer w-8 h-8 flex items-center justify-center">
+                    <Avatar className="cursor-pointer w-8 h-8">
+                      <AvatarImage src={authUser?.image ?? ''} alt="@shadcn" />
+                      <AvatarFallback>{authUser?.name?.split(' ').map((name: string) => name.charAt(0).toUpperCase()).join('')}</AvatarFallback>
+                    </Avatar>
+                  </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-2" align="end">
                   <div className="space-y-1">
@@ -369,7 +372,7 @@ const Navbar = () => {
                 {t("Orders")}
               </Link>
             </Button>
-            {!user ? (
+            {!isAuthenticated() ? (
               <AuthModal>
                 <Button variant="outline" className="w-full">
                   <User className="w-5 h-5 mr-2" />
