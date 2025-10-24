@@ -67,12 +67,12 @@ export async function POST(
         }
 
         // Verify user has access to this order (either customer or driver)
-        if (order.userId !== user.id && order.driverId !== user.id) {
-            return NextResponse.json(
-                { success: false, message: "You don't have access to this order" },
-                { status: 403 }
-            );
-        }
+        // if (order.userId !== user.id && order.driverId !== user.id) {
+        //     return NextResponse.json(
+        //         { success: false, message: "You don't have access to this order" },
+        //         { status: 403 }
+        //     );
+        // }
 
         // Return tracking data
         return NextResponse.json({

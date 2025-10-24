@@ -193,9 +193,9 @@ export function DriverOrderPage({
 
     // Fetch delivery address using reverse geocoding
     useEffect(() => {
-        if (order.deliveryInfo.delivery_longitude && order.deliveryInfo.delivery_latitude &&
-            order.deliveryInfo.delivery_latitude !== 0 && order.deliveryInfo.delivery_longitude !== 0) {
-            reverseGeocode(order.deliveryInfo.delivery_latitude, order.deliveryInfo.delivery_longitude)
+        if (order.deliveryInfo.location.lng && order.deliveryInfo.location.lat &&
+            order.deliveryInfo.location.lat !== 0 && order.deliveryInfo.location.lng !== 0) {
+            reverseGeocode(order.deliveryInfo.location.lat, order.deliveryInfo.location.lng)
                 .then((result) => {
                     setDeliveryStreet(result.formattedAddress);
                 })
@@ -228,8 +228,8 @@ export function DriverOrderPage({
                 const deliveryRoute = await calculateRouteDistance(
                     currentLocation.latitude,
                     currentLocation.longitude,
-                    order.deliveryInfo.delivery_latitude,
-                    order.deliveryInfo.delivery_longitude
+                    order.deliveryInfo.location.lat,
+                    order.deliveryInfo.location.lng
                 );
                 setDeliveryDistance(deliveryRoute.distance.toFixed(2));
             } catch (error) {
@@ -240,7 +240,7 @@ export function DriverOrderPage({
         };
 
         calculateDistances();
-    }, [currentLocation, order.merchant.address.latitude, order.merchant.address.longitude, order.deliveryInfo.delivery_latitude, order.deliveryInfo.delivery_longitude]);
+    }, [currentLocation, order.merchant.address.latitude, order.merchant.address.longitude, order.deliveryInfo.location.lat, order.deliveryInfo.location.lng]);
 
 
     // Contact actions
@@ -258,7 +258,7 @@ export function DriverOrderPage({
     };
 
     const openInGoogleMaps = () => {
-        const destination = `${order.deliveryInfo.delivery_latitude},${order.deliveryInfo.delivery_longitude}`;
+        const destination = `${order.deliveryInfo.location.lat},${order.deliveryInfo.location.lng}`;
         const origin = currentLocation
             ? `${currentLocation.latitude},${currentLocation.longitude}`
             : "";
@@ -273,6 +273,9 @@ export function DriverOrderPage({
             router.back();
         }
     };
+
+    console.log(order.merchant.address);
+    console.log(order.deliveryInfo);
 
     return (
         <div className="min-h-screen">
@@ -399,8 +402,8 @@ export function DriverOrderPage({
                                             : null
                                     }
                                     deliveryLocation={{
-                                        latitude: order.deliveryInfo.delivery_latitude,
-                                        longitude: order.deliveryInfo.delivery_longitude,
+                                        latitude: order.deliveryInfo.location.lat,
+                                        longitude: order.deliveryInfo.location.lng,
                                         address: order.deliveryInfo.address,
                                     }}
                                 />
@@ -488,10 +491,10 @@ export function DriverOrderPage({
                             </div>
 
                             <div className="space-y-3">
-                                {order.deliveryInfo.deliveryContactName && (
+                                {order.user.name && (
                                     <div>
                                         <p className="text-sm text-muted-foreground">{t("Name")}</p>
-                                        <p className="font-semibold text-sm sm:text-base">{order.deliveryInfo.deliveryContactName}</p>
+                                                        <p className="font-semibold text-sm sm:text-base">{order.user.name}</p>
                                     </div>
                                 )}
 

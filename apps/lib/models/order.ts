@@ -26,13 +26,25 @@ export interface OrderPrices {
    deliveryFee: number;
 }
 
+export interface DriverStatusHistory {
+   status: OrderStatus;
+   timestamp: string;
+}
+
+export interface DriverLocation {
+   latitude: number;
+   longitude: number;
+   timestamp: string;
+}
+
 export interface DeliveryInfo {
    address: string;
-   delivery_latitude: number;
-   delivery_longitude: number;
+   location: {
+      lng: number;
+      lat: number;
+   };
    additionalNotes?: string | null;
    deliveryContact?: string | null;
-   deliveryContactName?: string | null;
    estimatedDelivery?: Date | null;
    landmark?: {
       name: string;
@@ -84,6 +96,15 @@ export interface DriverInfo {
    currentLocation?: LongLat | null;
    lastUpdatedAt?: Date | null;
 }
+     
+export interface User {
+   id: string;
+   email: string;
+   name: string;
+   emailVerified: Boolean;
+   image: string;
+   phone?: string;
+}
 
 export interface Order {
    id: string;
@@ -103,9 +124,15 @@ export interface Order {
 
    // Tracking / Live updates
    driver?: DriverInfo | null;
+   driverCurrentLocation: DriverLocation;
+   driverStartDeliveryLocation: DriverLocation;
+   driverLocationUpdatedAt: string;
+   driverStatusHistories: DriverStatusHistory[];
+   driverTotalDistanceInKilometers: number;
+   onTimeDelivery: boolean;
 
    // Additional data
-   userId: string;
+   user: User;
    merchantId: string;
    deliveryZoneId?: string | null;
    paymentId?: string | null;
