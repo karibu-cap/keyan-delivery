@@ -840,7 +840,7 @@
   "supermarkets-stores": "Supermarkets & Stores",
   "medical-health": "Medical & Health",
   "search-merchants": "Search merchants...",
-  "selected": "selected",
+  "selected": "Selected",
   "clear-all": "Clear all",
   "loading-merchants": "Loading merchants...",
   "no-merchants-found-matching-query": "No merchants found matching \"{query}\"",
@@ -1136,5 +1136,12 @@
   "find-location-in-the-permissions-list": "Find \"Location\" in the permissions list",
   "change-it-to-allow": "Change it to \"Allow\"",
   "refresh-the-page-and-try-again": "Refresh the page and try again",
-  "error-loading-orders": "Error Loading Orders"
+  "error-loading-orders": "Error Loading Orders",
+  "active-you-receive-notifications": "Active - You receive notifications",
+  "inactive-enable-to-receive-alerts": "Inactive - Enable to receive alerts",
+  "auto-managed-subscribes-on-login": "🤖 Auto-managed (subscribes on login)",
+  "manual-control": "⚙️ Manual control",
+  "disabled": "🚫 Disabled",
+  "auto-mode-notifications-will-automatically-subscribe-when-you-login-and-unsubscribe-when-you-logout": "💡 Auto mode: Notifications will automatically subscribe when you login and unsubscribe when you logout.",
+  "stay-updated-enable-notifications-to-get-real-time-order-alerts": "Stay updated! Enable notifications to get real-time order alerts."
 }

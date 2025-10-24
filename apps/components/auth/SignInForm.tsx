@@ -45,7 +45,7 @@ export function SignInForm({ onToggleForm, onSuccess, redirectUrl }: SignInFormP
   const onSubmit = async (data: SignInSchemaType) => {
 
     try {
-      await signIn(data.email, data.password)
+      await signIn(data.email, data.password, redirectUrl)
       if (isAuthenticated()) {
         onSuccess?.()
       }

@@ -41,7 +41,6 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
     const [isEditing, setIsEditing] = useState(false);
     const { addMerchantType } = useMerchantStore();
 
-
     useEffect(() => {
         user.merchantManagers.forEach((manager) => {
             addMerchantType(manager.merchantId, manager.merchant.merchantType);
