@@ -1,13 +1,19 @@
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { checkIsAdmin } from "@/lib/actions/server/admin/admin-guard";
+import Unauthorized from "./unauthorized";
 
 export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const { user } = await checkIsAdmin();
+
+    const { isAdmin, user } = await checkIsAdmin();
+
+    if (!isAdmin) {
+        return <Unauthorized />
+    }
 
     return (
         <div className="flex h-screen overflow-hidden bg-background">

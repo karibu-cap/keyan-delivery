@@ -41,6 +41,7 @@ export function MerchantsFilters({ defaultValues }: MerchantsFiltersProps) {
         } else {
             params.delete("status");
         }
+
         params.delete("page"); // Reset to page 1
         router.push(`?${params.toString()}`);
     };
@@ -56,12 +57,18 @@ export function MerchantsFilters({ defaultValues }: MerchantsFiltersProps) {
             <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
+                    type="text"
                     placeholder="Search by business name or phone..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleFilter()}
                     className="pl-10"
-                />
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleFilter();
+                        }
+                    }} />
+
             </div>
             <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger className="w-full sm:w-[180px]">

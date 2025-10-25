@@ -22,6 +22,7 @@ import { Eye, MoreVertical, Check, X, Trash2, MessageSquare } from "lucide-react
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAction } from "next-safe-action/hooks";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -42,7 +43,8 @@ import {
 } from "@/components/ui/pagination";
 import { useT } from "@/hooks/use-inline-translation";
 import { toast } from "@/hooks/use-toast";
-import { approveMerchant, deleteMerchant, rejectMerchant } from "@/lib/actions/client/admin/merchants";
+import { approveMerchant, deleteMerchant, rejectMerchant } from "@/lib/actions/server/admin/merchants";
+import { MessageDialog } from "./MessageDialogue";
 
 interface Merchant {
     id: string;
@@ -70,85 +72,92 @@ interface MerchantsTableProps {
 export function MerchantsTable({ merchants, pagination }: MerchantsTableProps) {
     const router = useRouter();
     const t = useT()
-    const [loading, setLoading] = useState<string | null>(null);
     const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
 
-    const handleApprove = async (merchantId: string) => {
-        setLoading(merchantId);
-        try {
-            const result = await approveMerchant(merchantId);
-            if (result.success) {
-                toast({
-                    title: t("Merchant approved"),
-                    description: t("The merchant has been successfully verified."),
-                });
-                router.refresh();
-            } else {
+    const {
+        execute: approve,
+        isExecuting: isApproving,
+    } = useAction(approveMerchant, {
+        onSuccess: () => {
+            toast({
+                title: t("Merchant approved"),
+                description: t("The merchant has been successfully verified."),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
                 toast({
                     title: t("Cannot approve merchant"),
-                    description: result.error,
+                    description: error.serverError,
                     variant: "destructive",
                 });
-            }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to approve merchant"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
-
-    const handleReject = async (merchantId: string) => {
-        setLoading(merchantId);
-        try {
-            const result = await rejectMerchant(merchantId);
-            if (result.success) {
-                toast({
-                    title: t("Merchant rejected"),
-                    description: t("The merchant verification has been removed."),
-                });
-                router.refresh();
             } else {
                 toast({
-                    title: t("Cannot reject merchant"),
-                    description: result.error,
+                    title: t("Error"),
+                    description: t("Failed to approve merchant"),
                     variant: "destructive",
                 });
             }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to reject merchant"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
+        },
+    });
 
-    const handleDelete = async (merchantId: string) => {
-        setLoading(merchantId);
-        try {
-            await deleteMerchant(merchantId);
+
+    const {
+        execute: reject,
+        isExecuting: isRejecting,
+    } = useAction(rejectMerchant, {
+        onSuccess: () => {
+            toast({
+                title: t("Merchant rejected"),
+                description: t("The merchant verification has been removed."),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot reject merchant"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to reject merchant"),
+                    variant: "destructive",
+                });
+            }
+        },
+    });
+
+    const {
+        execute: deleteMerchantExec,
+        isExecuting: isDeleting,
+    } = useAction(deleteMerchant, {
+        onSuccess: () => {
             toast({
                 title: t("Merchant deleted"),
                 description: t("The merchant has been permanently deleted."),
             });
             router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to delete merchant"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-            setDeleteDialog(null);
-        }
-    };
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot delete merchant"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to delete merchant"),
+                    variant: "destructive",
+                });
+            }
+        },
+    });
 
     return (
         <>
@@ -216,7 +225,7 @@ export function MerchantsTable({ merchants, pagination }: MerchantsTableProps) {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    disabled={loading === merchant.id}
+                                                    disabled={isApproving || isRejecting || isDeleting}
                                                 >
                                                     <MoreVertical className="h-4 w-4" />
                                                 </Button>
@@ -232,25 +241,26 @@ export function MerchantsTable({ merchants, pagination }: MerchantsTableProps) {
                                                 </DropdownMenuItem>
                                                 {!merchant.isVerified ? (
                                                     <DropdownMenuItem
-                                                        onClick={() => handleApprove(merchant.id)}
-                                                        disabled={loading === merchant.id}
+                                                        onClick={() => approve({ id: merchant.id })}
+                                                        disabled={isApproving}
                                                     >
                                                         <Check className="mr-2 h-4 w-4" />
-                                                        {t("Approve")}
+                                                        {isApproving ? t("Approving...") : t("Approve")}
                                                     </DropdownMenuItem>
                                                 ) : (
                                                     <DropdownMenuItem
-                                                        onClick={() => handleReject(merchant.id)}
-                                                        disabled={loading === merchant.id}
+                                                        onClick={() => reject({ id: merchant.id })}
+                                                        disabled={isRejecting}
                                                     >
                                                         <X className="mr-2 h-4 w-4" />
-                                                        {t("Revoke Verification")}
+                                                        {isRejecting ? t("Rejecting...") : t("Revoke Verification")}
                                                     </DropdownMenuItem>
                                                 )}
-                                                <DropdownMenuItem>
+                                                <MessageDialog merchantId={merchant.id} triggerButton={<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                                     <MessageSquare className="mr-2 h-4 w-4" />
                                                     {t("Send Message")}
-                                                </DropdownMenuItem>
+                                                </DropdownMenuItem>}
+                                                />
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem
                                                     onClick={() => setDeleteDialog(merchant.id)}
@@ -271,7 +281,7 @@ export function MerchantsTable({ merchants, pagination }: MerchantsTableProps) {
 
             {/* Pagination */}
             {pagination.totalPages > 1 && (
-                <Pagination>
+                <Pagination className="justify-end">
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious
@@ -324,10 +334,11 @@ export function MerchantsTable({ merchants, pagination }: MerchantsTableProps) {
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={() => deleteDialog && handleDelete(deleteDialog)}
+                            onClick={() => deleteDialog && deleteMerchantExec({ id: deleteDialog })}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={isDeleting}
                         >
-                            {t("Delete")}
+                            {isDeleting ? t("Deleting...") : t("Delete")}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

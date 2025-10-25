@@ -80,7 +80,7 @@ export async function getZoneById(zoneId: string) {
     return zone;
 }
 
-// Check if zone code already exists
+// Check if zone code or name already exists
 async function checkDuplicateZone(code: ZoneCode, name: string, excludeId?: string) {
     const existingZone = await prisma.deliveryZone.findFirst({
         where: {
@@ -93,6 +93,24 @@ async function checkDuplicateZone(code: ZoneCode, name: string, excludeId?: stri
     });
 
     return existingZone;
+}
+
+// Check if landmark name exists in any zone
+async function checkDuplicateLandmark(landmarkName: string, excludeZoneId?: string): Promise<boolean> {
+    const zones = await prisma.deliveryZone.findMany({
+        where: excludeZoneId ? { id: { not: excludeZoneId } } : undefined,
+        select: { landmarks: true },
+    });
+
+    for (const zone of zones) {
+        if (zone.landmarks) {
+            const exists = zone.landmarks.some(
+                (lm) => lm.name.toLowerCase() === landmarkName.toLowerCase()
+            );
+            if (exists) return true;
+        }
+    }
+    return false;
 }
 
 interface CreateZoneData {
@@ -120,6 +138,14 @@ export async function createZone(data: CreateZoneData) {
     const duplicate = await checkDuplicateZone(data.code, data.name);
     if (duplicate) {
         throw new Error(`A zone with code "${data.code}" or name "${data.name}" already exists`);
+    }
+
+    // Validate landmarks for duplicates across all zones
+    for (const landmark of data.landmarks) {
+        const isDuplicate = await checkDuplicateLandmark(landmark.name);
+        if (isDuplicate) {
+            throw new Error(`A landmark with the name "${landmark.name}" already exists in another zone`);
+        }
     }
 
     const zone = await prisma.deliveryZone.create({
@@ -155,6 +181,16 @@ export async function updateZone(zoneId: string, data: Partial<CreateZoneData>) 
         );
         if (duplicate) {
             throw new Error(`A zone with code "${data.code}" or name "${data.name}" already exists`);
+        }
+    }
+
+    // Validate landmarks if provided
+    if (data.landmarks) {
+        for (const landmark of data.landmarks) {
+            const isDuplicate = await checkDuplicateLandmark(landmark.name, zoneId);
+            if (isDuplicate) {
+                throw new Error(`A landmark with the name "${landmark.name}" already exists in another zone`);
+            }
         }
     }
 
@@ -211,6 +247,12 @@ export async function addLandmark(
 ) {
     await requireAdmin();
 
+    // Check if landmark name already exists in ANY zone
+    const isDuplicate = await checkDuplicateLandmark(landmark.name);
+    if (isDuplicate) {
+        throw new Error(`A landmark with the name "${landmark.name}" already exists in another zone`);
+    }
+
     // Geocode the landmark address
     const coordinates = await geocodeAddress(landmark.address);
     if (!coordinates) {
@@ -223,6 +265,16 @@ export async function addLandmark(
 
     if (!zone) {
         throw new Error('Zone not found');
+    }
+
+    // Check if landmark name exists in current zone
+    if (zone.landmarks) {
+        const existsInCurrentZone = zone.landmarks.some(
+            (lm) => lm.name.toLowerCase() === landmark.name.toLowerCase()
+        );
+        if (existsInCurrentZone) {
+            throw new Error(`A landmark with the name "${landmark.name}" already exists in this zone`);
+        }
     }
 
     const newLandmark: Landmark = {
@@ -243,6 +295,7 @@ export async function addLandmark(
     });
 
     revalidatePath(`/admin/zones/${zoneId}/edit`);
+    revalidatePath('/admin/zones');
     return newLandmark;
 }
 
@@ -267,6 +320,22 @@ export async function updateLandmark(
 
     if (!landmark) {
         throw new Error('Landmark not found');
+    }
+
+    // Check if new name is duplicate (excluding current zone)
+    if (updates.name && updates.name !== landmark.name) {
+        const isDuplicate = await checkDuplicateLandmark(updates.name, zoneId);
+        if (isDuplicate) {
+            throw new Error(`A landmark with the name "${updates.name}" already exists in another zone`);
+        }
+
+        // Check in current zone
+        const existsInCurrentZone = landmarks.some(
+            (lm, idx) => idx !== landmarkIndex && lm.name.toLowerCase() === updates.name!.toLowerCase()
+        );
+        if (existsInCurrentZone) {
+            throw new Error(`A landmark with the name "${updates.name}" already exists in this zone`);
+        }
     }
 
     // If address changed, re-geocode
@@ -295,6 +364,7 @@ export async function updateLandmark(
     });
 
     revalidatePath(`/admin/zones/${zoneId}/edit`);
+    revalidatePath('/admin/zones');
     return landmarks[landmarkIndex];
 }
 
@@ -322,6 +392,7 @@ export async function deleteLandmark(zoneId: string, landmarkIndex: number) {
     });
 
     revalidatePath(`/admin/zones/${zoneId}/edit`);
+    revalidatePath('/admin/zones');
     return { success: true };
 }
 
@@ -354,6 +425,6 @@ export async function getZoneStats(zoneId: string) {
     return {
         zone,
         ordersCount,
-        totalRevenue: total
+        totalRevenue: total,
     };
 }

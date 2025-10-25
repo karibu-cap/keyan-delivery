@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { ZoneDrawMap } from '@/components/admin/zones/ZoneDrawMap';
-import { LandmarkManager } from '@/components/admin/zones/LandmarkManager';
+import LandmarksManager from '@/components/admin/zones/LandmarksManager';
 import { createZone } from '@/lib/actions/server/admin/zones';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
@@ -311,7 +311,7 @@ export default function NewZonePage() {
 
                 {/* Landmarks */}
                 <div>
-                    <LandmarkManager
+                    <LandmarksManager
                         landmarks={formData.landmarks}
                         onChange={(landmarks) => setFormData({ ...formData, landmarks })}
                     />

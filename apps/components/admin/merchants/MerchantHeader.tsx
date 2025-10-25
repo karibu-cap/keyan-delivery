@@ -5,20 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, X, MessageSquare, MapPin, Phone } from "lucide-react";
 import { OptimizedImage } from "@/components/ClsOptimization";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import { useAction } from "next-safe-action/hooks";
+
+
 import { useT } from "@/hooks/use-inline-translation";
 import { toast } from "@/hooks/use-toast";
-import { approveMerchant, rejectMerchant } from "@/lib/actions/client/admin/merchants";
+import { approveMerchant, rejectMerchant } from "@/lib/actions/server/admin/merchants";
+import { MessageDialog } from "./MessageDialogue";
 
 interface MerchantHeaderProps {
     merchant: any;
@@ -32,76 +26,62 @@ interface MerchantHeaderProps {
 export function MerchantHeader({ merchant, stats }: MerchantHeaderProps) {
     const t = useT();
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const [messageDialog, setMessageDialog] = useState(false);
-    const [message, setMessage] = useState("");
 
-
-    const handleApprove = async () => {
-        setLoading(true);
-        try {
-            const result = await approveMerchant(merchant.id);
-            if (result.success) {
-                toast({
-                    title: t("Merchant approved"),
-                    description: t("The merchant has been successfully verified."),
-                });
-                router.refresh();
-            } else {
+    const {
+        execute: approve,
+        isExecuting: isApproving,
+    } = useAction(approveMerchant, {
+        onSuccess: () => {
+            toast({
+                title: t("Merchant approved"),
+                description: t("The merchant has been successfully verified."),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
                 toast({
                     title: t("Cannot approve merchant"),
-                    description: result.error,
+                    description: error.serverError,
                     variant: "destructive",
                 });
-            }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to approve merchant"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleReject = async () => {
-        setLoading(true);
-        try {
-            const result = await rejectMerchant(merchant.id);
-            if (result.success) {
-                toast({
-                    title: t("Merchant rejected"),
-                    description: t("The merchant verification has been removed."),
-                });
-                router.refresh();
             } else {
                 toast({
-                    title: t("Cannot reject merchant"),
-                    description: result.error,
+                    title: t("Error"),
+                    description: t("Failed to approve merchant"),
                     variant: "destructive",
                 });
             }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to reject merchant"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+        },
+    });
 
-    const handleSendMessage = () => {
-        // TODO: Implement notification sending
-        toast({
-            title: t("Message sent"),
-            description: t("Notification has been sent to the merchant."),
-        });
-        setMessageDialog(false);
-        setMessage("");
-    };
+    const {
+        execute: reject,
+        isExecuting: isRejecting,
+    } = useAction(rejectMerchant, {
+        onSuccess: () => {
+            toast({
+                title: t("Merchant rejected"),
+                description: t("The merchant verification has been removed."),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot reject merchant"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to reject merchant"),
+                    variant: "destructive",
+                });
+            }
+        },
+    });
 
     return (
         <>
@@ -180,67 +160,41 @@ export function MerchantHeader({ merchant, stats }: MerchantHeaderProps) {
                             <div className="flex gap-2">
                                 {!merchant.isVerified ? (
                                     <>
-                                        <Button onClick={handleApprove} disabled={loading}>
+                                        <Button onClick={() => approve({ id: merchant.id })} disabled={isApproving}>
                                             <Check className="mr-2 h-4 w-4" />
-                                            {t("Approve Merchant")}
+
+                                            {isApproving ? t("Approving...") : t("Approve Merchant")}
                                         </Button>
                                         <Button
                                             variant="outline"
-                                            onClick={handleReject}
-                                            disabled={loading}
+                                            onClick={() => reject({ id: merchant.id })}
+                                            disabled={isRejecting}
                                         >
                                             <X className="mr-2 h-4 w-4" />
-                                            {t("Reject")}
+                                            {isRejecting ? t("Rejecting...") : t("Reject")}
                                         </Button>
                                     </>
                                 ) : (
                                     <Button
                                         variant="outline"
-                                        onClick={handleReject}
-                                        disabled={loading}
+                                        onClick={() => reject({ id: merchant.id })}
+                                        disabled={isRejecting}
                                     >
                                         <X className="mr-2 h-4 w-4" />
-                                        {t("Revoke Verification")}
+                                        {isRejecting ? t("Revoking...") : t("Revoke Verification")}
                                     </Button>
                                 )}
-                                <Button
+                                <MessageDialog merchantId={merchant.id} triggerButton={<Button
                                     variant="secondary"
-                                    onClick={() => setMessageDialog(true)}
                                 >
                                     <MessageSquare className="mr-2 h-4 w-4" />
                                     {t("Send Message")}
-                                </Button>
+                                </Button>} />
                             </div>
                         </div>
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Send Message Dialog */}
-            <Dialog open={messageDialog} onOpenChange={setMessageDialog}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{t("Send Message to {merchant.businessName}")}</DialogTitle>
-                        <DialogDescription>
-                            {t("This notification will be sent to the merchant via push notification and email.")}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Textarea
-                        placeholder="Enter your message..."
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        rows={5}
-                    />
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setMessageDialog(false)}>
-                            {t("Cancel")}
-                        </Button>
-                        <Button onClick={handleSendMessage} disabled={!message.trim()}>
-                            {t("Send Message")}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </>
     );
 }
