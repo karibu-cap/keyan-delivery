@@ -1,14 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useT } from "@/hooks/use-inline-translation";
+import { getServerT } from "@/i18n/server-translations";
+import type { IProduct } from "@/lib/actions/server/stores";
 
 interface ProductInfoProps {
-    product: any;
+    product: IProduct;
 }
 
-export function ProductInfo({ product }: ProductInfoProps) {
-    const t = useT();
+export async function ProductInfo({ product }: ProductInfoProps) {
+    const t = await getServerT();
     return (
         <div className="space-y-6">
             {/* Basic Information */}
@@ -192,39 +193,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
                                     </div>
                                 </div>
                             )}
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Promotions */}
-            {product.promotions && product.promotions.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{t("Active Promotions")}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3">
-                            {product.promotions.map((promo: any) => (
-                                <div
-                                    key={promo.id}
-                                    className="p-3 border rounded-lg bg-muted/50"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="font-medium">{promo.title}</h4>
-                                        <Badge
-                                            variant={promo.isActive ? "default" : "secondary"}
-                                        >
-                                            {promo.isActive ? "Active" : "Inactive"}
-                                        </Badge>
-                                    </div>
-                                    {promo.description && (
-                                        <p className="text-sm text-muted-foreground mt-1">
-                                            {promo.description}
-                                        </p>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
                     </CardContent>
                 </Card>
             )}

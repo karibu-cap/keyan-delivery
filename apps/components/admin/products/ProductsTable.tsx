@@ -26,8 +26,8 @@ import { useState } from "react";
 import {
     bulkProducts,
     deleteProduct,
-} from "@/lib/actions/client/admin/products";
-import { useToast } from "@/hooks/use-toast";
+} from "@/lib/actions/server/admin/products";
+import { toast } from "@/hooks/use-toast";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -48,7 +48,9 @@ import {
 } from "@/components/ui/pagination";
 import { OptimizedImage } from "@/components/ClsOptimization";
 import { useT } from "@/hooks/use-inline-translation";
-import { updateProduct } from "@/lib/actions/client/admin/products";
+import { updateProduct } from "@/lib/actions/server/admin/products";
+import { useAction } from "next-safe-action/hooks";
+import { ProductStatus } from "@prisma/client";
 
 interface Product {
     id: string;
@@ -77,138 +79,151 @@ interface ProductsTableProps {
 
 export function ProductsTable({ products, pagination }: ProductsTableProps) {
     const router = useRouter();
-    const { toast } = useToast();
-    const [loading, setLoading] = useState<string | null>(null);
     const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
     const t = useT();
 
 
-    const handleApprove = async (productId: string) => {
-        setLoading(productId);
-        try {
-            const result = await updateProduct(productId, 'approve');
-            if (result.success) {
-                toast({
-                    title: t("Product approved"),
-                    description: t("The product has been verified and is now visible."),
-                });
-                router.refresh();
-            } else {
+    const {
+        execute: approve,
+        isExecuting: isApproving,
+    } = useAction(updateProduct, {
+        onSuccess: () => {
+            toast({
+                title: t("Product approved"),
+                description: t("The product has been verified and is now visible."),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
                 toast({
                     title: t("Cannot approve product"),
-                    description: result.error,
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to approve product"),
                     variant: "destructive",
                 });
             }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to approve product"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
+        },
+    })
 
-    const handleReject = async (productId: string) => {
-        setLoading(productId);
-        try {
-            await updateProduct(productId, 'reject');
+    const {
+        execute: reject,
+        isExecuting: isRejecting,
+    } = useAction(updateProduct, {
+        onSuccess: () => {
             toast({
                 title: t("Product rejected"),
-                description: t("The product has been rejected."),
+                description: t("The product has been rejected and hidden."),
                 variant: "destructive",
             });
             router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to reject product"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
-
-    const handleDelete = async (productId: string) => {
-        setLoading(productId);
-        try {
-            const result = await deleteProduct(productId);
-            if (result.success) {
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
                 toast({
-                    title: t("Product deleted"),
-                    description: t("The product has been permanently deleted."),
+                    title: t("Cannot reject product"),
+                    description: error.serverError,
+                    variant: "destructive",
                 });
-                router.refresh();
             } else {
                 toast({
-                    title: t("Cannot delete product"),
-                    description: result.error,
+                    title: t("Error"),
+                    description: t("Failed to reject product"),
                     variant: "destructive",
                 });
             }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to delete product"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-            setDeleteDialog(null);
-        }
-    };
+        },
+    })
 
-    const handleToggleVisibility = async (productId: string) => {
-        setLoading(productId);
-        try {
-            await updateProduct(productId, 'toggleVisibility');
+    const { execute: deleteProductExecute,
+    } = useAction(deleteProduct, {
+        onSuccess: () => {
+            toast({
+                title: t("Product deleted"),
+                description: t("The product has been permanently deleted."),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot delete product"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to delete product"),
+                    variant: "destructive",
+                });
+            }
+        },
+    })
+
+
+
+    const {
+        execute: toggleVisibility,
+        isExecuting: isTogglingVisibility,
+    } = useAction(updateProduct, {
+        onSuccess: () => {
             toast({
                 title: t("Visibility updated"),
                 description: t("Product visibility has been toggled."),
             });
             router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to update visibility"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot update visibility"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to update visibility"),
+                    variant: "destructive",
+                });
+            }
+        },
+    })
 
-    const handleBulkApprove = async () => {
-        if (selectedProducts.length === 0) return;
-        setLoading("bulk");
-        try {
-            const result = await bulkProducts(selectedProducts, 'approve');
+    const { execute: bulkApprove, isExecuting: isBulkApproving } = useAction(bulkProducts, {
+        onSuccess: () => {
             toast({
                 title: t("Bulk approval complete"),
-                description: `${result.successful} products approved successfully${result.failed > 0 ? `, ${result.failed} failed` : ""}.`,
+                description: t("All selected products have been approved."),
             });
-            setSelectedProducts([]);
             router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to approve products"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot approve products"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to approve products"),
+                    variant: "destructive",
+                });
+            }
+        },
+    })
 
-    const handleBulkReject = async () => {
-        if (selectedProducts.length === 0) return;
-        setLoading("bulk");
-        try {
-            await bulkProducts(selectedProducts, 'reject');
+    const { execute: bulkReject, isExecuting: isBulkRejecting } = useAction(bulkProducts, {
+        onSuccess: () => {
             toast({
                 title: t("Bulk rejection complete"),
                 description: t(`${selectedProducts.length} products rejected.`),
@@ -216,16 +231,25 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
             });
             setSelectedProducts([]);
             router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to reject products"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot reject products"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to reject products"),
+                    variant: "destructive",
+                });
+            }
+        },
+    })
+
+
 
     const handleSelectAll = () => {
         if (selectedProducts.length === products.length) {
@@ -272,8 +296,8 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
                     </span>
                     <Button
                         size="sm"
-                        onClick={handleBulkApprove}
-                        disabled={loading === "bulk"}
+                        onClick={() => bulkApprove({ productIds: selectedProducts, action: "approve" })}
+                        disabled={isBulkApproving}
                     >
                         <Check className="mr-2 h-4 w-4" />
                         {t("Approve All")}
@@ -281,8 +305,8 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
                     <Button
                         size="sm"
                         variant="outline"
-                        onClick={handleBulkReject}
-                        disabled={loading === "bulk"}
+                        onClick={() => bulkReject({ productIds: selectedProducts, action: "reject" })}
+                        disabled={isBulkRejecting}
                     >
                         <X className="mr-2 h-4 w-4" />
                         {t("Reject All")}
@@ -388,7 +412,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    disabled={loading === product.id}
+                                                    disabled={isApproving || isRejecting || isTogglingVisibility}
                                                 >
                                                     <MoreVertical className="h-4 w-4" />
                                                 </Button>
@@ -405,28 +429,30 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
                                                 {product.status === "WAITING_FOR_REVIEW" && (
                                                     <>
                                                         <DropdownMenuItem
-                                                            onClick={() => handleApprove(product.id)}
-                                                            disabled={loading === product.id}
+                                                            onClick={() => approve({ productId: product.id, action: "approve" })}
+                                                            disabled={isApproving}
                                                         >
                                                             <Check className="mr-2 h-4 w-4" />
                                                             {t("Approve")}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            onClick={() => handleReject(product.id)}
-                                                            disabled={loading === product.id}
+                                                            onClick={() => reject({ productId: product.id, action: "reject" })}
+                                                            disabled={isRejecting}
                                                         >
                                                             <X className="mr-2 h-4 w-4" />
                                                             {t("Reject")}
                                                         </DropdownMenuItem>
                                                     </>
                                                 )}
-                                                <DropdownMenuItem
-                                                    onClick={() => handleToggleVisibility(product.id)}
-                                                    disabled={loading === product.id}
-                                                >
-                                                    <EyeOff className="mr-2 h-4 w-4" />
-                                                    {t("Toggle Visibility")}
-                                                </DropdownMenuItem>
+                                                {product.status === ProductStatus.VERIFIED && (
+                                                    <DropdownMenuItem
+                                                        onClick={() => toggleVisibility({ productId: product.id, action: "toggleVisibility" })}
+                                                        disabled={isTogglingVisibility}
+                                                    >
+                                                        {product.visibility ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
+                                                        {product.visibility ? t("Hide") : t("Show")}
+                                                    </DropdownMenuItem>
+                                                )}
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem
                                                     onClick={() => setDeleteDialog(product.id)}
@@ -498,7 +524,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={() => deleteDialog && handleDelete(deleteDialog)}
+                            onClick={() => deleteDialog && deleteProductExecute({ productId: deleteDialog })}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                             {t("Delete")}
