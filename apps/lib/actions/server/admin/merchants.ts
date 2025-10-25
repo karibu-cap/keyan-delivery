@@ -94,6 +94,7 @@ export async function getMerchantDetails(merchantId: string) {
                             name: true,
                             email: true,
                             phone: true,
+                            image: true,
                         },
                     },
                 },

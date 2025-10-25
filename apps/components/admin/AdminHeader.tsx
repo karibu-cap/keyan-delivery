@@ -15,6 +15,7 @@ import { useT } from "@/hooks/use-inline-translation";
 import { ROUTES } from "@/lib/router";
 import { Bell, LogOut, Settings, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface AdminHeaderProps {
     title?: string;
@@ -22,6 +23,7 @@ interface AdminHeaderProps {
     user?: {
         name?: string | null;
         email: string;
+        image?: string | null;
     };
 }
 
@@ -102,9 +104,10 @@ export function AdminHeader({ title, description, user }: AdminHeaderProps) {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">
-                                    {user?.name?.[0]?.toUpperCase() || user?.email[0].toUpperCase() || "A"}
-                                </div>
+                                <Avatar className="flex h-8 w-8 flex-shrink-0">
+                                    <AvatarImage src={user?.image || undefined} alt="@manager" />
+                                    <AvatarFallback className="flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold"> {user?.name?.[0]?.toUpperCase() || user?.email[0].toUpperCase() || "A"} </AvatarFallback>
+                                </Avatar>
                                 <div className="hidden text-left md:block">
                                     <p className="text-sm font-medium">
                                         {user?.name || "Admin"}

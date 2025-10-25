@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { useT } from "@/hooks/use-inline-translation";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface NavItem {
     title: string;
@@ -37,6 +38,7 @@ interface AdminSidebarProps {
     user?: {
         name?: string | null;
         email: string;
+        image?: string | null;
     };
 }
 
@@ -181,9 +183,10 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
                         <div className="border-t p-4">
                             {!collapsed ? (
                                 <div className="flex items-center gap-3">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">
-                                        {user.name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
-                                    </div>
+                                    <Avatar className="flex h-8 w-8 flex-shrink-0">
+                                        <AvatarImage src={user?.image || undefined} alt="@manager" />
+                                        <AvatarFallback className="flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold"> {user?.name?.[0]?.toUpperCase() || user?.email[0].toUpperCase() || "A"} </AvatarFallback>
+                                    </Avatar>
                                     <div className="flex-1 overflow-hidden">
                                         <p className="truncate text-sm font-medium">
                                             {user.name || "Admin"}

@@ -2,10 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getServerT } from "@/i18n/server-translations";
-import type { IProduct } from "@/lib/actions/server/stores";
 
 interface ProductInfoProps {
-    product: IProduct;
+    product: any;
 }
 
 export async function ProductInfo({ product }: ProductInfoProps) {

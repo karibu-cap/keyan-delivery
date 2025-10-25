@@ -12,11 +12,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useT } from "@/hooks/use-inline-translation";
 import { useAction } from "next-safe-action/hooks";
-import type { IProduct } from "@/lib/actions/server/stores";
 import { ProductStatus } from "@prisma/client";
 
 interface ProductHeaderProps {
-    product: IProduct;
+    product: any;
 }
 
 export function ProductHeader({ product }: ProductHeaderProps) {

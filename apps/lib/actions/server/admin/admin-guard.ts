@@ -57,7 +57,7 @@ export async function checkIsAdmin() {
 
         const user = await prisma.user.findUnique({
             where: { id: token.user.id },
-            select: { id: true, roles: true, email: true, name: true },
+            select: { id: true, roles: true, email: true, name: true, image: true },
         });
 
         if (!user) return { isAdmin: false, user: null };
