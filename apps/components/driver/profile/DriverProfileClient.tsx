@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { User as DbUser } from '@prisma/client';
 import { ROUTES } from '@/lib/router';
 import { useAuthStore } from '@/hooks/use-auth-store';
+import { useBlockBackNavigation } from '@/hooks/use-block-back-navigation';
 
 interface DriverProfileClientProps {
     driver: DbUser;
@@ -38,6 +39,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [performanceStats, setPerformanceStats] = useState<PerformanceStats | null>(null);
     const [loadingStats, setLoadingStats] = useState(true);
+    useBlockBackNavigation();
 
     useEffect(() => {
         const fetchPerformanceStats = async () => {
@@ -98,11 +100,11 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
 
                     <div className="flex flex-col sm:flex-row items-start gap-6">
                         {/* Profile Photo */}
-                        {/* <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
-                            {driver.photoUrl ? (
-                                <Image
-                                    src={driver.photoUrl}
-                                    alt={driver.fullName || 'Driver'}
+                        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
+                            {driver.image ? (
+                                <img
+                                    src={driver.image}
+                                    alt={driver.name || 'Driver'}
                                     width={96}
                                     height={96}
                                     className="w-full h-full object-cover"
@@ -112,7 +114,7 @@ export default function DriverProfileClient({ driver }: DriverProfileClientProps
                                     <User className="w-12 h-12 text-gray-400" />
                                 </div>
                             )}
-                        </div> */}
+                        </div>
 
                         {/* Info */}
                         <div className="flex-1 space-y-4">

@@ -11,100 +11,6 @@ import {
   isDriverApproved 
 } from './lib/utils/middleware-helpers';
 
-
-// Fetch driver status from database and cache it
-// async function fetchAndCacheDriverStatus(authId: string, request: NextRequest) {
-// try {
-//   const res = await fetch(`${request.nextUrl.origin}/api/v1/users/${authId}`
-//     , {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({
-//         authId,
-//       }),
-//     }
-//   );
-//   const result = await res.json();
-//   const driverStatus = result.data.driverStatus;
-
-//   if (driverStatus) {
-//     const response = NextResponse.next();
-//     response.cookies.set('driver-status', driverStatus, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === 'production',
-//       sameSite: 'lax',
-//       maxAge: 60 * 60,
-//       path: '/',
-//     });
-//   }
-//   return result.data;
-// } catch (error) {
-//   console.error('Error fetching driver status:', error);
-//   return null;
-// }
-
-
-// // Driver route protection
-// if (basePath.startsWith('/driver')) {
-//   console.log('1 allow', basePath)
-//   console.log('1 allow', basePath)
-//   console.log('1 allow', basePath)
-//   console.log('1 allow', basePath)
-//   console.log('1 allow', basePath)
-//   console.log('1 allow', basePath)
-//   const user = await fetchAndCacheDriverStatus(decodedToken.uid, request);
-//   const locale = pathname.match(/^\/([a-z]{2})\//)?.[1] || 'en';
-
-//   if (!user.roles.includes('driver')) {
-//     console.log('2 allow', basePath)
-//     console.log('2 allow', basePath)
-//     console.log('2 allow', user?.driverStatus)
-//     const redirectUrl = new URL(`/${locale}/driver/apply`, request.url);
-//     return NextResponse.redirect(redirectUrl);
-//   }
-
-//   // Check if route requires approval
-//   if (basePath != '/driver/review' && user?.driverStatus !== 'APPROVED') {
-//     // Redirect non-approved drivers to review page
-//     console.log('3 allow', basePath)
-//     console.log('3 allow', user.roles)
-//     console.log('3 allow', user?.driverStatus)
-//     const redirectUrl = new URL(`/${locale}/driver/review`, request.url);
-//     return NextResponse.redirect(redirectUrl);
-//   }
-
-//   // Check if route requires approval
-//   if (basePath != '/driver/review' && requiresDriverApproval(basePath) && user?.driverStatus !== 'APPROVED') {
-//     // Redirect non-approved drivers to review page
-//     console.log('3 allow', basePath)
-//     console.log('3 allow', basePath)
-//     console.log('3 allow', basePath)
-//     const redirectUrl = new URL(`/${locale}/driver/review`, request.url);
-//     return NextResponse.redirect(redirectUrl);
-//   }
-//   if (basePath != '/driver/dashboard' && !requiresDriverApproval(basePath) && user?.driverStatus === 'APPROVED') {
-//     console.log('4 allow', basePath)
-//     console.log('4 allow', basePath)
-//     console.log('4 allow', basePath)
-//     const redirectUrl = new URL(`/${locale}/driver/dashboard`, request.url);
-//     return NextResponse.redirect(redirectUrl);
-//   }
-// }
-
-// }
-
-// // Check if route requires driver approval
-// function requiresDriverApproval(path: string): boolean {
-//   return DRIVER_PROTECTED_ROUTES.includes(path) || path.startsWith('/driver/order');
-// }
-
-// // Check if route requires driver approval
-// function isPublicDriverRoute(path: string): boolean {
-//   return DRIVER_PUBLIC_ROUTES.includes(path);
-// }
-
 const intlMiddleware = createIntlMiddleware(routing);
 
 const PUBLIC_PATHS = [
@@ -207,7 +113,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Driver is approved but trying to access apply/review -> redirect to dashboard
-    if ((basePath === '/driver/apply' || basePath === '/driver/review') && isDriverApproved(userData)) {
+    if (basePath !== '/driver/dashboard' && (basePath === '/driver/apply' || basePath === '/driver/review') && isDriverApproved(userData)) {
       const redirectUrl = new URL(
         locale ? `/${locale}/driver/dashboard` : '/driver/dashboard',
         request.url

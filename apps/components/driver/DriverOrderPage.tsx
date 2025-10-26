@@ -1,4 +1,4 @@
-// File: /components/driver/DriverOrderPageRefactored.tsx
+// File: /components/driver/DriverOrderPage.tsx
 // Refactored DriverOrderPage with: Menu items + images, Client info with contact actions,
 // Stats cards (distance to merchant, distance to client, earnings), Merchant info with contact actions
 
@@ -149,6 +149,10 @@ export function DriverOrderPage({
                     };
                     setCurrentLocation(newLocation);
 
+                    console.log('newLocation : ', newLocation);
+                    console.log('order : ', order);
+                    console.log('newLocation : ', newLocation);
+
                     // Update server with new location
                     updateDriverLocation(newLocation.latitude, newLocation.longitude).catch((error) => {
                         console.error("Failed to update driver location:", error);
@@ -277,6 +281,37 @@ export function DriverOrderPage({
     console.log(order.merchant.address);
     console.log(order.deliveryInfo);
 
+    const getStatusColor = (status: OrderStatus) => {
+        switch (status) {
+            case OrderStatus.READY_TO_DELIVER:
+                return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400";
+            case OrderStatus.ACCEPTED_BY_DRIVER:
+                return "bg-blue-500/10 text-blue-700 dark:text-blue-400";
+            case OrderStatus.ON_THE_WAY:
+                return "bg-green-500/10 text-green-700 dark:text-green-400";
+            case OrderStatus.COMPLETED:
+                return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400";
+            default:
+                return "bg-gray-500/10 text-gray-700 dark:text-gray-400";
+        }
+    };
+
+    const getStatusIcon = (status: OrderStatus) => {
+        switch (status) {
+            case OrderStatus.READY_TO_DELIVER:
+                return <Package className="w-5 h-5" />;
+            case OrderStatus.ACCEPTED_BY_DRIVER:
+                return <AlertCircle className="w-5 h-5" />;
+            case OrderStatus.ON_THE_WAY:
+                return <Truck className="w-5 h-5" />;
+            case OrderStatus.COMPLETED:
+                return <CheckCircle className="w-5 h-5" />;
+            default:
+                return <Package className="w-5 h-5" />;
+        }
+    };
+
+
     return (
         <div className="min-h-screen">
             {/* Hero Section with Red Gradient */}
@@ -390,7 +425,8 @@ export function DriverOrderPage({
                             </div>
 
                             <div className="relative z-0 w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden">
-                                <DriverTrackingMap
+                                                <DriverTrackingMap
+                                    orderStatus={order.status}
                                     driverLocation={currentLocation}
                                     merchantLocation={
                                         order.merchant.address.latitude !== 0 && order.merchant.address.longitude !== 0

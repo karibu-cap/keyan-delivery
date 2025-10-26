@@ -1,3 +1,6 @@
+// apps/components/driver/DriverTrackingMap.tsx
+// Composant de carte avec itinéraires réels selon le status de la commande
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -6,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { Badge } from "@/components/ui/badge";
 import { preloadMapTiles } from "@/lib/utils/offline";
+import { useRouting } from "@/hooks/use-routing";
+import { OrderStatus } from "@prisma/client";
+import { createCustomIcon, MAP_ICONS, ROUTE_COLORS, injectMapStyles } from "@/lib/utils/map-icons";
 
 interface DriverTrackingMapProps {
     // Driver's current location
@@ -28,6 +34,9 @@ interface DriverTrackingMapProps {
         address: string;
     };
 
+    // Order status to determine what to display
+    orderStatus: OrderStatus;
+
     // Callback when map is ready
     onMapReady?: () => void;
 }
@@ -36,15 +45,56 @@ export default function DriverTrackingMap({
     driverLocation,
     merchantLocation,
     deliveryLocation,
+    orderStatus,
     onMapReady,
 }: DriverTrackingMapProps) {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<any>(null);
     const markersRef = useRef<any[]>([]);
-    const polylinesRef = useRef<any[]>([]);
+    const routesRef = useRef<any[]>([]);
     const [mapLoaded, setMapLoaded] = useState(false);
     const [isLoadingMap, setIsLoadingMap] = useState(true);
     const isOnline = useOnlineStatus();
+
+    const shouldShowDriverToMerchant =
+        (orderStatus === OrderStatus.READY_TO_DELIVER || orderStatus === OrderStatus.ACCEPTED_BY_DRIVER) &&
+        driverLocation && merchantLocation && merchantLocation.latitude !== 0;
+
+    const shouldShowMerchantToDelivery =
+        (orderStatus === OrderStatus.READY_TO_DELIVER || orderStatus === OrderStatus.ACCEPTED_BY_DRIVER) &&
+        merchantLocation && merchantLocation.latitude !== 0;
+
+    const shouldShowDriverToDelivery =
+        orderStatus === OrderStatus.ON_THE_WAY && !!driverLocation;
+
+    const shouldShowOnlyDelivery =
+        orderStatus === OrderStatus.COMPLETED;
+
+    console.log('orderStatus : ', orderStatus);
+    console.log('driverLocation : ', driverLocation);
+    console.log('merchantLocation : ', merchantLocation);
+    console.log('shouldShowDriverToMerchant : ', shouldShowDriverToMerchant);
+    console.log('shouldShowMerchantToDelivery : ', shouldShowMerchantToDelivery);
+    console.log('shouldShowDriverToDelivery : ', shouldShowDriverToDelivery);
+    console.log('shouldShowOnlyDelivery : ', shouldShowOnlyDelivery);
+
+    const { route: driverToMerchantRoute } = useRouting({
+        origin: driverLocation,
+        destination: merchantLocation,
+        enabled: shouldShowDriverToMerchant,
+    });
+
+    const { route: merchantToDeliveryRoute } = useRouting({
+        origin: merchantLocation,
+        destination: deliveryLocation,
+        enabled: shouldShowMerchantToDelivery,
+    });
+
+    const { route: driverToDeliveryRoute } = useRouting({
+        origin: driverLocation,
+        destination: deliveryLocation,
+        enabled: shouldShowDriverToDelivery,
+    });
 
     // Initialize map with Leaflet
     useEffect(() => {
@@ -52,6 +102,9 @@ export default function DriverTrackingMap({
 
         const initializeMap = async () => {
             try {
+                // Inject custom styles for markers
+                injectMapStyles();
+
                 // Load Leaflet CSS
                 if (!document.querySelector('link[href*="leaflet"]')) {
                     const link = document.createElement("link");
@@ -77,37 +130,31 @@ export default function DriverTrackingMap({
                 // Determine initial center
                 const initialCenter: [number, number] = driverLocation
                     ? [driverLocation.latitude, driverLocation.longitude]
-                    : merchantLocation
+                    : merchantLocation && merchantLocation.latitude !== 0
                         ? [merchantLocation.latitude, merchantLocation.longitude]
                         : [deliveryLocation.latitude, deliveryLocation.longitude];
 
                 // Initialize map
                 const map = L.map(mapContainerRef.current!, {
                     center: initialCenter,
-                    zoom: 14,
+                    zoom: 13,
                     zoomControl: false,
                 });
 
-                // Add tile layer with OpenStreetMap
+                // Add tile layer
                 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                     attribution: '© OpenStreetMap contributors',
                     maxZoom: 19,
                 }).addTo(map);
 
+                // Preload tiles for offline support
+                if (isOnline) {
+                    preloadMapTiles(initialCenter[0], initialCenter[1]);
+                }
+
                 mapRef.current = map;
                 setMapLoaded(true);
                 setIsLoadingMap(false);
-
-                // Preload map tiles for offline use
-                if (driverLocation || merchantLocation || deliveryLocation) {
-                    const centerLat = driverLocation?.latitude || merchantLocation?.latitude || deliveryLocation.latitude;
-                    const centerLng = driverLocation?.longitude || merchantLocation?.longitude || deliveryLocation.longitude;
-
-                    // Preload tiles in background (don't await)
-                    preloadMapTiles(centerLat, centerLng, 14, 3).catch(err => {
-                        console.warn('Failed to preload map tiles:', err);
-                    });
-                }
 
                 if (onMapReady) {
                     onMapReady();
@@ -120,7 +167,6 @@ export default function DriverTrackingMap({
 
         initializeMap();
 
-        // Cleanup on unmount
         return () => {
             if (mapRef.current) {
                 mapRef.current.remove();
@@ -129,7 +175,7 @@ export default function DriverTrackingMap({
         };
     }, []);
 
-    // Update markers and routes when locations change
+    // Update markers and routes when data changes
     useEffect(() => {
         if (!mapLoaded || !mapRef.current) return;
 
@@ -137,172 +183,292 @@ export default function DriverTrackingMap({
             const L = await import("leaflet");
             const map = mapRef.current;
 
-            // Clear existing markers and polylines
+            // Clear existing markers and routes
             markersRef.current.forEach((marker) => {
                 if (marker.remove) marker.remove();
             });
-            polylinesRef.current.forEach((polyline) => {
-                if (polyline.remove) polyline.remove();
+            routesRef.current.forEach((route) => {
+                if (route.remove) route.remove();
             });
             markersRef.current = [];
-            polylinesRef.current = [];
+            routesRef.current = [];
 
             const bounds: [number, number][] = [];
 
-            // Create custom icon for delivery location (green)
-            const deliveryIcon = L.icon({
-                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41],
-                className: 'delivery-marker'
-            });
-
-            // Add delivery location marker
-            const deliveryMarker = L.marker(
-                [deliveryLocation.latitude, deliveryLocation.longitude],
-                { icon: deliveryIcon }
-            )
-                .addTo(map)
-                .bindPopup(`<b>🏠 Delivery Location</b><br/>${deliveryLocation.address}`);
-
-            markersRef.current.push(deliveryMarker);
-            bounds.push([deliveryLocation.latitude, deliveryLocation.longitude]);
-
-            // Add merchant location marker if coordinates exist
-            if (merchantLocation && merchantLocation.latitude !== 0 && merchantLocation.longitude !== 0) {
-                const merchantIcon = L.icon({
-                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41],
-                    className: 'merchant-marker'
+            // ====================
+            // COMPLETED: Afficher seulement le point de livraison
+            // ====================
+            if (shouldShowOnlyDelivery) {
+                const deliveryIcon = L.divIcon({
+                    className: "custom-marker",
+                    html: createCustomIcon(
+                        MAP_ICONS.delivery.emoji,
+                        MAP_ICONS.delivery.color,
+                        MAP_ICONS.delivery.label
+                    ),
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 40],
+                    popupAnchor: [0, -40],
                 });
 
-                const merchantMarker = L.marker(
-                    [merchantLocation.latitude, merchantLocation.longitude],
-                    { icon: merchantIcon }
+                const deliveryMarker = L.marker(
+                    [deliveryLocation.latitude, deliveryLocation.longitude],
+                    { icon: deliveryIcon }
                 )
                     .addTo(map)
-                    .bindPopup(`<b>🏪 Pickup Location</b><br/>${merchantLocation.name}`);
+                    .bindPopup(
+                        `<div style="font-weight: 600; color: ${MAP_ICONS.delivery.color}">
+                            ${MAP_ICONS.delivery.emoji} Delivery Completed
+                        </div>
+                        <div style="margin-top: 4px; font-size: 13px;">
+                            ${deliveryLocation.address}
+                        </div>`,
+                        { className: 'custom-marker-popup' }
+                    );
 
-                markersRef.current.push(merchantMarker);
-                bounds.push([merchantLocation.latitude, merchantLocation.longitude]);
+                markersRef.current.push(deliveryMarker);
+                bounds.push([deliveryLocation.latitude, deliveryLocation.longitude]);
+
+                // Fit map to delivery location
+                if (bounds.length > 0) {
+                    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+                }
+
+                return;
             }
 
-            // Add driver location marker if available
-            if (driverLocation) {
-                const driverIcon = L.icon({
-                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41],
-                    className: 'driver-marker'
+            // ====================
+            // READY_TO_DELIVER & ACCEPTED_BY_DRIVER: 
+            // Afficher Driver, Merchant, Delivery + itinéraires complets
+            // ====================
+            if (orderStatus === OrderStatus.READY_TO_DELIVER || orderStatus === OrderStatus.ACCEPTED_BY_DRIVER) {
+                // 1. Marker Driver
+                if (driverLocation) {
+                    const driverIcon = L.divIcon({
+                        className: "custom-marker",
+                        html: createCustomIcon(
+                            MAP_ICONS.driver.emoji,
+                            MAP_ICONS.driver.color,
+                            MAP_ICONS.driver.label
+                        ),
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40],
+                        popupAnchor: [0, -40],
+                    });
+
+                    const driverMarker = L.marker(
+                        [driverLocation.latitude, driverLocation.longitude],
+                        { icon: driverIcon }
+                    )
+                        .addTo(map)
+                        .bindPopup(
+                            `<div style="font-weight: 600; color: ${MAP_ICONS.driver.color}">
+                                ${MAP_ICONS.driver.emoji} Your Location
+                            </div>
+                            <div style="margin-top: 4px; font-size: 13px;">
+                                Driver Position
+                            </div>`,
+                            { className: 'custom-marker-popup' }
+                        );
+
+                    markersRef.current.push(driverMarker);
+                    bounds.push([driverLocation.latitude, driverLocation.longitude]);
+                }
+
+                // 2. Marker Merchant
+                if (merchantLocation && merchantLocation.latitude !== 0) {
+                    const merchantIcon = L.divIcon({
+                        className: "custom-marker",
+                        html: createCustomIcon(
+                            MAP_ICONS.merchant.emoji,
+                            MAP_ICONS.merchant.color,
+                            MAP_ICONS.merchant.label
+                        ),
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40],
+                        popupAnchor: [0, -40],
+                    });
+
+                    const merchantMarker = L.marker(
+                        [merchantLocation.latitude, merchantLocation.longitude],
+                        { icon: merchantIcon }
+                    )
+                        .addTo(map)
+                        .bindPopup(
+                            `<div style="font-weight: 600; color: ${MAP_ICONS.merchant.color}">
+                                ${MAP_ICONS.merchant.emoji} Pickup Location
+                            </div>
+                            <div style="margin-top: 4px; font-size: 13px;">
+                                ${merchantLocation.name}
+                            </div>`,
+                            { className: 'custom-marker-popup' }
+                        );
+
+                    markersRef.current.push(merchantMarker);
+                    bounds.push([merchantLocation.latitude, merchantLocation.longitude]);
+                }
+
+                // 3. Marker Delivery
+                const deliveryIcon = L.divIcon({
+                    className: "custom-marker",
+                    html: createCustomIcon(
+                        MAP_ICONS.delivery.emoji,
+                        MAP_ICONS.delivery.color,
+                        MAP_ICONS.delivery.label
+                    ),
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 40],
+                    popupAnchor: [0, -40],
                 });
 
-                const driverMarker = L.marker(
-                    [driverLocation.latitude, driverLocation.longitude],
-                    { icon: driverIcon }
+                const deliveryMarker = L.marker(
+                    [deliveryLocation.latitude, deliveryLocation.longitude],
+                    { icon: deliveryIcon }
                 )
                     .addTo(map)
-                    .bindPopup("<b>🚗 Your Location</b><br/>Driver");
+                    .bindPopup(
+                        `<div style="font-weight: 600; color: ${MAP_ICONS.delivery.color}">
+                            ${MAP_ICONS.delivery.emoji} Delivery Location
+                        </div>
+                        <div style="margin-top: 4px; font-size: 13px;">
+                            ${deliveryLocation.address}
+                        </div>`,
+                        { className: 'custom-marker-popup' }
+                    );
 
-                markersRef.current.push(driverMarker);
-                bounds.push([driverLocation.latitude, driverLocation.longitude]);
+                markersRef.current.push(deliveryMarker);
+                bounds.push([deliveryLocation.latitude, deliveryLocation.longitude]);
 
-                // Draw route lines
-                if (merchantLocation && merchantLocation.latitude !== 0 && merchantLocation.longitude !== 0) {
-                    // Driver → Merchant (blue dashed line)
+                // 4. Tracer itinéraire Driver → Merchant
+                if (driverToMerchantRoute && driverToMerchantRoute.coordinates.length > 0) {
                     const driverToMerchantLine = L.polyline(
-                        [
-                            [driverLocation.latitude, driverLocation.longitude],
-                            [merchantLocation.latitude, merchantLocation.longitude],
-                        ],
+                        driverToMerchantRoute.coordinates,
                         {
-                            color: "#3b82f6",
-                            weight: 4,
-                            opacity: 0.7,
+                            color: ROUTE_COLORS.driverToMerchant,
+                            weight: 5,
+                            opacity: 0.8,
                             dashArray: "10, 10",
                         }
                     ).addTo(map);
-                    polylinesRef.current.push(driverToMerchantLine);
-
-                    // Merchant → Client (orange dashed line)
-                    const merchantToClientLine = L.polyline(
-                        [
-                            [merchantLocation.latitude, merchantLocation.longitude],
-                            [deliveryLocation.latitude, deliveryLocation.longitude],
-                        ],
-                        {
-                            color: "#f97316",
-                            weight: 4,
-                            opacity: 0.7,
-                            dashArray: "10, 10",
-                        }
-                    ).addTo(map);
-                    polylinesRef.current.push(merchantToClientLine);
-                } else {
-                    // Driver → Client directly (green dashed line)
-                    const driverToClientLine = L.polyline(
-                        [
-                            [driverLocation.latitude, driverLocation.longitude],
-                            [deliveryLocation.latitude, deliveryLocation.longitude],
-                        ],
-                        {
-                            color: "#10b981",
-                            weight: 4,
-                            opacity: 0.7,
-                            dashArray: "10, 10",
-                        }
-                    ).addTo(map);
-                    polylinesRef.current.push(driverToClientLine);
+                    routesRef.current.push(driverToMerchantLine);
                 }
-            } else if (merchantLocation && merchantLocation.latitude !== 0 && merchantLocation.longitude !== 0) {
-                // No driver location yet, just show merchant → client route
-                const merchantToClientLine = L.polyline(
-                    [
-                        [merchantLocation.latitude, merchantLocation.longitude],
-                        [deliveryLocation.latitude, deliveryLocation.longitude],
-                    ],
-                    {
-                        color: "#f97316",
-                        weight: 4,
-                        opacity: 0.7,
-                        dashArray: "10, 10",
-                    }
-                ).addTo(map);
-                polylinesRef.current.push(merchantToClientLine);
+
+                // 5. Tracer itinéraire Merchant → Delivery
+                if (merchantToDeliveryRoute && merchantToDeliveryRoute.coordinates.length > 0) {
+                    const merchantToDeliveryLine = L.polyline(
+                        merchantToDeliveryRoute.coordinates,
+                        {
+                            color: ROUTE_COLORS.merchantToDelivery,
+                            weight: 5,
+                            opacity: 0.8,
+                            dashArray: "10, 10",
+                        }
+                    ).addTo(map);
+                    routesRef.current.push(merchantToDeliveryLine);
+                }
+            }
+
+            // ====================
+            // ON_THE_WAY: 
+            // Afficher Driver, Delivery + itinéraire Driver → Delivery
+            // ====================
+            if (orderStatus === OrderStatus.ON_THE_WAY) {
+                // 1. Marker Driver
+                if (driverLocation) {
+                    const driverIcon = L.divIcon({
+                        className: "custom-marker",
+                        html: createCustomIcon(
+                            MAP_ICONS.driver.emoji,
+                            MAP_ICONS.driver.color,
+                            MAP_ICONS.driver.label
+                        ),
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40],
+                        popupAnchor: [0, -40],
+                    });
+
+                    const driverMarker = L.marker(
+                        [driverLocation.latitude, driverLocation.longitude],
+                        { icon: driverIcon }
+                    )
+                        .addTo(map)
+                        .bindPopup(
+                            `<div style="font-weight: 600; color: ${MAP_ICONS.driver.color}">
+                                ${MAP_ICONS.driver.emoji} Driver En Route
+                            </div>
+                            <div style="margin-top: 4px; font-size: 13px;">
+                                On the way to you
+                            </div>`,
+                            { className: 'custom-marker-popup' }
+                        );
+
+                    markersRef.current.push(driverMarker);
+                    bounds.push([driverLocation.latitude, driverLocation.longitude]);
+                }
+
+                // 2. Marker Delivery
+                const deliveryIcon = L.divIcon({
+                    className: "custom-marker",
+                    html: createCustomIcon(
+                        MAP_ICONS.delivery.emoji,
+                        MAP_ICONS.delivery.color,
+                        MAP_ICONS.delivery.label
+                    ),
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 40],
+                    popupAnchor: [0, -40],
+                });
+
+                const deliveryMarker = L.marker(
+                    [deliveryLocation.latitude, deliveryLocation.longitude],
+                    { icon: deliveryIcon }
+                )
+                    .addTo(map)
+                    .bindPopup(
+                        `<div style="font-weight: 600; color: ${MAP_ICONS.delivery.color}">
+                            ${MAP_ICONS.delivery.emoji} Delivery Destination
+                        </div>
+                        <div style="margin-top: 4px; font-size: 13px;">
+                            ${deliveryLocation.address}
+                        </div>`,
+                        { className: 'custom-marker-popup' }
+                    );
+
+                markersRef.current.push(deliveryMarker);
+                bounds.push([deliveryLocation.latitude, deliveryLocation.longitude]);
+
+                // 3. Tracer itinéraire Driver → Delivery
+                if (driverToDeliveryRoute && driverToDeliveryRoute.coordinates.length > 0) {
+                    const driverToDeliveryLine = L.polyline(
+                        driverToDeliveryRoute.coordinates,
+                        {
+                            color: ROUTE_COLORS.driverToDelivery,
+                            weight: 5,
+                            opacity: 0.8,
+                        }
+                    ).addTo(map);
+                    routesRef.current.push(driverToDeliveryLine);
+                }
             }
 
             // Fit map to show all markers
             if (bounds.length > 0) {
-                map.fitBounds(bounds as any, { padding: [50, 50] });
+                map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
             }
         };
 
         updateMapContent();
-    }, [mapLoaded, driverLocation, merchantLocation, deliveryLocation]);
-
-    const openInGoogleMaps = () => {
-        const destination = `${deliveryLocation.latitude},${deliveryLocation.longitude}`;
-        const origin = driverLocation
-            ? `${driverLocation.latitude},${driverLocation.longitude}`
-            : merchantLocation
-                ? `${merchantLocation.latitude},${merchantLocation.longitude}`
-                : "";
-
-        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
-        window.open(url, "_blank");
-    };
+    }, [
+        mapLoaded,
+        driverLocation,
+        merchantLocation,
+        deliveryLocation,
+        orderStatus,
+        driverToMerchantRoute,
+        merchantToDeliveryRoute,
+        driverToDeliveryRoute,
+        shouldShowOnlyDelivery,
+    ]);
 
     // Zoom controls
     const handleZoomIn = () => {
@@ -317,71 +483,52 @@ export default function DriverTrackingMap({
         }
     };
 
+    const handleRecenter = () => {
+        if (mapRef.current && driverLocation) {
+            mapRef.current.setView(
+                [driverLocation.latitude, driverLocation.longitude],
+                15,
+                { animate: true }
+            );
+        }
+    };
+
     return (
         <div className="relative w-full h-full">
-            {/* Marker color CSS */}
-            <style jsx global>{`
-                /* Green marker for delivery location */
-                .delivery-marker {
-                    filter: hue-rotate(90deg) saturate(1.5);
-                }
-                
-                /* Orange marker for merchant/pickup */
-                .merchant-marker {
-                    filter: hue-rotate(10deg) saturate(1.8) brightness(1.1);
-                }
-                
-                /* Blue marker for driver */
-                .driver-marker {
-                    filter: hue-rotate(200deg) saturate(1.5);
-                    animation: driver-pulse 2s ease-in-out infinite;
-                }
-                
-                @keyframes driver-pulse {
-                    0%, 100% {
-                        transform: scale(1);
-                        opacity: 1;
-                    }
-                    50% {
-                        transform: scale(1.1);
-                        opacity: 0.8;
-                    }
-                }
-            `}</style>
-
-            {/* Map container */}
+            {/* Map Container */}
             <div
                 ref={mapContainerRef}
-                className="w-full h-full rounded-2xl overflow-hidden"
+                className="w-full h-full rounded-2xl overflow-hidden bg-muted"
             />
 
-            {/* Loading overlay */}
+            {/* Loading Overlay */}
             {isLoadingMap && (
-                <div className="absolute inset-0 flex items-center justify-center bg-accent rounded-2xl">
-                    <div className="text-center">
-                        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
+                <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-2xl">
+                    <div className="text-center space-y-3">
+                        <div className="animate-spin w-10 h-10 border-3 border-primary border-t-transparent rounded-full mx-auto" />
                         <p className="text-sm text-muted-foreground">Loading map...</p>
                     </div>
                 </div>
             )}
 
-            {/* Offline Indicator */}
+            {/* Offline Badge */}
             {!isOnline && (
-                <div className="absolute top-4 left-4 z-[1000]">
-                    <Badge variant="destructive" className="shadow-lg">
-                        <WifiOff className="w-3 h-3 mr-1" />
-                        Offline Mode
-                    </Badge>
-                </div>
+                <Badge
+                    variant="destructive"
+                    className="absolute top-4 left-4 z-[1000] gap-2"
+                >
+                    <WifiOff className="w-3 h-3" />
+                    Offline Mode
+                </Badge>
             )}
 
             {/* Zoom Controls */}
-            {!isLoadingMap && (
-                <div className="absolute top-4 right-4 flex flex-col gap-2 z-[1000]">
+            {mapLoaded && (
+                <div className="absolute bottom-4 right-4 z-[1000] flex flex-col gap-2">
                     <Button
                         size="icon"
                         variant="secondary"
-                        className="bg-white shadow-lg hover:bg-gray-100"
+                        className="rounded-full shadow-lg"
                         onClick={handleZoomIn}
                     >
                         <ZoomIn className="w-4 h-4" />
@@ -389,25 +536,21 @@ export default function DriverTrackingMap({
                     <Button
                         size="icon"
                         variant="secondary"
-                        className="bg-white shadow-lg hover:bg-gray-100"
+                        className="rounded-full shadow-lg"
                         onClick={handleZoomOut}
                     >
                         <ZoomOut className="w-4 h-4" />
                     </Button>
-                </div>
-            )}
-
-            {/* Google Maps fallback button */}
-            {!isLoadingMap && (
-                <div className="absolute bottom-4 right-4 z-[1000]">
-                    <Button
-                        onClick={openInGoogleMaps}
-                        className="bg-white text-primary hover:bg-gray-100 shadow-lg"
-                        size="sm"
-                    >
-                        <Navigation className="w-4 h-4 mr-2" />
-                        Google Maps
-                    </Button>
+                    {driverLocation && (
+                        <Button
+                            size="icon"
+                            variant="secondary"
+                            className="rounded-full shadow-lg"
+                            onClick={handleRecenter}
+                        >
+                            <Navigation className="w-4 h-4" />
+                        </Button>
+                    )}
                 </div>
             )}
         </div>

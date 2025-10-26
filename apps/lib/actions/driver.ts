@@ -178,3 +178,27 @@ export async function completeDelivery(orderId: string, deliveryCode: string) {
       };
    }
 }
+
+
+export async function createWallet(userId: string) {
+   try {
+      // Create wallet for the user
+      const wallet = await prisma.wallet.create({
+         data: {
+            userId: userId,
+            balance: 0,
+            currency: 'USD',
+         },
+      })
+
+      return { success: true, data: wallet };
+   } catch (error) {
+      console.error({ message: "Error creating wallet:", error });
+      return {
+         success: false,
+         error: error instanceof Error ? error.message : "Failed to create wallet",
+      };
+   }
+}
+
+

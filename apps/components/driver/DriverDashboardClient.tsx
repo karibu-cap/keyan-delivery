@@ -13,6 +13,7 @@ import DriverOrdersList from './DriverOrdersList';
 import DriverStatsGrid from './DriverStatsGrid';
 import ErrorState from './ErrorState';
 import LocationPermissionCard from './LocationPermissionCard';
+import { useBlockBackNavigation } from '@/hooks/use-block-back-navigation';
 
 export default function DriverDashboardClient() {
     const { availableOrders, inProgressOrders, completedOrders, loading: orderLoading, error, refreshOrders } = useDriverOrders();
@@ -22,7 +23,8 @@ export default function DriverDashboardClient() {
     const [hasLocationPermission, setHasLocationPermission] = useState(false);
     const [isCheckingPermission, setIsCheckingPermission] = useState(true);
     const previousCountsRef = React.useRef({ available: 0, active: 0, completed: 0 });
-
+    useBlockBackNavigation();
+    
     const handleRetry = async () => {
         setIsRetrying(true);
         setIsInitialLoad(true);

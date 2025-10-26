@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,6 +16,7 @@ import { ROUTES } from "@/lib/router";
 import { DocumentUpload, UploadedDocument } from "./DocumentUpload";
 import AnimatedStatsCard from "./AnimatedStatsCard";
 import { useApplyStats } from "@/hooks/use-apply-stats";
+import { useBlockBackNavigation } from "@/hooks/use-block-back-navigation";
 
 export default function DriverApplyClient() {
     const router = useRouter();
@@ -25,6 +26,7 @@ export default function DriverApplyClient() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [cniDocument, setCniDocument] = useState<UploadedDocument | null>(null);
     const [licenseDocument, setLicenseDocument] = useState<UploadedDocument | null>(null);
+    useBlockBackNavigation();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
