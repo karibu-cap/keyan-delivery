@@ -15,6 +15,7 @@ import DriverEarningsChart from './DriverEarningsChart';
 import DriverDeliveriesOverview from './DriverDeliveriesOverview';
 import DriverPerformanceCard from './DriverPerformanceCard';
 import ErrorState from '../ErrorState';
+import { useBlockBackNavigation } from '@/hooks/use-block-back-navigation';
 
 type DateRange = {
     from: Date;
@@ -34,6 +35,7 @@ export default function DriverInsightsClient() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isRetrying, setIsRetrying] = useState(false);
+    useBlockBackNavigation();
 
     // Period presets
     const periods: Record<PeriodType, { label: string; getRange: () => DateRange }> = {

@@ -16,6 +16,7 @@ import { updateDriverDocuments } from "@/lib/actions/client/driver";
 import AnimatedStatsCard from "./AnimatedStatsCard";
 import DriverDocumentsPreview from "./profile/DriverDocumentsPreview";
 import { DocumentUpload, UploadedDocument } from "./DocumentUpload";
+import { useBlockBackNavigation } from "@/hooks/use-block-back-navigation";
 
 export default function DriverReviewClient() {
     const { user, authUser, refreshSession } = useAuthStore();
@@ -25,7 +26,8 @@ export default function DriverReviewClient() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [cniDocument, setCniDocument] = useState<UploadedDocument | null>(null);
     const [licenseDocument, setLicenseDocument] = useState<UploadedDocument | null>(null);
-
+    useBlockBackNavigation();
+    
     useEffect(() => {
         const loadUser = async () => {
             setIsLoadingUser(true);

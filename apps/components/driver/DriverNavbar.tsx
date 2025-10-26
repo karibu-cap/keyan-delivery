@@ -119,6 +119,9 @@ export default function DriverNavbar() {
         if (path == '/') {
             return result == path; 
         }
+        if (result.startsWith('/driver/order')) {
+            return path == '/driver/dashboard'; 
+        }
         return result.startsWith(path);
     };
 

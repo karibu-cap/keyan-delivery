@@ -19,7 +19,7 @@ export default function DriverLayout({
     return (
         <>
             <DriverNavbar />
-            <div className="pb-20 md:pb-8 min-h-screen">
+            <div className="mt-14 md:mt-16 min-h-screen">
                 {children}
             </div>
         </>
