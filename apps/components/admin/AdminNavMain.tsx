@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useT } from "@/hooks/use-inline-translation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Store, Package, UserIcon, Users, MapPin, TrendingUp, Bell, Settings } from "lucide-react";
+import { LayoutDashboard, Store, Package, UserIcon, Users, MapPin, TrendingUp, Bell } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -74,13 +74,7 @@ export function AdminNavMain() {
             title: t("Notifications"),
             href: "/admin/notifications",
             icon: Bell,
-        },
-        {
-            id: "settings",
-            title: t("Settings"),
-            href: "/admin/settings",
-            icon: Settings,
-        },
+        }
     ];
 
     return (
