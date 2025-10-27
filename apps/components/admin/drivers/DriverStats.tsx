@@ -26,7 +26,7 @@ export async function DriverStats({ stats, driver }: DriverStatsProps) {
                     <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{stats.totalDeliveries}</div>
+                    <div className="text-xl font-bold">{stats.totalDeliveries}</div>
                     <p className="text-xs text-muted-foreground mt-1">
                         {t("Completed orders")}
                     </p>
@@ -42,7 +42,7 @@ export async function DriverStats({ stats, driver }: DriverStatsProps) {
                 </CardHeader>
                 <CardContent>
                     <div
-                        className={`text-2xl font-bold ${stats.activeDeliveries > 0 ? "text-orange-600" : ""
+                        className={`text-xl font-bold ${stats.activeDeliveries > 0 ? "text-orange-600" : ""
                             }`}
                     >
                         {stats.activeDeliveries}
@@ -61,8 +61,8 @@ export async function DriverStats({ stats, driver }: DriverStatsProps) {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold text-green-600">
-                        ${stats.totalEarnings.toFixed(2)}
+                    <div className="text-xl font-bold text-green-600">
+                        {t.formatAmount(stats.totalEarnings)}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                         {t("Avg {price} per delivery", {
@@ -79,8 +79,8 @@ export async function DriverStats({ stats, driver }: DriverStatsProps) {
                     </CardTitle>
                     <Wallet className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">
+                <CardContent className="overflow-hidden">
+                    <div className="text-xl font-bold">
                         {t.formatAmount(stats.walletBalance)}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">

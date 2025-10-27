@@ -1,3 +1,5 @@
+"use server";
+
 import { sendNotificationToUser } from '@/lib/notifications/push-service';
 import { prisma } from '@/lib/prisma';
 import { MessageChannel, MessageData, RecipientType } from '@/types/messaging';

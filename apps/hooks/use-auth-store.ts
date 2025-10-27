@@ -3,7 +3,7 @@
 import { getUserById } from '@/lib/actions/client';
 import { getUser, signIn, signOut, signUp } from '@/lib/auth-client';
 import { ROUTES } from '@/lib/router';
-import { updateUserCookie, clearUserCookie } from '@/lib/utils/user-cookie';
+import { clearUserCookie, updateUserCookie } from '@/lib/utils/user-cookie';
 import type { User } from '@prisma/client';
 import { User as BetterAuthUser } from 'better-auth';
 import { create } from 'zustand';
@@ -120,7 +120,7 @@ export const useAuthStore = create<AuthState>()(
             email: data.email,
             password: data.password,
             name: data.name,
-            phone: data.phone,
+            phone: data.phone ?? '',
             callbackURL: callbackUrl || ROUTES.home
           });
 
@@ -186,14 +186,14 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ loading: true, error: null });
           await signOut();
-          
+
           // Clear user cookie on logout
           await clearUserCookie();
-          
+
           set({
             authUser: null,
             user: null,
-           });
+          });
         } catch (error: any) {
           set({ error: error.message });
         } finally {

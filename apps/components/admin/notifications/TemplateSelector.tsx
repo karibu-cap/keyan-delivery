@@ -111,7 +111,7 @@ export function TemplateSelector({ onSelect }: TemplateSelectorProps) {
                                             <h4 className="font-semibold mb-1">{template.name}</h4>
                                             <Badge variant="secondary" className="text-xs">
                                                 <ChannelIcon className="w-3 h-3 mr-1" />
-                                                {t(template.channel)}
+                                                {template.channel}
                                             </Badge>
                                         </div>
                                         <div className={`w-10 h-10 rounded-lg ${channelColor} flex items-center justify-center flex-shrink-0`}>

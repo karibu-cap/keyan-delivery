@@ -1,6 +1,10 @@
+'use server'
+
+import { sendNotificationToUsers } from "@/lib/notifications/push-service";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "./admin-guard";
+import { z } from "zod";
+import { actionAdminClient, ActionError, requireAdmin } from "./admin-guard";
 
 export async function getMerchants(filters?: {
     search?: string;
@@ -90,6 +94,7 @@ export async function getMerchantDetails(merchantId: string) {
                             name: true,
                             email: true,
                             phone: true,
+                            image: true,
                         },
                     },
                 },
@@ -126,63 +131,80 @@ export async function getMerchantDetails(merchantId: string) {
     };
 }
 
-export async function approveMerchant(merchantId: string) {
-    await requireAdmin();
+export const approveMerchant = actionAdminClient
+    .inputSchema(z.object({ id: z.string().min(1) }))
+    .action(async ({ parsedInput: { id } }) => {
+        const activeProductsCount = await prisma.product.count({
+            where: { merchantId: id, status: "VERIFIED", visibility: true },
+        });
+        if (activeProductsCount < 5) {
+            throw new ActionError(`Merchant must have at least 5 active products. Currently has ${activeProductsCount}.`);
+        }
 
-    // Check if merchant has at least 5 active products
-    const activeProductsCount = await prisma.product.count({
-        where: {
-            merchantId,
-            status: "VERIFIED",
-            visibility: true,
-        },
+        await prisma.merchant.update({
+            where: { id },
+            data: { isVerified: true },
+        });
+
+        revalidatePath("/admin/merchants");
+        revalidatePath(`/admin/merchants/${id}`);
+        return { success: true };
     });
 
-    if (activeProductsCount < 5) {
-        return {
-            success: false,
-            error: `Merchant must have at least 5 active products. Currently has ${activeProductsCount}.`,
-        };
-    }
+export const rejectMerchant = actionAdminClient
+    .inputSchema(z.object({ id: z.string().min(1), reason: z.string().optional() }))
+    .action(async ({ parsedInput: { id, reason } }) => {
+        await prisma.merchant.update({
+            where: { id },
+            data: { isVerified: false },
+        });
 
-    await prisma.merchant.update({
-        where: { id: merchantId },
-        data: { isVerified: true },
+        // TODO: Send notification
+        if (reason) console.log("Rejection reason:", reason);
+        revalidatePath("/admin/merchants");
+        revalidatePath(`/admin/merchants/${id}`);
+
+        return { success: true };
     });
 
-    revalidatePath("/admin/merchants");
-    revalidatePath(`/admin/merchants/${merchantId}`);
+export const senNotificationToMerchant = actionAdminClient
+    .inputSchema(z.object({ merchantId: z.string().min(1), message: z.string().min(1) }))
+    .action(async ({ parsedInput: { merchantId, message } }) => {
 
-    return { success: true };
-}
+        const managersOfMerchant = await prisma.userMerchantManager.findMany({
+            where: { merchantId },
+            include: { user: true },
+        });
 
-export async function rejectMerchant(merchantId: string, reason?: string) {
-    await requireAdmin();
+        if (!managersOfMerchant.length) {
+            throw new ActionError("Merchant has no managers");
+        }
 
-    await prisma.merchant.update({
-        where: { id: merchantId },
-        data: { isVerified: false },
+        const result = await sendNotificationToUsers(managersOfMerchant.map(m => m.user.id), { title: 'Admin', body: message });
+        console.log("Notification sent to merchant:", managersOfMerchant.map(m => m.user.id), message);
+
+        if (!result.success) {
+            throw new ActionError("Failed to send notification to merchant");
+        }
+        return { success: true };
     });
 
-    // TODO: Send notification to merchant with rejection reason
+export const deleteMerchant = actionAdminClient
+    .inputSchema(z.object({ id: z.string().min(1) }))
+    .action(async ({ parsedInput: { id } }) => {
+        // Delete all orders associated with the merchant first
+        await prisma.order.deleteMany({
+            where: {
+                merchantId: id
+            },
+        });
 
-    revalidatePath("/admin/merchants");
-    revalidatePath(`/admin/merchants/${merchantId}`);
-
-    return { success: true };
-}
-
-export async function deleteMerchant(merchantId: string) {
-    await requireAdmin();
-
-    await prisma.merchant.delete({
-        where: { id: merchantId },
+        // Then delete the merchant
+        await prisma.merchant.delete({
+            where: { id },
+        });
+        revalidatePath("/admin/merchants"); return { success: true };
     });
-
-    revalidatePath("/admin/merchants");
-
-    return { success: true };
-}
 
 export async function getMerchantOrders(merchantId: string) {
     await requireAdmin();

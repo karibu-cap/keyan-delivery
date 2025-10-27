@@ -1,10 +1,15 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("animate-pulse rounded-md bg-muted", className)} {...props} />;
+function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="skeleton"
+      className={cn("bg-accent animate-pulse rounded-md", className)}
+      {...props}
+    />
+  )
 }
 
-// Product card skeleton for loading states
 function ProductCardSkeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn("h-full bg-white rounded-xl border border-gray-200 overflow-hidden", className)} {...props}>
@@ -19,4 +24,4 @@ function ProductCardSkeleton({ className, ...props }: React.HTMLAttributes<HTMLD
   );
 }
 
-export { Skeleton, ProductCardSkeleton };
+export { Skeleton, ProductCardSkeleton }

@@ -36,11 +36,6 @@ export const auth = betterAuth({
         },
 
         cookiePrefix: "yetu",
-        logger: {
-            log: (level: string, message: string, data: any) => {
-                console.log(`[better-auth:${level}]`, message, data);
-            },
-        },
     },
     trustedOrigins: [process.env.NEXT_PUBLIC_APP_URL!, "http://localhost:3000"],
     user: {
@@ -59,6 +54,7 @@ export const auth = betterAuth({
                     await createWallet(user.id);
                 },
             },
+
         },
     },
 });

@@ -4,14 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, X, Eye, EyeOff, Store } from "lucide-react";
-import { useState } from "react";
 import {
     updateProduct,
-} from "@/lib/actions/client/admin/products";
+} from "@/lib/actions/server/admin/products";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useT } from "@/hooks/use-inline-translation";
+import { useAction } from "next-safe-action/hooks";
+import { ProductStatus } from "@prisma/client";
 
 interface ProductHeaderProps {
     product: any;
@@ -20,77 +21,94 @@ interface ProductHeaderProps {
 export function ProductHeader({ product }: ProductHeaderProps) {
     const { toast } = useToast();
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
     const t = useT();
 
-    const handleApprove = async () => {
-        setLoading(true);
-        try {
-            const result = await updateProduct(product.id, 'approve');
-            if (result.success) {
-                toast({
-                    title: t("Product approved"),
-                    description: t("The product has been verified and is now visible."),
-                });
-                router.refresh();
-            } else {
+
+    const {
+        execute: approve,
+        isExecuting: isApproving,
+    } = useAction(updateProduct, {
+        onSuccess: () => {
+            toast({
+                title: t("Product approved"),
+                description: t("The product has been verified and is now visible."),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
                 toast({
                     title: t("Cannot approve product"),
-                    description: result.error,
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to approve product"),
                     variant: "destructive",
                 });
             }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to approve product"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+        },
+    })
 
-    const handleReject = async () => {
-        setLoading(true);
-        try {
-            await updateProduct(product.id, 'reject');
+    const {
+        execute: reject,
+        isExecuting: isRejecting,
+    } = useAction(updateProduct, {
+        onSuccess: () => {
             toast({
                 title: t("Product rejected"),
                 description: t("The product has been rejected and hidden."),
                 variant: "destructive",
             });
             router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to reject product"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot reject product"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to reject product"),
+                    variant: "destructive",
+                });
+            }
+        },
+    })
 
-    const handleToggleVisibility = async () => {
-        setLoading(true);
-        try {
-            await updateProduct(product.id, 'toggleVisibility');
+    const {
+        execute: toggleVisibility,
+        isExecuting: isTogglingVisibility,
+    } = useAction(updateProduct, {
+        onSuccess: () => {
             toast({
                 title: t("Visibility updated"),
                 description: t("Product visibility has been toggled."),
             });
             router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to update visibility"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
+                toast({
+                    title: t("Cannot update visibility"),
+                    description: error.serverError,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: t("Error"),
+                    description: t("Failed to update visibility"),
+                    variant: "destructive",
+                });
+            }
+        },
+    })
+
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -159,56 +177,56 @@ export function ProductHeader({ product }: ProductHeaderProps) {
                         {product.rating && (
                             <div>
                                 <span className="text-muted-foreground">{t("Rating")}:</span>
-                                <span className="ml-2 font-semibold">{product.rating}/5</span>
+                                <span className="ml-2 font-semibold">{product.rating.toFixed(2)}/5</span>
                             </div>
                         )}
                     </div>
 
                     {/* Actions */}
                     <div className="flex gap-2 flex-wrap">
-                        {product.status === "WAITING_FOR_REVIEW" && (
+                        {(product.status === ProductStatus.WAITING_FOR_REVIEW || product.status === ProductStatus.REJECTED) && (
                             <>
-                                <Button onClick={handleApprove} disabled={loading}>
+                                <Button onClick={() => approve({ productId: product.id, action: "approve" })} disabled={isApproving}>
                                     <Check className="mr-2 h-4 w-4" />
-                                    {t("Approve Product")}
+                                    {isApproving ? t("Approving...") : t("Approve Product")}
                                 </Button>
-                                <Button
+                                {product.status === ProductStatus.WAITING_FOR_REVIEW && (<Button
                                     variant="outline"
-                                    onClick={handleReject}
-                                    disabled={loading}
+                                    onClick={() => reject({ productId: product.id, action: "reject" })}
+                                    disabled={isRejecting}
                                 >
                                     <X className="mr-2 h-4 w-4" />
-                                    {t("Reject")}
-                                </Button>
+                                    {isRejecting ? t("Rejecting...") : t("Reject")}
+                                </Button>)}
                             </>
                         )}
-                        {product.status === "VERIFIED" && (
+                        {product.status === ProductStatus.VERIFIED && (
                             <Button
                                 variant="outline"
-                                onClick={handleReject}
-                                disabled={loading}
+                                onClick={() => reject({ productId: product.id, action: "reject" })}
+                                disabled={isRejecting}
                             >
                                 <X className="mr-2 h-4 w-4" />
-                                {t("Revoke Verification")}
+                                {isRejecting ? t("Rejecting...") : t("Revoke Verification")}
                             </Button>
                         )}
-                        <Button
+                        {product.status === ProductStatus.VERIFIED && (<Button
                             variant="secondary"
-                            onClick={handleToggleVisibility}
-                            disabled={loading}
+                            onClick={() => toggleVisibility({ productId: product.id, action: "toggleVisibility" })}
+                            disabled={isTogglingVisibility}
                         >
                             {product.visibility ? (
                                 <>
-                                    <EyeOff className="mr-2 h-4 w-4" />
-                                    {t("Hide Product")}
+                                    {<EyeOff className="mr-2 h-4 w-4" />}
+                                    {isTogglingVisibility ? t("Hiding...") : t("Hide Product")}
                                 </>
                             ) : (
                                 <>
                                     <Eye className="mr-2 h-4 w-4" />
-                                    {t("Show Product")}
+                                    {isTogglingVisibility ? t("Showing...") : t("Show Product")}
                                 </>
                             )}
-                        </Button>
+                        </Button>)}
                     </div>
                 </div>
             </CardContent>

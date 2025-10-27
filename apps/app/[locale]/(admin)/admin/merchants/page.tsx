@@ -14,7 +14,7 @@ export default async function MerchantsPage({
     const search = params.search;
     const status = (params.status || "all") as "all" | "verified" | "pending";
 
-    const data = await getMerchants({ search, status, page, limit: 20 });
+    const data = await getMerchants({ search, status, page, limit: 5 });
 
     return (
         <div className="space-y-6">
