@@ -449,6 +449,7 @@ model Merchant {
   managers     UserMerchantManager[]
   deliveryTime String?
   rating       Float?
+  wallet       Wallet?
   order        Order[]
 }
 
@@ -469,10 +470,12 @@ model UserMerchantManager {
 
 model Wallet {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String        @unique @db.ObjectId
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String?       @unique @db.ObjectId
+  merchant     Merchant?     @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId   String?       @unique @db.ObjectId
   balance      Float         @default(0)
-  currency     String        @default("USD")
+  currency     String        @default("KES")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
