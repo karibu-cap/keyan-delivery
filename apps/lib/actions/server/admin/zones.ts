@@ -119,9 +119,7 @@ interface CreateZoneData {
     description?: string;
     deliveryFee: number;
     estimatedDeliveryMinutes?: number;
-    minOrderAmount?: number;
     color: string;
-    priority: number;
     status: ZoneStatus;
     geometry: {
         type: string;
@@ -155,9 +153,7 @@ export async function createZone(data: CreateZoneData) {
             description: data.description,
             deliveryFee: data.deliveryFee,
             estimatedDeliveryMinutes: data.estimatedDeliveryMinutes,
-            minOrderAmount: data.minOrderAmount,
             color: data.color,
-            priority: data.priority,
             status: data.status,
             geometry: data.geometry,
             landmarks: data.landmarks,
@@ -204,9 +200,7 @@ export async function updateZone(zoneId: string, data: Partial<CreateZoneData>) 
             ...(data.estimatedDeliveryMinutes !== undefined && {
                 estimatedDeliveryMinutes: data.estimatedDeliveryMinutes,
             }),
-            ...(data.minOrderAmount !== undefined && { minOrderAmount: data.minOrderAmount }),
             ...(data.color && { color: data.color }),
-            ...(data.priority !== undefined && { priority: data.priority }),
             ...(data.status && { status: data.status }),
             ...(data.geometry && { geometry: data.geometry }),
             ...(data.landmarks && { landmarks: data.landmarks }),

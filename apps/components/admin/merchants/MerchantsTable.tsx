@@ -292,6 +292,7 @@ export function MerchantsTable({ merchants, pagination }: MerchantsTableProps) {
                                         ? "pointer-events-none opacity-50"
                                         : ""
                                 }
+                                size="default"
                             />
                         </PaginationItem>
                         {[...Array(pagination.totalPages)].map((_, i) => (
@@ -299,6 +300,7 @@ export function MerchantsTable({ merchants, pagination }: MerchantsTableProps) {
                                 <PaginationLink
                                     href={`?page=${i + 1}`}
                                     isActive={pagination.page === i + 1}
+                                    size="default"
                                 >
                                     {i + 1}
                                 </PaginationLink>
@@ -313,6 +315,7 @@ export function MerchantsTable({ merchants, pagination }: MerchantsTableProps) {
                                         ? "pointer-events-none opacity-50"
                                         : ""
                                 }
+                                size="default"
                             />
                         </PaginationItem>
                     </PaginationContent>

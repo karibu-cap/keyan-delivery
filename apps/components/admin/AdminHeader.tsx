@@ -10,49 +10,25 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthStore } from "@/hooks/use-auth-store";
 import { useT } from "@/hooks/use-inline-translation";
-import { ROUTES } from "@/lib/router";
-import { Bell, LogOut, Settings, User } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Bell } from "lucide-react";
+import { SidebarTrigger } from "../ui/sidebar";
+import { Separator } from "../ui/separator";
 
-interface AdminHeaderProps {
-    title?: string;
-    description?: string;
-    user?: {
-        name?: string | null;
-        email: string;
-        image?: string | null;
-    };
-}
 
-export function AdminHeader({ title, description, user }: AdminHeaderProps) {
-    const router = useRouter();
-    const { logout } = useAuthStore();
+
+export function AdminHeader() {
     const t = useT();
 
-    const handleLogout = async () => {
-        await logout();
-        router.push(ROUTES.home);
-    };
-
     return (
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6">
-            <div className="flex flex-1 items-center justify-between">
-                {/* Page Title */}
-                <div>
-                    {title && (
-                        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
-                    )}
-                    {description && (
-                        <p className="text-sm text-muted-foreground">{description}</p>
-                    )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2">
-                    {/* Notifications */}
+        <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+            <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+                <SidebarTrigger className="-ml-1" />
+                <Separator
+                    orientation="vertical"
+                    className="mx-2 data-[orientation=vertical]:h-4"
+                />
+                <div className="ml-auto flex items-center gap-2">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="relative">
@@ -97,41 +73,6 @@ export function AdminHeader({ title, description, user }: AdminHeaderProps) {
                                     </p>
                                 </DropdownMenuItem>
                             </div>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-
-                    {/* User Menu */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="gap-2">
-                                <Avatar className="flex h-8 w-8 flex-shrink-0">
-                                    <AvatarImage src={user?.image || undefined} alt="@manager" />
-                                    <AvatarFallback className="flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold"> {user?.name?.[0]?.toUpperCase() || user?.email[0].toUpperCase() || "A"} </AvatarFallback>
-                                </Avatar>
-                                <div className="hidden text-left md:block">
-                                    <p className="text-sm font-medium">
-                                        {user?.name || "Admin"}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">{t("Administrator")}</p>
-                                </div>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuLabel>{t("My Account")}</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => router.push(ROUTES.profile)}>
-                                <User className="mr-2 h-4 w-4" />
-                                {t("Profile")}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => router.push("/admin/settings")}>
-                                <Settings className="mr-2 h-4 w-4" />
-                                {t("Settings")}
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-                                <LogOut className="mr-2 h-4 w-4" />
-                                {t("Logout")}
-                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

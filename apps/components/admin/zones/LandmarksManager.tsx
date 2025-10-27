@@ -23,15 +23,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, MapPin, Edit, Trash2, Loader2, Star, Search } from "lucide-react";
 import { useT } from "@/hooks/use-inline-translation";
-import { useToast } from "@/hooks/use-toast";
 import { geocodeAddress } from "@/lib/actions/server/admin/zones";
 import type { Landmark } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "@/hooks/use-toast";
 
 interface LandmarksManagerProps {
     landmarks: Landmark[];
     onChange: (landmarks: Landmark[]) => void;
-    zoneId?: string; // If provided, use server actions instead of local state
+    zoneId?: string;
 }
 
 const LANDMARK_CATEGORIES = [
@@ -48,7 +48,6 @@ const LANDMARK_CATEGORIES = [
 
 export default function LandmarksManager({ landmarks, onChange, zoneId }: LandmarksManagerProps) {
     const t = useT();
-    const { toast } = useToast();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [isGeocoding, setIsGeocoding] = useState(false);
@@ -78,7 +77,7 @@ export default function LandmarksManager({ landmarks, onChange, zoneId }: Landma
         setEditingIndex(index);
         setFormData({
             name: landmark.name,
-            address: "", // Address not stored, will need to geocode again
+            address: "",
             category: landmark.category || "general",
             isPopular: landmark.isPopular,
             coordinates: landmark.coordinates,
@@ -169,17 +168,9 @@ export default function LandmarksManager({ landmarks, onChange, zoneId }: Landma
             const updatedLandmarks = [...landmarks];
             updatedLandmarks[editingIndex] = newLandmark;
             onChange(updatedLandmarks);
-            toast({
-                title: t("Success"),
-                description: t("Landmark updated successfully"),
-            });
         } else {
             // Add new landmark
             onChange([...landmarks, newLandmark]);
-            toast({
-                title: t("Success"),
-                description: t("Landmark added successfully"),
-            });
         }
 
         setDialogOpen(false);
@@ -188,10 +179,6 @@ export default function LandmarksManager({ landmarks, onChange, zoneId }: Landma
     const handleDeleteLandmark = (index: number) => {
         const updatedLandmarks = landmarks.filter((_, idx) => idx !== index);
         onChange(updatedLandmarks);
-        toast({
-            title: t("Success"),
-            description: t("Landmark deleted successfully"),
-        });
     };
 
     return (
@@ -202,13 +189,13 @@ export default function LandmarksManager({ landmarks, onChange, zoneId }: Landma
                         <MapPin className="h-5 w-5" />
                         {t("Landmarks")}
                     </CardTitle>
-                    <Button onClick={handleAddLandmark} size="sm" className="gap-2">
+                    <Button onClick={handleAddLandmark} size="sm" className="gap-2" type="button">
                         <Plus className="h-4 w-4" />
                         {t("Add Landmark")}
                     </Button>
                 </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="max-h-[400px] overflow-y-auto">
                 {landmarks.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                         <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
@@ -242,6 +229,7 @@ export default function LandmarksManager({ landmarks, onChange, zoneId }: Landma
                                     <Button
                                         variant="ghost"
                                         size="icon"
+                                        type="button"
                                         onClick={() => handleEditLandmark(index)}
                                     >
                                         <Edit className="h-4 w-4" />
@@ -249,6 +237,7 @@ export default function LandmarksManager({ landmarks, onChange, zoneId }: Landma
                                     <Button
                                         variant="ghost"
                                         size="icon"
+                                        type="button"
                                         onClick={() => handleDeleteLandmark(index)}
                                         className="text-destructive hover:text-destructive"
                                     >
@@ -337,7 +326,7 @@ export default function LandmarksManager({ landmarks, onChange, zoneId }: Landma
                                 <SelectContent>
                                     {LANDMARK_CATEGORIES.map((cat) => (
                                         <SelectItem key={cat.value} value={cat.value}>
-                                            {t(cat.label)}
+                                            {cat.label}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -362,10 +351,10 @@ export default function LandmarksManager({ landmarks, onChange, zoneId }: Landma
                     </div>
 
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                        <Button variant="outline" onClick={() => setDialogOpen(false)} type="button">
                             {t("Cancel")}
                         </Button>
-                        <Button onClick={handleSaveLandmark}>
+                        <Button onClick={handleSaveLandmark} type="button">
                             {editingIndex !== null ? t("Update") : t("Add")}
                         </Button>
                     </DialogFooter>

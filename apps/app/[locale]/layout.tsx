@@ -1,21 +1,20 @@
+import { AuthModalProvider } from "@/components/auth/AuthModal";
 import { FontOptimizer } from "@/components/ClsOptimization";
+import { NotificationClientWrapper } from "@/components/notifications/NotificationClientWrapper";
+import NotificationHandler from "@/components/notifications/NotificationHandler";
+import ServicesWorkerRegistration from "@/components/notifications/ServiceWorkerRegistration";
 import { OfflineIndicator, OfflineNetworkErrorBoundary, OfflineProvider } from "@/components/OfflineSupport";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Toaster } from "@/components/ui/toaster";
 import { routing } from "@/i18n/routing";
+import { getSession } from "@/lib/auth-server";
 import { generateHomeMetadata, generateOrganizationStructuredData } from "@/lib/metadata";
 import type { Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
-import "./globals.css";
-import ServicesWorkerRegistration from "@/components/notifications/ServiceWorkerRegistration";
-import NotificationHandler from "@/components/notifications/NotificationHandler";
-import { NotificationClientWrapper } from "@/components/notifications/NotificationClientWrapper";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { AuthModalProvider } from "@/components/auth/AuthModal";
-import { getSession } from "@/lib/auth-server";
-// Your auth solution
+import "../globals.css";
 
 const geistSans = Geist({
      variable: "--font-geist-sans",
@@ -74,7 +73,6 @@ export default async function RootLayout({
                     <meta name="apple-mobile-web-app-title" content="Yetu Delivery" />
                     <link rel="apple-touch-icon" href="/icons/ios/192.png" />
                     <link rel="icon" href="/icons/favicon.ico" />
-
                     {/* Organization Structured Data */}
                     <script
                          type="application/ld+json"

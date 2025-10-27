@@ -136,7 +136,7 @@ export default function ZonesList({ zones }: ZonesListProps) {
                                     : t("Create your first delivery zone to get started")}
                             </p>
                             {!searchQuery && (
-                                <Button onClick={() => router.push("/admin/zones/new")}>
+                                <Button onClick={() => router.push("/admin/zones/new")} type="button">
                                     {t("Create Zone")}
                                 </Button>
                             )}
@@ -164,7 +164,7 @@ export default function ZonesList({ zones }: ZonesListProps) {
                                     </div>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
+                                            <Button variant="ghost" size="icon" type="button">
                                                 <MoreVertical className="h-4 w-4" />
                                             </Button>
                                         </DropdownMenuTrigger>
@@ -244,6 +244,7 @@ export default function ZonesList({ zones }: ZonesListProps) {
                                     <Button
                                         variant="outline"
                                         size="sm"
+                                        type="button"
                                         className="flex-1"
                                         onClick={() => router.push(`/admin/zones/${zone.id}/edit`)}
                                     >

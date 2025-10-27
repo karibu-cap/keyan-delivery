@@ -284,17 +284,13 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                             <PaginationPrevious
                                 href={`?page=${pagination.page - 1}`}
                                 aria-disabled={pagination.page === 1}
-                                className={
-                                    pagination.page === 1 ? "pointer-events-none opacity-50" : ""
-                                }
-                            />
+                                className={pagination.page === 1 ? "pointer-events-none opacity-50" : ""} size="default" />
                         </PaginationItem>
                         {[...Array(pagination.totalPages)].map((_, i) => (
                             <PaginationItem key={i}>
                                 <PaginationLink
                                     href={`?page=${i + 1}`}
-                                    isActive={pagination.page === i + 1}
-                                >
+                                    isActive={pagination.page === i + 1} size="default">
                                     {i + 1}
                                 </PaginationLink>
                             </PaginationItem>
@@ -303,12 +299,9 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                             <PaginationNext
                                 href={`?page=${pagination.page + 1}`}
                                 aria-disabled={pagination.page === pagination.totalPages}
-                                className={
-                                    pagination.page === pagination.totalPages
-                                        ? "pointer-events-none opacity-50"
-                                        : ""
-                                }
-                            />
+                                className={pagination.page === pagination.totalPages
+                                    ? "pointer-events-none opacity-50"
+                                    : ""} size="default" />
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>

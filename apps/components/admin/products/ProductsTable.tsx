@@ -482,6 +482,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
                                 className={
                                     pagination.page === 1 ? "pointer-events-none opacity-50" : ""
                                 }
+                                size="default"
                             />
                         </PaginationItem>
                         {[...Array(pagination.totalPages)].map((_, i) => (
@@ -489,6 +490,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
                                 <PaginationLink
                                     href={`?page=${i + 1}`}
                                     isActive={pagination.page === i + 1}
+                                    size="default"
                                 >
                                     {i + 1}
                                 </PaginationLink>
@@ -503,6 +505,7 @@ export function ProductsTable({ products, pagination }: ProductsTableProps) {
                                         ? "pointer-events-none opacity-50"
                                         : ""
                                 }
+                                size="default"
                             />
                         </PaginationItem>
                     </PaginationContent>

@@ -124,7 +124,7 @@ export default function UsersList({ users }: UsersListProps) {
 
         return (
             <Badge variant="outline" className={colors[status as keyof typeof colors]}>
-                {t(status)}
+                {status}
             </Badge>
         );
     };

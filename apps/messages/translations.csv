@@ -69,21 +69,6 @@ Category,Key,English,Swahili,File,Line
 "an-order-is-ready-at-merchantname","An order is ready at ${merchantName","","lib/notifications/push-service.ts",242
 "accepter","Accepter","","lib/notifications/push-service.ts",256
 "view-details","View details","","lib/notifications/push-service.ts",260
-"best-seller","Best Seller","","components/ui/product-modal.tsx",170
-"organic","Organic","","components/ui/product-modal.tsx",175
-"in-stock","In Stock","","components/ui/product-modal.tsx",222
-"visit","Visit","","components/ui/product-modal.tsx",246
-"reviews","reviews","","components/ui/product-modal.tsx",269
-"save","Save","","components/ui/product-modal.tsx",287
-"choose-size","Choose Size","","components/ui/product-modal.tsx",304
-"total","Total","","components/ui/product-modal.tsx",356
-"add-to-cart","Add to Cart","","components/ui/product-modal.tsx",367
-"free-delivery","Free Delivery","","components/ui/product-modal.tsx",375
-"100-guarantee","100% Guarantee","","components/ui/product-modal.tsx",379
-"secure-packaging","Secure Packaging","","components/ui/product-modal.tsx",383
-"about-this-product","About this product","","components/ui/product-modal.tsx",390
-"back-online","Back online","","components/ui/offline-indicator.tsx",36
-"you-re-offline","You're offline","","components/ui/offline-indicator.tsx",41
 "push-notifications","Push Notifications","","components/notifications/NotificationPermission.tsx",52
 "active-you-receive-notifications","Active - You receive notifications","","components/notifications/NotificationPermission.tsx",55
 "inactive-enable-to-receive-alerts","Inactive - Enable to receive alerts","","components/notifications/NotificationPermission.tsx",56
@@ -109,6 +94,10 @@ Category,Key,English,Swahili,File,Line
 "error-unsubscribing","Error unsubscribing","","components/notifications/AutoNotificationSubscriber.tsx",227
 "please-try-again-later","Please try again later","","components/notifications/AutoNotificationSubscriber.tsx",228
 "stay-updated-enable-notifications-to-get-real-time-order-alerts","Stay updated! Enable notifications to get real-time order alerts.","","components/notifications/AutoNotificationSubscriber.tsx",355
+"zoom-in","Zoom in","","components/map/MapBoxControls.tsx",28
+"zoom-out","Zoom out","","components/map/MapBoxControls.tsx",32
+"error","Error","","components/map/MapBoxControls.tsx",50
+"you-can-only-draw-one-polygon-by-zone-update-or-delete-the-existing-polygon-first","You can only draw one polygon by zone, update or delete the existing polygon first","","components/map/MapBoxControls.tsx",51
 "my-stores","My Stores","","components/merchants/StoresList.tsx",42
 "store","store","","components/merchants/StoresList.tsx",45
 "no-stores-found","No stores found","","components/merchants/StoresList.tsx",52
@@ -127,7 +116,6 @@ Category,Key,English,Swahili,File,Line
 "view-all-products","View All Products","","components/merchants/RecentProducts.tsx",38
 "stock","Stock","","components/merchants/RecentProducts.tsx",76
 "success","Success","","components/merchants/OrdersTabs.tsx",44
-"error","Error","","components/merchants/OrdersTabs.tsx",54
 "failed-to-update-order","Failed to update order","","components/merchants/OrdersTabs.tsx",55
 "failed-to-update-order-status","Failed to update order status","","components/merchants/OrdersTabs.tsx",62
 "active-orders","Active Orders","","components/merchants/OrdersTabs.tsx",76
@@ -148,6 +136,7 @@ Category,Key,English,Swahili,File,Line
 "notifications","Notifications","","components/merchants/MerchantNotifications.tsx",109
 "no-notifications","No notifications","","components/merchants/MerchantNotifications.tsx",122
 "view-all-notifications","View all notifications","","components/merchants/MerchantNotifications.tsx",168
+"total","Total","","components/merchants/HistoryOrders.tsx",115
 "cancelled","Cancelled","","components/merchants/HistoryOrders.tsx",138
 "rejected","Rejected","","components/merchants/HistoryOrders.tsx",138
 "revenue","Revenue","","components/merchants/HistoryOrders.tsx",151
@@ -322,11 +311,68 @@ Category,Key,English,Swahili,File,Line
 "track-your-route-in-real-time","Track your route in real time","","components/driver/DriverOrderPage.tsx",323
 "google-maps","Google Maps","","components/driver/DriverOrderPage.tsx",333
 "merchant-information","Merchant Information","","components/driver/DriverOrderPage.tsx",362
+"phone-number","Phone Number","","components/driver/DriverOrderPage.tsx",392
 "sms","SMS","","components/driver/DriverOrderPage.tsx",414
 "whatsapp","WhatsApp","","components/driver/DriverOrderPage.tsx",423
 "client-information","Client Information","","components/driver/DriverOrderPage.tsx",435
 "name","Name","","components/driver/DriverOrderPage.tsx",441
 "delivery-address","Delivery Address","","components/driver/DriverOrderPage.tsx",447
+"account-created","Account created","","components/auth/SignUpForm.tsx",64
+"welcome-your-account-has-been-created-successfully","Welcome! Your account has been created successfully.","","components/auth/SignUpForm.tsx",65
+"an-unexpected-error-occurred","An unexpected error occurred","","components/auth/SignUpForm.tsx",72
+"welcome","Welcome!","","components/auth/SignUpForm.tsx",80
+"you-have-successfully-signed-in-with-google","You have successfully signed in with Google","","components/auth/SignUpForm.tsx",81
+"create-account","Create Account","","components/auth/SignUpForm.tsx",87
+"join-our-platform-today","Join our platform today","","components/auth/SignUpForm.tsx",87
+"want-to-become-a-merchant-or-driver-you-can-apply-after-creating-your-account","Want to become a merchant or driver? You can apply after creating your account.","","components/auth/SignUpForm.tsx",119
+"full-name","Full Name *","","components/auth/SignUpForm.tsx",128
+"enter-your-name","Enter your name","","components/auth/SignUpForm.tsx",130
+"email","Email *","","components/auth/SignUpForm.tsx",156
+"password","Password *","","components/auth/SignUpForm.tsx",170
+"enter-your-password","Enter your password","","components/auth/SignUpForm.tsx",173
+"sign-up","Sign Up","","components/auth/SignUpForm.tsx",186
+"continue-with-google","Continue with Google","","components/auth/SignUpForm.tsx",197
+"already-have-an-account-sign-in","Already have an account? Sign In","","components/auth/SignUpForm.tsx",206
+"welcome-back","Welcome Back","","components/auth/SignInForm.tsx",73
+"sign-in-to-your-account","Sign in to your account","","components/auth/SignInForm.tsx",73
+"enter-your-email","Enter your email","","components/auth/SignInForm.tsx",83
+"don-t-have-an-account-sign-up","Don't have an account? Sign Up","","components/auth/SignInForm.tsx",126
+"password-reset-email-sent","Password reset email sent","","components/auth/ResetPasswordForm.tsx",48
+"check-your-email-for-further-instructions","Check your email for further instructions","","components/auth/ResetPasswordForm.tsx",49
+"reset-password","Reset Password","","components/auth/ResetPasswordForm.tsx",61
+"enter-your-email-to-reset-your-password","Enter your email to reset your password","","components/auth/ResetPasswordForm.tsx",61
+"send-reset-link","Send Reset Link","","components/auth/ResetPasswordForm.tsx",80
+"back-to-login","Back to login","","components/auth/ResetPasswordForm.tsx",88
+"exit-admin-mode","Exit Admin Mode?","","components/admin/ExitAdminModeDialog.tsx",41
+"you-can-return-to-admin-mode-anytime","You can return to admin mode anytime","","components/admin/ExitAdminModeDialog.tsx",54
+"admin-panel","Admin Panel","","components/admin/AdminSidebar.tsx",52
+"log-out","Log out","","components/admin/AdminNavUser.tsx",91
+"dashboard","Dashboard","","components/admin/AdminNavMain.tsx",35
+"merchants","Merchants","","components/admin/AdminNavMain.tsx",41
+"drivers","Drivers","","components/admin/AdminNavMain.tsx",53
+"users","Users","","components/admin/AdminNavMain.tsx",59
+"delivery-zones","Delivery Zones","","components/admin/AdminNavMain.tsx",65
+"settings","Settings","","components/admin/AdminNavMain.tsx",83
+"new-merchant-pending","New merchant pending","","components/admin/AdminHeader.tsx",61
+"fresh-market-store-is-waiting-for-approval","Fresh Market Store is waiting for approval","","components/admin/AdminHeader.tsx",65
+"driver-verification","Driver verification","","components/admin/AdminHeader.tsx",70
+"john-doe-submitted-documents-for-review","John Doe submitted documents for review","","components/admin/AdminHeader.tsx",74
+"product-pending-approval","Product pending approval","","components/admin/AdminHeader.tsx",79
+"5-new-products-waiting-for-review","5 new products waiting for review","","components/admin/AdminHeader.tsx",83
+"best-seller","Best Seller","","components/ui/product-modal.tsx",170
+"organic","Organic","","components/ui/product-modal.tsx",175
+"in-stock","In Stock","","components/ui/product-modal.tsx",222
+"visit","Visit","","components/ui/product-modal.tsx",246
+"reviews","reviews","","components/ui/product-modal.tsx",269
+"save","Save","","components/ui/product-modal.tsx",287
+"choose-size","Choose Size","","components/ui/product-modal.tsx",304
+"add-to-cart","Add to Cart","","components/ui/product-modal.tsx",367
+"free-delivery","Free Delivery","","components/ui/product-modal.tsx",375
+"100-guarantee","100% Guarantee","","components/ui/product-modal.tsx",379
+"secure-packaging","Secure Packaging","","components/ui/product-modal.tsx",383
+"about-this-product","About this product","","components/ui/product-modal.tsx",390
+"back-online","Back online","","components/ui/offline-indicator.tsx",36
+"you-re-offline","You're offline","","components/ui/offline-indicator.tsx",41
 "completed-transactions","completed transactions","","components/merchants/wallet/WalletBalance.tsx",61
 "all-time-expenses","All time expenses","","components/merchants/wallet/WalletBalance.tsx",79
 "pending-transactions","Pending Transactions","","components/merchants/wallet/WalletBalance.tsx",90
@@ -340,15 +386,12 @@ Category,Key,English,Swahili,File,Line
 "transactions","transactions","","components/merchants/wallet/TransactionsList.tsx",241
 "previous","Previous","","components/merchants/wallet/TransactionsList.tsx",252
 "next","Next","","components/merchants/wallet/TransactionsList.tsx",291
-"no-products-found","No products found","","components/merchants/products/ProductsList.tsx",33
-"try-adjusting-your-filters","Try adjusting your filters","","components/merchants/products/ProductsList.tsx",36
-"start-by-adding-your-first-product","Start by adding your first product","","components/merchants/products/ProductsList.tsx",37
-"low-stock","Low Stock","","components/merchants/products/ProductsList.tsx",91
-"product-management","Product Management","","components/merchants/products/ProductsHeader.tsx",25
-"manage-your-product-catalog","Manage your product catalog","","components/merchants/products/ProductsHeader.tsx",28
-"filter-by-status","Filter by status","","components/merchants/products/ProductsFilters.tsx",46
-"draft","Draft","","components/merchants/products/ProductsFilters.tsx",51
-"waiting-for-review","Waiting for Review","","components/merchants/products/ProductsFilters.tsx",53
+"no-products-found","No products found","","components/merchants/animations/EmptyStates.tsx",82
+"start-by-adding-your-first-product","Start by adding your first product","","components/merchants/animations/EmptyStates.tsx",83
+"no-results-found","No results found","","components/merchants/animations/EmptyStates.tsx",90
+"try-adjusting-your-filters","Try adjusting your filters","","components/merchants/animations/EmptyStates.tsx",91
+"no-order-history","No order history","","components/merchants/animations/EmptyStates.tsx",97
+"completed-and-cancelled-orders-will-appear-here","Completed and cancelled orders will appear here","","components/merchants/animations/EmptyStates.tsx",98
 "most-sold-products","Most sold products","","components/merchants/insights/TopProducts.tsx",27
 "top-10-products","Top 10 products","","components/merchants/insights/TopProducts.tsx",29
 "no-sales-data-available","No sales data available","","components/merchants/insights/TopProducts.tsx",37
@@ -372,9 +415,12 @@ Category,Key,English,Swahili,File,Line
 "status-breakdown-total-total-orders","Status breakdown - {total} total orders","","components/merchants/insights/OrdersOverview.tsx",100
 "success-rate","Success Rate","","components/merchants/insights/OrdersOverview.tsx",142
 "failure-rate","Failure Rate","","components/merchants/insights/OrdersOverview.tsx",148
-"no-results-found","No results found","","components/merchants/animations/EmptyStates.tsx",90
-"no-order-history","No order history","","components/merchants/animations/EmptyStates.tsx",97
-"completed-and-cancelled-orders-will-appear-here","Completed and cancelled orders will appear here","","components/merchants/animations/EmptyStates.tsx",98
+"low-stock","Low Stock","","components/merchants/products/ProductsList.tsx",91
+"product-management","Product Management","","components/merchants/products/ProductsHeader.tsx",25
+"manage-your-product-catalog","Manage your product catalog","","components/merchants/products/ProductsHeader.tsx",28
+"filter-by-status","Filter by status","","components/merchants/products/ProductsFilters.tsx",46
+"draft","Draft","","components/merchants/products/ProductsFilters.tsx",51
+"waiting-for-review","Waiting for Review","","components/merchants/products/ProductsFilters.tsx",53
 "oops-something-went-wrong","Oops! Something went wrong","","components/client/stores/StoresError.tsx",20
 "all-stores","All stores","","components/client/stores/StoresContent.tsx",52
 "grocery","Grocery","","components/client/stores/StoresContent.tsx",53
@@ -398,19 +444,6 @@ Category,Key,English,Swahili,File,Line
 "off","off","","components/client/stores/MerchantProduct.tsx",178
 "many-in-stock","Many in stock","","components/client/stores/MerchantProduct.tsx",189
 "out-of-stock","Out of stock","","components/client/stores/MerchantProduct.tsx",192
-"related-products","Related Products","","components/client/products/RelatedProducts.tsx",19
-"home","Home","","components/client/products/ProductDetailClient.tsx",93
-"back","Back","","components/client/products/ProductDetailClient.tsx",120
-"per","Per","","components/client/products/ProductDetailClient.tsx",278
-"only","Only","","components/client/products/ProductDetailClient.tsx",302
-"left","left","","components/client/products/ProductDetailClient.tsx",302
-"view-cart","View Cart","","components/client/products/ProductDetailClient.tsx",348
-"fast-delivery","Fast Delivery","","components/client/products/ProductDetailClient.tsx",359
-"delivered-within-30-60-minutes","Delivered within 30-60 minutes","","components/client/products/ProductDetailClient.tsx",362
-"quality-guaranteed","Quality Guaranteed","","components/client/products/ProductDetailClient.tsx",370
-"fresh-and-quality-products","Fresh and quality products","","components/client/products/ProductDetailClient.tsx",373
-"product-description","Product Description","","components/client/products/ProductDetailClient.tsx",409
-"sku","SKU","","components/client/products/ProductDetailClient.tsx",417
 "order-confirmed","Order Confirmed","","components/client/orders/OrderTimeline.tsx",14
 "preparing-order","Preparing Order","","components/client/orders/OrderTimeline.tsx",15
 "out-for-delivery","Out for Delivery","","components/client/orders/OrderTimeline.tsx",16
@@ -428,19 +461,6 @@ Category,Key,English,Swahili,File,Line
 "failed-to-download-receipt-please-try-again","Failed to download receipt. Please try again.","","components/client/orders/OrderActions.tsx",50
 "view-receipt","View Receipt","","components/client/orders/OrderActions.tsx",66
 "track-order","Track Order","","components/client/orders/OrderActions.tsx",72
-"location-outside-delivery-zone","Location outside delivery zone","","components/client/map/MapPicker.tsx",150
-"please-select-a-location-within-the-shaded-area","Please select a location within the shaded area.","","components/client/map/MapPicker.tsx",151
-"your-browser-doesn-t-support-geolocation","Your browser doesn't support geolocation.","","components/client/map/MapPicker.tsx",213
-"you-re-outside-the-delivery-zone","You're outside the delivery zone","","components/client/map/MapPicker.tsx",239
-"your-current-location-is-not-within-our-delivery-area-please-select-a-location-within-the-shaded-zon","Your current location is not within our delivery area. Please select a location within the shaded zone.","","components/client/map/MapPicker.tsx",240
-"please-check-your-location-permissions-and-try-again","Please check your location permissions and try again.","","components/client/map/MapPicker.tsx",251
-"drop-a-pin-at-your-exact-location","Drop a pin at your exact location","","components/client/map/MapPicker.tsx",284
-"tap-anywhere-on-the-map-or-drag-the-red-marker-to-your-delivery-location","Tap anywhere on the map or drag the red marker to your delivery location.","","components/client/map/MapPicker.tsx",287
-"you-can-only-select-locations-within-the-shaded-delivery-zone","You can only select locations within the shaded delivery zone.","","components/client/map/MapPicker.tsx",288
-"use-my-location","Use my location","","components/client/map/MapPicker.tsx",330
-"location-selected","Location selected","","components/client/map/MapPicker.tsx",356
-"high-accuracy","High accuracy","","components/client/map/MapPicker.tsx",365
-"tip-zoom-in-for-better-precision-the-more-accurate-your-pin-the-easier-delivery-will-be","Tip: Zoom in for better precision. The more accurate your pin, the easier delivery will be!","","components/client/map/MapPicker.tsx",373
 "profile-updated","Profile Updated","","components/client/customer/UserProfile.tsx",62
 "your-profile-has-been-successfully-updated","Your profile has been successfully updated","","components/client/customer/UserProfile.tsx",63
 "failed-to-update-profile-please-try-again","Failed to update profile. Please try again.","","components/client/customer/UserProfile.tsx",69
@@ -482,6 +502,82 @@ Category,Key,English,Swahili,File,Line
 "delete-account","Delete Account","","components/client/customer/UserProfile.tsx",379
 "permanently-delete-your-account","Permanently delete your account","","components/client/customer/UserProfile.tsx",380
 "delete","Delete","","components/client/customer/UserProfile.tsx",384
+"related-products","Related Products","","components/client/products/RelatedProducts.tsx",19
+"home","Home","","components/client/products/ProductDetailClient.tsx",93
+"back","Back","","components/client/products/ProductDetailClient.tsx",120
+"per","Per","","components/client/products/ProductDetailClient.tsx",278
+"only","Only","","components/client/products/ProductDetailClient.tsx",302
+"left","left","","components/client/products/ProductDetailClient.tsx",302
+"view-cart","View Cart","","components/client/products/ProductDetailClient.tsx",348
+"fast-delivery","Fast Delivery","","components/client/products/ProductDetailClient.tsx",359
+"delivered-within-30-60-minutes","Delivered within 30-60 minutes","","components/client/products/ProductDetailClient.tsx",362
+"quality-guaranteed","Quality Guaranteed","","components/client/products/ProductDetailClient.tsx",370
+"fresh-and-quality-products","Fresh and quality products","","components/client/products/ProductDetailClient.tsx",373
+"product-description","Product Description","","components/client/products/ProductDetailClient.tsx",409
+"sku","SKU","","components/client/products/ProductDetailClient.tsx",417
+"location-outside-delivery-zone","Location outside delivery zone","","components/client/map/MapPicker.tsx",150
+"please-select-a-location-within-the-shaded-area","Please select a location within the shaded area.","","components/client/map/MapPicker.tsx",151
+"your-browser-doesn-t-support-geolocation","Your browser doesn't support geolocation.","","components/client/map/MapPicker.tsx",213
+"you-re-outside-the-delivery-zone","You're outside the delivery zone","","components/client/map/MapPicker.tsx",239
+"your-current-location-is-not-within-our-delivery-area-please-select-a-location-within-the-shaded-zon","Your current location is not within our delivery area. Please select a location within the shaded zone.","","components/client/map/MapPicker.tsx",240
+"please-check-your-location-permissions-and-try-again","Please check your location permissions and try again.","","components/client/map/MapPicker.tsx",251
+"drop-a-pin-at-your-exact-location","Drop a pin at your exact location","","components/client/map/MapPicker.tsx",284
+"tap-anywhere-on-the-map-or-drag-the-red-marker-to-your-delivery-location","Tap anywhere on the map or drag the red marker to your delivery location.","","components/client/map/MapPicker.tsx",287
+"you-can-only-select-locations-within-the-shaded-delivery-zone","You can only select locations within the shaded delivery zone.","","components/client/map/MapPicker.tsx",288
+"use-my-location","Use my location","","components/client/map/MapPicker.tsx",330
+"location-selected","Location selected","","components/client/map/MapPicker.tsx",356
+"high-accuracy","High accuracy","","components/client/map/MapPicker.tsx",365
+"tip-zoom-in-for-better-precision-the-more-accurate-your-pin-the-easier-delivery-will-be","Tip: Zoom in for better precision. The more accurate your pin, the easier delivery will be!","","components/client/map/MapPicker.tsx",373
+"light","Light","","components/driver/profile/ThemeToggle.tsx",47
+"dark","Dark","","components/driver/profile/ThemeToggle.tsx",48
+"system","System","","components/driver/profile/ThemeToggle.tsx",49
+"document-downloaded-successfully","Document downloaded successfully!","","components/driver/profile/ImageDocumentPreview.tsx",54
+"you-ve-downloaded-successfully-the-document","You've downloaded successfully the document.","","components/driver/profile/ImageDocumentPreview.tsx",55
+"failed-to-download-image","Failed to download image","","components/driver/profile/ImageDocumentPreview.tsx",60
+"make-sure-you-are-connected-and-retry","Make sure you are connected and retry","","components/driver/profile/ImageDocumentPreview.tsx",61
+"exit-driver-mode","Exit Driver Mode?","","components/driver/profile/ExitDriverModeDialog.tsx",44
+"you-can-return-to-driver-mode-anytime-from-your-profile","You can return to driver mode anytime from your profile.","","components/driver/profile/ExitDriverModeDialog.tsx",57
+"earnings-this-month","Earnings This Month","","components/driver/profile/DriverProfileStats.tsx",44
+"average-rating","Average Rating","","components/driver/profile/DriverProfileStats.tsx",60
+"manage-your-account-and-preferences","Manage your account and preferences","","components/driver/profile/DriverProfileClient.tsx",79
+"language-preferences","Language Preferences","","components/driver/profile/DriverProfileClient.tsx",151
+"language","Language","","components/driver/profile/DriverProfileClient.tsx",154
+"choose-your-preferred-language","Choose your preferred language","","components/driver/profile/DriverProfileClient.tsx",156
+"performance-overview","Performance Overview","","components/driver/profile/DriverProfileClient.tsx",167
+"total-deliveries","Total Deliveries","","components/driver/profile/DriverProfileClient.tsx",196
+"completion-rate","Completion Rate","","components/driver/profile/DriverProfileClient.tsx",204
+"on-time-rate","On-time Rate","","components/driver/profile/DriverProfileClient.tsx",212
+"failed-to-load-performance-stats","Failed to load performance stats","","components/driver/profile/DriverProfileClient.tsx",219
+"logout","Logout","","components/driver/profile/DriverProfileClient.tsx",246
+"documents","Documents","","components/driver/profile/DriverDocumentsPreview.tsx",50
+"no-documents-uploaded-yet","No documents uploaded yet","","components/driver/profile/DriverDocumentsPreview.tsx",77
+"id-card","ID Card","","components/driver/profile/DriverDocumentsPreview.tsx",85
+"driver-license","Driver License","","components/driver/profile/DriverDocumentsPreview.tsx",100
+"total-earnings","Total Earnings","","components/driver/insights/DriverStatsCards.tsx",36
+"avg-earnings","Avg. Earnings","","components/driver/insights/DriverStatsCards.tsx",44
+"performance-metrics","Performance Metrics","","components/driver/insights/DriverPerformanceCard.tsx",43
+"avg-delivery-time","Avg. Delivery Time","","components/driver/insights/DriverPerformanceCard.tsx",74
+"min","min","","components/driver/insights/DriverPerformanceCard.tsx",75
+"time-from-pickup-to-delivery","Time from pickup to delivery","","components/driver/insights/DriverPerformanceCard.tsx",79
+"total-distance","Total Distance","","components/driver/insights/DriverPerformanceCard.tsx",90
+"km","km","","components/driver/insights/DriverPerformanceCard.tsx",91
+"distance-covered-during-period","Distance covered during period","","components/driver/insights/DriverPerformanceCard.tsx",95
+"on-time-deliveries","On-time deliveries","","components/driver/insights/DriverPerformanceCard.tsx",104
+"last-7-days","Last 7 days","","components/driver/insights/DriverInsightsClient.tsx",41
+"last-30-days","Last 30 days","","components/driver/insights/DriverInsightsClient.tsx",45
+"last-90-days","Last 90 days","","components/driver/insights/DriverInsightsClient.tsx",49
+"this-month","This month","","components/driver/insights/DriverInsightsClient.tsx",53
+"last-month","Last month","","components/driver/insights/DriverInsightsClient.tsx",57
+"this-year","This year","","components/driver/insights/DriverInsightsClient.tsx",64
+"insights-analytics","Insights & Analytics","","components/driver/insights/DriverInsightsClient.tsx",152
+"track-your-performance-and-earnings","Track your performance and earnings","","components/driver/insights/DriverInsightsClient.tsx",155
+"earnings-evolution","Earnings Evolution","","components/driver/insights/DriverEarningsChart.tsx",37
+"no-earnings-data","No earnings data","","components/driver/insights/DriverEarningsChart.tsx",47
+"earnings-will-appear-here-once-you-complete-deliveries","Earnings will appear here once you complete deliveries","","components/driver/insights/DriverEarningsChart.tsx",50
+"in-progress","In Progress","","components/driver/insights/DriverDeliveriesOverview.tsx",46
+"canceled","Canceled","","components/driver/insights/DriverDeliveriesOverview.tsx",60
+"deliveries-overview","Deliveries Overview","","components/driver/insights/DriverDeliveriesOverview.tsx",71
+"status-breakdown","Status breakdown","","components/driver/insights/DriverDeliveriesOverview.tsx",73
 "zone-deleted","Zone deleted","","components/admin/zones/ZonesList.tsx",68
 "delivery-zone-has-been-deleted-successfully","Delivery zone has been deleted successfully","","components/admin/zones/ZonesList.tsx",69
 "failed-to-delete-zone","Failed to delete zone","","components/admin/zones/ZonesList.tsx",75
@@ -495,7 +591,6 @@ Category,Key,English,Swahili,File,Line
 "create-zone","Create Zone","","components/admin/zones/ZonesList.tsx",140
 "delivery-fee","Delivery Fee","","components/admin/zones/ZonesList.tsx",211
 "est-time","Est. Time","","components/admin/zones/ZonesList.tsx",219
-"min","min","","components/admin/zones/ZonesList.tsx",222
 "landmarks","Landmarks","","components/admin/zones/ZonesList.tsx",229
 "delete-zone","Delete Zone","","components/admin/zones/ZonesList.tsx",264
 "are-you-sure-you-want-to-delete-this-delivery-zone-this-action-cannot-be-undone-zones-with-existing-","Are you sure you want to delete this delivery zone? This action cannot be undone. Zones with existing orders cannot be deleted.","","components/admin/zones/ZonesList.tsx",266
@@ -633,6 +728,115 @@ Category,Key,English,Swahili,File,Line
 "this-action-cannot-be-undone-all-user-data-will-be-permanently-deleted","This action cannot be undone. All user data will be permanently deleted.","","components/admin/users/DeleteUserDialog.tsx",103
 "this-user-has-count-orders-deletion-may-fail","This user has {count} orders. Deletion may fail.","","components/admin/users/DeleteUserDialog.tsx",108
 "to-confirm","to confirm","","components/admin/users/DeleteUserDialog.tsx",117
+"delete-zone","Delete Zone","","components/admin/zones/ZonesList.tsx",265
+"are-you-sure-you-want-to-delete-this-delivery-zone-this-action-cannot-be-undone-zones-with-existing-","Are you sure you want to delete this delivery zone? This action cannot be undone. Zones with existing orders cannot be deleted.","","components/admin/zones/ZonesList.tsx",267
+"deleting","Deleting...","","components/admin/zones/ZonesList.tsx",279
+"you-must-draw-a-polygon","You must draw a polygon","","components/admin/zones/ZoneDrawMap.tsx",70
+"you-can-save-only-one-polygone","You can save only one polygone","","components/admin/zones/ZoneDrawMap.tsx",78
+"please-enter-an-address","Please enter an address","","components/admin/zones/LandmarksManager.tsx",92
+"address-geocoded-successfully","Address geocoded successfully","","components/admin/zones/LandmarksManager.tsx",105
+"could-not-geocode-the-address-please-try-a-different-address","Could not geocode the address. Please try a different address.","","components/admin/zones/LandmarksManager.tsx",110
+"failed-to-geocode-address","Failed to geocode address","","components/admin/zones/LandmarksManager.tsx",117
+"landmark-name-is-required","Landmark name is required","","components/admin/zones/LandmarksManager.tsx",129
+"please-geocode-the-address-first","Please geocode the address first","","components/admin/zones/LandmarksManager.tsx",138
+"a-landmark-with-this-name-already-exists","A landmark with this name already exists","","components/admin/zones/LandmarksManager.tsx",153
+"add-landmark","Add Landmark","","components/admin/zones/LandmarksManager.tsx",194
+"no-landmarks-added-yet","No landmarks added yet","","components/admin/zones/LandmarksManager.tsx",202
+"add-landmarks-to-help-customers-locate-their-delivery-address","Add landmarks to help customers locate their delivery address","","components/admin/zones/LandmarksManager.tsx",203
+"popular","Popular","","components/admin/zones/LandmarksManager.tsx",218
+"coordinates","Coordinates","","components/admin/zones/LandmarksManager.tsx",224
+"edit-landmark","Edit Landmark","","components/admin/zones/LandmarksManager.tsx",258
+"add-a-landmark-to-help-customers-find-their-delivery-location","Add a landmark to help customers find their delivery location","","components/admin/zones/LandmarksManager.tsx",261
+"landmark-name","Landmark Name","","components/admin/zones/LandmarksManager.tsx",267
+"e-g-central-market","e.g., Central Market","","components/admin/zones/LandmarksManager.tsx",272
+"address","Address","","components/admin/zones/LandmarksManager.tsx",277
+"enter-address-to-geocode","Enter address to geocode","","components/admin/zones/LandmarksManager.tsx",285
+"click-the-search-button-to-convert-address-to-coordinates","Click the search button to convert address to coordinates","","components/admin/zones/LandmarksManager.tsx",301
+"coordinates-found","Coordinates found","","components/admin/zones/LandmarksManager.tsx",308
+"lat","Lat","","components/admin/zones/LandmarksManager.tsx",311
+"lng","Lng","","components/admin/zones/LandmarksManager.tsx",311
+"category","Category","","components/admin/zones/LandmarksManager.tsx",318
+"mark-as-popular-landmark","Mark as popular landmark","","components/admin/zones/LandmarksManager.tsx",348
+"update","Update","","components/admin/zones/LandmarksManager.tsx",358
+"add","Add","","components/admin/zones/LandmarksManager.tsx",358
+"zone-name-is-required","Zone name is required","","components/admin/zones/EditZoneForm.tsx",70
+"zone-code-is-required","Zone code is required","","components/admin/zones/EditZoneForm.tsx",79
+"please-draw-a-zone-boundary-on-the-map","Please draw a zone boundary on the map","","components/admin/zones/EditZoneForm.tsx",88
+"delivery-fee-cannot-be-negative","Delivery fee cannot be negative","","components/admin/zones/EditZoneForm.tsx",97
+"zone-updated","Zone updated","","components/admin/zones/EditZoneForm.tsx",107
+"the-delivery-zone-has-been-successfully-updated","The delivery zone has been successfully updated","","components/admin/zones/EditZoneForm.tsx",108
+"failed-to-update-zone","Failed to update zone","","components/admin/zones/EditZoneForm.tsx",116
+"basic-information","Basic Information","","components/admin/zones/EditZoneForm.tsx",126
+"zone-name","Zone Name","","components/admin/zones/EditZoneForm.tsx",129
+"e-g-downtown-area","e.g., Downtown Area","","components/admin/zones/EditZoneForm.tsx",134
+"zone-code","Zone Code","","components/admin/zones/EditZoneForm.tsx",139
+"description","Description","","components/admin/zones/EditZoneForm.tsx",159
+"describe-the-delivery-zone-coverage-area","Describe the delivery zone coverage area","","components/admin/zones/EditZoneForm.tsx",166
+"delivery-settings","Delivery Settings","","components/admin/zones/EditZoneForm.tsx",175
+"est-delivery-time","Est. Delivery Time","","components/admin/zones/EditZoneForm.tsx",193
+"minutes","minutes","","components/admin/zones/EditZoneForm.tsx",193
+"zone-appearance","Zone Appearance","","components/admin/zones/EditZoneForm.tsx",213
+"zone-color","Zone Color","","components/admin/zones/EditZoneForm.tsx",236
+"zone-boundary","Zone Boundary","","components/admin/zones/EditZoneForm.tsx",264
+"updating","Updating...","","components/admin/zones/EditZoneForm.tsx",303
+"update-zone","Update Zone","","components/admin/zones/EditZoneForm.tsx",308
+"settings-saved","Settings saved","","components/admin/settings/SettingsClient.tsx",97
+"general-settings-have-been-updated-successfully","General settings have been updated successfully","","components/admin/settings/SettingsClient.tsx",98
+"failed-to-update-settings","Failed to update settings","","components/admin/settings/SettingsClient.tsx",104
+"order-settings-have-been-updated-successfully","Order settings have been updated successfully","","components/admin/settings/SettingsClient.tsx",118
+"delivery-settings-have-been-updated-successfully","Delivery settings have been updated successfully","","components/admin/settings/SettingsClient.tsx",138
+"notification-settings-have-been-updated-successfully","Notification settings have been updated successfully","","components/admin/settings/SettingsClient.tsx",158
+"payment-settings-have-been-updated-successfully","Payment settings have been updated successfully","","components/admin/settings/SettingsClient.tsx",178
+"cache-cleared","Cache cleared","","components/admin/settings/SettingsClient.tsx",197
+"platform-cache-has-been-cleared-successfully","Platform cache has been cleared successfully","","components/admin/settings/SettingsClient.tsx",198
+"failed-to-clear-cache","Failed to clear cache","","components/admin/settings/SettingsClient.tsx",203
+"general-settings","General Settings","","components/admin/settings/SettingsClient.tsx",218
+"basic-platform-information-and-configuration","Basic platform information and configuration","","components/admin/settings/SettingsClient.tsx",221
+"platform-name","Platform Name","","components/admin/settings/SettingsClient.tsx",227
+"platform-email","Platform Email","","components/admin/settings/SettingsClient.tsx",237
+"platform-phone","Platform Phone","","components/admin/settings/SettingsClient.tsx",251
+"currency","Currency","","components/admin/settings/SettingsClient.tsx",264
+"saving","Saving...","","components/admin/settings/SettingsClient.tsx",291
+"order-settings","Order Settings","","components/admin/settings/SettingsClient.tsx",306
+"configure-order-processing-and-policies","Configure order processing and policies","","components/admin/settings/SettingsClient.tsx",308
+"auto-accept-orders","Auto Accept Orders","","components/admin/settings/SettingsClient.tsx",313
+"automatically-accept-all-incoming-orders","Automatically accept all incoming orders","","components/admin/settings/SettingsClient.tsx",315
+"order-timeout-minutes","Order Timeout (minutes)","","components/admin/settings/SettingsClient.tsx",328
+"cancellation-window-minutes","Cancellation Window (minutes)","","components/admin/settings/SettingsClient.tsx",344
+"minimum-order-amount","Minimum Order Amount","","components/admin/settings/SettingsClient.tsx",360
+"configure-delivery-options-and-fees","Configure delivery options and fees","","components/admin/settings/SettingsClient.tsx",399
+"default-delivery-fee","Default Delivery Fee","","components/admin/settings/SettingsClient.tsx",404
+"free-delivery-threshold","Free Delivery Threshold","","components/admin/settings/SettingsClient.tsx",421
+"max-delivery-distance-km","Max Delivery Distance (km)","","components/admin/settings/SettingsClient.tsx",439
+"delivery-time-slots","Delivery Time Slots","","components/admin/settings/SettingsClient.tsx",458
+"allow-customers-to-select-delivery-time-slots","Allow customers to select delivery time slots","","components/admin/settings/SettingsClient.tsx",460
+"notification-settings","Notification Settings","","components/admin/settings/SettingsClient.tsx",494
+"configure-notification-channels-and-preferences","Configure notification channels and preferences","","components/admin/settings/SettingsClient.tsx",497
+"email-notifications","Email Notifications","","components/admin/settings/SettingsClient.tsx",504
+"send-notifications-via-email","Send notifications via email","","components/admin/settings/SettingsClient.tsx",506
+"sms-notifications","SMS Notifications","","components/admin/settings/SettingsClient.tsx",522
+"send-notifications-via-sms","Send notifications via SMS","","components/admin/settings/SettingsClient.tsx",524
+"send-push-notifications-to-mobile-apps","Send push notifications to mobile apps","","components/admin/settings/SettingsClient.tsx",542
+"order-notifications","Order Notifications","","components/admin/settings/SettingsClient.tsx",558
+"notify-users-about-order-updates","Notify users about order updates","","components/admin/settings/SettingsClient.tsx",560
+"promotion-notifications","Promotion Notifications","","components/admin/settings/SettingsClient.tsx",576
+"notify-users-about-promotions-and-deals","Notify users about promotions and deals","","components/admin/settings/SettingsClient.tsx",578
+"payment-settings","Payment Settings","","components/admin/settings/SettingsClient.tsx",616
+"configure-payment-methods-and-commission","Configure payment methods and commission","","components/admin/settings/SettingsClient.tsx",618
+"cash-on-delivery","Cash on Delivery","","components/admin/settings/SettingsClient.tsx",624
+"allow-customers-to-pay-with-cash","Allow customers to pay with cash","","components/admin/settings/SettingsClient.tsx",626
+"mobile-payment","Mobile Payment","","components/admin/settings/SettingsClient.tsx",639
+"allow-customers-to-pay-via-mobile-money","Allow customers to pay via mobile money","","components/admin/settings/SettingsClient.tsx",641
+"card-payment","Card Payment","","components/admin/settings/SettingsClient.tsx",654
+"allow-customers-to-pay-with-credit-debit-cards","Allow customers to pay with credit/debit cards","","components/admin/settings/SettingsClient.tsx",656
+"platform-commission","Platform Commission (%)","","components/admin/settings/SettingsClient.tsx",669
+"commission-charged-on-each-order","Commission charged on each order","","components/admin/settings/SettingsClient.tsx",685
+"system-actions","System Actions","","components/admin/settings/SettingsClient.tsx",712
+"maintenance-and-system-operations","Maintenance and system operations","","components/admin/settings/SettingsClient.tsx",714
+"clear-platform-cache","Clear Platform Cache","","components/admin/settings/SettingsClient.tsx",719
+"clear-all-cached-data-to-apply-changes-immediately","Clear all cached data to apply changes immediately","","components/admin/settings/SettingsClient.tsx",721
+"clearing","Clearing...","","components/admin/settings/SettingsClient.tsx",732
+"clear-cache","Clear Cache","","components/admin/settings/SettingsClient.tsx",737
 "message-templates","Message Templates","","components/admin/notifications/TemplateSelector.tsx",84
 "choose-a-pre-made-template-to-quickly-compose-your-message","Choose a pre-made template to quickly compose your message","","components/admin/notifications/TemplateSelector.tsx",86
 "no-templates-available","No templates available","","components/admin/notifications/TemplateSelector.tsx",93
@@ -664,6 +868,7 @@ Category,Key,English,Swahili,File,Line
 "no-merchants-found-matching-query","No merchants found matching ""{query}""","","components/admin/notifications/RecipientSelector.tsx",203
 "no-merchants-available","No merchants available","","components/admin/notifications/RecipientSelector.tsx",204
 "mobile-push-notification","Mobile Push Notification","","components/admin/notifications/MessagePreview.tsx",29
+"admin","Admin","","components/admin/notifications/MessagePreview.tsx",43
 "now","now","","components/admin/notifications/MessagePreview.tsx",44
 "sms-message","SMS Message","","components/admin/notifications/MessagePreview.tsx",60
 "email-message","Email Message","","components/admin/notifications/MessagePreview.tsx",85
@@ -741,6 +946,8 @@ Category,Key,English,Swahili,File,Line
 "cannot-delete-merchant","Cannot delete merchant","","components/admin/merchants/MerchantsTable.tsx",148
 "failed-to-delete-merchant","Failed to delete merchant","","components/admin/merchants/MerchantsTable.tsx",155
 "business-name","Business Name","","components/admin/merchants/MerchantsTable.tsx",168
+"joined","Joined","","components/admin/merchants/MerchantsTable.tsx",174
+"actions","Actions","","components/admin/merchants/MerchantsTable.tsx",175
 "approving","Approving...","","components/admin/merchants/MerchantsTable.tsx",248
 "approve","Approve","","components/admin/merchants/MerchantsTable.tsx",248
 "rejecting","Rejecting...","","components/admin/merchants/MerchantsTable.tsx",256
@@ -809,42 +1016,54 @@ Category,Key,English,Swahili,File,Line
 "assigned","Assigned","","components/admin/merchants/MerchantManagers.tsx",64
 "approve-merchant","Approve Merchant","","components/admin/merchants/MerchantHeader.tsx",166
 "revoking","Revoking...","","components/admin/merchants/MerchantHeader.tsx",184
-"driver-action","Driver {action}","","components/admin/drivers/DriversTable.tsx",87
-"the-driver-has-been-action-successfully","The driver has been {action} successfully.","","components/admin/drivers/DriversTable.tsx",88
-"cannot-action-the-driver","Cannot {action} the driver","","components/admin/drivers/DriversTable.tsx",95
-"failed-to-action-the-driver","Failed to {action} the driver","","components/admin/drivers/DriversTable.tsx",102
-"unknown","Unknown","","components/admin/drivers/DriversTable.tsx",137
-"documents","Documents","","components/admin/drivers/DriversTable.tsx",150
-"deliveries","Deliveries","","components/admin/drivers/DriversTable.tsx",151
-"no-drivers-found","No drivers found","","components/admin/drivers/DriversTable.tsx",162
-"cni","CNI","","components/admin/drivers/DriversTable.tsx",179
-"","✓","","components/admin/drivers/DriversTable.tsx",179
-"license","License","","components/admin/drivers/DriversTable.tsx",185
-"ban-driver","Ban Driver","","components/admin/drivers/DriversTable.tsx",251
-"unban-driver","Unban Driver","","components/admin/drivers/DriversTable.tsx",260
-"this-action-cannot-be-undone-this-will-permanently-delete-the-driver-account-the-driver-cannot-be-de","This action cannot be undone. This will permanently delete the driver account. The driver cannot be deleted if they have active deliveries.","","components/admin/drivers/DriversTable.tsx",326
-"search-by-name-email-phone-or-cni","Search by name, email, phone, or CNI...","","components/admin/drivers/DriversFilters.tsx",58
-"total-deliveries","Total Deliveries","","components/admin/drivers/DriverStats.tsx",24
-"active-deliveries","Active Deliveries","","components/admin/drivers/DriverStats.tsx",39
-"in-progress","In progress","","components/admin/drivers/DriverStats.tsx",51
-"total-earnings","Total Earnings","","components/admin/drivers/DriverStats.tsx",59
-"avg-price-per-delivery","Avg {price} per delivery","","components/admin/drivers/DriverStats.tsx",68
-"wallet-balance","Wallet Balance","","components/admin/drivers/DriverStats.tsx",78
-"current-balance","Current balance","","components/admin/drivers/DriverStats.tsx",87
-"no-deliveries-yet","No deliveries yet","","components/admin/drivers/DriverOrders.tsx",42
-"this-driver-hasn-t-completed-any-deliveries","This driver hasn't completed any deliveries","","components/admin/drivers/DriverOrders.tsx",44
-"order-total","Order Total","","components/admin/drivers/DriverOrders.tsx",76
-"pendingreview","PendingReview","","components/admin/drivers/DriverHeader.tsx",70
-"unnamed-driver","Unnamed Driver","","components/admin/drivers/DriverHeader.tsx",103
-"approve-driver","Approve Driver","","components/admin/drivers/DriverHeader.tsx",151
-"missing-documents","Missing documents","","components/admin/drivers/DriverDocuments.tsx",38
-"driver-must-upload-both-cni-and-driver-s-license-before-approval","Driver must upload both CNI and driver's license before approval.","","components/admin/drivers/DriverDocuments.tsx",38
-"cni-national-id","CNI (National ID)","","components/admin/drivers/DriverDocuments.tsx",48
-"download","Download","","components/admin/drivers/DriverDocuments.tsx",88
-"no-cni-uploaded","No CNI uploaded","","components/admin/drivers/DriverDocuments.tsx",96
-"driver-s-license","Driver's License","","components/admin/drivers/DriverDocuments.tsx",106
-"no-license-uploaded","No license uploaded","","components/admin/drivers/DriverDocuments.tsx",154
-"document-preview","Document Preview","","components/admin/drivers/DriverDocuments.tsx",165
+"platform-performance-and-key-metrics","Platform performance and key metrics","","components/admin/insights/InsightsClient.tsx",100
+"last-year","Last year","","components/admin/insights/InsightsClient.tsx",110
+"vs-previous-period","vs previous period","","components/admin/insights/InsightsClient.tsx",157
+"active-users","Active Users","","components/admin/insights/InsightsClient.tsx",183
+"orders-by-status","Orders by Status","","components/admin/insights/InsightsClient.tsx",203
+"top-merchants","Top Merchants","","components/admin/insights/InsightsClient.tsx",227
+"top-drivers","Top Drivers","","components/admin/insights/InsightsClient.tsx",260
+"deliveries","deliveries","","components/admin/insights/InsightsClient.tsx",275
+"popular-products","Popular Products","","components/admin/insights/InsightsClient.tsx",288
+"recent-activities","Recent Activities","","components/admin/insights/InsightsClient.tsx",318
+"search-by-name-email-or-phone","Search by name, email, or phone...","","components/admin/users/UsersList.tsx",139
+"filter-by-role","Filter by role","","components/admin/users/UsersList.tsx",147
+"all-roles","All Roles","","components/admin/users/UsersList.tsx",150
+"driver","Driver","","components/admin/users/UsersList.tsx",152
+"merchant","Merchant","","components/admin/users/UsersList.tsx",153
+"super-admin","Super Admin","","components/admin/users/UsersList.tsx",155
+"driver-status","Driver status","","components/admin/users/UsersList.tsx",160
+"approved","Approved","","components/admin/users/UsersList.tsx",164
+"banned","Banned","","components/admin/users/UsersList.tsx",167
+"showing-count-users","Showing {count} users","","components/admin/users/UsersList.tsx",174
+"no-users-found","No users found","","components/admin/users/UsersList.tsx",182
+"user","User","","components/admin/users/UsersList.tsx",192
+"roles","Roles","","components/admin/users/UsersList.tsx",194
+"no-name","No name","","components/admin/users/UsersList.tsx",214
+"no-phone","No phone","","components/admin/users/UsersList.tsx",230
+"manage-roles","Manage Roles","","components/admin/users/UsersList.tsx",276
+"delete-user","Delete User","","components/admin/users/UsersList.tsx",287
+"can-place-orders-and-shop","Can place orders and shop","","components/admin/users/UserRoleDialog.tsx",52
+"can-deliver-orders","Can deliver orders","","components/admin/users/UserRoleDialog.tsx",59
+"can-manage-stores-and-products","Can manage stores and products","","components/admin/users/UserRoleDialog.tsx",66
+"can-manage-users-and-content","Can manage users and content","","components/admin/users/UserRoleDialog.tsx",73
+"cannot-update-roles","Cannot update roles","","components/admin/users/UserRoleDialog.tsx",86
+"failed-to-update-user-roles","Failed to update user roles","","components/admin/users/UserRoleDialog.tsx",93
+"manage-user-roles","Manage User Roles","","components/admin/users/UserRoleDialog.tsx",132
+"select-roles-for","Select roles for","","components/admin/users/UserRoleDialog.tsx",134
+"current-roles","Current Roles","","components/admin/users/UserRoleDialog.tsx",141
+"no-roles-assigned","No roles assigned","","components/admin/users/UserRoleDialog.tsx",150
+"available-roles","Available Roles","","components/admin/users/UserRoleDialog.tsx",157
+"super-admin-role-grants-full-access-to-the-platform-use-with-caution","Super Admin role grants full access to the platform. Use with caution.","","components/admin/users/UserRoleDialog.tsx",202
+"user-deleted","User deleted","","components/admin/users/DeleteUserDialog.tsx",48
+"the-user-has-been-permanently-deleted","The user has been permanently deleted","","components/admin/users/DeleteUserDialog.tsx",49
+"cannot-delete-user","Cannot delete user","","components/admin/users/DeleteUserDialog.tsx",57
+"failed-to-delete-user","Failed to delete user","","components/admin/users/DeleteUserDialog.tsx",64
+"please-type-delete-to-confirm","Please type DELETE to confirm","","components/admin/users/DeleteUserDialog.tsx",75
+"are-you-sure-you-want-to-delete","Are you sure you want to delete","","components/admin/users/DeleteUserDialog.tsx",100
+"this-action-cannot-be-undone-all-user-data-will-be-permanently-deleted","This action cannot be undone. All user data will be permanently deleted.","","components/admin/users/DeleteUserDialog.tsx",103
+"this-user-has-count-orders-deletion-may-fail","This user has {count} orders. Deletion may fail.","","components/admin/users/DeleteUserDialog.tsx",108
+"to-confirm","to confirm","","components/admin/users/DeleteUserDialog.tsx",117
 "product-approved","Product approved","","components/admin/products/ProductsTable.tsx",93
 "the-product-has-been-verified-and-is-now-visible","The product has been verified and is now visible.","","components/admin/products/ProductsTable.tsx",94
 "cannot-approve-product","Cannot approve product","","components/admin/products/ProductsTable.tsx",101
@@ -870,6 +1089,7 @@ Category,Key,English,Swahili,File,Line
 "failed-to-reject-products","Failed to reject products","","components/admin/products/ProductsTable.tsx",245
 "approve-all","Approve All","","components/admin/products/ProductsTable.tsx",303
 "reject-all","Reject All","","components/admin/products/ProductsTable.tsx",312
+"clear","Clear","","components/admin/products/ProductsTable.tsx",319
 "image","Image","","components/admin/products/ProductsTable.tsx",334
 "product","Product","","components/admin/products/ProductsTable.tsx",335
 "price","Price","","components/admin/products/ProductsTable.tsx",337
@@ -906,55 +1126,55 @@ Category,Key,English,Swahili,File,Line
 "hiding","Hiding...","","components/admin/products/ProductHeader.tsx",221
 "hide-product","Hide Product","","components/admin/products/ProductHeader.tsx",221
 "show-product","Show Product","","components/admin/products/ProductHeader.tsx",226
-"light","Light","","components/driver/profile/ThemeToggle.tsx",47
-"dark","Dark","","components/driver/profile/ThemeToggle.tsx",48
-"system","System","","components/driver/profile/ThemeToggle.tsx",49
-"document-downloaded-successfully","Document downloaded successfully!","","components/driver/profile/ImageDocumentPreview.tsx",54
-"you-ve-downloaded-successfully-the-document","You've downloaded successfully the document.","","components/driver/profile/ImageDocumentPreview.tsx",55
-"failed-to-download-image","Failed to download image","","components/driver/profile/ImageDocumentPreview.tsx",60
-"make-sure-you-are-connected-and-retry","Make sure you are connected and retry","","components/driver/profile/ImageDocumentPreview.tsx",61
-"exit-driver-mode","Exit Driver Mode?","","components/driver/profile/ExitDriverModeDialog.tsx",44
-"you-can-return-to-driver-mode-anytime-from-your-profile","You can return to driver mode anytime from your profile.","","components/driver/profile/ExitDriverModeDialog.tsx",57
-"earnings-this-month","Earnings This Month","","components/driver/profile/DriverProfileStats.tsx",44
-"average-rating","Average Rating","","components/driver/profile/DriverProfileStats.tsx",60
-"manage-your-account-and-preferences","Manage your account and preferences","","components/driver/profile/DriverProfileClient.tsx",79
-"language-preferences","Language Preferences","","components/driver/profile/DriverProfileClient.tsx",151
-"language","Language","","components/driver/profile/DriverProfileClient.tsx",154
-"choose-your-preferred-language","Choose your preferred language","","components/driver/profile/DriverProfileClient.tsx",156
-"performance-overview","Performance Overview","","components/driver/profile/DriverProfileClient.tsx",167
-"completion-rate","Completion Rate","","components/driver/profile/DriverProfileClient.tsx",204
-"on-time-rate","On-time Rate","","components/driver/profile/DriverProfileClient.tsx",212
-"failed-to-load-performance-stats","Failed to load performance stats","","components/driver/profile/DriverProfileClient.tsx",219
-"no-documents-uploaded-yet","No documents uploaded yet","","components/driver/profile/DriverDocumentsPreview.tsx",77
-"id-card","ID Card","","components/driver/profile/DriverDocumentsPreview.tsx",85
-"driver-license","Driver License","","components/driver/profile/DriverDocumentsPreview.tsx",100
-"avg-earnings","Avg. Earnings","","components/driver/insights/DriverStatsCards.tsx",44
-"performance-metrics","Performance Metrics","","components/driver/insights/DriverPerformanceCard.tsx",43
-"avg-delivery-time","Avg. Delivery Time","","components/driver/insights/DriverPerformanceCard.tsx",74
-"time-from-pickup-to-delivery","Time from pickup to delivery","","components/driver/insights/DriverPerformanceCard.tsx",79
-"total-distance","Total Distance","","components/driver/insights/DriverPerformanceCard.tsx",90
-"km","km","","components/driver/insights/DriverPerformanceCard.tsx",91
-"distance-covered-during-period","Distance covered during period","","components/driver/insights/DriverPerformanceCard.tsx",95
-"on-time-deliveries","On-time deliveries","","components/driver/insights/DriverPerformanceCard.tsx",104
-"last-7-days","Last 7 days","","components/driver/insights/DriverInsightsClient.tsx",41
-"last-30-days","Last 30 days","","components/driver/insights/DriverInsightsClient.tsx",45
-"last-90-days","Last 90 days","","components/driver/insights/DriverInsightsClient.tsx",49
-"this-month","This month","","components/driver/insights/DriverInsightsClient.tsx",53
-"last-month","Last month","","components/driver/insights/DriverInsightsClient.tsx",57
-"this-year","This year","","components/driver/insights/DriverInsightsClient.tsx",64
-"insights-analytics","Insights & Analytics","","components/driver/insights/DriverInsightsClient.tsx",152
-"track-your-performance-and-earnings","Track your performance and earnings","","components/driver/insights/DriverInsightsClient.tsx",155
-"earnings-evolution","Earnings Evolution","","components/driver/insights/DriverEarningsChart.tsx",37
-"no-earnings-data","No earnings data","","components/driver/insights/DriverEarningsChart.tsx",47
-"earnings-will-appear-here-once-you-complete-deliveries","Earnings will appear here once you complete deliveries","","components/driver/insights/DriverEarningsChart.tsx",50
-"canceled","Canceled","","components/driver/insights/DriverDeliveriesOverview.tsx",60
-"deliveries-overview","Deliveries Overview","","components/driver/insights/DriverDeliveriesOverview.tsx",71
-"status-breakdown","Status breakdown","","components/driver/insights/DriverDeliveriesOverview.tsx",73
+"driver-action","Driver {action}","","components/admin/drivers/DriversTable.tsx",87
+"the-driver-has-been-action-successfully","The driver has been {action} successfully.","","components/admin/drivers/DriversTable.tsx",88
+"cannot-action-the-driver","Cannot {action} the driver","","components/admin/drivers/DriversTable.tsx",95
+"failed-to-action-the-driver","Failed to {action} the driver","","components/admin/drivers/DriversTable.tsx",102
+"unknown","Unknown","","components/admin/drivers/DriversTable.tsx",137
+"no-drivers-found","No drivers found","","components/admin/drivers/DriversTable.tsx",162
+"cni","CNI","","components/admin/drivers/DriversTable.tsx",179
+"","✓","","components/admin/drivers/DriversTable.tsx",179
+"license","License","","components/admin/drivers/DriversTable.tsx",185
+"ban-driver","Ban Driver","","components/admin/drivers/DriversTable.tsx",251
+"unban-driver","Unban Driver","","components/admin/drivers/DriversTable.tsx",260
+"this-action-cannot-be-undone-this-will-permanently-delete-the-driver-account-the-driver-cannot-be-de","This action cannot be undone. This will permanently delete the driver account. The driver cannot be deleted if they have active deliveries.","","components/admin/drivers/DriversTable.tsx",326
+"search-by-name-email-phone-or-cni","Search by name, email, phone, or CNI...","","components/admin/drivers/DriversFilters.tsx",58
+"active-deliveries","Active Deliveries","","components/admin/drivers/DriverStats.tsx",39
+"avg-price-per-delivery","Avg {price} per delivery","","components/admin/drivers/DriverStats.tsx",68
+"wallet-balance","Wallet Balance","","components/admin/drivers/DriverStats.tsx",78
+"current-balance","Current balance","","components/admin/drivers/DriverStats.tsx",87
+"no-deliveries-yet","No deliveries yet","","components/admin/drivers/DriverOrders.tsx",42
+"this-driver-hasn-t-completed-any-deliveries","This driver hasn't completed any deliveries","","components/admin/drivers/DriverOrders.tsx",44
+"order-total","Order Total","","components/admin/drivers/DriverOrders.tsx",76
+"pendingreview","PendingReview","","components/admin/drivers/DriverHeader.tsx",70
+"unnamed-driver","Unnamed Driver","","components/admin/drivers/DriverHeader.tsx",103
+"approve-driver","Approve Driver","","components/admin/drivers/DriverHeader.tsx",151
+"missing-documents","Missing documents","","components/admin/drivers/DriverDocuments.tsx",38
+"driver-must-upload-both-cni-and-driver-s-license-before-approval","Driver must upload both CNI and driver's license before approval.","","components/admin/drivers/DriverDocuments.tsx",38
+"cni-national-id","CNI (National ID)","","components/admin/drivers/DriverDocuments.tsx",48
+"download","Download","","components/admin/drivers/DriverDocuments.tsx",88
+"no-cni-uploaded","No CNI uploaded","","components/admin/drivers/DriverDocuments.tsx",96
+"driver-s-license","Driver's License","","components/admin/drivers/DriverDocuments.tsx",106
+"no-license-uploaded","No license uploaded","","components/admin/drivers/DriverDocuments.tsx",154
+"document-preview","Document Preview","","components/admin/drivers/DriverDocuments.tsx",165
 "access-denied","Access Denied","","app/[locale]/unauthorized/page.tsx",21
 "you-don-t-have-permission-to-access-this-page-this-area-is-restricted-to-administrators-only","You don't have permission to access this page. This area is restricted to administrators only.","","app/[locale]/unauthorized/page.tsx",24
 "return-to-home","Return to Home","","app/[locale]/unauthorized/page.tsx",31
 "go-to-profile","Go to Profile","","app/[locale]/unauthorized/page.tsx",36
 "if-you-believe-this-is-an-error-please-contact-support","If you believe this is an error, please contact support.","","app/[locale]/unauthorized/page.tsx",42
+"total-merchants","Total Merchants","","app/[locale]/(admin)/admin/page.tsx",111
+"pending-approval","pending approval","","app/[locale]/(admin)/admin/page.tsx",114
+"total-users","Total Users","","app/[locale]/(admin)/admin/page.tsx",127
+"active-platform-users","Active platform users","","app/[locale]/(admin)/admin/page.tsx",130
+"welcome-back-here-s-what-s-happening-with-your-platform-today","Welcome back! Here's what's happening with your platform today.","","app/[locale]/(admin)/admin/page.tsx",150
+"today-s-orders","Today's Orders","","app/[locale]/(admin)/admin/page.tsx",200
+"pending-reviews","Pending Reviews","","app/[locale]/(admin)/admin/page.tsx",214
+"active-merchants","Active Merchants","","app/[locale]/(admin)/admin/page.tsx",228
+"recent-merchants","Recent Merchants","","app/[locale]/(admin)/admin/page.tsx",244
+"view-all-merchants","View All Merchants","","app/[locale]/(admin)/admin/page.tsx",267
+"pending-products","Pending Products","","app/[locale]/(admin)/admin/page.tsx",276
+"review","Review","","app/[locale]/(admin)/admin/page.tsx",291
+"review-products","Review Products","","app/[locale]/(admin)/admin/page.tsx",295
 "failed-to-load-stores","Failed to load stores","","app/[locale]/(client)/stores/page.tsx",28
 "store-not-found","Store Not Found","","app/[locale]/(client)/stores/not-found.tsx",16
 "the-store-you-re-looking-for-doesn-t-exist-or-is-currently-unavailable","The store you're looking for doesn't exist or is currently unavailable.","","app/[locale]/(client)/stores/not-found.tsx",19
@@ -1056,19 +1276,6 @@ Category,Key,English,Swahili,File,Line
 "your-cart","Your Cart","","app/[locale]/(client)/cart/page.tsx",60
 "clear-cart","Clear Cart","","app/[locale]/(client)/cart/page.tsx",61
 "proceed-to-checkout","Proceed to Checkout","","app/[locale]/(client)/cart/page.tsx",161
-"total-merchants","Total Merchants","","app/[locale]/(admin)/admin/page.tsx",111
-"pending-approval","pending approval","","app/[locale]/(admin)/admin/page.tsx",114
-"total-users","Total Users","","app/[locale]/(admin)/admin/page.tsx",127
-"active-platform-users","Active platform users","","app/[locale]/(admin)/admin/page.tsx",130
-"welcome-back-here-s-what-s-happening-with-your-platform-today","Welcome back! Here's what's happening with your platform today.","","app/[locale]/(admin)/admin/page.tsx",150
-"today-s-orders","Today's Orders","","app/[locale]/(admin)/admin/page.tsx",200
-"pending-reviews","Pending Reviews","","app/[locale]/(admin)/admin/page.tsx",214
-"active-merchants","Active Merchants","","app/[locale]/(admin)/admin/page.tsx",228
-"recent-merchants","Recent Merchants","","app/[locale]/(admin)/admin/page.tsx",244
-"view-all-merchants","View All Merchants","","app/[locale]/(admin)/admin/page.tsx",267
-"pending-products","Pending Products","","app/[locale]/(admin)/admin/page.tsx",276
-"review","Review","","app/[locale]/(admin)/admin/page.tsx",291
-"review-products","Review Products","","app/[locale]/(admin)/admin/page.tsx",295
 "merchant-not-found","Merchant Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",21
 "the-merchant-you-re-looking-for-doesn-t-exist-or-you-don-t-have-access-to-it","The merchant you're looking for doesn't exist or you don't have access to it.","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",31
 "go-to-home","Go to Home","","app/[locale]/(merchant)/merchant/[merchantId]/not-found.tsx",35
@@ -1078,27 +1285,24 @@ Category,Key,English,Swahili,File,Line
 "we-encountered-an-error-while-loading-your-dashboard","We encountered an error while loading your dashboard.","","app/[locale]/(merchant)/merchant/[merchantId]/error.tsx",41
 "wallet-transactions","Wallet & Transactions","","app/[locale]/(driver)/driver/wallet/page.tsx",192
 "manage-your-earnings-and-view-transaction-history","Manage your earnings and view transaction history","","app/[locale]/(driver)/driver/wallet/page.tsx",195
-"the-store-you-apos-re-looking-for-doesn-apos-t-exist-or-is-currently-unavailable","The store you&apos;re looking for doesn&apos;t exist or is currently unavailable.","","app/[locale]/(client)/stores/[slug]/not-found.tsx",20
-"back-to-orders","Back to Orders","","app/[locale]/(client)/orders/[orderId]/page.tsx",107
-"placed-on","Placed on","","app/[locale]/(client)/orders/[orderId]/page.tsx",118
-"order-status","Order Status","","app/[locale]/(client)/orders/[orderId]/page.tsx",128
-"quantity","Quantity","","app/[locale]/(client)/orders/[orderId]/page.tsx",173
-"each","each","","app/[locale]/(client)/orders/[orderId]/page.tsx",176
-"discount","Discount","","app/[locale]/(client)/orders/[orderId]/page.tsx",202
-"verification-codes","Verification Codes","","app/[locale]/(client)/orders/[orderId]/page.tsx",221
-"delivery-code","Delivery Code","","app/[locale]/(client)/orders/[orderId]/page.tsx",226
-"delivery-information","Delivery Information","","app/[locale]/(client)/orders/[orderId]/page.tsx",242
-"notes","Notes","","app/[locale]/(client)/orders/[orderId]/page.tsx",273
-"estimated-delivery","Estimated Delivery","","app/[locale]/(client)/orders/[orderId]/page.tsx",285
-"method","Method","","app/[locale]/(client)/orders/[orderId]/page.tsx",328
+"manage-delivery-zones-landmarks-and-coverage-areas","Manage delivery zones, landmarks, and coverage areas","","app/[locale]/(admin)/admin/zones/page.tsx",44
+"total-zones","Total Zones","","app/[locale]/(admin)/admin/zones/page.tsx",59
+"count-active","{count} active","","app/[locale]/(admin)/admin/zones/page.tsx",65
+"total-landmarks","Total Landmarks","","app/[locale]/(admin)/admin/zones/page.tsx",73
+"across-all-zones","Across all zones","","app/[locale]/(admin)/admin/zones/page.tsx",79
+"in-delivery-zones","In delivery zones","","app/[locale]/(admin)/admin/zones/page.tsx",93
+"coverage","Coverage","","app/[locale]/(admin)/admin/zones/page.tsx",101
+"active-coverage","Active coverage","","app/[locale]/(admin)/admin/zones/page.tsx",109
+"users-management","Users Management","","app/[locale]/(admin)/admin/users/page.tsx",31
+"manage-users-roles-and-permissions-across-the-platform","Manage users, roles, and permissions across the platform","","app/[locale]/(admin)/admin/users/page.tsx",33
+"customers","Customers","","app/[locale]/(admin)/admin/users/page.tsx",58
+"of-total","of total","","app/[locale]/(admin)/admin/users/page.tsx",64
+"admins","Admins","","app/[locale]/(admin)/admin/users/page.tsx",88
+"platform-administrators","Platform administrators","","app/[locale]/(admin)/admin/users/page.tsx",94
+"platform-settings","Platform Settings","","app/[locale]/(admin)/admin/settings/page.tsx",18
+"configure-platform-behavior-features-and-preferences","Configure platform behavior, features, and preferences","","app/[locale]/(admin)/admin/settings/page.tsx",20
 "products-management","Products Management","","app/[locale]/(admin)/admin/products/page.tsx",37
 "review-and-approve-products-submitted-by-merchants","Review and approve products submitted by merchants","","app/[locale]/(admin)/admin/products/page.tsx",39
-"users-management","Users Management","","app/[locale]/(admin)/admin/users/page.tsx",30
-"manage-users-roles-and-permissions-across-the-platform","Manage users, roles, and permissions across the platform","","app/[locale]/(admin)/admin/users/page.tsx",32
-"customers","Customers","","app/[locale]/(admin)/admin/users/page.tsx",57
-"of-total","of total","","app/[locale]/(admin)/admin/users/page.tsx",63
-"admins","Admins","","app/[locale]/(admin)/admin/users/page.tsx",87
-"platform-administrators","Platform administrators","","app/[locale]/(admin)/admin/users/page.tsx",93
 "all-registered-merchants","All registered merchants","","app/[locale]/(admin)/admin/notifications/page.tsx",30
 "can-receive-orders","Can receive orders","","app/[locale]/(admin)/admin/notifications/page.tsx",37
 "awaiting-verification","Awaiting verification","","app/[locale]/(admin)/admin/notifications/page.tsx",44
@@ -1127,18 +1331,23 @@ Category,Key,English,Swahili,File,Line
 "keep-messages-clear-concise-and-action-oriented","Keep messages clear, concise, and action-oriented","","app/[locale]/(admin)/admin/notifications/page.tsx",146
 "merchants-management","Merchants Management","","app/[locale]/(admin)/admin/merchants/page.tsx",23
 "approve-manage-and-monitor-all-merchants-on-the-platform","Approve, manage, and monitor all merchants on the platform","","app/[locale]/(admin)/admin/merchants/page.tsx",25
-"manage-delivery-zones-landmarks-and-coverage-areas","Manage delivery zones, landmarks, and coverage areas","","app/[locale]/(admin)/admin/zones/page.tsx",44
-"total-zones","Total Zones","","app/[locale]/(admin)/admin/zones/page.tsx",59
-"count-active","{count} active","","app/[locale]/(admin)/admin/zones/page.tsx",65
-"total-landmarks","Total Landmarks","","app/[locale]/(admin)/admin/zones/page.tsx",73
-"across-all-zones","Across all zones","","app/[locale]/(admin)/admin/zones/page.tsx",79
-"in-delivery-zones","In delivery zones","","app/[locale]/(admin)/admin/zones/page.tsx",93
-"coverage","Coverage","","app/[locale]/(admin)/admin/zones/page.tsx",101
-"active-coverage","Active coverage","","app/[locale]/(admin)/admin/zones/page.tsx",109
 "drivers-management","Drivers Management","","app/[locale]/(admin)/admin/drivers/page.tsx",37
 "review-driver-applications-and-manage-driver-accounts","Review driver applications and manage driver accounts","","app/[locale]/(admin)/admin/drivers/page.tsx",39
 "total-drivers","Total Drivers","","app/[locale]/(admin)/admin/drivers/page.tsx",49
 "rejected-banned","Rejected/Banned","","app/[locale]/(admin)/admin/drivers/page.tsx",83
+"the-store-you-apos-re-looking-for-doesn-apos-t-exist-or-is-currently-unavailable","The store you&apos;re looking for doesn&apos;t exist or is currently unavailable.","","app/[locale]/(client)/stores/[slug]/not-found.tsx",20
+"back-to-orders","Back to Orders","","app/[locale]/(client)/orders/[orderId]/page.tsx",107
+"placed-on","Placed on","","app/[locale]/(client)/orders/[orderId]/page.tsx",118
+"order-status","Order Status","","app/[locale]/(client)/orders/[orderId]/page.tsx",128
+"quantity","Quantity","","app/[locale]/(client)/orders/[orderId]/page.tsx",173
+"each","each","","app/[locale]/(client)/orders/[orderId]/page.tsx",176
+"discount","Discount","","app/[locale]/(client)/orders/[orderId]/page.tsx",202
+"verification-codes","Verification Codes","","app/[locale]/(client)/orders/[orderId]/page.tsx",221
+"delivery-code","Delivery Code","","app/[locale]/(client)/orders/[orderId]/page.tsx",226
+"delivery-information","Delivery Information","","app/[locale]/(client)/orders/[orderId]/page.tsx",242
+"notes","Notes","","app/[locale]/(client)/orders/[orderId]/page.tsx",273
+"estimated-delivery","Estimated Delivery","","app/[locale]/(client)/orders/[orderId]/page.tsx",285
+"method","Method","","app/[locale]/(client)/orders/[orderId]/page.tsx",328
 "you-don-t-have-permission-to-access-this-page-only-members-of-this-merchant-can-access","You don't have permission to access this page. Only members of this merchant can access.","","app/[locale]/(merchant)/merchant/[merchantId]/unauthorized/page.tsx",24
 "products-not-found","Products Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",20
 "we-couldn-t-find-the-products-you-re-looking-for","We couldn't find the products you're looking for.","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",30
@@ -1152,6 +1361,22 @@ Category,Key,English,Swahili,File,Line
 "average-orders-per-customer","Average orders per customer","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",126
 "global-performance","Global performance","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",142
 "cancellation-rate","Cancellation rate","","app/[locale]/(merchant)/merchant/[merchantId]/insights/page.tsx",162
+"zone-created","Zone created","","app/[locale]/(admin)/admin/zones/new/page.tsx",106
+"the-delivery-zone-has-been-successfully-created","The delivery zone has been successfully created","","app/[locale]/(admin)/admin/zones/new/page.tsx",107
+"failed-to-create-zone","Failed to create zone","","app/[locale]/(admin)/admin/zones/new/page.tsx",114
+"create-delivery-zone","Create Delivery Zone","","app/[locale]/(admin)/admin/zones/new/page.tsx",132
+"define-a-new-delivery-zone-with-boundaries-pricing-and-landmarks","Define a new delivery zone with boundaries, pricing, and landmarks","","app/[locale]/(admin)/admin/zones/new/page.tsx",134
+"e-g-downtown-central-zone","e.g., Downtown, Central Zone","","app/[locale]/(admin)/admin/zones/new/page.tsx",147
+"select-zone-code","Select zone code","","app/[locale]/(admin)/admin/zones/new/page.tsx",161
+"brief-description-of-the-zone-coverage-area","Brief description of the zone coverage area...","","app/[locale]/(admin)/admin/zones/new/page.tsx",176
+"pricing-settings","Pricing & Settings","","app/[locale]/(admin)/admin/zones/new/page.tsx",187
+"creating","Creating...","","app/[locale]/(admin)/admin/zones/new/page.tsx",302
+"back-to-products","Back to Products","","app/[locale]/(admin)/admin/products/[id]/page.tsx",32
+"back-to-merchants","Back to Merchants","","app/[locale]/(admin)/admin/merchants/[id]/page.tsx",35
+"managers","Managers","","app/[locale]/(admin)/admin/merchants/[id]/page.tsx",52
+"the-merchant-you-re-looking-for-doesn-t-exist-or-has-been-removed","The merchant you're looking for doesn't exist or has been removed.","","app/[locale]/(admin)/admin/merchants/[id]/not-found.tsx",21
+"back-to-drivers","Back to Drivers","","app/[locale]/(admin)/admin/drivers/[id]/page.tsx",35
+"delivery-history","Delivery History","","app/[locale]/(admin)/admin/drivers/[id]/page.tsx",50
 "back-to-order-details","Back to Order Details","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",153
 "order-progress","Order Progress","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",183
 "delivery-details","Delivery Details","","app/[locale]/(client)/orders/[orderId]/track/page.tsx",196
@@ -1178,3 +1403,5 @@ Category,Key,English,Swahili,File,Line
 "delivery-history","Delivery History","","app/[locale]/(admin)/admin/drivers/[id]/page.tsx",50
 "edit-zone","Edit Zone","","app/[locale]/(admin)/admin/zones/[id]/edit/page.tsx",39
 "update-zone-details-boundaries-and-landmarks","Update zone details, boundaries, and landmarks","","app/[locale]/(admin)/admin/zones/[id]/edit/page.tsx",41
+"edit-zone","Edit Zone","","app/[locale]/(admin)/admin/zones/[id]/edit/page.tsx",40
+"update-zone-details-boundaries-and-landmarks","Update zone details, boundaries, and landmarks","","app/[locale]/(admin)/admin/zones/[id]/edit/page.tsx",42

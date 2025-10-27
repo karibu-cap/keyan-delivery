@@ -139,69 +139,70 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
             </Card>
 
             {/* Map Section */}
-            {(trackingData?.status === OrderStatus.ON_THE_WAY || 
-              trackingData?.status === OrderStatus.ACCEPTED_BY_DRIVER) && trackingData && (
-                <Card className="p-4 sm:p-6 rounded-2xl shadow-card">
-                    <div className="mb-4">
-                        <h2 className="text-lg sm:text-xl font-semibold">Live Tracking</h2>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            Follow your driver in real-time
-                        </p>
-                    </div>
+            {(trackingData?.status === OrderStatus.ON_THE_WAY ||
+                trackingData?.status === OrderStatus.ACCEPTED_BY_DRIVER) && trackingData && (
+                    <Card className="p-4 sm:p-6 rounded-2xl shadow-card">
+                        <div className="mb-4">
+                            <h2 className="text-lg sm:text-xl font-semibold">Live Tracking</h2>
+                            <p className="text-sm text-muted-foreground mt-1">
+                                Follow your driver in real-time
+                            </p>
+                        </div>
 
-                    {/* Map */}
-                    <div className="relative w-full h-[400px] rounded-2xl overflow-hidden">
-                        <DriverTrackingMap
-                            driverLocation={
-                                trackingData.driverCurrentLocation
-                                    ? {
-                                        latitude: trackingData.driverCurrentLocation.latitude,
-                                        longitude: trackingData.driverCurrentLocation.longitude,
-                                    }
-                                    : null
-                            }
-                            merchantLocation={
-                                trackingData.merchant.address
-                                    ? {
-                                        latitude: trackingData.merchant.address.latitude,
-                                        longitude: trackingData.merchant.address.longitude,
-                                        name: trackingData.merchant.businessName,
-                                    }
-                                    : null
-                            }
-                            deliveryLocation={{
-                                latitude: trackingData.deliveryInfo.location.lat,
-                                longitude: trackingData.deliveryInfo.location.lng,
-                                address: trackingData.deliveryInfo.address,
-                            }}
-                        />
-                    </div>
+                        {/* Map */}
+                        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden">
+                            <DriverTrackingMap
+                                orderStatus={trackingData.status}
+                                driverLocation={
+                                    trackingData.driverCurrentLocation
+                                        ? {
+                                            latitude: trackingData.driverCurrentLocation.latitude,
+                                            longitude: trackingData.driverCurrentLocation.longitude,
+                                        }
+                                        : null
+                                }
+                                merchantLocation={
+                                    trackingData.merchant.address
+                                        ? {
+                                            latitude: trackingData.merchant.address.latitude,
+                                            longitude: trackingData.merchant.address.longitude,
+                                            name: trackingData.merchant.businessName,
+                                        }
+                                        : null
+                                }
+                                deliveryLocation={{
+                                    latitude: trackingData.deliveryInfo.location.lat,
+                                    longitude: trackingData.deliveryInfo.location.lng,
+                                    address: trackingData.deliveryInfo.address,
+                                }}
+                            />
+                        </div>
 
-                    {/* Location Info */}
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {trackingData.merchant.address && (
-                            <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg">
-                                <Package className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                        {/* Location Info */}
+                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {trackingData.merchant.address && (
+                                <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg">
+                                    <Package className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-orange-900">Pickup</p>
+                                        <p className="text-xs text-orange-700 truncate">
+                                            {trackingData.merchant.businessName}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
+                                <MapPin className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-orange-900">Pickup</p>
-                                    <p className="text-xs text-orange-700 truncate">
-                                        {trackingData.merchant.businessName}
+                                    <p className="text-sm font-medium text-green-900">Delivery</p>
+                                    <p className="text-xs text-green-700 truncate">
+                                        {trackingData.deliveryInfo.address}
                                     </p>
                                 </div>
                             </div>
-                        )}
-                        <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
-                            <MapPin className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-green-900">Delivery</p>
-                                <p className="text-xs text-green-700 truncate">
-                                    {trackingData.deliveryInfo.address}
-                                </p>
-                            </div>
                         </div>
-                    </div>
-                </Card>
-            )}
+                    </Card>
+                )}
 
             {/* Completed State */}
             {trackingData?.status === OrderStatus.COMPLETED && (

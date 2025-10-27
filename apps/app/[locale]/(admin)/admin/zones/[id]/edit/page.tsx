@@ -1,11 +1,11 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { getZoneById } from "@/lib/actions/server/admin/zones";
-import { getServerT } from "@/i18n/server-translations";
 import EditZoneForm from "@/components/admin/zones/EditZoneForm";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getServerT } from "@/i18n/server-translations";
+import { getZoneById } from "@/lib/actions/server/admin/zones";
+import { ArrowLeft } from "lucide-react";
+import { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
     title: "Edit Zone | Admin Dashboard",
@@ -13,14 +13,15 @@ export const metadata: Metadata = {
 };
 
 interface EditZonePageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 export default async function EditZonePage({ params }: EditZonePageProps) {
     const t = await getServerT();
-    const zone = await getZoneById(params.id);
+    const props = await params
+    const zone = await getZoneById(props.id);
 
     if (!zone) {
         notFound();

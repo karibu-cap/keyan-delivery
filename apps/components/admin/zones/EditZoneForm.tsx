@@ -53,9 +53,7 @@ export default function EditZoneForm({ zone }: EditZoneFormProps) {
         description: zone.description || "",
         deliveryFee: zone.deliveryFee,
         estimatedDeliveryMinutes: zone.estimatedDeliveryMinutes || 30,
-        minOrderAmount: zone.minOrderAmount || 0,
         color: zone.color || "#3b82f6",
-        priority: zone.priority,
         status: zone.status,
         geometry: zone.geometry as { type: string; coordinates: number[][][] },
         landmarks: (zone.landmarks || []) as Landmark[],
@@ -82,7 +80,7 @@ export default function EditZoneForm({ zone }: EditZoneFormProps) {
             });
             return;
         }
-
+        console.log(formData.geometry.coordinates[0].length)
         if (formData.geometry.coordinates[0].length < 3) {
             toast({
                 variant: "destructive",
@@ -207,32 +205,6 @@ export default function EditZoneForm({ zone }: EditZoneFormProps) {
                             }
                         />
                     </div>
-                    <div>
-                        <Label htmlFor="minOrderAmount">{t("Min Order Amount")}</Label>
-                        <Input
-                            id="minOrderAmount"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={formData.minOrderAmount}
-                            onChange={(e) =>
-                                setFormData({ ...formData, minOrderAmount: parseFloat(e.target.value) || 0 })
-                            }
-                        />
-                    </div>
-                    <div>
-                        <Label htmlFor="priority">
-                            {t("Priority")} ({t("higher = more important")})
-                        </Label>
-                        <Input
-                            id="priority"
-                            type="number"
-                            value={formData.priority}
-                            onChange={(e) =>
-                                setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })
-                            }
-                        />
-                    </div>
                 </div>
             </Card>
 
@@ -254,7 +226,7 @@ export default function EditZoneForm({ zone }: EditZoneFormProps) {
                             <SelectContent>
                                 {ZONE_STATUSES.map((status) => (
                                     <SelectItem key={status} value={status}>
-                                        {t(status)}
+                                        {status}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -277,7 +249,7 @@ export default function EditZoneForm({ zone }: EditZoneFormProps) {
                                                 className="w-4 h-4 rounded-full border"
                                                 style={{ backgroundColor: preset.value }}
                                             />
-                                            {t(preset.name)}
+                                            {preset.name}
                                         </div>
                                     </SelectItem>
                                 ))}
