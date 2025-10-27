@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { ZoneDrawMap } from '@/components/admin/zones/ZoneDrawMap';
-import { LandmarkManager } from '@/components/admin/zones/LandmarkManager';
+import LandmarksManager from '@/components/admin/zones/LandmarksManager';
 import { createZone } from '@/lib/actions/server/admin/zones';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
@@ -49,9 +49,7 @@ export default function NewZonePage() {
         description: '',
         deliveryFee: 0,
         estimatedDeliveryMinutes: 30,
-        minOrderAmount: 0,
         color: '#3b82f6',
-        priority: 0,
         status: 'ACTIVE' as ZoneStatus,
         geometry: {
             type: 'Polygon',
@@ -220,33 +218,6 @@ export default function NewZonePage() {
                             />
                         </div>
                         <div>
-                            <Label htmlFor="minOrderAmount">{t('Min Order Amount')} ($)</Label>
-                            <Input
-                                id="minOrderAmount"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                placeholder="0.00"
-                                value={formData.minOrderAmount || ''}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, minOrderAmount: parseFloat(e.target.value) || 0 })
-                                }
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="priority">{t('Priority')} ({t('higher = more important')})</Label>
-                            <Input
-                                id="priority"
-                                type="number"
-                                min="0"
-                                placeholder="0"
-                                value={formData.priority || ''}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })
-                                }
-                            />
-                        </div>
-                        <div>
                             <Label htmlFor="status">{t('Status')}</Label>
                             <Select
                                 value={formData.status}
@@ -311,7 +282,7 @@ export default function NewZonePage() {
 
                 {/* Landmarks */}
                 <div>
-                    <LandmarkManager
+                    <LandmarksManager
                         landmarks={formData.landmarks}
                         onChange={(landmarks) => setFormData({ ...formData, landmarks })}
                     />

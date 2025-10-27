@@ -179,6 +179,8 @@ model Product {
   cartItems      CartItem[]
   SavedList      SavedList?             @relation(fields: [savedListId], references: [id])
   savedListId    String?                @db.ObjectId
+
+  @@index([title])
 }
 
 // --------------------------------Delivery Zone model------------------------------------
@@ -235,7 +237,7 @@ enum OrderStatus {
 
 model OrderItem {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  order     Order    @relation(fields: [orderId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String   @db.ObjectId
   product   Product  @relation(fields: [productId], references: [id])
   productId String   @db.ObjectId

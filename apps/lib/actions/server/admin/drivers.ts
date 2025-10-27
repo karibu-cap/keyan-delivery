@@ -1,7 +1,9 @@
+'use server'
 import { prisma } from "@/lib/prisma";
 import { DriverStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "./admin-guard";
+import z from "zod";
+import { actionAdminClient, ActionError, requireAdmin } from "./admin-guard";
 
 export async function getDrivers(filters?: {
     search?: string;
@@ -155,118 +157,69 @@ export async function getDriverDetails(driverId: string) {
     };
 }
 
-export async function approveDriver(driverId: string) {
-    await requireAdmin();
-
-    const driver = await prisma.user.findUnique({
-        where: { id: driverId },
-        select: {
-            cni: true,
-            driverDocument: true,
-        },
-    });
-
-    if (!driver) {
-        return {
-            success: false,
-            error: "Driver not found",
-        };
-    }
-
-    if (!driver.cni || !driver.driverDocument) {
-        return {
-            success: false,
-            error: "Driver must have both CNI and driver document uploaded",
-        };
-    }
-
-    await prisma.user.update({
-        where: { id: driverId },
-        data: { driverStatus: DriverStatus.APPROVED },
-    });
-
-    // TODO: Send approval notification to driver
-
-    revalidatePath("/admin/drivers");
-    revalidatePath(`/admin/drivers/${driverId}`);
-
-    return { success: true };
-}
-
-export async function rejectDriver(driverId: string, reason?: string) {
-    await requireAdmin();
-
-    await prisma.user.update({
-        where: { id: driverId },
-        data: { driverStatus: DriverStatus.REJECTED },
-    });
-
-    // TODO: Send rejection notification to driver with reason
-
-    revalidatePath("/admin/drivers");
-    revalidatePath(`/admin/drivers/${driverId}`);
-
-    return { success: true };
-}
-
-export async function banDriver(driverId: string, reason?: string) {
-    await requireAdmin();
-
-    await prisma.user.update({
-        where: { id: driverId },
-        data: { driverStatus: DriverStatus.BANNED },
-    });
-
-    // TODO: Send ban notification to driver with reason
-
-    revalidatePath("/admin/drivers");
-    revalidatePath(`/admin/drivers/${driverId}`);
-
-    return { success: true };
-}
-
-export async function unbanDriver(driverId: string) {
-    await requireAdmin();
-
-    await prisma.user.update({
-        where: { id: driverId },
-        data: { driverStatus: DriverStatus.APPROVED },
-    });
-
-    revalidatePath("/admin/drivers");
-    revalidatePath(`/admin/drivers/${driverId}`);
-
-    return { success: true };
-}
-
-export async function deleteDriver(driverId: string) {
-    await requireAdmin();
-
-    // Check if driver has any active deliveries
-    const activeDeliveries = await prisma.order.count({
-        where: {
-            driverId,
-            status: {
-                in: ["ACCEPTED_BY_DRIVER", "ON_THE_WAY", "READY_TO_DELIVER"],
+export const updateDriver = actionAdminClient
+    .inputSchema(z.object({ id: z.string().min(1), action: z.enum(['approve', 'reject', 'delete', 'ban', 'unban']) }))
+    .action(async ({ parsedInput: { id, action } }) => {
+        const driver = await prisma.user.findUnique({
+            where: { id: id },
+            select: {
+                cni: true,
+                driverDocument: true,
             },
-        },
+        });
+
+        if (!driver) {
+            throw new ActionError("Driver not found");
+        }
+
+        switch (action) {
+            case 'approve':
+                if (!driver.cni || !driver.driverDocument) {
+                    throw new ActionError("Driver must have both CNI and driver document uploaded");
+                }
+                await prisma.user.update({
+                    where: { id },
+                    data: { driverStatus: DriverStatus.APPROVED },
+                });
+                break;
+            case 'reject':
+                await prisma.user.update({
+                    where: { id },
+                    data: { driverStatus: DriverStatus.REJECTED },
+                });
+                break;
+            case 'delete':
+                const activeDeliveries = await prisma.order.count({
+                    where: {
+                        driverId: id,
+                        status: {
+                            in: ["ACCEPTED_BY_DRIVER", "ON_THE_WAY", "READY_TO_DELIVER"],
+                        },
+                    },
+                });
+                if (activeDeliveries > 0) {
+                    throw new ActionError("Cannot delete driver with active deliveries");
+                }
+                await prisma.user.delete({ where: { id } });
+                break;
+            case 'ban':
+                await prisma.user.update({
+                    where: { id },
+                    data: { driverStatus: DriverStatus.BANNED },
+                });
+                break;
+            case 'unban':
+                await prisma.user.update({
+                    where: { id },
+                    data: { driverStatus: DriverStatus.APPROVED },
+                });
+                break;
+        }
+
+        revalidatePath("/admin/drivers");
+        revalidatePath(`/admin/drivers/${id}`);
+        return { success: true };
     });
-
-    if (activeDeliveries > 0) {
-        return {
-            success: false,
-            error: `Cannot delete driver with ${activeDeliveries} active deliveries`,
-        };
-    }
-
-    await prisma.user.delete({
-        where: { id: driverId },
-    });
-
-    revalidatePath("/admin/drivers");
-
-    return { success: true };
-}
 
 export async function getDriverStats(driverId: string) {
     await requireAdmin();

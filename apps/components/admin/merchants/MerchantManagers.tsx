@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { getServerT } from "@/i18n/server-translations";
 import { User, Mail, Phone, Calendar } from "lucide-react";
@@ -7,6 +8,7 @@ interface Manager {
         name: string | null;
         email: string;
         phone: string | null;
+        image: string | null;
     };
     assignedAt: Date;
 }
@@ -37,10 +39,11 @@ export async function MerchantManagers({ managers }: MerchantManagersProps) {
                 <Card key={index}>
                     <CardContent className="p-6">
                         <div className="flex items-start gap-4">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-bold flex-shrink-0">
-                                {manager.user.name?.[0]?.toUpperCase() ||
-                                    manager.user.email[0].toUpperCase()}
-                            </div>
+                            <Avatar className="flex h-12 w-12 flex-shrink-0">
+                                <AvatarImage src={manager.user.image || undefined} alt="@manager" />
+                                <AvatarFallback className="flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold"> {manager.user.name?.[0]?.toUpperCase() ||
+                                    manager.user.email[0].toUpperCase()} </AvatarFallback>
+                            </Avatar>
                             <div className="flex-1 space-y-2">
                                 <h3 className="font-semibold">
                                     {manager.user.name || t("Unnamed Manager")}

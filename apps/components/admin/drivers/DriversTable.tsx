@@ -22,13 +22,7 @@ import { Eye, MoreVertical, Check, X, Ban, Unlock, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-    approveDriver,
-    rejectDriver,
-    banDriver,
-    unbanDriver,
-    deleteDriver,
-} from "@/lib/actions/client/admin/drivers";
+import { updateDriver } from "@/lib/actions/server/admin/drivers";
 import { toast } from "@/hooks/use-toast";
 import {
     AlertDialog,
@@ -49,6 +43,7 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useT } from "@/hooks/use-inline-translation";
+import { useAction } from "next-safe-action/hooks";
 
 interface Driver {
     id: string;
@@ -75,129 +70,42 @@ interface DriversTableProps {
     };
 }
 
+
+
 export function DriversTable({ drivers, pagination }: DriversTableProps) {
     const router = useRouter();
-    const [loading, setLoading] = useState<string | null>(null);
     const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
     const t = useT()
 
-    const handleApprove = async (driverId: string) => {
-        setLoading(driverId);
-        try {
-            const result = await approveDriver(driverId);
-            if (result.success) {
+    const {
+        execute: updateDriverExec,
+        isExecuting: isUpdating,
+        input,
+    } = useAction(updateDriver, {
+        onSuccess: () => {
+            toast({
+                title: t('Driver {action}', { action: input.action }),
+                description: t('The driver has been {action} successfully.', { action: input.action }),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
                 toast({
-                    title: t("Driver approved"),
-                    description: t("The driver has been successfully verified."),
+                    title: t('Cannot {action} the driver', { action: input.action }),
+                    description: error.serverError,
+                    variant: "destructive",
                 });
-                router.refresh();
             } else {
                 toast({
-                    title: t("Cannot approve driver"),
-                    description: result.error,
+                    title: t('Error'),
+                    description: t('Failed to {action} the driver', { action: input.action }),
                     variant: "destructive",
                 });
             }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to approve driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
+        },
+    })
 
-    const handleReject = async (driverId: string) => {
-        setLoading(driverId);
-        try {
-            await rejectDriver(driverId);
-            toast({
-                title: t("Driver rejected"),
-                description: t("The driver application has been rejected."),
-            });
-            router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to reject driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
-
-    const handleBan = async (driverId: string) => {
-        setLoading(driverId);
-        try {
-            await banDriver(driverId);
-            toast({
-                title: t("Driver banned"),
-                description: t("The driver has been banned from the platform."),
-                variant: "destructive",
-            });
-            router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to ban driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
-
-    const handleUnban = async (driverId: string) => {
-        setLoading(driverId);
-        try {
-            await unbanDriver(driverId);
-            toast({
-                title: t("Driver unbanned"),
-                description: t("The driver has been unbanned and approved."),
-            });
-            router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to unban driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-        }
-    };
-
-    const handleDelete = async (driverId: string) => {
-        setLoading(driverId);
-        try {
-            const result = await deleteDriver(driverId);
-            if (result.success) {
-                toast({
-                    title: t("Driver deleted"),
-                    description: t("The driver has been permanently deleted."),
-                });
-                router.refresh();
-            } else {
-                toast({
-                    title: t("Cannot delete driver"),
-                    description: result.error,
-                    variant: "destructive",
-                });
-            }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to delete driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(null);
-            setDeleteDialog(null);
-        }
-    };
 
     const getStatusBadge = (status: string | null) => {
         switch (status) {
@@ -302,7 +210,7 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    disabled={loading === driver.id}
+                                                    disabled={isUpdating}
                                                 >
                                                     <MoreVertical className="h-4 w-4" />
                                                 </Button>
@@ -319,15 +227,15 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                                                 {driver.driverStatus === "PENDING" && (
                                                     <>
                                                         <DropdownMenuItem
-                                                            onClick={() => handleApprove(driver.id)}
-                                                            disabled={loading === driver.id}
+                                                            onClick={() => updateDriverExec({ action: "approve", id: driver.id })}
+                                                            disabled={isUpdating}
                                                         >
                                                             <Check className="mr-2 h-4 w-4" />
                                                             {t("Approve")}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            onClick={() => handleReject(driver.id)}
-                                                            disabled={loading === driver.id}
+                                                            onClick={() => updateDriverExec({ action: "reject", id: driver.id })}
+                                                            disabled={isUpdating}
                                                         >
                                                             <X className="mr-2 h-4 w-4" />
                                                             {t("Reject")}
@@ -336,8 +244,8 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                                                 )}
                                                 {driver.driverStatus === "APPROVED" && (
                                                     <DropdownMenuItem
-                                                        onClick={() => handleBan(driver.id)}
-                                                        disabled={loading === driver.id}
+                                                        onClick={() => updateDriverExec({ action: "ban", id: driver.id })}
+                                                        disabled={isUpdating}
                                                     >
                                                         <Ban className="mr-2 h-4 w-4" />
                                                         {t("Ban Driver")}
@@ -345,8 +253,8 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                                                 )}
                                                 {driver.driverStatus === "BANNED" && (
                                                     <DropdownMenuItem
-                                                        onClick={() => handleUnban(driver.id)}
-                                                        disabled={loading === driver.id}
+                                                        onClick={() => updateDriverExec({ action: "unban", id: driver.id })}
+                                                        disabled={isUpdating}
                                                     >
                                                         <Unlock className="mr-2 h-4 w-4" />
                                                         {t("Unban Driver")}
@@ -376,17 +284,13 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                             <PaginationPrevious
                                 href={`?page=${pagination.page - 1}`}
                                 aria-disabled={pagination.page === 1}
-                                className={
-                                    pagination.page === 1 ? "pointer-events-none opacity-50" : ""
-                                }
-                            />
+                                className={pagination.page === 1 ? "pointer-events-none opacity-50" : ""} size="default" />
                         </PaginationItem>
                         {[...Array(pagination.totalPages)].map((_, i) => (
                             <PaginationItem key={i}>
                                 <PaginationLink
                                     href={`?page=${i + 1}`}
-                                    isActive={pagination.page === i + 1}
-                                >
+                                    isActive={pagination.page === i + 1} size="default">
                                     {i + 1}
                                 </PaginationLink>
                             </PaginationItem>
@@ -395,12 +299,9 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                             <PaginationNext
                                 href={`?page=${pagination.page + 1}`}
                                 aria-disabled={pagination.page === pagination.totalPages}
-                                className={
-                                    pagination.page === pagination.totalPages
-                                        ? "pointer-events-none opacity-50"
-                                        : ""
-                                }
-                            />
+                                className={pagination.page === pagination.totalPages
+                                    ? "pointer-events-none opacity-50"
+                                    : ""} size="default" />
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
@@ -421,7 +322,7 @@ export function DriversTable({ drivers, pagination }: DriversTableProps) {
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={() => deleteDialog && handleDelete(deleteDialog)}
+                            onClick={() => deleteDialog && updateDriverExec({ action: "delete", id: deleteDialog })}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                             {t("Delete")}

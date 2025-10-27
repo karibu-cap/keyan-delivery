@@ -57,6 +57,7 @@ export const ROUTES = {
   adminInsights: '/admin/insights',
   adminNotifications: '/admin/notifications',
   adminSettings: '/admin/settings',
+  adminUnauthorized: '/admin/unauthorized',
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

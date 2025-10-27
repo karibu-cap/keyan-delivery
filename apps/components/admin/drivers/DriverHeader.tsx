@@ -4,16 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, X, Ban, Unlock, Mail, Phone, Calendar } from "lucide-react";
-import { useState } from "react";
-import {
-    approveDriver,
-    rejectDriver,
-    banDriver,
-    unbanDriver,
-} from "@/lib/actions/client/admin/drivers";
+import { updateDriver } from "@/lib/actions/server/admin/drivers";
+
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { useT } from "@/hooks/use-inline-translation";
+import { useAction } from "next-safe-action/hooks";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DriverStatus } from "@prisma/client";
 
 interface DriverHeaderProps {
     driver: any;
@@ -28,97 +26,37 @@ interface DriverHeaderProps {
 
 export function DriverHeader({ driver, stats }: DriverHeaderProps) {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
     const t = useT();
 
-    const handleApprove = async () => {
-        setLoading(true);
-        try {
-            const result = await approveDriver(driver.id);
-            if (result.success) {
+    const {
+        execute: updateDriverExec,
+        isExecuting: isUpdating,
+        input,
+    } = useAction(updateDriver, {
+        onSuccess: () => {
+            toast({
+                title: t('Driver {action}', { action: input.action }),
+                description: t('The driver has been {action} successfully.', { action: input.action }),
+            });
+            router.refresh();
+        },
+        onError: ({ error }) => {
+            if (error.serverError) {
                 toast({
-                    title: t("Driver approved"),
-                    description: t("The driver has been successfully verified."),
+                    title: t('Cannot {action} the driver', { action: input.action }),
+                    description: error.serverError,
+                    variant: "destructive",
                 });
-                router.refresh();
             } else {
                 toast({
-                    title: t("Cannot approve driver"),
-                    description: result.error,
+                    title: t('Error'),
+                    description: t('Failed to {action} the driver', { action: input.action }),
                     variant: "destructive",
                 });
             }
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to approve driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+        },
+    })
 
-    const handleReject = async () => {
-        setLoading(true);
-        try {
-            await rejectDriver(driver.id);
-            toast({
-                title: t("Driver rejected"),
-                description: t("The driver application has been rejected."),
-            });
-            router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to reject driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleBan = async () => {
-        setLoading(true);
-        try {
-            await banDriver(driver.id);
-            toast({
-                title: t("Driver banned"),
-                description: t("The driver has been banned from the platform."),
-                variant: "destructive",
-            });
-            router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to ban driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleUnban = async () => {
-        setLoading(true);
-        try {
-            await unbanDriver(driver.id);
-            toast({
-                title: t("Driver unbanned"),
-                description: t("The driver has been unbanned and approved."),
-            });
-            router.refresh();
-        } catch (error) {
-            toast({
-                title: t("Error"),
-                description: t("Failed to unban driver"),
-                variant: "destructive",
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const getStatusBadge = (status: string | null) => {
         switch (status) {
@@ -151,9 +89,10 @@ export function DriverHeader({ driver, stats }: DriverHeaderProps) {
                 <div className="flex flex-col md:flex-row gap-6">
                     {/* Avatar */}
                     <div className="flex-shrink-0">
-                        <div className="h-24 w-24 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-3xl font-bold">
-                            {driver.name?.[0]?.toUpperCase() || driver.email[0].toUpperCase()}
-                        </div>
+                        <Avatar className="flex h-24 w-24 flex-shrink-0">
+                            <AvatarImage src={driver?.image || undefined} alt="@manager" />
+                            <AvatarFallback className="flex items-center justify-center bg-primary text-primary-foreground text-3xl font-bold"> {driver?.name?.[0]?.toUpperCase() || driver?.email[0].toUpperCase() || "A"} </AvatarFallback>
+                        </Avatar>
                     </div>
 
                     {/* Info */}
@@ -161,7 +100,7 @@ export function DriverHeader({ driver, stats }: DriverHeaderProps) {
                         <div>
                             <div className="flex items-center gap-3 flex-wrap">
                                 <h2 className="text-2xl font-bold">
-                                    {driver.name || t("UnnamedDriver")}
+                                    {driver.name || t("Unnamed Driver")}
                                 </h2>
                                 {getStatusBadge(driver.driverStatus)}
                             </div>
@@ -186,7 +125,7 @@ export function DriverHeader({ driver, stats }: DriverHeaderProps) {
                         {/* Quick Stats */}
                         <div className="flex gap-6 text-sm flex-wrap">
                             <div>
-                                <span className="text-muted-foreground">{t("TotalDeliveries")}:</span>
+                                <span className="text-muted-foreground">{t("Total Deliveries")}:</span>
                                 <span className="ml-2 font-semibold">{stats.totalDeliveries}</span>
                             </div>
                             <div>
@@ -196,7 +135,7 @@ export function DriverHeader({ driver, stats }: DriverHeaderProps) {
                                 </span>
                             </div>
                             <div>
-                                <span className="text-muted-foreground">{t("TotalEarnings")}:</span>
+                                <span className="text-muted-foreground">{t("Total Earnings")}:</span>
                                 <span className="ml-2 font-semibold text-green-600">
                                     {t.formatAmount(stats.totalEarnings)}
                                 </span>
@@ -205,36 +144,36 @@ export function DriverHeader({ driver, stats }: DriverHeaderProps) {
 
                         {/* Actions */}
                         <div className="flex gap-2 flex-wrap">
-                            {driver.driverStatus === "PENDING" && (
+                            {(driver.driverStatus === DriverStatus.PENDING || driver.driverStatus === DriverStatus.REJECTED) && (
                                 <>
-                                    <Button onClick={handleApprove} disabled={loading}>
+                                    <Button onClick={() => updateDriverExec({ id: driver.id, action: "approve" })} disabled={isUpdating}>
                                         <Check className="mr-2 h-4 w-4" />
-                                        {t("ApproveDriver")}
+                                        {t("Approve Driver")}
                                     </Button>
-                                    <Button
+                                    {driver.driverStatus === DriverStatus.PENDING && (<Button
                                         variant="outline"
-                                        onClick={handleReject}
-                                        disabled={loading}
+                                        onClick={() => updateDriverExec({ id: driver.id, action: "reject" })}
+                                        disabled={isUpdating}
                                     >
                                         <X className="mr-2 h-4 w-4" />
                                         {t("Reject")}
-                                    </Button>
+                                    </Button>)}
                                 </>
                             )}
                             {driver.driverStatus === "APPROVED" && (
                                 <Button
                                     variant="destructive"
-                                    onClick={handleBan}
-                                    disabled={loading}
+                                    onClick={() => updateDriverExec({ id: driver.id, action: "ban" })}
+                                    disabled={isUpdating}
                                 >
                                     <Ban className="mr-2 h-4 w-4" />
-                                    {t("BanDriver")}
+                                    {t("Ban Driver")}
                                 </Button>
                             )}
                             {driver.driverStatus === "BANNED" && (
-                                <Button onClick={handleUnban} disabled={loading}>
+                                <Button onClick={() => updateDriverExec({ id: driver.id, action: "unban" })} disabled={isUpdating}>
                                     <Unlock className="mr-2 h-4 w-4" />
-                                    {t("UnbanDriver")}
+                                    {t("Unban Driver")}
                                 </Button>
                             )}
                         </div>

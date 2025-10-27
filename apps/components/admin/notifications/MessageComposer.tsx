@@ -27,12 +27,9 @@ import { useToast } from '@/hooks/use-toast';
 import { useT } from '@/hooks/use-inline-translation';
 import {
     Bell,
-    Mail,
-    MessageSquare,
     Send,
     Loader2,
     Eye,
-    Sparkles,
     Users,
 } from 'lucide-react';
 import { MerchantType } from '@prisma/client';
@@ -92,9 +89,9 @@ export function MessageComposer({ merchantStats }: MessageComposerProps) {
     // Channel options
     const channels = [
         { value: MessageChannel.PUSH, label: t('Push Notification'), icon: Bell, color: 'text-blue-500' },
-        { value: MessageChannel.SMS, label: t('SMS'), icon: MessageSquare, color: 'text-green-500' },
-        { value: MessageChannel.EMAIL, label: t('Email'), icon: Mail, color: 'text-purple-500' },
-        { value: MessageChannel.ALL, label: t('All Channels'), icon: Sparkles, color: 'text-orange-500' },
+        // { value: MessageChannel.SMS, label: t('SMS'), icon: MessageSquare, color: 'text-green-500' },
+        // { value: MessageChannel.EMAIL, label: t('Email'), icon: Mail, color: 'text-purple-500' },
+        // { value: MessageChannel.ALL, label: t('All Channels'), icon: Sparkles, color: 'text-orange-500' },
     ];
 
     const handleTemplateSelect = (template: any) => {
@@ -203,7 +200,7 @@ export function MessageComposer({ merchantStats }: MessageComposerProps) {
                     <div>
                         <h2 className="text-2xl font-bold mb-2">{t('Compose Message')}</h2>
                         <p className="text-muted-foreground">
-                            {t('Send notifications to merchants via push, SMS, or email')}
+                            {t('Send notifications to merchants via push.')}
                         </p>
                     </div>
 
