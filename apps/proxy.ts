@@ -43,7 +43,7 @@ function isProtectedPath(pathname: string): boolean {
   return !PUBLIC_PATHS.some((path) => typeof path === 'string' ? pathname === path : path.test(pathname));
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const basePath = hasLocale(pathname) ? removeLocaleFromPath(pathname) : pathname;
 

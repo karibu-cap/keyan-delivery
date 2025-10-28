@@ -19,9 +19,6 @@ import { ProductsContentSkeleton } from "./loading";
 // Revalidate every 30 seconds (products change frequently)
 export const revalidate = 30;
 
-// Enable partial prerendering
-export const experimental_ppr = true;
-
 interface PageProps {
      params: Promise<{ merchantId: string }>;
      searchParams?: Promise<{ status?: string; search?: string }>;

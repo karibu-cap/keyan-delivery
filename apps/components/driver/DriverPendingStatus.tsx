@@ -97,7 +97,7 @@ export function DriverPendingStatus() {
                         <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/50 backdrop-blur-sm rounded-xl p-1">
                             <TabsTrigger
                                 value="documents"
-                                className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
+                                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
                             >
                                 <FileText className="w-4 h-4 mr-2" />
                                 <span className="hidden sm:inline">{t("Your Documents")}</span>
@@ -107,7 +107,7 @@ export function DriverPendingStatus() {
                             </TabsTrigger>
                             <TabsTrigger
                                 value="update"
-                                className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
+                                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
                             >
                                 <Upload className="w-4 h-4 mr-2" />
                                 <span className="hidden sm:inline">{t("Update Documents")}</span>

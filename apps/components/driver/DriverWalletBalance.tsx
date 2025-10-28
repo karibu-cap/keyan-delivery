@@ -50,11 +50,11 @@ export default function DriverWalletBalance({ wallet, stats }: DriverWalletBalan
                                     {t('Last updated')}: {new Date(wallet.updatedAt).toLocaleDateString()}
                                 </p>
                             </div>
-                            
+
                             {/* Withdrawal Button */}
                             <Link href={ROUTES.driverWalletWithdrawal}>
-                                <Button 
-                                    className="w-full bg-white text-red-600 hover:bg-red-50 font-semibold rounded-xl"
+                                <Button
+                                    className="w-full bg-white text-primary hover:bg-red-50 font-semibold rounded-xl"
                                     size="lg"
                                 >
                                     <ArrowDownToLine className="w-4 h-4 mr-2" />
@@ -81,7 +81,7 @@ export default function DriverWalletBalance({ wallet, stats }: DriverWalletBalan
                     title={t('Total Spent')}
                     value={`KES ${(stats?.totalSpent || 0).toFixed(2)}`}
                     icon={TrendingDown}
-                    color="text-red-600"
+                    color="text-primary"
                     bgColor="bg-red-50 dark:bg-red-950/20"
                     borderColor="border-red-200 dark:border-red-800"
                     animationDelay={200}

@@ -1,5 +1,5 @@
 
-import "./globals.css";
+import "../../globals.css";
 
 
 export default async function AdminLayoutWrapper({
@@ -8,5 +8,5 @@ export default async function AdminLayoutWrapper({
     children: React.ReactNode;
 }) {
 
-    return <>{children}</>;
+    return <section className="admin-theme">{children}</section>;
 }

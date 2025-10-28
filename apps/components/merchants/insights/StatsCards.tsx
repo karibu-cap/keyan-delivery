@@ -82,10 +82,10 @@ export default function StatsCards({ stats }: StatsCardsProps) {
                                 {isPositive ? (
                                     <TrendingUp className="h-4 w-4 text-primary/60" />
                                 ) : (
-                                    <TrendingDown className="h-4 w-4 text-red-600" />
+                                    <TrendingDown className="h-4 w-4 text-primary" />
                                 )}
                                 <span
-                                    className={`ml-1 font-medium ${isPositive ? 'text-primary/60' : 'text-red-600'
+                                    className={`ml-1 font-medium ${isPositive ? 'text-primary/60' : 'text-primary'
                                         }`}
                                 >
                                     {Math.abs(card.change).toFixed(1)}%

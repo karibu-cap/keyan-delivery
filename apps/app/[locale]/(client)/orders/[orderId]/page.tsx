@@ -59,18 +59,6 @@ async function getOrderDetail(orderId: string, userId: string) {
      return order
 }
 
-// Check if order can be tracked
-function canTrackOrder(status: OrderStatus): boolean {
-     return [
-          OrderStatus.PENDING,
-          OrderStatus.ACCEPTED_BY_MERCHANT,
-          OrderStatus.ACCEPTED_BY_DRIVER,
-          OrderStatus.ON_THE_WAY,
-          OrderStatus.IN_PREPARATION,
-          OrderStatus.READY_TO_DELIVER,
-     ].some((e) => e == status)
-}
-
 export default async function OrderDetailPage(props: { params: Promise<{ orderId: string }> }) {
      const params = await props.params;
 
@@ -96,7 +84,6 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
           notFound()
      }
 
-     const showTracking = canTrackOrder(order.status)
 
      return (
           <div className="min-h-screen bg-background">
@@ -131,16 +118,6 @@ export default async function OrderDetailPage(props: { params: Promise<{ orderId
                                    <OrderTimeline status={order.status} />
                               </CardContent>
                          </Card>
-                    )}
-
-                    {/* Track Order Button */}
-                    {showTracking && (
-                         <Link href={`/orders/${order.id}/track`} className="mb-6 block">
-                              <Button className="w-full bg-primary hover:bg-[#089808]" size="lg">
-                                   <MapPinIcon className="mr-2 h-5 w-5" />
-                                   {t("Track Order")}
-                              </Button>
-                         </Link>
                     )}
 
                     <div className="grid gap-6 lg:grid-cols-3">

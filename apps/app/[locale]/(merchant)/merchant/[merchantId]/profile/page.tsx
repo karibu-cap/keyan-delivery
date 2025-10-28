@@ -3,6 +3,7 @@ import MerchantProfile from '@/components/merchants/MerchantProfile';
 import { getMerchantWithUser } from '@/lib/actions/server/merchants';
 import { getSession } from '@/lib/auth-server';
 import { ROUTES } from '@/lib/router';
+import UnauthorizedPage from '../unauthorized/page';
 
 export const metadata = {
     title: 'Merchant Profile',
@@ -30,7 +31,7 @@ export default async function MerchantProfilePage({ params }: PageProps) {
     const userMerchant = await getMerchantWithUser(merchantId, session.user.id);
 
     if (!userMerchant) {
-        redirect('/unauthorized');
+        return <UnauthorizedPage />
     }
 
     return (

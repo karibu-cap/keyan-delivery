@@ -36,7 +36,7 @@ export default function DriverStatsCards({ analytics, loading }: DriverStatsCard
             title: t('Total Earnings'),
             value: t.formatAmount(analytics?.totalEarnings || 0),
             icon: Wallet,
-            color: 'text-red-600',
+            color: 'text-primary',
             bgColor: 'bg-red-50 dark:bg-red-950/20',
             borderColor: 'border-red-200 dark:border-red-800',
         },

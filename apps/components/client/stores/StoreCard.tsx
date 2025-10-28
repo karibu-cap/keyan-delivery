@@ -13,7 +13,6 @@ import {
     UtensilsCrossed,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 interface StoreCardProps {
@@ -24,7 +23,6 @@ interface StoreCardProps {
 export function StoreCard({ store, index }: StoreCardProps) {
     const t = useT()
 
-    const router = useRouter();
     const merchantType =
         (store as IMerchant & { merchantType: string }).merchantType ||
         MerchantType.GROCERY;
@@ -41,22 +39,13 @@ export function StoreCard({ store, index }: StoreCardProps) {
     }, []);
 
 
-    const handleShopNowClick = useCallback(
-        (e: React.MouseEvent) => {
-            e.stopPropagation();
-            router.push(`/stores/${store.id}`);
-        },
-        [router, store.id]
-    );
-
     const handleDeliveryClick = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
-        // Handle delivery options
     }, []);
 
     return (
-        <Link href={'/stores/' + store.slug}
-            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer animate-slide-up group"
+        <div
+            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 animate-slide-up group"
             tabIndex={0}
             aria-label={`View ${store.businessName} store`}
         >
@@ -89,9 +78,12 @@ export function StoreCard({ store, index }: StoreCardProps) {
             <div className="flex space-x-2">
                 <Button
                     className="flex-1 bg-primary hover:bg-primary text-white shadow-sm hover:shadow-md transition-all"
-                    onClick={handleShopNowClick}
+                    asChild
                 >
-                    {t("Shop now")}
+                    <Link href={'/stores/' + store.slug}  >
+
+                        {t("Shop now")}
+                    </Link>
                 </Button>
                 <Button
                     variant="outline"
@@ -102,6 +94,6 @@ export function StoreCard({ store, index }: StoreCardProps) {
                     <Truck className="w-4 h-4" />
                 </Button>
             </div>
-        </Link>
+        </div>
     );
 }

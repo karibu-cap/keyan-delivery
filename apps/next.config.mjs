@@ -6,9 +6,9 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 const nextConfig = {
     output: 'standalone',
     productionBrowserSourceMaps: true,
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
+    // eslint: {
+    //     ignoreDuringBuilds: true,
+    // },
     images: {
         remotePatterns: [
             {

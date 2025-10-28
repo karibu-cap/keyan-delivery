@@ -1,7 +1,6 @@
 "use client";
-import "./globals.css";
-
 import DriverNavbar from '@/components/driver/DriverNavbar';
+import "../../../globals.css"
 
 export default function DriverLayout({
     children,
@@ -10,11 +9,11 @@ export default function DriverLayout({
 }) {
 
     return (
-        <>
+        <div className='driver-theme'>
             <DriverNavbar />
             <div className="mt-14 md:mt-16 min-h-screen">
                 {children}
             </div>
-        </>
+        </div>
     );
 }

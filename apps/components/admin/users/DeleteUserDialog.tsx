@@ -91,7 +91,7 @@ export default function DeleteUserDialog({ open, onOpenChange, user }: DeleteUse
                 <AlertDialogHeader>
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-red-100 dark:bg-red-900 rounded-full">
-                            <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                            <AlertTriangle className="h-5 w-5 text-primary dark:text-red-400" />
                         </div>
                         <AlertDialogTitle>{t("Delete User")}</AlertDialogTitle>
                     </div>

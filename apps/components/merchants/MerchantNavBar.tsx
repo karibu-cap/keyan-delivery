@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Package, BarChart3, Wallet, User, Menu, ShoppingCart } from 'lucide-react';
+import { Package, BarChart3, Wallet, User, Menu, Store } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
     Sheet,
@@ -67,10 +67,10 @@ export default function MerchantNavBar() {
                         {/* Logo */}
                         <Link href={`/merchant/${merchantId}`} className="flex items-center gap-2">
                             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                                <ShoppingCart className="w-6 h-6 text-white" />
+                                <Store className="w-6 h-6 text-white" />
                             </div>
                             <span className="text-xl font-bold text-primary hidden sm:block">
-                                Yetu
+                                Yetu Store
                             </span>
                         </Link>
 

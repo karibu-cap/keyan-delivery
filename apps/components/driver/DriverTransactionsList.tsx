@@ -60,19 +60,19 @@ export default function DriverTransactionsList({
 
     const updateFilters = (type?: string, status?: string, page?: number) => {
         const params = new URLSearchParams(searchParams.toString());
-        
+
         if (type && type !== 'all') {
             params.set('type', type);
         } else {
             params.delete('type');
         }
-        
+
         if (status && status !== 'all') {
             params.set('status', status);
         } else {
             params.delete('status');
         }
-        
+
         if (page) {
             params.set('page', page.toString());
         } else {
@@ -199,11 +199,10 @@ export default function DriverTransactionsList({
                             </div>
                             <div className="text-right">
                                 <p
-                                    className={`text-lg font-bold ${
-                                        transaction.type === 'credit'
+                                    className={`text-lg font-bold ${transaction.type === 'credit'
                                             ? 'text-green-600'
-                                            : 'text-red-600'
-                                    }`}
+                                            : 'text-primary'
+                                        }`}
                                 >
                                     {transaction.type === 'credit' ? '+' : '-'}KES{' '}
                                     {transaction.amount.toFixed(2)}

@@ -319,10 +319,12 @@ export async function fetchMerchants({
       }
     });
 
+    const validMerchants = merchants?.filter(e => e.products.length > 4)
+
     const totalCount = await prisma.merchant.count({ where: whereClause });
 
     return {
-      merchants: merchants,
+      merchants: validMerchants,
       pagination: {
         total: totalCount,
         limit,

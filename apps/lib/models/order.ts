@@ -96,12 +96,12 @@ export interface DriverInfo {
    currentLocation?: LongLat | null;
    lastUpdatedAt?: Date | null;
 }
-     
+
 export interface User {
    id: string;
    email: string;
    name: string;
-   emailVerified: Boolean;
+   emailVerified: boolean;
    image: string;
    phone?: string;
 }

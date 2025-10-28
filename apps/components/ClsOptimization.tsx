@@ -6,7 +6,7 @@ import NextImage, { type ImageProps } from 'next/image';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 export const FAKE_BLUR =
     'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQrJiEwUy0rLysuKCkwN0Y/ODNANykpQFdCS05QT0hHSlFWW1FSN05PW1H/2wBDARUXFx4eHR8eHVFLJSwtUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVH/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k='
-
+const BLUR = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAeEAABBAIDAQAAAAAAAAAAAAABAAIDBBFRBhIhcf/EABUBAQEAAAAAAAAAAAAAAAAAAAME/8QAFhEAAwAAAAAAAAAAAAAAAAAAABES/9oADAMBAAIRAxEAPwCd2XQOewT7K2K8fWj8bHk3j6i79/gA0L8R//2Q=="
 // Font loading optimization to prevent layout shifts
 export function useFontLoader() {
     const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -80,7 +80,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     width,
     height,
     priority = false,
-    loading = 'lazy',
     preload = false,
     blurDataURL,
     fallbackSrc,
@@ -155,17 +154,16 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         <>
             <NextImage
                 ref={imgRef}
-                src={imageSrc}
+                src={src}
                 alt={alt}
                 {...(props.fill ? {} : { width, height })}
                 priority={priority}
-                loading={priority ? undefined : loading}
-                blurDataURL={blurDataURL || FAKE_BLUR}
+                blurDataURL={BLUR}
+                placeholder={hasError ? 'empty' : 'blur'}
                 sizes={imageSizes}
-                onLoad={() => {
-                    handleLoad();
-                }}
+                loading='lazy'
                 onError={handleError}
+                onLoad={handleLoad}
                 style={{
                     ...style,
                     filter: hasError ? 'grayscale(100%)' : 'none',
