@@ -17,6 +17,7 @@ import { useDriverOrders } from "@/hooks/use-driver-orders";
 import { useWallet } from "@/hooks/use-wallet";
 import { useT } from "@/hooks/use-inline-translation";
 import { Order } from '@/lib/models/order';
+import { formatOrderId, getOrderDriverFee } from "@/lib/orders-utils";
 
 interface DriverOrderCardMinimalistProps {
     order: Order;
@@ -106,7 +107,7 @@ export function DriverOrderCardMinimalist({
                     </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                    Order #{order.id.slice(-6).toUpperCase()}
+                    Order {formatOrderId(order.id)}
                 </p>
             </div>
 
@@ -114,7 +115,7 @@ export function DriverOrderCardMinimalist({
             <div className="px-4 py-6 text-center bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
                 <p className="text-xs text-muted-foreground mb-1">Your Earnings</p>
                 <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                    {t.formatAmount(order.orderPrices.deliveryFee)}
+                    {t.formatAmount(getOrderDriverFee(order.orderPrices))}
                 </p>
             </div>
 

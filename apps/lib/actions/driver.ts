@@ -187,7 +187,7 @@ export async function createWallet(userId: string) {
          data: {
             userId: userId,
             balance: 0,
-            currency: 'USD',
+            currency: 'KES',
          },
       })
 

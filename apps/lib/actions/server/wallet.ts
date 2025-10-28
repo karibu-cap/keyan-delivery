@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
-import { TransactionStatus, TransactionType } from '@prisma/client';
+import { TransactionStatus, TransactionType, UserRole } from '@prisma/client';
+
+export type WalletUserType = 'driver' | 'merchant' | 'customer';
 
 export interface TransactionFilters {
     type?: TransactionType;
@@ -18,7 +20,6 @@ export interface PaginatedTransactions {
         description: string;
         status: TransactionStatus;
         createdAt: Date;
-        orderId: string | null;
     }>;
     pagination: {
         total: number;
@@ -46,6 +47,7 @@ export async function getMerchantWallet(merchantId: string) {
                         },
                     },
                 },
+                wallet: true,
             },
         });
 
@@ -56,7 +58,7 @@ export async function getMerchantWallet(merchantId: string) {
         const user = merchant.managers[0].user;
 
         // Get or create wallet
-        let wallet = user.wallet;
+        let wallet = merchant.wallet;
         if (!wallet) {
             wallet = await prisma.wallet.create({
                 data: {
@@ -181,7 +183,6 @@ export async function getMerchantTransactions(
                     description: t.description,
                     status: t.status,
                     createdAt: t.createdAt,
-                    orderId: t.orderId,
                 })),
                 pagination: {
                     total,
@@ -268,5 +269,212 @@ export async function getTransactionStats(merchantId: string) {
     } catch (error) {
         console.error('Error fetching transaction stats:', error);
         return { ok: false, error: 'Failed to fetch stats' };
+    }
+}
+
+/**
+ * Get wallet for any user type (unified)
+ */
+export async function getWalletByUserType(userId: string, userType: WalletUserType) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+                wallet: true,
+                merchantManagers: {
+                    include: {
+                        user: {
+                            include: {
+                                wallet: true,
+                            },
+                        },
+                        merchant: {
+                            include: {
+                                wallet: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!user) {
+            return { ok: false, error: 'User not found' };
+        }
+
+        // Get the appropriate wallet based on user type
+        let wallet;
+        if (userType === 'merchant' && user.merchantManagers.length > 0) {
+            wallet = user.merchantManagers[0].merchant.wallet;
+        } else {
+            wallet = user.wallet;
+        }
+
+        // Create wallet if it doesn't exist
+        if (!wallet) {
+            if (userType === 'merchant' && user.merchantManagers.length > 0) {
+                wallet = await prisma.wallet.create({
+                    data: {
+                        merchantId: user.merchantManagers[0].merchant.id,
+                        balance: 0,
+                        currency: 'KES',
+                    },
+                });
+            } else {
+                wallet = await prisma.wallet.create({
+                    data: {
+                        userId: user.id,
+                        balance: 0,
+                        currency: 'KES',
+                    },
+                });
+            }
+        }
+
+        return {
+            ok: true,
+            data: {
+                id: wallet.id,
+                balance: wallet.balance,
+                currency: wallet.currency,
+                updatedAt: wallet.updatedAt,
+            },
+        };
+    } catch (error) {
+        console.error('Error fetching wallet:', error);
+        return { ok: false, error: 'Failed to fetch wallet' };
+    }
+}
+
+/**
+ * Get transaction stats for any user type (unified)
+ */
+export async function getTransactionStatsByUserType(userId: string, userType: WalletUserType) {
+    try {
+        const walletResponse = await getWalletByUserType(userId, userType);
+        if (!walletResponse.ok || !walletResponse.data) {
+            return { ok: false, error: 'Wallet not found' };
+        }
+
+        const [totalEarned, totalSpent, completedCount] = await Promise.all([
+            prisma.transaction.aggregate({
+                where: {
+                    walletId: walletResponse.data.id,
+                    type: TransactionType.credit,
+                    status: TransactionStatus.COMPLETED,
+                },
+                _sum: { amount: true },
+            }),
+            prisma.transaction.aggregate({
+                where: {
+                    walletId: walletResponse.data.id,
+                    type: TransactionType.debit,
+                    status: TransactionStatus.COMPLETED,
+                },
+                _sum: { amount: true },
+            }),
+            prisma.transaction.count({
+                where: {
+                    walletId: walletResponse.data.id,
+                    status: TransactionStatus.COMPLETED,
+                },
+            }),
+        ]);
+
+        return {
+            ok: true,
+            data: {
+                totalEarned: totalEarned._sum?.amount || 0,
+                totalSpent: totalSpent._sum?.amount || 0,
+                completedTransactions: completedCount,
+            },
+        };
+    } catch (error) {
+        console.error('Error fetching transaction stats:', error);
+        return { ok: false, error: 'Failed to fetch stats' };
+    }
+}
+
+/**
+ * Get transactions for any user type (unified)
+ */
+export async function getTransactionsByUserType(
+    userId: string,
+    userType: WalletUserType,
+    filters: TransactionFilters = {}
+): Promise<{ ok: boolean; data?: PaginatedTransactions; error?: string }> {
+    try {
+        const walletResponse = await getWalletByUserType(userId, userType);
+        if (!walletResponse.ok || !walletResponse.data) {
+            return { ok: false, error: 'Wallet not found' };
+        }
+
+        const {
+            type,
+            status,
+            startDate,
+            endDate,
+            page = 1,
+            limit = 10,
+        } = filters;
+
+        // Build where clause
+        const where: any = {
+            walletId: walletResponse.data.id,
+        };
+
+        if (type) {
+            where.type = type;
+        }
+
+        if (status) {
+            where.status = status;
+        }
+
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) {
+                where.createdAt.gte = startDate;
+            }
+            if (endDate) {
+                where.createdAt.lte = endDate;
+            }
+        }
+
+        // Get total count
+        const total = await prisma.transaction.count({ where });
+
+        // Get transactions with pagination
+        const transactions = await prisma.transaction.findMany({
+            where,
+            orderBy: {
+                createdAt: 'desc',
+            },
+            skip: (page - 1) * limit,
+            take: limit,
+        });
+
+        return {
+            ok: true,
+            data: {
+                transactions: transactions.map((t) => ({
+                    id: t.id,
+                    amount: t.amount,
+                    type: t.type,
+                    description: t.description,
+                    status: t.status,
+                    createdAt: t.createdAt,
+                })),
+                pagination: {
+                    total,
+                    page,
+                    limit,
+                    totalPages: Math.ceil(total / limit),
+                },
+            },
+        };
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        return { ok: false, error: 'Failed to fetch transactions' };
     }
 }

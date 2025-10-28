@@ -1,8 +1,9 @@
 import { verifySession } from "@/lib/auth-server";
 import { notifyClientOrderStatusChange } from "@/lib/notifications/push-service";
+import { getOrderMerchantFee } from "@/lib/orders-utils";
 import { prisma } from "@/lib/prisma";
 import { calculateTotalDistance } from "@/lib/utils/distance";
-import { DriverStatus, OrderStatus, PaymentStatus, TransactionStatus } from "@prisma/client";
+import { DriverStatus, OrderStatus, PaymentStatus, TransactionStatus, TransactionType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 interface StatusUpdateRequest {
@@ -54,7 +55,11 @@ export async function POST(
             where: { id: orderId },
             include: {
                 payment: true,
-                merchant: true
+                merchant: {
+                    include: {
+                        wallet: true,
+                    }
+                }
             },
         });
 
@@ -155,32 +160,62 @@ export async function POST(
                     });
                 }
 
-                // Calculate driver earnings (80% of delivery fee)
-                earnings = order.orderPrices.deliveryFee * 0.8;
+                // Calculate driver earnings (70% of delivery fee)
+                const driverEarnings = getOrderMerchantFee(order.orderPrices);
+
+                // Calculate merchant earnings (99.5% of order fee)
+                const merchantEarnings = getOrderMerchantFee(order.orderPrices);
 
                 // Update driver's wallet
-                const wallet = await prisma.wallet.upsert({
+                const driverWallet = await prisma.wallet.upsert({
                     where: { userId: user.id },
                     update: {
                         balance: {
-                            increment: earnings,
+                            increment: driverEarnings,
                         },
                     },
                     create: {
                         userId: user.id,
-                        balance: earnings,
-                        currency: "USD",
+                        balance: driverEarnings,
+                        currency: "KES",
                     },
                 });
 
-                // Create transaction record
+                // Update merchant's wallet
+                const merchantWallet = await prisma.wallet.upsert({
+                    where: { merchantId: order.merchant.id },
+                    update: {
+                        balance: {
+                            increment: merchantEarnings,
+                        },
+                    },
+                    create: {
+                        userId: user.id,
+                        balance: merchantEarnings,
+                        currency: "KES",
+                    },
+                });
+
+                // Create driver transaction record
                 await prisma.transaction.create({
                     data: {
-                        walletId: wallet.id,
+                        walletId: driverWallet.id,
                         orderId: order.id,
-                        amount: earnings,
-                        type: "credit",
+                        amount: driverEarnings,
+                        type: TransactionType.credit,
                         description: `Delivery earnings for order #${order.id.slice(-6)}`,
+                        status: TransactionStatus.COMPLETED,
+                    },
+                });
+
+                // Create merchant transaction record
+                await prisma.transaction.create({
+                    data: {
+                        walletId: merchantWallet.id,
+                        orderId: order.id,
+                        amount: merchantEarnings,
+                        type: TransactionType.credit,
+                        description: `Earnings for order #${order.id.slice(-6)}`,
                         status: TransactionStatus.COMPLETED,
                     },
                 });
@@ -236,7 +271,6 @@ export async function POST(
             success: true,
             data: updatedOrder,
             message: responseMessage,
-            earnings,
         });
     } catch (error) {
         console.error("Error updating order status:", error);

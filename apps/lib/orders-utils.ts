@@ -118,6 +118,20 @@ export function getOrderStatusLabel(status: OrderStatus): string {
 }
 
 /**
+ * Get order merchant fee
+ */
+export function getOrderMerchantFee(orderFees: OrderPrices): number {
+    return orderFees.subtotal * 0.995
+}
+
+/**
+ * Get order driver fee
+ */
+export function getOrderDriverFee(orderFees: OrderPrices): number {
+    return orderFees.deliveryFee * 0.7
+}
+
+/**
  * Calculate estimated delivery time based on status
  */
 export function getEstimatedDeliveryMinutes(status: OrderStatus): number | null {
@@ -274,6 +288,7 @@ import {
     Truck,
     XCircle
 } from "lucide-react"
+import { OrderPrices } from "./models/order"
 
 
 export function getStatusIcon(status: string) {

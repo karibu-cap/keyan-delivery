@@ -3,12 +3,12 @@
 
 import { redirect } from 'next/navigation';
 import { getServerT } from '@/i18n/server-translations';
-import { prisma } from '@/lib/prisma';
 import { TransactionType, TransactionStatus } from '@prisma/client';
-import DriverWalletBalance from '@/components/driver/DriverWalletBalance';
-import DriverTransactionsList from '@/components/driver/DriverTransactionsList';
+import WalletBalance from '@/components/wallet/WalletBalance';
+import TransactionsList from '@/components/wallet/TransactionsList';
 import { ROUTES } from '@/lib/router';
 import { getSession } from '@/lib/auth-server';
+import { getWalletByUserType, getTransactionStatsByUserType, getTransactionsByUserType } from '@/lib/actions/server/wallet';
 
 export const metadata = {
     title: 'Wallet & Transactions',
@@ -26,111 +26,6 @@ interface PageProps {
     }>;
 }
 
-async function getDriverWallet(userId: string) {
-    try {
-        const wallet = await prisma.wallet.findUnique({
-            where: { userId },
-            select: {
-                id: true,
-                balance: true,
-                updatedAt: true,
-            },
-        });
-
-        return { ok: true, data: wallet };
-    } catch (error) {
-        console.error('Error fetching driver wallet:', error);
-        return { ok: false, error: 'Failed to fetch wallet' };
-    }
-}
-
-async function getDriverTransactionStats(userId: string) {
-    try {
-        const [totalEarned, totalSpent] = await Promise.all([
-            prisma.transaction.aggregate({
-                where: {
-                    wallet: { userId },
-                    type: TransactionType.credit,
-                    status: TransactionStatus.COMPLETED,
-                },
-                _sum: { amount: true },
-            }),
-            prisma.transaction.aggregate({
-                where: {
-                    wallet: { userId },
-                    type: TransactionType.debit,
-                    status: TransactionStatus.COMPLETED,
-                },
-                _sum: { amount: true },
-            }),
-        ]);
-
-        return {
-            ok: true,
-            data: {
-                totalEarned: totalEarned._sum?.amount || 0,
-                totalSpent: totalSpent._sum?.amount || 0,
-                completedTransactions: await prisma.transaction.count({
-                    where: {
-                        wallet: { userId },
-                        status: TransactionStatus.COMPLETED,
-                    },
-                }),
-            },
-        };
-    } catch (error) {
-        console.error('Error fetching transaction stats:', error);
-        return { ok: false, error: 'Failed to fetch stats' };
-    }
-}
-
-async function getDriverTransactions(
-    userId: string,
-    filters: {
-        type?: TransactionType;
-        status?: TransactionStatus;
-        page?: number;
-        limit?: number;
-    }
-) {
-    try {
-        const { type, status, page = 1, limit = 10 } = filters;
-        const skip = (page - 1) * limit;
-
-        const where: any = {
-            wallet: { userId },
-        };
-
-        if (type) where.type = type;
-        if (status) where.status = status;
-
-        const [transactions, total] = await Promise.all([
-            prisma.transaction.findMany({
-                where,
-                orderBy: { createdAt: 'desc' },
-                skip,
-                take: limit,
-            }),
-            prisma.transaction.count({ where }),
-        ]);
-
-        return {
-            ok: true,
-            data: {
-                transactions,
-                pagination: {
-                    page,
-                    limit,
-                    total,
-                    totalPages: Math.ceil(total / limit),
-                },
-            },
-        };
-    } catch (error) {
-        console.error('Error fetching transactions:', error);
-        return { ok: false, error: 'Failed to fetch transactions' };
-    }
-}
 
 export default async function DriverWalletPage({ params, searchParams }: PageProps) {
     const search = await searchParams;
@@ -142,18 +37,8 @@ export default async function DriverWalletPage({ params, searchParams }: PagePro
         redirect(ROUTES.signIn({ redirect: ROUTES.driverWallet }));
     }
 
-    // Get user
-    const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { id: true },
-    });
-
-    if (!user) {
-        redirect(ROUTES.signIn({ redirect: ROUTES.driverWallet }));
-    }
-
-    // Get wallet data
-    const walletResponse = await getDriverWallet(user.id);
+    // Get wallet data using unified function
+    const walletResponse = await getWalletByUserType(session.user.id, 'driver');
     if (!walletResponse.ok || !walletResponse.data) {
         return (
             <div className="container mx-auto px-4 py-6">
@@ -166,12 +51,12 @@ export default async function DriverWalletPage({ params, searchParams }: PagePro
     }
 
     // Get transaction stats
-    const statsResponse = await getDriverTransactionStats(user.id);
+    const statsResponse = await getTransactionStatsByUserType(session.user.id, 'driver');
     const stats = statsResponse.ok ? statsResponse.data : null;
 
     // Get transactions with filters
     const page = parseInt(search.page || '1');
-    const transactionsResponse = await getDriverTransactions(user.id, {
+    const transactionsResponse = await getTransactionsByUserType(session.user.id, 'driver', {
         type: search.type,
         status: search.status,
         page,
@@ -200,14 +85,16 @@ export default async function DriverWalletPage({ params, searchParams }: PagePro
             </section>
 
             {/* Wallet Balance */}
-            <DriverWalletBalance
+            <WalletBalance
                 wallet={walletResponse.data}
                 stats={stats}
+                userType="driver"
+                withdrawalUrl={ROUTES.driverWalletWithdrawal}
             />
 
             {/* Transactions List */}
             {transactionsData && (
-                <DriverTransactionsList
+                <TransactionsList
                     transactions={transactionsData.transactions}
                     pagination={transactionsData.pagination}
                     currentFilters={{
@@ -215,6 +102,7 @@ export default async function DriverWalletPage({ params, searchParams }: PagePro
                         status: search.status,
                         page,
                     }}
+                    baseUrl={ROUTES.driverWallet}
                 />
             )}
         </div>

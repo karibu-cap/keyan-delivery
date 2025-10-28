@@ -1,17 +1,14 @@
+// File: /app/[locale]/(client)/client/wallet/page.tsx
+// Client wallet page with balance, stats, and transactions
+
 import { redirect } from 'next/navigation';
 import { getServerT } from '@/i18n/server-translations';
-import { prisma } from '@/lib/prisma';
-import {
-    getWalletByUserType,
-    getTransactionStatsByUserType,
-    getTransactionsByUserType
-} from '@/lib/actions/server/wallet';
+import { getSession } from '@/lib/auth-server';
+import { getWalletByUserType, getTransactionStatsByUserType, getTransactionsByUserType } from '@/lib/actions/server/wallet';
 import { TransactionType, TransactionStatus } from '@prisma/client';
-import { SlideUp } from '@/components/merchants/animations/TransitionWrappers';
-import { ROUTES } from '@/lib/router';
 import WalletBalance from '@/components/wallet/WalletBalance';
 import TransactionsList from '@/components/wallet/TransactionsList';
-import { getSession } from '@/lib/auth-server';
+import { ROUTES } from '@/lib/router';
 
 export const metadata = {
     title: 'Wallet & Transactions',
@@ -20,7 +17,6 @@ export const metadata = {
 
 interface PageProps {
     params: Promise<{
-        merchantId: string;
         locale: string;
     }>;
     searchParams: Promise<{
@@ -30,40 +26,18 @@ interface PageProps {
     }>;
 }
 
-async function verifyMerchantAccess(merchantId: string, id: string) {
-    const userMerchant = await prisma.userMerchantManager.findFirst({
-        where: {
-            merchantId,
-            user: {
-                id,
-            },
-        },
-    });
-
-    return !!userMerchant;
-}
-
-export default async function MerchantWalletPage({ params, searchParams }: PageProps) {
-    const { merchantId } = await params;
+export default async function ClientWalletPage({ params, searchParams }: PageProps) {
     const search = await searchParams;
-
     const t = await getServerT();
-
 
     const session = await getSession();
 
     if (!session?.user) {
-        redirect(ROUTES.signIn({ redirect: ROUTES.merchantWallet(merchantId) }));
-    }
-
-
-    const hasAccess = await verifyMerchantAccess(merchantId, session.user.id);
-    if (!hasAccess) {
-        redirect(ROUTES.merchantUnauthorized(merchantId));
+        redirect(ROUTES.signIn({ redirect: ROUTES.clientWallet }));
     }
 
     // Get wallet data using unified function
-    const walletResponse = await getWalletByUserType(session.user.id, 'merchant');
+    const walletResponse = await getWalletByUserType(session.user.id, 'customer');
     if (!walletResponse.ok || !walletResponse.data) {
         return (
             <div className="container mx-auto px-4 py-6">
@@ -76,12 +50,12 @@ export default async function MerchantWalletPage({ params, searchParams }: PageP
     }
 
     // Get transaction stats
-    const statsResponse = await getTransactionStatsByUserType(session.user.id, 'merchant');
+    const statsResponse = await getTransactionStatsByUserType(session.user.id, 'customer');
     const stats = statsResponse.ok ? statsResponse.data : null;
 
     // Get transactions with filters
     const page = parseInt(search.page || '1');
-    const transactionsResponse = await getTransactionsByUserType(session.user.id, 'merchant', {
+    const transactionsResponse = await getTransactionsByUserType(session.user.id, 'customer', {
         type: search.type,
         status: search.status,
         page,
@@ -91,33 +65,30 @@ export default async function MerchantWalletPage({ params, searchParams }: PageP
     const transactionsData = transactionsResponse.ok ? transactionsResponse.data : null;
 
     return (
-        <div className="container mx-auto max-w-7xl">
-
+        <div className="min-h-screen">
+            {/* Hero Section with Red Gradient */}
             <section className="gradient-hero py-8 sm:py-12 lg:py-16 px-4">
-                <SlideUp>
-                    <div className="container mx-auto max-w-7xl">
-                        <div className="text-white">
-                            {/* Header Title */}
-                            <div className="mb-6">
-                                <h1 className="text-2xl sm:text-3xl font-bold text-white truncate">
-                                    {t('Wallet & Transactions')}
-                                </h1>
-                                <p className="mt-1 sm:mt-2 text-sm text-white truncate">
-                                    {t('Manage your earnings and view transaction history')}
-                                </p>
-                            </div>
-
+                <div className="container mx-auto max-w-7xl">
+                    <div className="text-white">
+                        {/* Header Title */}
+                        <div className="mb-6">
+                            <h1 className="text-2xl sm:text-3xl font-bold text-white truncate">
+                                {t('Wallet & Transactions')}
+                            </h1>
+                            <p className="mt-1 sm:mt-2 text-sm text-white/90 truncate">
+                                {t('Manage your wallet and view transaction history')}
+                            </p>
                         </div>
                     </div>
-                </SlideUp>
+                </div>
             </section>
 
             {/* Wallet Balance */}
             <WalletBalance
                 wallet={walletResponse.data}
                 stats={stats}
-                userType="merchant"
-                withdrawalUrl={ROUTES.merchantWalletWithdrawal(merchantId)}
+                userType="customer"
+                withdrawalUrl={ROUTES.clientWalletWithdrawal}
             />
 
             {/* Transactions List */}
@@ -130,7 +101,7 @@ export default async function MerchantWalletPage({ params, searchParams }: PageP
                         status: search.status,
                         page,
                     }}
-                    baseUrl={ROUTES.merchantWallet(merchantId)}
+                    baseUrl={ROUTES.clientWallet}
                 />
             )}
         </div>
