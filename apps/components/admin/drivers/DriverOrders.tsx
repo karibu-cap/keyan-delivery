@@ -10,7 +10,23 @@ import {
 } from "@/components/ui/table";
 import { getServerT } from "@/i18n/server-translations";
 import { Package } from "lucide-react";
-import { Order } from "@/lib/models/order";
+
+interface Order {
+    id: string;
+    status: string;
+    createdAt: Date;
+    orderPrices: {
+        total: number;
+        deliveryFee: number;
+    };
+    merchant: {
+        businessName: string;
+    };
+    user: {
+        name: string | null;
+        phone: string | null;
+    };
+}
 
 interface DriverOrdersProps {
     orders: Order[];

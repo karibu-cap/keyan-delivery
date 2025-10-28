@@ -30,7 +30,7 @@ import Image from "next/image";
 import { Order } from "@/lib/models/order";
 import LocationPermissionCard from "./LocationPermissionCard";
 import AnimatedStatsCard from "./AnimatedStatsCard";
-import { formatOrderId, getOrderDriverFee } from "@/lib/orders-utils";
+import { formatOrderId, getOrderDriverFee, validCoordinates } from "@/lib/orders-utils";
 import { cn } from "@/lib/utils";
 
 // Dynamically import the tracking map
@@ -149,12 +149,17 @@ export function DriverOrderPage({
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude,
                     };
-                    setCurrentLocation(newLocation);
+                    if (!currentLocation ||
+                        Math.abs(newLocation.latitude - currentLocation.latitude) > 0.0001 ||
+                        Math.abs(newLocation.longitude - currentLocation.longitude) > 0.0001) {
 
-                    // Update server with new location
-                    updateDriverLocation(newLocation.latitude, newLocation.longitude).catch((error) => {
-                        console.error("Failed to update driver location:", error);
-                    });
+                        setCurrentLocation(newLocation);
+                        // Update server with new location
+                        if (order.status === OrderStatus.ACCEPTED_BY_DRIVER || order.status === OrderStatus.ON_THE_WAY)
+                            updateDriverLocation(newLocation.latitude, newLocation.longitude).catch((error) => {
+                                console.error("Failed to update driver location:", error);
+                            });
+                    }
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
@@ -181,8 +186,7 @@ export function DriverOrderPage({
 
     // Fetch merchant address using reverse geocoding
     useEffect(() => {
-        if (order.merchant.address.latitude && order.merchant.address.longitude &&
-            order.merchant.address.latitude !== 0 && order.merchant.address.longitude !== 0) {
+        if (validCoordinates({ latitude: order.merchant.address.latitude, longitude: order.merchant.address.longitude })) {
             reverseGeocode(order.merchant.address.latitude, order.merchant.address.longitude)
                 .then((result) => {
                     setMerchantStreet(result.formattedAddress);
@@ -195,8 +199,7 @@ export function DriverOrderPage({
 
     // Fetch delivery address using reverse geocoding
     useEffect(() => {
-        if (order.deliveryInfo.location.lng && order.deliveryInfo.location.lat &&
-            order.deliveryInfo.location.lat !== 0 && order.deliveryInfo.location.lng !== 0) {
+        if (validCoordinates({ latitude: order.deliveryInfo.location.lat , longitude: order.deliveryInfo.location.lng}) ) {
             reverseGeocode(order.deliveryInfo.location.lat, order.deliveryInfo.location.lng)
                 .then((result) => {
                     setDeliveryStreet(result.formattedAddress);

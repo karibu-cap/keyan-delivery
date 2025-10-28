@@ -200,7 +200,6 @@ export async function POST(
                 await prisma.transaction.create({
                     data: {
                         walletId: driverWallet.id,
-                        orderId: order.id,
                         amount: driverEarnings,
                         type: TransactionType.credit,
                         description: `Delivery earnings for order #${order.id.slice(-6)}`,
@@ -212,7 +211,6 @@ export async function POST(
                 await prisma.transaction.create({
                     data: {
                         walletId: merchantWallet.id,
-                        orderId: order.id,
                         amount: merchantEarnings,
                         type: TransactionType.credit,
                         description: `Earnings for order #${order.id.slice(-6)}`,

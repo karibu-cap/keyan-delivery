@@ -246,6 +246,27 @@ export function isValidCoordinates(
 }
 
 /**
+ * Validate delivery location coordinates
+ */
+export function validCoordinates(
+    {
+        latitude, longitude,
+    }: {
+        latitude: number
+        longitude: number
+    }
+): boolean {
+    return (
+        typeof latitude === "number" &&
+        typeof longitude === "number" &&
+        latitude >= -180 &&
+        latitude <= 180 &&
+        longitude >= -90 &&
+        longitude <= 90
+    )
+}
+
+/**
  * Calculate distance between two coordinates (Haversine formula)
  */
 export function calculateDistance(
