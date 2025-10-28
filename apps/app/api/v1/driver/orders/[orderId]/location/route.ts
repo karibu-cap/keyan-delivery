@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth-server";
+import { validCoordinates } from "@/lib/orders-utils";
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -38,14 +39,7 @@ export async function POST(
         const { latitude, longitude, orderId } = body;
 
         // Validate coordinates
-        if (
-            typeof latitude !== "number" ||
-            typeof longitude !== "number" ||
-            latitude < -90 ||
-            latitude > 90 ||
-            longitude < -180 ||
-            longitude > 180
-        ) {
+        if (!validCoordinates({ latitude, longitude })) {
             return NextResponse.json(
                 { success: false, message: "Invalid coordinates" },
                 { status: 400 }

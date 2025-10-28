@@ -30,6 +30,8 @@ import Image from "next/image";
 import { Order } from "@/lib/models/order";
 import LocationPermissionCard from "./LocationPermissionCard";
 import AnimatedStatsCard from "./AnimatedStatsCard";
+import { formatOrderId, getOrderDriverFee, validCoordinates } from "@/lib/orders-utils";
+import { cn } from "@/lib/utils";
 
 // Dynamically import the tracking map
 const DriverTrackingMap = dynamic(
@@ -97,11 +99,11 @@ export function DriverOrderPage({
                 // Try to get permission status if supported
                 if ('permissions' in navigator) {
                     const result = await navigator.permissions.query({ name: 'geolocation' });
-                    
+
                     if (result.state === 'granted') {
                         setHasLocationPermission(true);
                     }
-                    
+
                     // Listen for permission changes
                     result.addEventListener('change', () => {
                         setHasLocationPermission(result.state === 'granted');
@@ -140,23 +142,24 @@ export function DriverOrderPage({
         let watchId: number | null = null;
 
         // Only track location for active orders
-        if (order.status === OrderStatus.ACCEPTED_BY_DRIVER || order.status === OrderStatus.ON_THE_WAY) {
+        if (order.status === OrderStatus.READY_TO_DELIVER ||order.status === OrderStatus.ACCEPTED_BY_DRIVER || order.status === OrderStatus.ON_THE_WAY) {
             watchId = navigator.geolocation.watchPosition(
                 (position) => {
                     const newLocation = {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude,
                     };
-                    setCurrentLocation(newLocation);
+                    if (!currentLocation ||
+                        Math.abs(newLocation.latitude - currentLocation.latitude) > 0.0001 ||
+                        Math.abs(newLocation.longitude - currentLocation.longitude) > 0.0001) {
 
-                    console.log('newLocation : ', newLocation);
-                    console.log('order : ', order);
-                    console.log('newLocation : ', newLocation);
-
-                    // Update server with new location
-                    updateDriverLocation(newLocation.latitude, newLocation.longitude).catch((error) => {
-                        console.error("Failed to update driver location:", error);
-                    });
+                        setCurrentLocation(newLocation);
+                        // Update server with new location
+                        if (order.status === OrderStatus.ACCEPTED_BY_DRIVER || order.status === OrderStatus.ON_THE_WAY)
+                            updateDriverLocation(newLocation.latitude, newLocation.longitude).catch((error) => {
+                                console.error("Failed to update driver location:", error);
+                            });
+                    }
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
@@ -183,8 +186,7 @@ export function DriverOrderPage({
 
     // Fetch merchant address using reverse geocoding
     useEffect(() => {
-        if (order.merchant.address.latitude && order.merchant.address.longitude &&
-            order.merchant.address.latitude !== 0 && order.merchant.address.longitude !== 0) {
+        if (validCoordinates({ latitude: order.merchant.address.latitude, longitude: order.merchant.address.longitude })) {
             reverseGeocode(order.merchant.address.latitude, order.merchant.address.longitude)
                 .then((result) => {
                     setMerchantStreet(result.formattedAddress);
@@ -197,8 +199,7 @@ export function DriverOrderPage({
 
     // Fetch delivery address using reverse geocoding
     useEffect(() => {
-        if (order.deliveryInfo.location.lng && order.deliveryInfo.location.lat &&
-            order.deliveryInfo.location.lat !== 0 && order.deliveryInfo.location.lng !== 0) {
+        if (validCoordinates({ latitude: order.deliveryInfo.location.lat , longitude: order.deliveryInfo.location.lng}) ) {
             reverseGeocode(order.deliveryInfo.location.lat, order.deliveryInfo.location.lng)
                 .then((result) => {
                     setDeliveryStreet(result.formattedAddress);
@@ -281,20 +282,48 @@ export function DriverOrderPage({
     console.log(order.merchant.address);
     console.log(order.deliveryInfo);
 
-    const getStatusColor = (status: OrderStatus) => {
+
+    function getOrderStatusColor(status: OrderStatus): string {
         switch (status) {
-            case OrderStatus.READY_TO_DELIVER:
-                return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400";
+            case OrderStatus.PENDING:
+                return "bg-yellow-500 text-yellow-50 border-yellow-500"
+            case OrderStatus.ACCEPTED_BY_MERCHANT:
             case OrderStatus.ACCEPTED_BY_DRIVER:
-                return "bg-blue-500/10 text-blue-700 dark:text-blue-400";
+                return "bg-blue-500 text-blue-50 border-blue-500"
+            case OrderStatus.IN_PREPARATION:
+            case OrderStatus.READY_TO_DELIVER:
+                return "bg-purple-500 text-purple-50 border-purple-500"
             case OrderStatus.ON_THE_WAY:
-                return "bg-green-500/10 text-green-700 dark:text-green-400";
+                return "bg-indigo-500 text-indigo-50 border-indigo-500"
             case OrderStatus.COMPLETED:
-                return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400";
+                return "bg-green-500 text-green-50 border-green-500"
+            case OrderStatus.REJECTED_BY_MERCHANT:
+            case OrderStatus.REJECTED_BY_DRIVER:
+            case OrderStatus.CANCELED_BY_MERCHANT:
+            case OrderStatus.CANCELED_BY_DRIVER:
+                return "bg-red-500 text-red-50 border-red-500"
             default:
-                return "bg-gray-500/10 text-gray-700 dark:text-gray-400";
+                return "bg-gray-500 text-gray-50 border-gray-500"
         }
-    };
+    }
+
+    function getOrderStatusLabel(status: OrderStatus): string {
+        const labels: Record<OrderStatus, string> = {
+            [OrderStatus.PENDING]: "Pending",
+            [OrderStatus.ACCEPTED_BY_MERCHANT]: "Accepted by Merchant",
+            [OrderStatus.ACCEPTED_BY_DRIVER]: "Driver Assigned",
+            [OrderStatus.REJECTED_BY_MERCHANT]: "Rejected by Merchant",
+            [OrderStatus.REJECTED_BY_DRIVER]: "Rejected by Driver",
+            [OrderStatus.CANCELED_BY_MERCHANT]: "Cancelled by Merchant",
+            [OrderStatus.CANCELED_BY_DRIVER]: "Cancelled by Driver",
+            [OrderStatus.ON_THE_WAY]: "On the Way",
+            [OrderStatus.IN_PREPARATION]: "In Preparation",
+            [OrderStatus.READY_TO_DELIVER]: "Ready to Deliver",
+            [OrderStatus.COMPLETED]: "Completed",
+        }
+
+        return labels[status] || status
+    }
 
     const getStatusIcon = (status: OrderStatus) => {
         switch (status) {
@@ -338,7 +367,7 @@ export function DriverOrderPage({
                                     Order Details
                                 </h1>
                                 <p className="text-sm sm:text-base text-white/90">
-                                    Order #{order.id.slice(-6).toUpperCase()} • {order.merchant.businessName}
+                                    Order {formatOrderId(order.id)} • {order.merchant.businessName}
                                 </p>
                                 <Badge className="mt-2 bg-white/20 text-white border-white/30">
                                     {order.status.replace(/_/g, ' ').toLowerCase()}
@@ -377,7 +406,7 @@ export function DriverOrderPage({
                     {/* Earnings */}
                     <AnimatedStatsCard
                         title="Your Earnings"
-                        value={t.formatAmount(order.orderPrices.deliveryFee)}
+                        value={t.formatAmount(getOrderDriverFee(order.orderPrices))}
                         icon={WalletIcon}
                         color="text-red-600"
                         bgColor="bg-red-50 dark:bg-red-950/20"
@@ -404,339 +433,339 @@ export function DriverOrderPage({
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             {/* Left Column - Map, Merchant, Client, Items */}
                             <div className="lg:col-span-2 space-y-6">
-                        {/* Map Section */}
-                        <Card className="p-6 rounded-2xl shadow-card">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h2 className="text-xl font-semibold">{t("Navigation Map")}</h2>
-                                    <p className="text-sm text-muted-foreground mt-1">
-                                        {t("Track your route in real time")}
-                                    </p>
-                                </div>
-                                <Button
-                                    onClick={openInGoogleMaps}
-                                    variant="outline"
-                                    size="sm"
-                                    className="gap-2"
-                                >
-                                    <Navigation className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t("Google Maps")}</span>
-                                </Button>
-                            </div>
-
-                            <div className="relative z-0 w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden">
-                                                <DriverTrackingMap
-                                    orderStatus={order.status}
-                                    driverLocation={currentLocation}
-                                    merchantLocation={
-                                        order.merchant.address.latitude !== 0 && order.merchant.address.longitude !== 0
-                                            ? {
-                                                latitude: order.merchant.address.latitude,
-                                                longitude: order.merchant.address.longitude,
-                                                name: order.merchant.businessName,
-                                            }
-                                            : null
-                                    }
-                                    deliveryLocation={{
-                                        latitude: order.deliveryInfo.location.lat,
-                                        longitude: order.deliveryInfo.location.lng,
-                                        address: order.deliveryInfo.address,
-                                    }}
-                                />
-                            </div>
-                        </Card>
-
-                        {/* Merchant Info Card */}
-                        <Card className="p-6 rounded-2xl shadow-card border-2 border-blue-200 dark:border-blue-800">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Store className="w-5 h-5 text-blue-600" />
-                                <h3 className="text-lg font-semibold">{t("Merchant Information")}</h3>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row items-start gap-4">
-                                {/* Merchant Image */}
-                                <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-100 dark:bg-blue-950 flex-shrink-0">
-                                    {order.merchant.bannerUrl ? (
-                                        <Image
-                                            src={order.merchant.bannerUrl}
-                                            alt={order.merchant.businessName}
-                                            width={64}
-                                            height={64}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <Store className="w-8 h-8 text-blue-600" />
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="flex-1 w-full">
-                                    <h4 className="font-semibold text-lg">{order.merchant.businessName}</h4>
-                                    {order.merchant.address.latitude && order.merchant.address.longitude && (
-                                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                            {merchantStreet}
-                                        </p>
-                                    )}
-                                    {order.merchant.phone && (
-                                        <div className="mt-2">
-                                            <p className="text-sm text-muted-foreground">{t("Phone Number")}</p>
-                                            <p className="font-medium text-sm">{order.merchant.phone}</p>
-                                        </div>
-                                    )}
-                                    {order.merchant.phone && (
-                                        <div className="flex flex-wrap items-center gap-2 mt-3">
-                                            <Button
-                                                onClick={() => openPhone(order.merchant.phone!)}
-                                                size="sm"
-                                                variant="outline"
-                                                className="gap-1 flex-1 sm:flex-none min-w-[80px]"
-                                            >
-                                                <Phone className="w-4 h-4" />
-                                                <span className="text-xs sm:text-sm">{t("Call")}</span>
-                                            </Button>
-                                            <Button
-                                                onClick={() => openSMS(order.merchant.phone!)}
-                                                size="sm"
-                                                variant="outline"
-                                                className="gap-1 flex-1 sm:flex-none min-w-[80px]"
-                                            >
-                                                <MessageSquare className="w-4 h-4" />
-                                                <span className="text-xs sm:text-sm">{t("SMS")}</span>
-                                            </Button>
-                                            <Button
-                                                onClick={() => openWhatsApp(order.merchant.phone!)}
-                                                size="sm"
-                                                variant="outline"
-                                                className="gap-1 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 flex-1 sm:flex-none min-w-[100px]"
-                                            >
-                                                <WhatsAppIcon className="w-4 h-4 text-green-600" />
-                                                <span className="text-xs sm:text-sm">{t("WhatsApp")}</span>
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </Card>
-
-                        {/* Client Info Card */}
-                        <Card className="p-6 rounded-2xl shadow-card border-2 border-purple-200 dark:border-purple-800">
-                            <div className="flex items-center gap-2 mb-4">
-                                <User className="w-5 h-5 text-purple-600" />
-                                <h3 className="text-lg font-semibold">{t("Client Information")}</h3>
-                            </div>
-
-                            <div className="space-y-3">
-                                {order.user.name && (
-                                    <div>
-                                        <p className="text-sm text-muted-foreground">{t("Name")}</p>
-                                                        <p className="font-semibold text-sm sm:text-base">{order.user.name}</p>
-                                    </div>
-                                )}
-
-                                <div>
-                                    <p className="text-sm text-muted-foreground">{t("Delivery Address")}</p>
-                                    <p className="font-medium text-sm sm:text-base line-clamp-3">{deliveryStreet || order.deliveryInfo.address}</p>
-                                </div>
-
-                                {order.deliveryInfo.deliveryContact && (
-                                    <>
+                                {/* Map Section */}
+                                <Card className="p-6 rounded-2xl shadow-card">
+                                    <div className="flex items-center justify-between mb-4">
                                         <div>
-                                            <p className="text-sm text-muted-foreground">{t("Phone Number")}</p>
-                                            <p className="font-medium text-sm">{order.deliveryInfo.deliveryContact}</p>
+                                            <h2 className="text-xl font-semibold">{t("Navigation Map")}</h2>
+                                            <p className="text-sm text-muted-foreground mt-1">
+                                                {t("Track your route in real time")}
+                                            </p>
                                         </div>
-
-                                        <div className="flex flex-wrap items-center gap-2 pt-2">
-                                            <Button
-                                                onClick={() => openPhone(order.deliveryInfo.deliveryContact!)}
-                                                size="sm"
-                                                variant="outline"
-                                                className="gap-1 flex-1 sm:flex-none min-w-[80px]"
-                                            >
-                                                <Phone className="w-4 h-4" />
-                                                <span className="text-xs sm:text-sm">Call</span>
-                                            </Button>
-                                            <Button
-                                                onClick={() => openSMS(order.deliveryInfo.deliveryContact!)}
-                                                size="sm"
-                                                variant="outline"
-                                                className="gap-1 flex-1 sm:flex-none min-w-[80px]"
-                                            >
-                                                <MessageSquare className="w-4 h-4" />
-                                                <span className="text-xs sm:text-sm">SMS</span>
-                                            </Button>
-                                            <Button
-                                                onClick={() => openWhatsApp(order.deliveryInfo.deliveryContact!)}
-                                                size="sm"
-                                                variant="outline"
-                                                className="gap-1 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 flex-1 sm:flex-none min-w-[100px]"
-                                            >
-                                                <WhatsAppIcon className="w-4 h-4 text-green-600" />
-                                                <span className="text-xs sm:text-sm">WhatsApp</span>
-                                            </Button>
-                                        </div>
-                                    </>
-                                )}
-
-                                {order.deliveryInfo.additionalNotes && (
-                                    <div className="pt-3 border-t">
-                                        <p className="text-sm text-muted-foreground">Additional Notes</p>
-                                        <p className="text-sm mt-1 line-clamp-3">{order.deliveryInfo.additionalNotes}</p>
+                                        <Button
+                                            onClick={openInGoogleMaps}
+                                            variant="outline"
+                                            size="sm"
+                                            className="gap-2"
+                                        >
+                                            <Navigation className="w-4 h-4" />
+                                            <span className="hidden sm:inline">{t("Google Maps")}</span>
+                                        </Button>
                                     </div>
-                                )}
-                            </div>
-                        </Card>
 
-                        {/* Menu Items Card */}
-                        <Card className="p-6 rounded-2xl shadow-card">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Package className="w-5 h-5 text-red-600" />
-                                <h3 className="text-lg font-semibold">Order Items ({order.items.length})</h3>
-                            </div>
+                                    <div className="relative z-0 w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden">
+                                        <DriverTrackingMap
+                                            orderStatus={order.status}
+                                            driverLocation={currentLocation}
+                                            merchantLocation={
+                                                order.merchant.address.latitude !== 0 && order.merchant.address.longitude !== 0
+                                                    ? {
+                                                        latitude: order.merchant.address.latitude,
+                                                        longitude: order.merchant.address.longitude,
+                                                        name: order.merchant.businessName,
+                                                    }
+                                                    : null
+                                            }
+                                            deliveryLocation={{
+                                                latitude: order.deliveryInfo.location.lat,
+                                                longitude: order.deliveryInfo.location.lng,
+                                                address: order.deliveryInfo.address,
+                                            }}
+                                        />
+                                    </div>
+                                </Card>
 
-                            <div className="space-y-3">
-                                {order.items.map((item) => (
-                                    <div key={item.id} className="flex items-start gap-4 p-4 bg-accent/50 rounded-xl hover:bg-accent transition-colors">
-                                        {/* Product Image */}
-                                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
-                                            {item.product.images ? (
+                                {/* Merchant Info Card */}
+                                <Card className="p-6 rounded-2xl shadow-card border-2 border-blue-200 dark:border-blue-800">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Store className="w-5 h-5 text-blue-600" />
+                                        <h3 className="text-lg font-semibold">{t("Merchant Information")}</h3>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row items-start gap-4">
+                                        {/* Merchant Image */}
+                                        <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-100 dark:bg-blue-950 flex-shrink-0">
+                                            {order.merchant.bannerUrl ? (
                                                 <Image
-                                                    src={item.product.images[0]}
-                                                    alt={item.product.title}
+                                                    src={order.merchant.bannerUrl}
+                                                    alt={order.merchant.businessName}
                                                     width={64}
                                                     height={64}
                                                     className="w-full h-full object-cover"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
-                                                    <Package className="w-6 h-6 text-gray-400" />
+                                                    <Store className="w-8 h-8 text-blue-600" />
                                                 </div>
                                             )}
                                         </div>
 
-                                        {/* Product Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="font-semibold text-sm truncate">{item.product.title}</h4>
-                                            {item.product.description && (
-                                                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                                    {item.product.description}
+                                        <div className="flex-1 w-full">
+                                            <h4 className="font-semibold text-lg">{order.merchant.businessName}</h4>
+                                            {order.merchant.address.latitude && order.merchant.address.longitude && (
+                                                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                                                    {merchantStreet}
                                                 </p>
                                             )}
-                                            <div className="flex items-center gap-4 mt-2">
-                                                <p className="text-xs text-muted-foreground">
-                                                    Qty: <span className="font-semibold text-foreground">{item.quantity}</span>
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    Price: <span className="font-semibold text-foreground">{t.formatAmount(item.price)}</span>
+                                            {order.merchant.phone && (
+                                                <div className="mt-2">
+                                                    <p className="text-sm text-muted-foreground">{t("Phone Number")}</p>
+                                                    <p className="font-medium text-sm">{order.merchant.phone}</p>
+                                                </div>
+                                            )}
+                                            {order.merchant.phone && (
+                                                <div className="flex flex-wrap items-center gap-2 mt-3">
+                                                    <Button
+                                                        onClick={() => openPhone(order.merchant.phone!)}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="gap-1 flex-1 sm:flex-none min-w-[80px]"
+                                                    >
+                                                        <Phone className="w-4 h-4" />
+                                                        <span className="text-xs sm:text-sm">{t("Call")}</span>
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => openSMS(order.merchant.phone!)}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="gap-1 flex-1 sm:flex-none min-w-[80px]"
+                                                    >
+                                                        <MessageSquare className="w-4 h-4" />
+                                                        <span className="text-xs sm:text-sm">{t("SMS")}</span>
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => openWhatsApp(order.merchant.phone!)}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="gap-1 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 flex-1 sm:flex-none min-w-[100px]"
+                                                    >
+                                                        <WhatsAppIcon className="w-4 h-4 text-green-600" />
+                                                        <span className="text-xs sm:text-sm">{t("WhatsApp")}</span>
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </Card>
+
+                                {/* Client Info Card */}
+                                <Card className="p-6 rounded-2xl shadow-card border-2 border-purple-200 dark:border-purple-800">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <User className="w-5 h-5 text-purple-600" />
+                                        <h3 className="text-lg font-semibold">{t("Client Information")}</h3>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        {order.user.name && (
+                                            <div>
+                                                <p className="text-sm text-muted-foreground">{t("Name")}</p>
+                                                <p className="font-semibold text-sm sm:text-base">{order.user.name}</p>
+                                            </div>
+                                        )}
+
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">{t("Delivery Address")}</p>
+                                            <p className="font-medium text-sm sm:text-base line-clamp-3">{deliveryStreet || order.deliveryInfo.address}</p>
+                                        </div>
+
+                                        {order.deliveryInfo.deliveryContact && (
+                                            <>
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">{t("Phone Number")}</p>
+                                                    <p className="font-medium text-sm">{order.deliveryInfo.deliveryContact}</p>
+                                                </div>
+
+                                                <div className="flex flex-wrap items-center gap-2 pt-2">
+                                                    <Button
+                                                        onClick={() => openPhone(order.deliveryInfo.deliveryContact!)}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="gap-1 flex-1 sm:flex-none min-w-[80px]"
+                                                    >
+                                                        <Phone className="w-4 h-4" />
+                                                        <span className="text-xs sm:text-sm">Call</span>
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => openSMS(order.deliveryInfo.deliveryContact!)}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="gap-1 flex-1 sm:flex-none min-w-[80px]"
+                                                    >
+                                                        <MessageSquare className="w-4 h-4" />
+                                                        <span className="text-xs sm:text-sm">SMS</span>
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => openWhatsApp(order.deliveryInfo.deliveryContact!)}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="gap-1 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 flex-1 sm:flex-none min-w-[100px]"
+                                                    >
+                                                        <WhatsAppIcon className="w-4 h-4 text-green-600" />
+                                                        <span className="text-xs sm:text-sm">WhatsApp</span>
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {order.deliveryInfo.additionalNotes && (
+                                            <div className="pt-3 border-t">
+                                                <p className="text-sm text-muted-foreground">Additional Notes</p>
+                                                <p className="text-sm mt-1 line-clamp-3">{order.deliveryInfo.additionalNotes}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </Card>
+
+                                {/* Menu Items Card */}
+                                <Card className="p-6 rounded-2xl shadow-card">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Package className="w-5 h-5 text-red-600" />
+                                        <h3 className="text-lg font-semibold">Order Items ({order.items.length})</h3>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        {order.items.map((item) => (
+                                            <div key={item.id} className="flex items-start gap-4 p-4 bg-accent/50 rounded-xl hover:bg-accent transition-colors">
+                                                {/* Product Image */}
+                                                <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-800 flex-shrink-0">
+                                                    {item.product.images ? (
+                                                        <Image
+                                                            src={item.product.images[0]}
+                                                            alt={item.product.title}
+                                                            width={64}
+                                                            height={64}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <Package className="w-6 h-6 text-gray-400" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Product Info */}
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-semibold text-sm truncate">{item.product.title}</h4>
+                                                    {item.product.description && (
+                                                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                                            {item.product.description}
+                                                        </p>
+                                                    )}
+                                                    <div className="flex items-center gap-4 mt-2">
+                                                        <p className="text-xs text-muted-foreground">
+                                                            Qty: <span className="font-semibold text-foreground">{item.quantity}</span>
+                                                        </p>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            Price: <span className="font-semibold text-foreground">{t.formatAmount(item.price)}</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Total Price */}
+                                                <div className="text-right">
+                                                    <p className="font-bold text-sm">{t.formatAmount(item.price * item.quantity)}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {/* Order Total */}
+                                        <div className="flex justify-between items-center pt-4 border-t">
+                                            <span className="font-semibold">Order Total:</span>
+                                            <span className="font-bold text-lg">{t.formatAmount(order.orderPrices.total)}</span>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </div>
+
+                            {/* Right Column - Actions */}
+                            <div className="lg:col-span-1">
+                                <Card className="p-6 rounded-2xl shadow-card sticky top-4">
+                                    <h2 className="text-xl font-semibold mb-4">Order Management</h2>
+
+                                    {/* Status Badge */}
+                                    <div className="mb-6">
+                                        <Badge className="w-full justify-center py-2 text-sm">
+                                            {order.status.replace(/_/g, ' ').toLowerCase()}
+                                        </Badge>
+                                    </div>
+
+                                    {/* Actions based on status */}
+                                    <div className="space-y-4">
+                                        {/* Accept Order */}
+                                        {order.status === OrderStatus.READY_TO_DELIVER && (
+                                            <div className="space-y-3">
+                                                <Label htmlFor="pickup-code">Pickup Code</Label>
+                                                <Input
+                                                    id="pickup-code"
+                                                    placeholder="Enter code from merchant"
+                                                    value={pickupCode}
+                                                    onChange={(e) => setPickupCode(e.target.value.toUpperCase())}
+                                                    className="uppercase"
+                                                />
+                                                <Button
+                                                    onClick={() => acceptOrder(order.id, pickupCode)}
+                                                    disabled={loading || !pickupCode.trim()}
+                                                    className="w-full"
+                                                >
+                                                    {loading ? "Processing..." : "Accept Order"}
+                                                </Button>
+                                            </div>
+                                        )}
+
+                                        {/* Start Delivery */}
+                                        {order.status === OrderStatus.ACCEPTED_BY_DRIVER && (
+                                            <div className="space-y-3">
+                                                <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                                                    <p className="text-sm text-center">
+                                                        Pickup Code: <span className="font-mono font-bold text-lg">{order.pickupCode}</span>
+                                                    </p>
+                                                </div>
+                                                <Button
+                                                    onClick={() => startDelivery(order.id)}
+                                                    disabled={loading}
+                                                    className="w-full"
+                                                >
+                                                    <Truck className="w-4 h-4 mr-2" />
+                                                    {loading ? "Starting..." : "Start Delivery"}
+                                                </Button>
+                                            </div>
+                                        )}
+
+                                        {/* Complete Delivery */}
+                                        {order.status === OrderStatus.ON_THE_WAY && (
+                                            <div className="space-y-3">
+                                                <Label htmlFor="delivery-code">Delivery Code</Label>
+                                                <Input
+                                                    id="delivery-code"
+                                                    placeholder="Enter code from client"
+                                                    value={deliveryCode}
+                                                    onChange={(e) => setDeliveryCode(e.target.value.toUpperCase())}
+                                                    className="uppercase"
+                                                />
+                                                <Button
+                                                    onClick={() => completeDelivery(order.id, deliveryCode)}
+                                                    disabled={loading || !deliveryCode.trim()}
+                                                    className="w-full bg-green-600 hover:bg-green-700"
+                                                >
+                                                    {loading ? "Processing..." : "Complete Delivery"}
+                                                </Button>
+                                            </div>
+                                        )}
+
+                                        {/* Completed */}
+                                        {order.status === OrderStatus.COMPLETED && (
+                                            <div className="text-center py-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                                                <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-2" />
+                                                <p className="font-semibold text-green-600">Order Completed!</p>
+                                                <p className="text-sm text-muted-foreground mt-1">
+                                                    Great job on this delivery
                                                 </p>
                                             </div>
-                                        </div>
-
-                                        {/* Total Price */}
-                                        <div className="text-right">
-                                            <p className="font-bold text-sm">{t.formatAmount(item.price * item.quantity)}</p>
-                                        </div>
+                                        )}
                                     </div>
-                                ))}
-
-                                {/* Order Total */}
-                                <div className="flex justify-between items-center pt-4 border-t">
-                                    <span className="font-semibold">Order Total:</span>
-                                    <span className="font-bold text-lg">{t.formatAmount(order.orderPrices.total)}</span>
-                                </div>
+                                </Card>
                             </div>
-                        </Card>
-                    </div>
-
-                    {/* Right Column - Actions */}
-                    <div className="lg:col-span-1">
-                        <Card className="p-6 rounded-2xl shadow-card sticky top-4">
-                            <h2 className="text-xl font-semibold mb-4">Order Management</h2>
-
-                            {/* Status Badge */}
-                            <div className="mb-6">
-                                <Badge className="w-full justify-center py-2 text-sm">
-                                    {order.status.replace(/_/g, ' ').toLowerCase()}
-                                </Badge>
-                            </div>
-
-                            {/* Actions based on status */}
-                            <div className="space-y-4">
-                                {/* Accept Order */}
-                                {order.status === OrderStatus.READY_TO_DELIVER && (
-                                    <div className="space-y-3">
-                                        <Label htmlFor="pickup-code">Pickup Code</Label>
-                                        <Input
-                                            id="pickup-code"
-                                            placeholder="Enter code from merchant"
-                                            value={pickupCode}
-                                            onChange={(e) => setPickupCode(e.target.value.toUpperCase())}
-                                            className="uppercase"
-                                        />
-                                        <Button
-                                            onClick={() => acceptOrder(order.id, pickupCode)}
-                                            disabled={loading || !pickupCode.trim()}
-                                            className="w-full"
-                                        >
-                                            {loading ? "Processing..." : "Accept Order"}
-                                        </Button>
-                                    </div>
-                                )}
-
-                                {/* Start Delivery */}
-                                {order.status === OrderStatus.ACCEPTED_BY_DRIVER && (
-                                    <div className="space-y-3">
-                                        <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                                            <p className="text-sm text-center">
-                                                Pickup Code: <span className="font-mono font-bold text-lg">{order.pickupCode}</span>
-                                            </p>
-                                        </div>
-                                        <Button
-                                            onClick={() => startDelivery(order.id)}
-                                            disabled={loading}
-                                            className="w-full"
-                                        >
-                                            <Truck className="w-4 h-4 mr-2" />
-                                            {loading ? "Starting..." : "Start Delivery"}
-                                        </Button>
-                                    </div>
-                                )}
-
-                                {/* Complete Delivery */}
-                                {order.status === OrderStatus.ON_THE_WAY && (
-                                    <div className="space-y-3">
-                                        <Label htmlFor="delivery-code">Delivery Code</Label>
-                                        <Input
-                                            id="delivery-code"
-                                            placeholder="Enter code from client"
-                                            value={deliveryCode}
-                                            onChange={(e) => setDeliveryCode(e.target.value.toUpperCase())}
-                                            className="uppercase"
-                                        />
-                                        <Button
-                                            onClick={() => completeDelivery(order.id, deliveryCode)}
-                                            disabled={loading || !deliveryCode.trim()}
-                                            className="w-full bg-green-600 hover:bg-green-700"
-                                        >
-                                            {loading ? "Processing..." : "Complete Delivery"}
-                                        </Button>
-                                    </div>
-                                )}
-
-                                {/* Completed */}
-                                {order.status === OrderStatus.COMPLETED && (
-                                    <div className="text-center py-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
-                                        <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-2" />
-                                        <p className="font-semibold text-green-600">Order Completed!</p>
-                                        <p className="text-sm text-muted-foreground mt-1">
-                                            Great job on this delivery
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </Card>
-                    </div>
-                </div>
+                        </div>
                     </>
                 )}
             </div>

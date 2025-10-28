@@ -90,6 +90,14 @@ enum PaymentStatus {
   FAILED
 }
 
+enum WithdrawalStatus {
+  INITIALIZATION
+  INITIALIZATION_FAILED
+  COMPLETED
+  PENDING
+  FAILED
+}
+
 enum MerchantType {
   FOOD
   PHARMACY
@@ -287,40 +295,42 @@ type DriverLocation {
 }
 
 type DriverStatusHistory {
-  status OrderStatus
+  status    OrderStatus
   timestamp String
 }
+
 model Order {
-  id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  deliveryInfo   DeliveryInfo
-  items          OrderItem[]
-  orderPrices    OrderPrices
-  status         OrderStatus   @default(PENDING)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  user           User          @relation(fields: [userId], references: [id])
-  userId         String        @db.ObjectId
-  merchantId     String        @db.ObjectId
-  merchant       Merchant      @relation(fields: [merchantId], references: [id])
-  pickupCode     String?
-  deliveryCode   String?
-  driverId       String?
+  id                              String                @id @default(auto()) @map("_id") @db.ObjectId
+  deliveryInfo                    DeliveryInfo
+  items                           OrderItem[]
+  orderPrices                     OrderPrices
+  status                          OrderStatus           @default(PENDING)
+  createdAt                       DateTime              @default(now())
+  updatedAt                       DateTime              @updatedAt
+  user                            User                  @relation(fields: [userId], references: [id])
+  userId                          String                @db.ObjectId
+  merchantId                      String                @db.ObjectId
+  merchant                        Merchant              @relation(fields: [merchantId], references: [id])
+  pickupCode                      String?
+  deliveryCode                    String?
+  driverId                        String?
   // Driver's current location for real-time tracking
-  driverCurrentLocation DriverLocation?
+  driverCurrentLocation           DriverLocation?
   // Driver's position when he accept the order
   // Format: { latitude: number, longitude: number, timestamp: Date}
-  driverStartDeliveryLocation DriverLocation?
-  driverLocationUpdatedAt DateTime?
+  driverStartDeliveryLocation     DriverLocation?
+  driverLocationUpdatedAt         DateTime?
   // Driver's status history during delivery
   // Format: [{ status: OrderStatus, timestamp: Date,}]
-  driverStatusHistories DriverStatusHistory[]
+  driverStatusHistories           DriverStatusHistory[]
   driverTotalDistanceInKilometers Float?
-  onTimeDelivery Boolean?
-  payment        Payment?      @relation(fields: [paymentId], references: [id])
-  paymentId      String?       @db.ObjectId
+  onTimeDelivery                  Boolean?
+  payment                         Payment?
   // Delivery zone selected at order placement
-  deliveryZone   DeliveryZone? @relation(fields: [deliveryZoneId], references: [id])
-  deliveryZoneId String?       @db.ObjectId
+  deliveryZone                    DeliveryZone?         @relation(fields: [deliveryZoneId], references: [id])
+  deliveryZoneId                  String?               @db.ObjectId
+  transaction                     Transaction?          @relation(fields: [transactionId], references: [id])
+  transactionId                   String?               @unique @db.ObjectId
 
   @@index([userId])
   @@index([merchantId])
@@ -451,6 +461,7 @@ model Merchant {
   managers     UserMerchantManager[]
   deliveryTime String?
   rating       Float?
+  wallet       Wallet?
   order        Order[]
 }
 
@@ -471,13 +482,16 @@ model UserMerchantManager {
 
 model Wallet {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String        @unique @db.ObjectId
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String?       @unique @db.ObjectId
+  merchant     Merchant?     @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId   String?       @unique @db.ObjectId
   balance      Float         @default(0)
-  currency     String        @default("USD")
+  currency     String        @default("KES")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
+  withdrawals  Withdrawal[]
 }
 
 // --------------------------------Transaction model------------------------------------
@@ -486,7 +500,9 @@ model Transaction {
   id          String            @id @default(auto()) @map("_id") @db.ObjectId
   wallet      Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
   walletId    String            @db.ObjectId
-  orderId     String?           @db.ObjectId
+  order       Order?
+  payment     Payment?
+  withdrawal  Withdrawal?
   amount      Float
   type        TransactionType
   description String
@@ -497,22 +513,39 @@ model Transaction {
 // --------------------------------Payment model------------------------------------
 
 enum PaymentGateway {
-  STRIPE
-  CASH
+  MTN_KENYA
+}
+
+enum WithdrawalGateway {
+  MTN_KENYA
 }
 
 model Payment {
-  id             String         @id @default(auto()) @map("_id") @db.ObjectId
-  customer       User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  customerId     String         @db.ObjectId
-  amountTotal    Float
-  merchantPayout Float
-  driverPayout   Float
-  platformFee    Float
-  gateway        PaymentGateway
-  status         PaymentStatus  @default(PENDING)
-  createdAt      DateTime       @default(now())
-  Order          Order[]
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  customer      User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId    String         @db.ObjectId
+  amountTotal   Float
+  phoneNumber   String
+  gateway       PaymentGateway
+  status        PaymentStatus  @default(PENDING)
+  createdAt     DateTime       @default(now())
+  order         Order          @relation(fields: [orderId], references: [id])
+  orderId       String         @unique @db.ObjectId
+  transaction   Transaction?   @relation(fields: [transactionId], references: [id])
+  transactionId String?        @unique @db.ObjectId
+}
+
+model Withdrawal {
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId
+  wallet        Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  walletId      String            @db.ObjectId
+  phoneNumber   String
+  amount        Float
+  gateway       WithdrawalGateway
+  status        WithdrawalStatus  @default(PENDING)
+  createdAt     DateTime          @default(now())
+  transaction   Transaction       @relation(fields: [transactionId], references: [id])
+  transactionId String            @unique @db.ObjectId
 }
 
 // --------------------------------Relation schemas------------------------------------

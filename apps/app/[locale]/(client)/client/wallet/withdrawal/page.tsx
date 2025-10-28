@@ -1,5 +1,5 @@
-// File: /app/[locale]/(driver)/driver/wallet/withdrawal/page.tsx
-// Driver withdrawal page with stats, intelligent polling, and status tracking
+// File: /app/[locale]/(client)/client/wallet/withdrawal/page.tsx
+// Client withdrawal page with stats, intelligent polling, and status tracking
 
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth-server';
@@ -12,15 +12,15 @@ export const metadata = {
     description: 'Request withdrawal to your MTN Mobile Money account',
 };
 
-export default async function DriverWithdrawalPage() {
+export default async function ClientWithdrawalPage() {
     const session = await getSession();
 
     if (!session?.user) {
-        redirect(ROUTES.signIn({ redirect: ROUTES.driverWalletWithdrawal }));
+        redirect(ROUTES.signIn({ redirect: ROUTES.clientWalletWithdrawal }));
     }
 
     // Get wallet data using unified function
-    const walletResponse = await getWalletByUserType(session.user.id, 'driver');
+    const walletResponse = await getWalletByUserType(session.user.id, 'customer');
     
     if (!walletResponse.ok || !walletResponse.data) {
         return (
@@ -36,8 +36,8 @@ export default async function DriverWithdrawalPage() {
     return (
         <WithdrawalPageClient 
             balance={walletResponse.data.balance} 
-            userType="driver"
-            backUrl={ROUTES.driverWallet}
+            userType="customer"
+            backUrl={ROUTES.clientWallet}
         />
     );
 }

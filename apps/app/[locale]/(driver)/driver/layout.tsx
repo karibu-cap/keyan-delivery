@@ -1,7 +1,6 @@
 "use client";
+import "./globals.css";
 
-import { useEffect } from 'react';
-import { useThemeColor } from '@/components/theme/ThemeProvider';
 import DriverNavbar from '@/components/driver/DriverNavbar';
 
 export default function DriverLayout({
@@ -9,12 +8,6 @@ export default function DriverLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const { setDriverTheme } = useThemeColor();
-
-    useEffect(() => {
-        // Set driver theme color (red-600)
-        setDriverTheme();
-    }, [setDriverTheme]);
 
     return (
         <>

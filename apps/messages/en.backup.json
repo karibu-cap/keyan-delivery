@@ -136,7 +136,7 @@
   "please-try-again-or-contact-support-if-the-issue-persists": "Please try again or contact support if the issue persists.",
   "order-placed-successfully": "Order placed successfully!",
   "your-delivery-code-is-deliverycode": "Your delivery code is: {deliveryCode}",
-  "continue-shopping": "Continue Shopping",
+  "continue-shopping": "Continue shopping",
   "checkout": "Checkout",
   "delivery-location": "Delivery Location",
   "where-should-we-deliver": "Where should we deliver?",
@@ -1352,5 +1352,6 @@
   "you-can-save-only-one-polygone": "You can save only one polygone",
   "exit-admin-mode": "Exit Admin Mode?",
   "you-can-return-to-admin-mode-anytime": "You can return to admin mode anytime",
-  "log-out": "Log out"
+  "log-out": "Log out",
+  "admin-panel": "Admin Panel"
 }

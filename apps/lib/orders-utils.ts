@@ -118,6 +118,20 @@ export function getOrderStatusLabel(status: OrderStatus): string {
 }
 
 /**
+ * Get order merchant fee
+ */
+export function getOrderMerchantFee(orderFees: OrderPrices): number {
+    return orderFees.subtotal * 0.995
+}
+
+/**
+ * Get order driver fee
+ */
+export function getOrderDriverFee(orderFees: OrderPrices): number {
+    return orderFees.deliveryFee * 0.7
+}
+
+/**
  * Calculate estimated delivery time based on status
  */
 export function getEstimatedDeliveryMinutes(status: OrderStatus): number | null {
@@ -232,6 +246,27 @@ export function isValidCoordinates(
 }
 
 /**
+ * Validate delivery location coordinates
+ */
+export function validCoordinates(
+    {
+        latitude, longitude,
+    }: {
+        latitude: number
+        longitude: number
+    }
+): boolean {
+    return (
+        typeof latitude === "number" &&
+        typeof longitude === "number" &&
+        latitude >= -180 &&
+        latitude <= 180 &&
+        longitude >= -90 &&
+        longitude <= 90
+    )
+}
+
+/**
  * Calculate distance between two coordinates (Haversine formula)
  */
 export function calculateDistance(
@@ -274,6 +309,7 @@ import {
     Truck,
     XCircle
 } from "lucide-react"
+import { OrderPrices } from "./models/order"
 
 
 export function getStatusIcon(status: string) {

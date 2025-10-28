@@ -17,6 +17,7 @@ import { useDriverOrders } from "@/hooks/use-driver-orders";
 import { useWallet } from "@/hooks/use-wallet";
 import { useT } from "@/hooks/use-inline-translation";
 import { Order } from "@/lib/models/order";
+import { formatOrderId, getOrderDriverFee } from "@/lib/orders-utils";
 
 
 interface DriverOrderCardGlassProps {
@@ -119,7 +120,7 @@ export function DriverOrderCardGlass({
                             </h3>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            Order #{order.id.slice(-6).toUpperCase()}
+                            Order {formatOrderId(order.id)}
                         </p>
                     </div>
                     <Badge className="bg-gradient-to-r from-red-600 to-pink-600 text-white border-0 shadow-lg">
@@ -136,7 +137,7 @@ export function DriverOrderCardGlass({
                             Your Earnings
                         </p>
                         <p className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                            {t.formatAmount(order.orderPrices.deliveryFee)}
+                            {t.formatAmount(getOrderDriverFee(order.orderPrices))}
                         </p>
                     </div>
                 </div>

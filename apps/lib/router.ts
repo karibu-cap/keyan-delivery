@@ -16,16 +16,19 @@ export const ROUTES = {
   signup: ({ redirect }: { redirect?: string }) => `/sign-up${redirect ? `?redirect=${redirect}` : ''}`,
   profile: '/profile',
 
-  // Customer routes
+  // Customer/Client routes
   orders: '/orders',
   order: (id: string) => `/orders/${id}`,
   wishlist: '/wishlist',
+  clientWallet: '/client/wallet',
+  clientWalletWithdrawal: '/client/wallet/withdrawal',
 
   // Merchant routes
   merchantDashboard: (id: string) => `/merchant/${id}`,
   merchantProductNew: '/merchant/new',
   merchantProductEdit: (id: string) => `/merchant/${id}/products`,
   merchantWallet: (id: string) => `/merchant/${id}/wallet`,
+  merchantWalletWithdrawal: (id: string) => `/merchant/${id}/wallet/withdrawal`,
   merchantProfile: (id: string) => `/merchant/${id}/profile`,
   merchantInsights: (id: string) => `/merchant/${id}/insights`,
   merchantUnauthorized: (id: string) => `/merchant/${id}/unauthorized`,

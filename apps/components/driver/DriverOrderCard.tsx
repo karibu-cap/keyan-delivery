@@ -20,40 +20,8 @@ import { ROUTES } from "@/lib/router";
 import { useDriverOrders } from "@/hooks/use-driver-orders";
 import { useWallet } from "@/hooks/use-wallet";
 import { useT } from "@/hooks/use-inline-translation";
-
-interface Order {
-    id: string;
-    status: OrderStatus;
-    createdAt: Date;
-    pickupCode: string | null;
-    deliveryCode: string | null;
-    orderPrices: {
-        total: number;
-        deliveryFee: number;
-    };
-    deliveryInfo: {
-        address: string;
-        delivery_latitude: number;
-        delivery_longitude: number;
-        deliveryContact: string | null;
-        additionalNotes?: string | null;
-    };
-    merchant: {
-        businessName: string;
-        address: {
-            latitude: number;
-            longitude: number;
-        };
-    };
-    items: Array<{
-        id: string;
-        quantity: number;
-        price: number;
-        product: {
-            title: string;
-        };
-    }>;
-}
+import { formatOrderId, getOrderDriverFee } from "@/lib/orders-utils";
+import { Order } from "@/lib/models/order";
 
 interface DriverOrderCardProps {
     order: Order;
@@ -138,7 +106,7 @@ export function DriverOrderCard({
                     <div>
                         <h3 className="font-semibold text-lg">{order.merchant.businessName}</h3>
                         <p className="text-sm text-muted-foreground">
-                            Order #{order.id.slice(-6)}
+                            Order {formatOrderId(order.id)}
                         </p>
                     </div>
                     <Badge variant={isActive ? "default" : "secondary"}>
@@ -161,7 +129,7 @@ export function DriverOrderCard({
                             <span className="text-sm font-medium text-success">Your Earnings</span>
                         </div>
                         <span className="text-lg font-bold text-success">
-                            {t.formatAmount(order.orderPrices.deliveryFee)}
+                            {t.formatAmount(getOrderDriverFee(order.orderPrices))}
                         </span>
                     </div>
                 </div>

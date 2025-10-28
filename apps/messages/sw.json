@@ -1353,5 +1353,8 @@
   "exit-admin-mode": "Toka hali ya admin?",
   "you-can-return-to-admin-mode-anytime": "Unaweza kurudi kwenye hali ya admin wakati wowote",
   "log-out": "Ingia nje",
-  "admin-panel": "Jopo la Usimamizi"
+  "admin-panel": "Jopo la Usimamizi",
+  "your-transaction-history-will-appear-here": "Historia yako ya shughuli itaonekana hapa",
+  "send-notifications-to-merchants-via-push": "Tuma arifa kwa wafanyabiashara kupitia kushinikiza.",
+  "manage-your-wallet-and-view-transaction-history": "Simamia mkoba wako na uangalie historia ya shughuli"
 }

@@ -18,6 +18,7 @@ import { useWallet } from "@/hooks/use-wallet";
 import { useT } from "@/hooks/use-inline-translation";
 import { cn } from "@/lib/utils";
 import { Order } from '@/lib/models/order';
+import { formatOrderId, getOrderDriverFee } from "@/lib/orders-utils";
 
 interface DriverOrderCardTimelineProps {
     order: Order;
@@ -108,11 +109,11 @@ export function DriverOrderCardTimeline({
                         {order.merchant.businessName}
                     </h3>
                     <Badge className="bg-red-600 text-white text-xs ml-2">
-                        {t.formatAmount(order.orderPrices.deliveryFee)}
+                        {t.formatAmount(getOrderDriverFee(order.orderPrices))}
                     </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    #{order.id.slice(-6).toUpperCase()} • {order.items.length} items
+                    {formatOrderId(order.id)} • {order.items.length} items
                 </p>
             </div>
 

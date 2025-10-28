@@ -949,7 +949,6 @@ async function seedDatabase() {
         return prisma.transaction.create({
           data: {
             walletId: wallet.id,
-            orderId: order.id,
             amount: order.orderPrices.total,
             type: 'debit',
             description: `Payment for order ${order.id}`,
@@ -968,18 +967,13 @@ async function seedDatabase() {
           return prisma.payment.create({
             data: {
               customerId: order.userId,
+              orderId: order.id,
+              phoneNumber: faker.phone.number(),
               amountTotal: order.orderPrices.total,
-              merchantPayout: order.orderPrices.total * 0.85,
-              driverPayout: order.orderPrices.deliveryFee * 0.8,
-              platformFee: order.orderPrices.total * 0.15,
               status: order.status === 'COMPLETED' ? 'COMPLETED' : 'PENDING',
               gateway: faker.helpers.arrayElement([
-                'STRIPE',
-                'CASH'
+                'MTN_KENYA',
               ]),
-              Order: {
-                connect: { id: order.id }
-              },
             },
           })
         }
