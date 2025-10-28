@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Package, Truck, CheckCircle2, TrendingUp } from 'lucide-react';
+import { Package, Truck, CheckCircle2 } from 'lucide-react';
 import { useDriverOrders } from '@/hooks/use-driver-orders';
 import DriverOrdersList from './DriverOrdersList';
 import DriverStatsGrid from './DriverStatsGrid';
@@ -24,7 +24,7 @@ export default function DriverDashboardClient() {
     const [isCheckingPermission, setIsCheckingPermission] = useState(true);
     const previousCountsRef = React.useRef({ available: 0, active: 0, completed: 0 });
     useBlockBackNavigation();
-    
+
     const handleRetry = async () => {
         setIsRetrying(true);
         setIsInitialLoad(true);
@@ -47,11 +47,11 @@ export default function DriverDashboardClient() {
                 // Try to get permission status if supported
                 if ('permissions' in navigator) {
                     const result = await navigator.permissions.query({ name: 'geolocation' });
-                    
+
                     if (result.state === 'granted') {
                         setHasLocationPermission(true);
                     }
-                    
+
                     // Listen for permission changes
                     result.addEventListener('change', () => {
                         setHasLocationPermission(result.state === 'granted');
@@ -70,7 +70,7 @@ export default function DriverDashboardClient() {
     // Auto-refresh data every 30 seconds (silent refresh, no skeleton)
     useEffect(() => {
         if (!hasLocationPermission) return;
-        
+
         const interval = setInterval(() => {
             refreshOrders();
         }, 30000); // 30 seconds
@@ -81,7 +81,7 @@ export default function DriverDashboardClient() {
     // Initial load
     useEffect(() => {
         if (!hasLocationPermission) return;
-        
+
         refreshOrders();
         setTimeout(() => setIsInitialLoad(false), 1000);
     }, [refreshOrders, hasLocationPermission]);
@@ -199,9 +199,9 @@ export default function DriverDashboardClient() {
             <div className="container mx-auto max-w-7xl px-4 pb-12">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                     <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/50 backdrop-blur-sm rounded-xl p-1">
-                        <TabsTrigger 
-                            value="available" 
-                            className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
+                        <TabsTrigger
+                            value="available"
+                            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
                         >
                             <Package className="w-4 h-4 mr-2" />
                             <span className="hidden sm:inline">Orders</span>
@@ -209,9 +209,9 @@ export default function DriverDashboardClient() {
                                 {availableOrders.length}
                             </span>
                         </TabsTrigger>
-                        <TabsTrigger 
+                        <TabsTrigger
                             value="active"
-                            className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
+                            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
                         >
                             <Truck className="w-4 h-4 mr-2" />
                             <span className="hidden sm:inline">Deliveries</span>
@@ -219,9 +219,9 @@ export default function DriverDashboardClient() {
                                 {inProgressOrders.length}
                             </span>
                         </TabsTrigger>
-                        <TabsTrigger 
+                        <TabsTrigger
                             value="completed"
-                            className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
+                            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
                         >
                             <CheckCircle2 className="w-4 h-4 mr-2" />
                             <span className="hidden sm:inline">Completed</span>

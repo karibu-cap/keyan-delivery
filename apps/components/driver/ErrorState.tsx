@@ -36,7 +36,7 @@ export default function ErrorState({
         <div className="min-h-[60vh] flex items-center justify-center p-4">
             <Card className="max-w-md w-full p-8 text-center">
                 <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center mx-auto mb-4">
-                    <AlertCircle className="w-8 h-8 text-red-600" />
+                    <AlertCircle className="w-8 h-8 text-primary" />
                 </div>
 
                 <h2 className="text-xl font-semibold mb-2">

@@ -29,7 +29,7 @@ export default function DriverReviewClient() {
     const [cniDocument, setCniDocument] = useState<UploadedDocument | null>(null);
     const [licenseDocument, setLicenseDocument] = useState<UploadedDocument | null>(null);
     useBlockBackNavigation();
-    
+
     useEffect(() => {
         const loadUser = async () => {
             setIsLoadingUser(true);
@@ -109,10 +109,10 @@ export default function DriverReviewClient() {
                     description: t("Your application status has been updated to PENDING. Reloading page..."),
                     variant: "default",
                 });
-                
+
                 // Wait a moment for the toast to be visible
                 await new Promise(resolve => setTimeout(resolve, 1500));
-                
+
                 // Reload the entire page because driver status changed from REJECTED to PENDING
                 // This will show the PENDING interface instead of REJECTED
                 window.location.reload();
@@ -233,7 +233,7 @@ export default function DriverReviewClient() {
                                 title={t("Application Status")}
                                 value={t("Rejected")}
                                 icon={XCircle}
-                                color="text-red-600"
+                                color="text-primary"
                                 bgColor="bg-red-50 dark:bg-red-950/20"
                                 borderColor="border-red-200 dark:border-red-800"
                                 animationDelay={0}
@@ -265,7 +265,7 @@ export default function DriverReviewClient() {
                                 title={t("Account Status")}
                                 value={t("Suspended")}
                                 icon={AlertTriangle}
-                                color="text-red-600"
+                                color="text-primary"
                                 bgColor="bg-red-50 dark:bg-red-950/20"
                                 borderColor="border-red-200 dark:border-red-800"
                                 animationDelay={0}

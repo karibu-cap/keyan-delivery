@@ -31,7 +31,6 @@ import { Order } from "@/lib/models/order";
 import LocationPermissionCard from "./LocationPermissionCard";
 import AnimatedStatsCard from "./AnimatedStatsCard";
 import { formatOrderId, getOrderDriverFee, validCoordinates } from "@/lib/orders-utils";
-import { cn } from "@/lib/utils";
 
 // Dynamically import the tracking map
 const DriverTrackingMap = dynamic(
@@ -142,7 +141,7 @@ export function DriverOrderPage({
         let watchId: number | null = null;
 
         // Only track location for active orders
-        if (order.status === OrderStatus.READY_TO_DELIVER ||order.status === OrderStatus.ACCEPTED_BY_DRIVER || order.status === OrderStatus.ON_THE_WAY) {
+        if (order.status === OrderStatus.READY_TO_DELIVER || order.status === OrderStatus.ACCEPTED_BY_DRIVER || order.status === OrderStatus.ON_THE_WAY) {
             watchId = navigator.geolocation.watchPosition(
                 (position) => {
                     const newLocation = {
@@ -199,7 +198,7 @@ export function DriverOrderPage({
 
     // Fetch delivery address using reverse geocoding
     useEffect(() => {
-        if (validCoordinates({ latitude: order.deliveryInfo.location.lat , longitude: order.deliveryInfo.location.lng}) ) {
+        if (validCoordinates({ latitude: order.deliveryInfo.location.lat, longitude: order.deliveryInfo.location.lng })) {
             reverseGeocode(order.deliveryInfo.location.lat, order.deliveryInfo.location.lng)
                 .then((result) => {
                     setDeliveryStreet(result.formattedAddress);
@@ -408,7 +407,7 @@ export function DriverOrderPage({
                         title="Your Earnings"
                         value={t.formatAmount(getOrderDriverFee(order.orderPrices))}
                         icon={WalletIcon}
-                        color="text-red-600"
+                        color="text-primary"
                         bgColor="bg-red-50 dark:bg-red-950/20"
                         borderColor="border-red-200 dark:border-red-800"
                         animationDelay={200}

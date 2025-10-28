@@ -168,7 +168,7 @@ export function DriverOrderCardMinimalist({
                     <Button
                         onClick={handleAcceptOrder}
                         disabled={isAccepting || !pickupCode.trim()}
-                        className="w-full h-12 text-base font-semibold rounded-xl bg-red-600 hover:bg-red-700"
+                        className="w-full h-12 text-base font-semibold rounded-xl bg-primary hover:bg-red-700"
                     >
                         {isAccepting ? "Processing..." : "Accept Order"}
                     </Button>

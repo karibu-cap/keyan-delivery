@@ -65,14 +65,14 @@ export function DriverBadge({ onClick }: DriverBadgeProps) {
          case DriverStatus.REJECTED:
             return {
                icon: XCircle,
-               color: "bg-red-500 hover:bg-red-600",
+               color: "bg-red-500 hover:bg-primary",
                text: "Rejected",
                showCount: false,
             };
          case DriverStatus.BANNED:
             return {
                icon: XCircle,
-               color: "bg-red-600 hover:bg-red-700",
+               color: "bg-primary hover:bg-red-700",
                text: "Banned",
                showCount: false,
             };

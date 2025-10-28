@@ -98,7 +98,7 @@ export function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) 
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                        <AlertTriangle className="w-6 h-6 text-red-600" />
+                        <AlertTriangle className="w-6 h-6 text-primary" />
                     </div>
                     <CardTitle className="text-red-900">Something went wrong</CardTitle>
                     <CardDescription>
@@ -171,7 +171,7 @@ export function ProductErrorFallback({ resetError }: ErrorFallbackProps) {
     return (
         <div className="p-4 border border-red-200 rounded-lg bg-red-50">
             <div className="flex items-center">
-                <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
+                <AlertTriangle className="w-5 h-5 text-primary mr-2" />
                 <span className="text-red-800 font-medium">Failed to load products</span>
             </div>
             <Button

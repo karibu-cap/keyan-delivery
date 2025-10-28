@@ -14,6 +14,7 @@ import { LogOut, ShoppingBag } from 'lucide-react';
 import { useT } from '@/hooks/use-inline-translation';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/router';
+import Link from 'next/link';
 
 interface ExitAdminModeDialogProps {
     isOpen: boolean;
@@ -60,11 +61,14 @@ export default function ExitAdminModeDialog({ isOpen, onClose }: ExitAdminModeDi
                     <div className="w-2" />
                     <AlertDialogAction
 
-                        onClick={handleConfirmExit}
                         className="bg-destructive hover:bg-destructive/90"
+                        asChild
                     >
-                        <ShoppingBag className="w-4 h-4 mr-2 ml-2" />
-                        {t('Switch to Customer Mode')}
+                        <Link href={ROUTES.home} className='flex flex-row'>
+                            <ShoppingBag className="w-4 h-4 mr-2 ml-2" />
+                            {t('Switch to Customer Mode')}
+                        </Link>
+
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

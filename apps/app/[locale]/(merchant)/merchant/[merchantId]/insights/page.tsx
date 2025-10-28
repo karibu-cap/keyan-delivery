@@ -54,8 +54,8 @@ export default async function MerchantInsightsPage({ params }: { params: Promise
     const analytics: MerchantAnalytics = await getMerchantAnalytics(userMerchant.merchantId, 30);
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="mx-auto max-w-7xl">
+        <div className="min-h-screen bg-background">
+            <div className="mx-auto">
                 {/* Header Section - Responsive */}
                 <section className="gradient-hero py-8 sm:py-12 lg:py-16 px-4">
                     <SlideUp>
@@ -84,108 +84,110 @@ export default async function MerchantInsightsPage({ params }: { params: Promise
                 <div className="container mx-auto max-w-7xl px-4 -mt-8 pb-12">
                     <StatsCards stats={analytics.stats} />
                 </div>
-                {/* Charts Grid - Responsive */}
-                <div className="mt-6 sm:mt-8 grid gap-4 sm:gap-6 lg:grid-cols-2">
-                    <RevenueChart data={analytics.dailyData} />
-                    <OrdersOverview breakdown={analytics.orderStatusBreakdown} />
-                </div>
-
-                {/* Additional Insights - Responsive */}
-                <div className="mt-6 sm:mt-8 grid gap-4 sm:gap-6 lg:grid-cols-3">
-                    {/* Clients Card */}
-                    <div className="rounded-xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200">
-                        <div className="mb-4 flex items-center gap-3">
-                            <div className="rounded-full bg-purple-100 p-2 flex-shrink-0">
-                                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
-                            </div>
-                            <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
-                                {t('Clients')}
-                            </h3>
-                        </div>
-                        <div className="space-y-2 sm:space-y-3">
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600">{t('Total')}</span>
-                                <span className="font-semibold text-gray-900">
-                                    {analytics.customerInsights.totalCustomers}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600">{t('New')}</span>
-                                <span className="font-semibold text-primary/60">
-                                    {analytics.customerInsights.newCustomers}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600">{t('Returning')}</span>
-                                <span className="font-semibold text-blue-600">
-                                    {analytics.customerInsights.returningCustomers}
-                                </span>
-                            </div>
-                            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
-                                <p className="text-xs sm:text-sm text-gray-600">
-                                    {t('Average orders per customer')}
-                                </p>
-                                <p className="text-lg sm:text-xl font-bold text-gray-900 mt-1">
-                                    {analytics.customerInsights.averageOrdersPerCustomer.toFixed(1)}
-                                </p>
-                            </div>
-                        </div>
+                <div className='p-6'>
+                    {/* Charts Grid - Responsive */}
+                    <div className="mt-6 sm:mt-8 grid gap-4 sm:gap-6 lg:grid-cols-2">
+                        <RevenueChart data={analytics.dailyData} />
+                        <OrdersOverview breakdown={analytics.orderStatusBreakdown} />
                     </div>
 
-                    {/* Global Performance Card */}
-                    <div className="rounded-xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200 lg:col-span-1">
-                        <div className="mb-4 flex items-center gap-3">
-                            <div className="rounded-full bg-primary/10 p-2 flex-shrink-0">
-                                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary/60" />
+                    {/* Additional Insights - Responsive */}
+                    <div className="mt-6 sm:mt-8 grid gap-4 sm:gap-6 lg:grid-cols-3">
+                        {/* Clients Card */}
+                        <div className="rounded-xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200">
+                            <div className="mb-4 flex items-center gap-3">
+                                <div className="rounded-full bg-purple-100 p-2 flex-shrink-0">
+                                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                                </div>
+                                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+                                    {t('Clients')}
+                                </h3>
                             </div>
-                            <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
-                                {t('Global performance')}
-                            </h3>
-                        </div>
-                        <div className="space-y-3 sm:space-y-4">
-                            <div>
-                                <div className="mb-1 flex items-center justify-between text-sm">
-                                    <span className="text-gray-600">{t('Completion rate')}</span>
+                            <div className="space-y-2 sm:space-y-3">
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600">{t('Total')}</span>
+                                    <span className="font-semibold text-gray-900">
+                                        {analytics.customerInsights.totalCustomers}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600">{t('New')}</span>
                                     <span className="font-semibold text-primary/60">
-                                        {analytics.stats.completionRate.toFixed(1)}%
+                                        {analytics.customerInsights.newCustomers}
                                     </span>
                                 </div>
-                                <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                                    <div
-                                        className="h-full rounded-full bg-primary"
-                                        style={{ width: `${analytics.stats.completionRate}%` }}
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <div className="mb-1 flex items-center justify-between text-sm">
-                                    <span className="text-gray-600">{t('Cancellation rate')}</span>
-                                    <span className="font-semibold text-red-600">
-                                        {analytics.stats.cancelRate.toFixed(1)}%
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600">{t('Returning')}</span>
+                                    <span className="font-semibold text-blue-600">
+                                        {analytics.customerInsights.returningCustomers}
                                     </span>
                                 </div>
-                                <div className="h-2 overflow-hidden rounded-full bg-gray-200">
-                                    <div
-                                        className="h-full rounded-full bg-red-600"
-                                        style={{ width: `${analytics.stats.cancelRate}%` }}
-                                    />
+                                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
+                                    <p className="text-xs sm:text-sm text-gray-600">
+                                        {t('Average orders per customer')}
+                                    </p>
+                                    <p className="text-lg sm:text-xl font-bold text-gray-900 mt-1">
+                                        {analytics.customerInsights.averageOrdersPerCustomer.toFixed(1)}
+                                    </p>
                                 </div>
                             </div>
-                            <div className="mt-3 sm:mt-4 rounded-lg bg-blue-50 p-2 sm:p-3">
-                                <p className="text-xs sm:text-sm text-blue-800">
-                                    <span className="font-semibold">
-                                        {analytics.orderStatusBreakdown.pending}
-                                    </span>{' '}
-                                    {t("pending orders")}
-                                </p>
+                        </div>
+
+                        {/* Global Performance Card */}
+                        <div className="rounded-xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200 lg:col-span-1">
+                            <div className="mb-4 flex items-center gap-3">
+                                <div className="rounded-full bg-primary/10 p-2 flex-shrink-0">
+                                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary/60" />
+                                </div>
+                                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+                                    {t('Global performance')}
+                                </h3>
+                            </div>
+                            <div className="space-y-3 sm:space-y-4">
+                                <div>
+                                    <div className="mb-1 flex items-center justify-between text-sm">
+                                        <span className="text-gray-600">{t('Completion rate')}</span>
+                                        <span className="font-semibold text-primary/60">
+                                            {analytics.stats.completionRate.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+                                        <div
+                                            className="h-full rounded-full bg-primary"
+                                            style={{ width: `${analytics.stats.completionRate}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="mb-1 flex items-center justify-between text-sm">
+                                        <span className="text-gray-600">{t('Cancellation rate')}</span>
+                                        <span className="font-semibold text-primary">
+                                            {analytics.stats.cancelRate.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+                                        <div
+                                            className="h-full rounded-full bg-primary"
+                                            style={{ width: `${analytics.stats.cancelRate}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="mt-3 sm:mt-4 rounded-lg bg-blue-50 p-2 sm:p-3">
+                                    <p className="text-xs sm:text-sm text-blue-800">
+                                        <span className="font-semibold">
+                                            {analytics.orderStatusBreakdown.pending}
+                                        </span>{' '}
+                                        {t("pending orders")}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Top Products Section */}
-                <div className="mt-6 sm:mt-8">
-                    <TopProducts products={analytics.topProducts} />
+                    {/* Top Products Section */}
+                    <div className="mt-6 sm:mt-8">
+                        <TopProducts products={analytics.topProducts} />
+                    </div>
                 </div>
             </div>
         </div>

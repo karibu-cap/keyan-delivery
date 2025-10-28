@@ -98,11 +98,11 @@ export function DriverOrderCardGlass({
     return (
         <Card className="relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 group">
             {/* Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-purple-500/10 to-blue-500/10 dark:from-red-600/20 dark:via-purple-600/20 dark:to-blue-600/20" />
-            
+            <div className="absolute inset-0 bg-background from-red-500/10 via-purple-500/10 to-blue-500/10 dark:from-red-600/20 dark:via-purple-600/20 dark:to-blue-600/20" />
+
             {/* Glass Effect */}
-            <div className="absolute inset-0 backdrop-blur-xl bg-white/60 dark:bg-gray-900/60" />
-            
+            <div className="absolute inset-0 backdrop-blur-xl bg-white dark:bg-gray-900/60" />
+
             {/* Animated Border Gradient */}
             <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ padding: '2px', borderRadius: 'inherit' }}>
                 <div className="w-full h-full bg-white dark:bg-gray-900 rounded-[inherit]" />

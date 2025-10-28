@@ -145,7 +145,7 @@ export default function OrdersOverview({ breakdown }: OrdersOverviewProps) {
                     </p>
                 </div>
                 <div className="rounded-lg bg-red-50 p-3 sm:p-4">
-                    <p className="text-xs font-medium text-red-600">{t('Failure Rate')}</p>
+                    <p className="text-xs font-medium text-primary">{t('Failure Rate')}</p>
                     <p className="mt-1 text-xl font-bold text-red-700 sm:text-2xl">
                         {total > 0
                             ? (((breakdown.canceled + breakdown.rejected) / total) * 100).toFixed(1)

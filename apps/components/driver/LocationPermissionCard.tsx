@@ -47,7 +47,7 @@ export default function LocationPermissionCard({
                 (error) => {
                     // Permission denied or error
                     console.error('Geolocation error:', error);
-                    
+
                     switch (error.code) {
                         case error.PERMISSION_DENIED:
                             setPermissionState('denied');
@@ -167,7 +167,7 @@ export default function LocationPermissionCard({
                         <>
                             <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                                 <div className="flex items-start gap-3">
-                                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                                    <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                                     <div className="flex-1">
                                         <p className="font-medium text-red-900 dark:text-red-100 text-sm mb-1">
                                             {permissionState === 'denied' && t('Permission Denied')}

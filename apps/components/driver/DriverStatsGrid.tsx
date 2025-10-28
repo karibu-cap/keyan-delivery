@@ -60,7 +60,7 @@ export default function DriverStatsGrid({
             title: 'Total Earnings',
             value: 'KES 0.00',
             icon: TrendingUp,
-            color: 'text-red-600',
+            color: 'text-primary',
             bgColor: 'bg-red-50 dark:bg-red-950/20',
             borderColor: 'border-red-200 dark:border-red-800',
             onClick: () => router.push(ROUTES.driverWallet),

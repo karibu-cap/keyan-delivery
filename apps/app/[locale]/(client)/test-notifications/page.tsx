@@ -162,7 +162,7 @@ export default function TestNotifications() {
 
                 <button
                     onClick={testSWNotification}
-                    className="w-full px-4 py-3 bg-red-600 text-white rounded hover:bg-red-700"
+                    className="w-full px-4 py-3 bg-primary text-white rounded hover:bg-red-700"
                 >
                     5. Test SW Notification
                 </button>

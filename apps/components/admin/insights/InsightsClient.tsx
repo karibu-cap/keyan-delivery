@@ -148,8 +148,8 @@ export default function InsightsClient({
                                 </>
                             ) : (
                                 <>
-                                    <TrendingDown className="h-3 w-3 text-red-600" />
-                                    <span className="text-red-600">
+                                    <TrendingDown className="h-3 w-3 text-primary" />
+                                    <span className="text-primary">
                                         {platformStats.orderGrowth.toFixed(1)}%
                                     </span>
                                 </>

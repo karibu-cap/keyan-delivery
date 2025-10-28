@@ -44,7 +44,7 @@ export default function DriverProfileStats({ driverId }: DriverProfileStatsProps
             title: t('Earnings This Month'),
             value: stats ? t.formatAmount(stats.earningsThisMonth) : '0',
             icon: Wallet,
-            color: 'text-red-600',
+            color: 'text-primary',
             bgColor: 'bg-red-50 dark:bg-red-950/20',
             borderColor: 'border-red-200 dark:border-red-800',
         },

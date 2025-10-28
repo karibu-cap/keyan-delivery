@@ -1,9 +1,7 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCart } from "@/hooks/use-cart";
 import { useT } from "@/hooks/use-inline-translation";
 import { IMerchantDetail } from "@/lib/actions/server/stores";
 import { ROUTES } from "@/lib/router";
@@ -12,11 +10,9 @@ import {
   Menu,
   Search,
   Shield,
-  ShoppingCart,
   Star,
 } from "lucide-react";
 import { OptimizedImage } from "@/components/ClsOptimization";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { CategorySidebar } from "./CategorySidebar";
@@ -43,7 +39,6 @@ export function StoreDetailContent({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { cart } = useCart();
   const router = useRouter();
 
   const filteredProducts = useMemo(() => {
@@ -126,21 +121,6 @@ export function StoreDetailContent({
               >
                 <Menu className="w-5 h-5" />
               </Button>
-              <Link href="/cart">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative"
-                  aria-label={`Cart with ${cart.itemCount} items`}
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  {cart.itemCount > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 bg-primary text-white text-xs rounded-full">
-                      {cart.itemCount}
-                    </Badge>
-                  )}
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
@@ -231,7 +211,7 @@ export function StoreDetailContent({
           {/* Main Content Area */}
           <div className="flex-1 p-6">
             {/* On Sale Section */}
-            {onSaleProducts.length > 0 && (
+            {/* {onSaleProducts.length > 0 && (
               <div className="mb-8">
                 <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-4 py-2 rounded-lg mb-4 inline-flex items-center font-bold">
                   <span className="text-lg mr-2">🔥</span>
@@ -242,7 +222,7 @@ export function StoreDetailContent({
                 </h2>
                 <ProductGrid products={onSaleProducts} />
               </div>
-            )}
+            )} */}
 
             {/* Search Bar */}
             <div className="relative max-w-md mb-6">

@@ -1,4 +1,5 @@
 import { toast } from '@/hooks/use-toast';
+import { addToCartAction, clearCartAction, getCartAction, removeFromCartAction, updateCartItemAction } from '@/lib/actions/server/cart-actions';
 import type { Cart } from '@/types/cart';
 import { DeliveryInfo } from '@prisma/client';
 import { create } from 'zustand';
@@ -50,31 +51,24 @@ const useCart = create(
                 itemCount: 0,
             },
             addItem: async ({ productId, quantity, price }: { productId: string; quantity: number; price: number; }) => {
-                const response = await fetch('/api/v1/client/cart', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ productId, quantity, price }),
-                })
+                const response = await addToCartAction(productId, quantity, price)
 
-                const responseJson = await response.json()
-                if (!responseJson.success) {
+                if (!response.success) {
                     toast({
                         title: '❌ Failed to add item to cart',
-                        description: responseJson.error,
+                        description: response.error,
                         variant: 'destructive'
                     })
                     return
                 }
 
+                const updatedItems = await getCartAction()
 
+                if (updatedItems.error) {
+                    return;
+                }
 
-                const updatedItems = await fetch('/api/v1/client/cart')
-                const updatedItemsJson = await updatedItems.json()
-                console.info(responseJson, updatedItemsJson.data)
-
-                set({ cart: updatedItemsJson.data })
+                set({ cart: updatedItems.data })
                 toast({
                     title: '🎉 Item added to cart',
                     description: `added successfully`,
@@ -83,29 +77,19 @@ const useCart = create(
             },
             removeItem: async (productId: string) => {
 
-                const response = await fetch('/api/v1/client/cart', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        productId,
-                    }),
-                })
+                const response = await removeFromCartAction(productId)
 
-                const responseJson = await response.json()
-                if (!responseJson.success) {
+                if (!response.success) {
                     toast({
                         title: '❌ Failed to remove item from cart',
-                        description: responseJson.error,
+                        description: response.error,
                         variant: 'destructive'
                     })
                     return
                 }
 
-                const updatedItems = await fetch('/api/v1/client/cart')
-                const updatedItemsJson = await updatedItems.json()
-                set({ cart: updatedItemsJson.data })
+                const cart = await getCartAction()
+                set({ cart: cart.data })
                 toast({
                     title: 'Item removed from cart',
                     description: `removed successfully`,
@@ -113,52 +97,36 @@ const useCart = create(
 
             },
             updateQuantity: async (id: string, quantity: number) => {
-
-                const response = await fetch('/api/v1/client/cart', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        productId: id,
-                        quantity,
-                    }),
-                })
-
-                const responseJson = await response.json()
-                if (!responseJson.success) {
+                const response = await updateCartItemAction(id, quantity)
+                if (!response.success) {
                     toast({
                         title: '❌ Failed to update item quantity',
-                        description: responseJson.error,
+                        description: response.error,
                         variant: 'destructive'
                     })
                     return
                 }
 
-                const updatedItems = await fetch('/api/v1/client/cart')
-                const updatedItemsJson = await updatedItems.json()
-                set({ cart: updatedItemsJson.data })
+                const cart = await getCartAction()
+                set({ cart: cart.data })
                 toast({
                     title: '✅ Quantity updated',
                     description: `new quantity to ${quantity}`,
                 })
             },
             clearCart: async () => {
-                const response = await fetch('/api/v1/client/cart/clean', {
-                    method: 'DELETE',
-                })
-                const responseJson = await response.json()
-                if (!responseJson.success) {
+                const response = await clearCartAction()
+                if (!response.success) {
                     toast({
                         title: '❌ Failed to clear cart',
-                        description: responseJson.error,
+                        description: response.error,
                         variant: 'destructive'
                     })
                     return
                 }
-                const updatedItems = await fetch('/api/v1/client/cart')
-                const updatedItemsJson = await updatedItems.json()
-                set({ cart: updatedItemsJson.data })
+                const cart = await getCartAction()
+
+                set({ cart: cart.data })
             },
         }),
         {

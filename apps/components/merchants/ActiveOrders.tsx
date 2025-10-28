@@ -22,7 +22,7 @@ import { OptimizedImage } from "@/components/ClsOptimization";
 import { useState } from "react";
 import { getStatusIcon, getNextStatus, getOrderStatusColor, canReject, canCancel } from "@/lib/orders-utils";
 import EmptyState from "./animations/EmptyStates";
-import { HoverScale, Pulse, StaggerChildren, StaggerItem } from "./animations/TransitionWrappers";
+import { HoverScale, StaggerChildren, StaggerItem } from "./animations/TransitionWrappers";
 
 interface ActiveOrdersProps {
      orders: Order[];
@@ -135,15 +135,13 @@ export default function ActiveOrders({
                                                                       {order.status.replace(/_/g, " ")}
                                                                  </Badge>
                                                                  {isPending && (
-                                                                      <Pulse>
-                                                                           <Badge
-                                                                                variant="destructive"
-                                                                                className="animate-pulse text-xs"
-                                                                           >
-                                                                                <AlertCircle className="w-3 h-3 mr-1" />
-                                                                                {t("Action Required")}
-                                                                           </Badge>
-                                                                      </Pulse>
+                                                                      <Badge
+                                                                           variant="destructive"
+                                                                           className="animate-pulse text-xs"
+                                                                      >
+                                                                           <AlertCircle className="w-3 h-3 mr-1" />
+                                                                           {t("Action Required")}
+                                                                      </Badge>
                                                                  )}
                                                             </div>
 

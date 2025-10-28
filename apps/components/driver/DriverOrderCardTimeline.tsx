@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MapPin, Store, Home, CheckCircle, Circle, ArrowRight } from "lucide-react";
+import { Store, Home, CheckCircle, ArrowRight } from "lucide-react";
 import { useOrderStatus } from "@/hooks/use-order-status";
 import { OrderStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -124,8 +124,8 @@ export function DriverOrderCardTimeline({
                     <div className="flex flex-col items-center">
                         <div className={cn(
                             "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
-                            isAccepted 
-                                ? "bg-green-500 text-white scale-110" 
+                            isAccepted
+                                ? "bg-green-500 text-white scale-110"
                                 : "bg-gray-200 dark:bg-gray-700 text-gray-400"
                         )}>
                             {isAccepted ? <CheckCircle className="w-4 h-4" /> : <Store className="w-4 h-4" />}
@@ -155,11 +155,11 @@ export function DriverOrderCardTimeline({
                     <div className="flex flex-col items-center">
                         <div className={cn(
                             "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
-                            isDelivered 
-                                ? "bg-green-500 text-white scale-110" 
+                            isDelivered
+                                ? "bg-green-500 text-white scale-110"
                                 : isOnTheWay
-                                ? "bg-blue-500 text-white animate-pulse"
-                                : "bg-gray-200 dark:bg-gray-700 text-gray-400"
+                                    ? "bg-blue-500 text-white animate-pulse"
+                                    : "bg-gray-200 dark:bg-gray-700 text-gray-400"
                         )}>
                             {isDelivered ? <CheckCircle className="w-4 h-4" /> : <Home className="w-4 h-4" />}
                         </div>
@@ -191,7 +191,7 @@ export function DriverOrderCardTimeline({
                         <Button
                             onClick={handleAcceptOrder}
                             disabled={isAccepting || !pickupCode.trim()}
-                            className="w-full bg-red-600 hover:bg-red-700"
+                            className="w-full bg-primary hover:bg-red-700"
                         >
                             {isAccepting ? "Processing..." : "Accept Order"}
                         </Button>

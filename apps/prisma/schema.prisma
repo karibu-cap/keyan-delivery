@@ -360,7 +360,6 @@ model User {
   SavedList         SavedList[]
   createdAt         DateTime?             @default(now())
   updatedAt         DateTime?             @updatedAt
-  CartItem          CartItem[]
   pushSubscriptions PushSubscription[]
 
   accounts     Account[]
@@ -584,8 +583,7 @@ model ProductPromotion {
 
 model CartItem {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String   @db.ObjectId
+  userId         String?   @db.ObjectId
   product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId      String   @db.ObjectId
   quantity       Int      @default(1)

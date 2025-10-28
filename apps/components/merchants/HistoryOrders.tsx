@@ -133,12 +133,12 @@ export default function HistoryOrders({ orders }: HistoryOrdersProps) {
                          <Card className="rounded-xl">
                               <CardContent className="p-3 sm:p-4">
                                    <div className="flex items-center gap-2 mb-1">
-                                        <XCircle className="w-4 h-4 text-red-600" />
+                                        <XCircle className="w-4 h-4 text-primary" />
                                         <p className="text-xs text-muted-foreground">
                                              {t("Cancelled")} / {t("Rejected")}
                                         </p>
                                    </div>
-                                   <p className="text-xl sm:text-2xl font-bold text-red-600">
+                                   <p className="text-xl sm:text-2xl font-bold text-primary">
                                         {stats.cancelled + stats.rejected}
                                    </p>
                               </CardContent>

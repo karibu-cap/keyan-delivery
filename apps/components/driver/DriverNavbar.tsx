@@ -27,7 +27,7 @@ interface Item {
     path: string,
     mobileLabel: string
 }
- 
+
 
 
 export default function DriverNavbar() {
@@ -122,10 +122,10 @@ export default function DriverNavbar() {
         // Remove the locale in url
         const result = pathname.slice(3)
         if (path == '/') {
-            return result == path; 
+            return result == path;
         }
         if (result.startsWith('/driver/order')) {
-            return path == '/driver/dashboard'; 
+            return path == '/driver/dashboard';
         }
         return result.startsWith(path);
     };
@@ -138,7 +138,7 @@ export default function DriverNavbar() {
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
                         <Link href="/driver/dashboard" className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                                 <Truck className="w-6 h-6 text-white" />
                             </div>
                             <div className="hidden sm:flex flex-col">
@@ -163,8 +163,8 @@ export default function DriverNavbar() {
                                         href={item.path}
                                         className={cn(
                                             "flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200",
-                                            "hover:bg-red-50 hover:text-red-600 hover:scale-105 dark:hover:bg-red-950/20",
-                                            isActive && "bg-red-600 text-white font-medium shadow-md scale-105"
+                                            "hover:bg-red-50 hover:text-primary hover:scale-105 dark:hover:bg-red-950/20",
+                                            isActive && "bg-primary text-white font-medium shadow-md scale-105"
                                         )}
                                     >
                                         <Icon className={cn(
@@ -184,7 +184,7 @@ export default function DriverNavbar() {
             <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
                 <div className="flex items-center justify-between h-14 px-4">
                     <Link href="/driver/dashboard" className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <Truck className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex flex-col">
@@ -200,9 +200,9 @@ export default function DriverNavbar() {
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="right" className="w-64">
-                            
+
                             <SheetTitle><Link href="/driver/dashboard" className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
+                                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                                     <Truck className="w-5 h-5 text-white" />
                                 </div>
                                 <div className="flex flex-col">
@@ -210,7 +210,7 @@ export default function DriverNavbar() {
                                     <span className="text-xs text-muted-foreground -mt-0.5">Driver</span>
                                 </div>
                             </Link></SheetTitle>
-                            
+
                             <div className="flex flex-col gap-2 mt-8">
                                 {navItems.map((item) => {
                                     const Icon = item.icon;
@@ -223,8 +223,8 @@ export default function DriverNavbar() {
                                             onClick={() => setIsOpen(false)}
                                             className={cn(
                                                 "flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-200",
-                                                "hover:bg-red-50 hover:text-red-600 hover:scale-105 dark:hover:bg-red-950/20",
-                                                isActive && "bg-red-600 text-white font-medium shadow-md scale-105"
+                                                "hover:bg-red-50 hover:text-primary hover:scale-105 dark:hover:bg-red-950/20",
+                                                isActive && "bg-primary text-white font-medium shadow-md scale-105"
                                             )}
                                         >
                                             <Icon className={cn(
@@ -255,12 +255,12 @@ export default function DriverNavbar() {
                                 className={cn(
                                     "relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 flex-1",
                                     "hover:bg-red-50 dark:hover:bg-red-950/20",
-                                    isActive && "text-red-600"
+                                    isActive && "text-primary"
                                 )}
                             >
                                 {/* Active indicator - red line at bottom */}
                                 {isActive && (
-                                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-red-600 rounded-t-full" />
+                                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-primary rounded-t-full" />
                                 )}
                                 <Icon className={cn(
                                     "w-5 h-5 transition-transform duration-200",
@@ -268,7 +268,7 @@ export default function DriverNavbar() {
                                 )} />
                                 <span className={cn(
                                     "text-xs transition-all duration-200",
-                                    isActive ? "font-medium text-red-600" : "text-muted-foreground"
+                                    isActive ? "font-medium text-primary" : "text-muted-foreground"
                                 )}>
                                     {item.mobileLabel}
                                 </span>

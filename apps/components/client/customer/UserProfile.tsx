@@ -1,6 +1,7 @@
 'use client';
 
 import NotificationPermission from "@/components/notifications/NotificationPermission";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,12 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useT } from '@/hooks/use-inline-translation';
-import { useMerchantStore } from "@/hooks/use-merchant-store";
 import { useToast } from '@/hooks/use-toast';
 import { Prisma, User } from "@prisma/client";
-import { ArrowLeftIcon, CheckCircleIcon, ClockIcon, CreditCardIcon, HelpCircleIcon, MapPinIcon, ShieldIcon, Store, StoreIcon, UserIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckCircleIcon, ClockIcon, Store, StoreIcon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export enum TABS {
     PROFILE = "profile",
@@ -39,13 +39,6 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
     const { toast } = useToast()
     const [currentUser, setCurrentUser] = useState<User>(user);
     const [isEditing, setIsEditing] = useState(false);
-    const { addMerchantType } = useMerchantStore();
-
-    useEffect(() => {
-        user.merchantManagers.forEach((manager) => {
-            addMerchantType(manager.merchantId, manager.merchant.merchantType);
-        });
-    }, [user]);
 
     const merchants = user.merchantManagers.map((manager) => {
         return manager.merchant;
@@ -93,11 +86,11 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                 <Tabs defaultValue={initialValue || TABS.PROFILE} className="space-y-6 relative">
                     <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-6">
                         <TabsTrigger value={TABS.PROFILE}>{t("Profile")}</TabsTrigger>
-                        <TabsTrigger value={TABS.MERCHANTS}>{t("Merchants")}</TabsTrigger>
-                        <TabsTrigger value={TABS.ADDRESSES}>{t("Addresses")}</TabsTrigger>
-                        <TabsTrigger value={TABS.PAYMENT}>{t("Payment")}</TabsTrigger>
+                        {merchants.length > 0 && <TabsTrigger value={TABS.MERCHANTS}>{t("Merchants")}</TabsTrigger>}
+                        {/* <TabsTrigger value={TABS.ADDRESSES}>{t("Addresses")}</TabsTrigger> */}
+                        {/* <TabsTrigger value={TABS.PAYMENT}>{t("Payment")}</TabsTrigger> */}
                         <TabsTrigger value={TABS.NOTIFICATIONS}>{t("Notifications")}</TabsTrigger>
-                        <TabsTrigger value={TABS.SECURITY}>{t("Security")}</TabsTrigger>
+                        {/* <TabsTrigger value={TABS.SECURITY}>{t("Security")}</TabsTrigger> */}
                     </TabsList>
 
                     {/* Profile Tab */}
@@ -126,9 +119,10 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-                                        <UserIcon className="h-10 w-10 text-primary" />
-                                    </div>
+                                    <Avatar className="h-20 w-20 rounded-full">
+                                        <AvatarImage src={user.image || ''} alt={user.name} />
+                                        <AvatarFallback className="rounded-lg">{user?.name?.[0]?.toUpperCase() || user?.email[0].toUpperCase() || "A"}</AvatarFallback>
+                                    </Avatar>
                                 </div>
 
                                 <div className="grid gap-4 sm:grid-cols-2">
@@ -166,79 +160,79 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                             </CardContent>
                         </Card>
                     </TabsContent>
-
-                    <TabsContent value="merchants">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <StoreIcon className="h-5 w-5" />
-                                    {t("My Merchants")}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                {merchants.length > 0 ? (
-                                    <div className="space-y-4">
-                                        {merchants.map((merchant) => (
-                                            <div key={merchant.id} className="rounded-lg border p-4">
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex gap-3">
-                                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                                                            <StoreIcon className="h-6 w-6 text-primary" />
+                    {merchants.length > 0 &&
+                        <TabsContent value="merchants">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <StoreIcon className="h-5 w-5" />
+                                        {t("My Merchants")}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    {merchants.length > 0 ? (
+                                        <div className="space-y-4">
+                                            {merchants.map((merchant) => (
+                                                <div key={merchant.id} className="rounded-lg border p-4">
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex gap-3">
+                                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                                                                <StoreIcon className="h-6 w-6 text-primary" />
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <div className="mb-2 flex items-center gap-2">
+                                                                    <h3 className="font-semibold">{merchant.businessName}</h3>
+                                                                    <Badge variant={merchant.isVerified ? "default" : "secondary"} className={merchant.isVerified ? "bg-primary/10 text-primary/80" : ""}>
+                                                                        {merchant.isVerified ? (
+                                                                            <>
+                                                                                <CheckCircleIcon className="mr-1 h-3 w-3" />
+                                                                                {t("Verified")}
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <ClockIcon className="mr-1 h-3 w-3" />
+                                                                                {t("Pending")}
+                                                                            </>
+                                                                        )}
+                                                                    </Badge>
+                                                                </div>
+                                                                <p className="text-sm text-muted-foreground mb-2">{merchant.phone}</p>
+                                                                <div className="flex flex-wrap gap-1 mb-2">
+                                                                    <Badge variant="outline">{merchant.merchantType}</Badge>
+                                                                </div>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    {t("Manager since")}: {t.formatDateTime(merchant.createdAt)}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex-1">
-                                                            <div className="mb-2 flex items-center gap-2">
-                                                                <h3 className="font-semibold">{merchant.businessName}</h3>
-                                                                <Badge variant={merchant.isVerified ? "default" : "secondary"} className={merchant.isVerified ? "bg-primary/10 text-primary/80" : ""}>
-                                                                    {merchant.isVerified ? (
-                                                                        <>
-                                                                            <CheckCircleIcon className="mr-1 h-3 w-3" />
-                                                                            {t("Verified")}
-                                                                        </>
-                                                                    ) : (
-                                                                        <>
-                                                                            <ClockIcon className="mr-1 h-3 w-3" />
-                                                                            {t("Pending")}
-                                                                        </>
-                                                                    )}
-                                                                </Badge>
-                                                            </div>
-                                                            <p className="text-sm text-muted-foreground mb-2">{merchant.phone}</p>
-                                                            <div className="flex flex-wrap gap-1 mb-2">
-                                                                <Badge variant="outline">{merchant.merchantType}</Badge>
-                                                            </div>
-                                                            <div className="text-xs text-muted-foreground">
-                                                                {t("Manager since")}: {t.formatDateTime(merchant.createdAt)}
-                                                            </div>
+                                                        <div className="flex gap-2">
+                                                            {merchant.isVerified && <Button variant="outline" size="sm" asChild>
+                                                                <Link href={`/merchant/${merchant.id}`}>
+                                                                    <Store className="w-4 h-4 mr-2" />
+                                                                    {t("Manage")}
+                                                                </Link>
+                                                            </Button>}
                                                         </div>
-                                                    </div>
-                                                    <div className="flex gap-2">
-                                                        {merchant.isVerified && <Button variant="outline" size="sm" asChild>
-                                                            <Link href={`/merchant/${merchant.id}`}>
-                                                                <Store className="w-4 h-4 mr-2" />
-                                                                {t("Manage")}
-                                                            </Link>
-                                                        </Button>}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <StoreIcon className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                                        <p className="mb-2">{t("No merchants found")}</p>
-                                        <p className="text-sm">{t("You are not managing any merchants yet")}</p>
-                                        <div className="mt-4">
-                                            <p className="text-sm">{t("Contact an administrator to get access to manage merchants")}</p>
+                                            ))}
                                         </div>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
+                                    ) : (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            <StoreIcon className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                                            <p className="mb-2">{t("No merchants found")}</p>
+                                            <p className="text-sm">{t("You are not managing any merchants yet")}</p>
+                                            <div className="mt-4">
+                                                <p className="text-sm">{t("Contact an administrator to get access to manage merchants")}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </TabsContent>}
 
                     {/* Addresses Tab */}
-                    <TabsContent value="addresses">
+                    {/* <TabsContent value="addresses">
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center justify-between">
@@ -286,10 +280,10 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                 </div>
                             </CardContent>
                         </Card>
-                    </TabsContent>
+                    </TabsContent> */}
 
                     {/* Payment Tab */}
-                    <TabsContent value="payment">
+                    {/* <TabsContent value="payment">
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center justify-between">
@@ -310,7 +304,7 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                 </div>
                             </CardContent>
                         </Card>
-                    </TabsContent>
+                    </TabsContent> */}
 
                     {/* Notifications Tab */}
                     <TabsContent value="notifications">
@@ -325,7 +319,7 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                     </TabsContent>
 
                     {/* Security Tab */}
-                    <TabsContent value="security">
+                    {/* <TabsContent value="security">
                         <div className="space-y-6">
                             <Card>
                                 <CardHeader>
@@ -387,7 +381,7 @@ export function UserProfile({ user, initialValue }: { user: IUser, initialValue?
                                 </CardContent>
                             </Card>
                         </div>
-                    </TabsContent>
+                    </TabsContent> */}
                 </Tabs>
             </main>
         </div>

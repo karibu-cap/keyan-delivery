@@ -60,7 +60,7 @@ export default function DriverDeliveriesOverview({ breakdown, loading }: DriverD
             label: t('Canceled'),
             value: breakdown?.canceled || 0,
             icon: XCircle,
-            color: 'text-red-600',
+            color: 'text-primary',
             bgColor: 'bg-red-50 dark:bg-red-950/20',
         },
     ];
@@ -77,8 +77,8 @@ export default function DriverDeliveriesOverview({ breakdown, loading }: DriverD
             <div className="space-y-3">
                 {statuses.map((status) => {
                     const Icon = status.icon;
-                    const percentage = totalDeliveries > 0 
-                        ? ((status.value / totalDeliveries) * 100).toFixed(1) 
+                    const percentage = totalDeliveries > 0
+                        ? ((status.value / totalDeliveries) * 100).toFixed(1)
                         : '0.0';
 
                     return (

@@ -16,8 +16,6 @@ import { ROUTES } from "@/lib/router";
 // Enable ISR with on-demand revalidation
 export const revalidate = 60; // Revalidate every 60 seconds
 
-export const experimental_ppr = true;
-
 interface PageProps {
      params: Promise<{
           merchantId: string;

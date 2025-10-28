@@ -6,7 +6,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TransactionType, TransactionStatus } from '@prisma/client';
-import { ArrowUpCircle, ArrowDownCircle, Clock, CheckCircle2, XCircle, Inbox, Filter } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, Clock, CheckCircle2, XCircle, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useT } from '@/hooks/use-inline-translation';
 import { Button } from '@/components/ui/button';
@@ -44,8 +44,8 @@ interface TransactionsListProps {
     baseUrl: string;
 }
 
-export default function TransactionsList({ 
-    transactions, 
+export default function TransactionsList({
+    transactions,
     pagination,
     currentFilters,
     baseUrl
@@ -131,8 +131,8 @@ export default function TransactionsList({
                             {/* Filters */}
                             <div className="flex flex-wrap items-center gap-2">
                                 {/* Type Filter */}
-                                <Select 
-                                    value={currentFilters.type || 'all'} 
+                                <Select
+                                    value={currentFilters.type || 'all'}
                                     onValueChange={handleTypeFilter}
                                 >
                                     <SelectTrigger className="w-[130px] h-9">
@@ -156,8 +156,8 @@ export default function TransactionsList({
                                 </Select>
 
                                 {/* Status Filter */}
-                                <Select 
-                                    value={currentFilters.status || 'all'} 
+                                <Select
+                                    value={currentFilters.status || 'all'}
                                     onValueChange={handleStatusFilter}
                                 >
                                     <SelectTrigger className="w-[130px] h-9">
@@ -252,8 +252,8 @@ export default function TransactionsList({
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-primary/10 rounded-full blur-xl animate-pulse"></div>
                                     <div className="relative p-6 bg-primary/5 rounded-full">
-                                        <Inbox className="w-12 h-12 text-primary/40 animate-bounce" 
-                                               style={{ animationDuration: '2s' }} />
+                                        <Inbox className="w-12 h-12 text-primary/40 animate-bounce"
+                                            style={{ animationDuration: '2s' }} />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
@@ -280,8 +280,8 @@ export default function TransactionsList({
                                     <div className="flex items-center gap-4 flex-1">
                                         <div className={cn(
                                             "p-2 rounded-lg",
-                                            transaction.type === TransactionType.credit 
-                                                ? "bg-green-50 dark:bg-green-950/20" 
+                                            transaction.type === TransactionType.credit
+                                                ? "bg-green-50 dark:bg-green-950/20"
                                                 : "bg-red-50 dark:bg-red-950/20"
                                         )}>
                                             {transaction.type === TransactionType.credit ? (
@@ -308,8 +308,8 @@ export default function TransactionsList({
                                         <div className="text-right">
                                             <p className={cn(
                                                 "font-bold text-lg",
-                                                transaction.type === TransactionType.credit 
-                                                    ? "text-green-600" 
+                                                transaction.type === TransactionType.credit
+                                                    ? "text-green-600"
                                                     : "text-red-600"
                                             )}>
                                                 {transaction.type === TransactionType.credit ? '+' : '-'}

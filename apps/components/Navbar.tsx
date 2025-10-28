@@ -13,9 +13,7 @@ import { useT } from "@/hooks/use-inline-translation";
 import { IProduct } from "@/lib/actions/server/stores";
 import { ROUTES } from "@/lib/router";
 import {
-  ChevronDown,
   LogOut,
-  MapPin,
   Menu,
   Package,
   ShoppingCart,
@@ -25,15 +23,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-
-interface LocationState {
-  address: string;
-  loading: boolean;
-  error: string | null;
-}
 
 const Navbar = () => {
   const t = useT();
@@ -42,11 +34,6 @@ const Navbar = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
-  const [location, setLocation] = useState<LocationState>({
-    address: t("Getting location..."),
-    loading: true,
-    error: null,
-  });
 
 
   const router = useRouter();
@@ -54,85 +41,6 @@ const Navbar = () => {
   const { logout, authUser, isAuthenticated } = useAuthStore();
 
   const { cart } = useCart();
-
-  // Geolocation: Get user's current location
-  const getUserLocation = useCallback(async () => {
-    if (!navigator.geolocation) {
-      setLocation({
-        address: t("Location unavailable"),
-        loading: false,
-        error: t("Geolocation not supported"),
-      });
-      return;
-    }
-
-    try {
-      const position = await new Promise<GeolocationPosition>(
-        (resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0,
-          });
-        }
-      );
-
-      const { latitude, longitude } = position.coords;
-      await reverseGeocode(latitude, longitude);
-    } catch (error) {
-      console.error(t("Geolocation error:"), error);
-      setLocation({
-        address: t("Location unavailable"),
-        loading: false,
-        error: t("Unable to get location"),
-      });
-    }
-  }, []);
-
-  // Reverse geocoding to get address from coordinates
-  const reverseGeocode = async (lat: number, lon: number) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`,
-        {
-          headers: {
-            "Accept-Language": "en-US,en;q=0.9",
-          },
-        }
-      );
-
-      if (!response.ok) throw new Error(t("Geocoding failed"));
-
-      const data = await response.json();
-      const address = data.address;
-
-      // Format address: City, State/Region
-      const city = address.city || address.town || address.village || address.county;
-      const state = address.state || address.region;
-
-      const formattedAddress = [city, state]
-        .filter(Boolean)
-        .join(", ") || t("Location found");
-
-      setLocation({
-        address: formattedAddress,
-        loading: false,
-        error: null,
-      });
-    } catch (error) {
-      console.error(t("Reverse geocoding error:"), error);
-      setLocation({
-        address: t("Location unavailable"),
-        loading: false,
-        error: t("Unable to fetch address"),
-      });
-    }
-  };
-
-  // Initialize geolocation on mount
-  useEffect(() => {
-    getUserLocation();
-  }, [getUserLocation]);
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -227,20 +135,6 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center space-x-4">
-            {/* Location Selector */}
-            <Button
-              variant="ghost"
-              className="hidden md:flex items-center space-x-1 text-sm"
-              onClick={getUserLocation}
-              disabled={location.loading}
-              aria-label="Current location"
-            >
-              <MapPin className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-700 max-w-[150px] truncate">
-                {location.address}
-              </span>
-              <ChevronDown className="w-4 h-4 text-gray-500" />
-            </Button>
             {/* the language switcher */}
             <LanguageSwitcher />
 
@@ -309,7 +203,7 @@ const Navbar = () => {
                     </Button>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50"
+                      className="w-full justify-start text-primary hover:text-primary hover:bg-red-50"
                       onClick={handleSignOut}
                     >
                       <LogOut className="w-4 h-4 mr-2" />
@@ -349,17 +243,6 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-4 border-t border-gray-200 animate-slide-up">
-            {/* Mobile Location */}
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={getUserLocation}
-              disabled={location.loading}
-            >
-              <MapPin className="w-5 h-5 mr-3" />
-              <span className="truncate">{location.address}</span>
-            </Button>
-
             <Button variant="ghost" className="w-full justify-start" asChild>
               <Link href={ROUTES.stores}>
                 <Store className="w-5 h-5 mr-3" />

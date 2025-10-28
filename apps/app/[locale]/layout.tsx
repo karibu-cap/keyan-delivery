@@ -14,7 +14,8 @@ import type { Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
-import "../globals.css";
+import '../globals.css'
+
 
 const geistSans = Geist({
      variable: "--font-geist-sans",

@@ -84,7 +84,7 @@ export default async function DriversPage({
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-red-600">
+                        <div className="text-2xl font-bold text-primary">
                             {statusCounts.rejected + statusCounts.banned}
                         </div>
                     </CardContent>
