@@ -1,4 +1,7 @@
 Category,Key,English,Swahili,File,Line
+"1","1","","components/driver/DriverReviewClient.tsx",312
+"2","2","","components/driver/DriverReviewClient.tsx",321
+"3","3","","components/driver/DriverReviewClient.tsx",330
 "welcome-to-yetu","Welcome to Yetu","","i18n/server-translations.ts",8
 "hello-name","Hello {name}","","hooks/use-inline-translation.ts",16
 "total-amount","Total: {amount}","","hooks/use-inline-translation.ts",19
@@ -69,14 +72,67 @@ Category,Key,English,Swahili,File,Line
 "an-order-is-ready-at-merchantname","An order is ready at ${merchantName","","lib/notifications/push-service.ts",242
 "accepter","Accepter","","lib/notifications/push-service.ts",256
 "view-details","View details","","lib/notifications/push-service.ts",260
+"latest-withdrawal","Latest Withdrawal","","components/wallet/WithdrawalStatusCard.tsx",34
+"no-withdrawal-requests-yet","No withdrawal requests yet","","components/wallet/WithdrawalStatusCard.tsx",42
+"amount","Amount","","components/wallet/WithdrawalStatusCard.tsx",111
+"phone-number","Phone Number","","components/wallet/WithdrawalStatusCard.tsx",116
+"transaction-id","Transaction ID","","components/wallet/WithdrawalStatusCard.tsx",121
+"date","Date","","components/wallet/WithdrawalStatusCard.tsx",128
+"status","Status","","components/wallet/WithdrawalStatusCard.tsx",138
+"total-withdrawals","Total Withdrawals","","components/wallet/WithdrawalStatsCards.tsx",27
+"successful","Successful","","components/wallet/WithdrawalStatsCards.tsx",38
+"failed","Failed","","components/wallet/WithdrawalStatsCards.tsx",49
+"in-progress","In Progress","","components/wallet/WithdrawalStatsCards.tsx",60
+"back-to-wallet","Back to Wallet","","components/wallet/WithdrawalPageClient.tsx",42
+"withdraw-funds","Withdraw Funds","","components/wallet/WithdrawalPageClient.tsx",49
+"request-withdrawal-to-your-mtn-mobile-money-account","Request withdrawal to your MTN Mobile Money account","","components/wallet/WithdrawalPageClient.tsx",52
 "available-balance","Available Balance","","components/wallet/WalletBalance.tsx",40
 "last-updated","Last updated","","components/wallet/WalletBalance.tsx",51
-"withdraw-funds","Withdraw Funds","","components/wallet/WalletBalance.tsx",62
 "total-earned","Total Earned","","components/wallet/WalletBalance.tsx",71
 "total-spent","Total Spent","","components/wallet/WalletBalance.tsx",82
-"transaction-history","Transaction History","","components/wallet/TransactionsList.tsx",126
-"no-transactions-found","No transactions found","","components/wallet/TransactionsList.tsx",262
-"your-transaction-history-will-appear-here","Your transaction history will appear here","","components/wallet/TransactionsList.tsx",265
+"invalid-amount","Invalid amount","","components/wallet/UnifiedWithdrawalForm.tsx",96
+"please-enter-a-valid-amount","Please enter a valid amount","","components/wallet/UnifiedWithdrawalForm.tsx",97
+"amount-too-low","Amount too low","","components/wallet/UnifiedWithdrawalForm.tsx",106
+"minimum-withdrawal-amount-is","Minimum withdrawal amount is","","components/wallet/UnifiedWithdrawalForm.tsx",107
+"insufficient-balance","Insufficient balance","","components/wallet/UnifiedWithdrawalForm.tsx",116
+"you-only-have","You only have","","components/wallet/UnifiedWithdrawalForm.tsx",117
+"available","available","","components/wallet/UnifiedWithdrawalForm.tsx",117
+"phone-number-required","Phone number required","","components/wallet/UnifiedWithdrawalForm.tsx",126
+"please-enter-your-mobile-money-number","Please enter your mobile money number","","components/wallet/UnifiedWithdrawalForm.tsx",127
+"invalid-phone-number","Invalid phone number","","components/wallet/UnifiedWithdrawalForm.tsx",136
+"withdrawal-request-submitted","Withdrawal request submitted","","components/wallet/UnifiedWithdrawalForm.tsx",166
+"failed-to-process-withdrawal","Failed to process withdrawal","","components/wallet/UnifiedWithdrawalForm.tsx",176
+"withdrawal-failed","Withdrawal failed","","components/wallet/UnifiedWithdrawalForm.tsx",180
+"please-try-again","Please try again","","components/wallet/UnifiedWithdrawalForm.tsx",181
+"you-need-at-least","You need at least","","components/wallet/UnifiedWithdrawalForm.tsx",205
+"to-withdraw","to withdraw.","","components/wallet/UnifiedWithdrawalForm.tsx",205
+"current-balance","Current balance:","","components/wallet/UnifiedWithdrawalForm.tsx",207
+"start-earning-by-completing-deliveries","💡 Start earning by completing deliveries!","","components/wallet/UnifiedWithdrawalForm.tsx",210
+"you-have-a-pending-withdrawal-please-wait-for-it-to-complete-before-requesting-another","You have a pending withdrawal. Please wait for it to complete before requesting another.","","components/wallet/UnifiedWithdrawalForm.tsx",222
+"withdrawal-amount","Withdrawal Amount *","","components/wallet/UnifiedWithdrawalForm.tsx",236
+"insufficient-balance-you-need-to-earn-money-first","⚠️ Insufficient balance. You need to earn money first!","","components/wallet/UnifiedWithdrawalForm.tsx",258
+"mobile-money-number","Mobile Money Number *","","components/wallet/UnifiedWithdrawalForm.tsx",266
+"processing","Processing...","","components/wallet/UnifiedWithdrawalForm.tsx",319
+"request-withdrawal","Request Withdrawal","","components/wallet/UnifiedWithdrawalForm.tsx",323
+"transaction-history","Transaction History","","components/wallet/TransactionsList.tsx",125
+"all-types","All Types","","components/wallet/TransactionsList.tsx",142
+"credit","Credit","","components/wallet/TransactionsList.tsx",146
+"debit","Debit","","components/wallet/TransactionsList.tsx",152
+"all-status","All Status","","components/wallet/TransactionsList.tsx",167
+"completed","Completed","","components/wallet/TransactionsList.tsx",171
+"pending","Pending","","components/wallet/TransactionsList.tsx",177
+"clear","Clear","","components/wallet/TransactionsList.tsx",198
+"credit-only","Credit Only","","components/wallet/TransactionsList.tsx",212
+"debit-only","Debit Only","","components/wallet/TransactionsList.tsx",217
+"completed-only","Completed Only","","components/wallet/TransactionsList.tsx",227
+"pending-only","Pending Only","","components/wallet/TransactionsList.tsx",233
+"failed-only","Failed Only","","components/wallet/TransactionsList.tsx",239
+"no-transactions-found","No transactions found","","components/wallet/TransactionsList.tsx",261
+"your-transaction-history-will-appear-here","Your transaction history will appear here","","components/wallet/TransactionsList.tsx",264
+"previous","Previous","","components/wallet/TransactionsList.tsx",339
+"page","Page","","components/wallet/TransactionsList.tsx",342
+"of","of","","components/wallet/TransactionsList.tsx",342
+"next","Next","","components/wallet/TransactionsList.tsx",350
 "best-seller","Best Seller","","components/ui/product-modal.tsx",170
 "organic","Organic","","components/ui/product-modal.tsx",175
 "in-stock","In Stock","","components/ui/product-modal.tsx",222
@@ -122,12 +178,10 @@ Category,Key,English,Swahili,File,Line
 "no-stores-found","No stores found","","components/merchants/StoresList.tsx",52
 "current","Current","","components/merchants/StoresList.tsx",93
 "verified","Verified","","components/merchants/StoresList.tsx",108
-"pending","Pending","","components/merchants/StoresList.tsx",113
 "switch-to-this-store","Switch to this store","","components/merchants/StoresList.tsx",127
 "total-products","Total Products","","components/merchants/StatsCards.tsx",17
 "active","active","","components/merchants/StatsCards.tsx",19
 "monthly-revenue","Monthly Revenue","","components/merchants/StatsCards.tsx",25
-"completed","completed","","components/merchants/StatsCards.tsx",27
 "orders-today","Orders Today","","components/merchants/StatsCards.tsx",33
 "store-rating","Store Rating","","components/merchants/StatsCards.tsx",41
 "recent-products","Recent Products","","components/merchants/RecentProducts.tsx",30
@@ -160,11 +214,9 @@ Category,Key,English,Swahili,File,Line
 "rejected","Rejected","","components/merchants/HistoryOrders.tsx",138
 "revenue","Revenue","","components/merchants/HistoryOrders.tsx",151
 "search-by-order-id-or-customer","Search by order ID or customer...","","components/merchants/HistoryOrders.tsx",168
-"all-status","All Status","","components/merchants/HistoryOrders.tsx",182
 "sort-by-date","Sort by Date","","components/merchants/HistoryOrders.tsx",195
 "sort-by-amount","Sort by Amount","","components/merchants/HistoryOrders.tsx",196
 "showing","Showing","","components/merchants/HistoryOrders.tsx",205
-"of","of","","components/merchants/HistoryOrders.tsx",205
 "clear-filters","Clear filters","","components/merchants/HistoryOrders.tsx",217
 "no-orders-match-your-filters","No orders match your filters","","components/merchants/HistoryOrders.tsx",230
 "order","Order","","components/merchants/HistoryOrders.tsx",256
@@ -257,17 +309,102 @@ Category,Key,English,Swahili,File,Line
 "retrying","Retrying...","","components/driver/ErrorState.tsx",58
 "back-to-dashboard","Back to Dashboard","","components/driver/ErrorState.tsx",69
 "transactions-will-appear-here-once-you-start-receiving-payments","Transactions will appear here once you start receiving payments","","components/driver/DriverTransactionsList.tsx",134
+"no-changes-made","No changes made","","components/driver/DriverReviewClient.tsx",91
+"please-upload-at-least-one-document-to-update-your-application","Please upload at least one document to update your application","","components/driver/DriverReviewClient.tsx",92
+"documents-updated","Documents updated!","","components/driver/DriverReviewClient.tsx",108
+"your-application-status-has-been-updated-to-pending-reloading-page","Your application status has been updated to PENDING. Reloading page...","","components/driver/DriverReviewClient.tsx",109
+"failed-to-update-documents","Failed to update documents","","components/driver/DriverReviewClient.tsx",120
+"update-failed","Update failed","","components/driver/DriverReviewClient.tsx",124
+"application-under-review","Application Under Review","","components/driver/DriverReviewClient.tsx",140
+"your-driver-application-is-currently-being-reviewed-by-our-team","Your driver application is currently being reviewed by our team","","components/driver/DriverReviewClient.tsx",141
+"application-rejected","Application Rejected","","components/driver/DriverReviewClient.tsx",148
+"your-driver-application-has-been-rejected-please-review-the-information-below","Your driver application has been rejected. Please review the information below.","","components/driver/DriverReviewClient.tsx",149
+"account-suspended","Account Suspended","","components/driver/DriverReviewClient.tsx",156
+"your-driver-account-has-been-suspended-by-our-administrators","Your driver account has been suspended by our administrators","","components/driver/DriverReviewClient.tsx",157
+"application-status","Application Status","","components/driver/DriverReviewClient.tsx",163
+"check-your-driver-application-status","Check your driver application status","","components/driver/DriverReviewClient.tsx",164
+"under-review","Under Review","","components/driver/DriverReviewClient.tsx",202
+"review-time","Review Time","","components/driver/DriverReviewClient.tsx",210
+"24-48h","24-48h","","components/driver/DriverReviewClient.tsx",211
+"documents","Documents","","components/driver/DriverReviewClient.tsx",219
+"submitted","Submitted","","components/driver/DriverReviewClient.tsx",220
+"view-only","View Only","","components/driver/DriverReviewClient.tsx",243
+"contact-support","Contact Support","","components/driver/DriverReviewClient.tsx",251
+"account-status","Account Status","","components/driver/DriverReviewClient.tsx",265
+"suspended","Suspended","","components/driver/DriverReviewClient.tsx",266
+"access","Access","","components/driver/DriverReviewClient.tsx",274
+"restricted","Restricted","","components/driver/DriverReviewClient.tsx",275
+"required","Required","","components/driver/DriverReviewClient.tsx",284
+"what-happens-next","What happens next?","","components/driver/DriverReviewClient.tsx",307
+"review-process","Review Process","","components/driver/DriverReviewClient.tsx",315
+"our-team-reviews-your-documents","Our team reviews your documents","","components/driver/DriverReviewClient.tsx",316
+"notification","Notification","","components/driver/DriverReviewClient.tsx",324
+"you-ll-receive-an-email-with-results","You'll receive an email with results","","components/driver/DriverReviewClient.tsx",325
+"start-earning","Start Earning","","components/driver/DriverReviewClient.tsx",333
+"accept-deliveries-once-approved","Accept deliveries once approved","","components/driver/DriverReviewClient.tsx",334
+"your-updated-documents-have-been-submitted-for-review","Your updated documents have been submitted for review.","","components/driver/DriverPendingStatus.tsx",51
+"your-documents","Your Documents","","components/driver/DriverPendingStatus.tsx",103
+"update-documents","Update Documents","","components/driver/DriverPendingStatus.tsx",113
+"update-application-documents","Update Application Documents","","components/driver/DriverPendingStatus.tsx",130
+"upload-new-documents-if-you-want-to-modify-your-application-or-if-requested-by-our-administrators","Upload new documents if you want to modify your application or if requested by our administrators.","","components/driver/DriverPendingStatus.tsx",132
+"document-requirements","Document Requirements","","components/driver/DriverPendingStatus.tsx",139
+"valid-national-id-card-cni","Valid national ID card (CNI)","","components/driver/DriverPendingStatus.tsx",141
+"valid-driver-s-license","Valid driver's license","","components/driver/DriverPendingStatus.tsx",142
+"documents-must-be-clear-and-readable","Documents must be clear and readable","","components/driver/DriverPendingStatus.tsx",143
+"accepted-formats-jpeg-png-max-1mb-each","Accepted formats: JPEG, PNG, (max 1MB each)","","components/driver/DriverPendingStatus.tsx",144
+"only-upload-documents-that-have-been-changed-or-specifically-requested-by-administrators","Only upload documents that have been changed or specifically requested by administrators.","","components/driver/DriverPendingStatus.tsx",175
+"our-team-will-review-your-updated-documents","Our team will review your updated documents","","components/driver/DriverPendingStatus.tsx",193
+"approval","Approval","","components/driver/DriverPendingStatus.tsx",210
+"once-approved-you-can-start-accepting-deliveries","Once approved, you can start accepting deliveries","","components/driver/DriverPendingStatus.tsx",211
 "error-loading-orders","Error Loading Orders","","components/driver/DriverOrdersList.tsx",89
-"navigation-map","Navigation Map","","components/driver/DriverOrderPage.tsx",412
-"track-your-route-in-real-time","Track your route in real time","","components/driver/DriverOrderPage.tsx",414
-"google-maps","Google Maps","","components/driver/DriverOrderPage.tsx",424
-"merchant-information","Merchant Information","","components/driver/DriverOrderPage.tsx",454
-"phone-number","Phone Number","","components/driver/DriverOrderPage.tsx",484
-"sms","SMS","","components/driver/DriverOrderPage.tsx",506
-"whatsapp","WhatsApp","","components/driver/DriverOrderPage.tsx",515
-"client-information","Client Information","","components/driver/DriverOrderPage.tsx",527
-"name","Name","","components/driver/DriverOrderPage.tsx",533
-"delivery-address","Delivery Address","","components/driver/DriverOrderPage.tsx",539
+"order-details","Order Details","","components/driver/DriverOrderPage.tsx",367
+"navigation-map","Navigation Map","","components/driver/DriverOrderPage.tsx",440
+"track-your-route-in-real-time","Track your route in real time","","components/driver/DriverOrderPage.tsx",442
+"google-maps","Google Maps","","components/driver/DriverOrderPage.tsx",452
+"merchant-information","Merchant Information","","components/driver/DriverOrderPage.tsx",482
+"sms","SMS","","components/driver/DriverOrderPage.tsx",534
+"whatsapp","WhatsApp","","components/driver/DriverOrderPage.tsx",543
+"client-information","Client Information","","components/driver/DriverOrderPage.tsx",555
+"name","Name","","components/driver/DriverOrderPage.tsx",561
+"delivery-address","Delivery Address","","components/driver/DriverOrderPage.tsx",567
+"order-items","Order Items","","components/driver/DriverOrderPage.tsx",623
+"qty","Qty","","components/driver/DriverOrderPage.tsx",656
+"price","Price","","components/driver/DriverOrderPage.tsx",659
+"order-total","Order Total","","components/driver/DriverOrderPage.tsx",673
+"order-management","Order Management","","components/driver/DriverOrderPage.tsx",683
+"delivery-code","Delivery Code","","components/driver/DriverOrderPage.tsx",737
+"order-completed","Order Completed!","","components/driver/DriverOrderPage.tsx",759
+"great-job-on-this-delivery","Great job on this delivery","","components/driver/DriverOrderPage.tsx",761
+"dashboard","Dashboard","","components/driver/DriverNavbar.tsx",39
+"wallet","Wallet","","components/driver/DriverNavbar.tsx",51
+"customers","Customers","","components/driver/DriverNavbar.tsx",67
+"review-status","Review Status","","components/driver/DriverNavbar.tsx",73
+"review","Review","","components/driver/DriverNavbar.tsx",76
+"apply","Apply","","components/driver/DriverNavbar.tsx",90
+"yetu","Yetu","","components/driver/DriverNavbar.tsx",146
+"driver","Driver","","components/driver/DriverNavbar.tsx",149
+"missing-documents","Missing documents","","components/driver/DriverApplyClient.tsx",38
+"please-upload-both-your-id-card-and-driver-s-license","Please upload both your ID card and driver's license","","components/driver/DriverApplyClient.tsx",39
+"error-processing-documents","Error processing documents","","components/driver/DriverApplyClient.tsx",47
+"please-re-upload-your-documents","Please re-upload your documents","","components/driver/DriverApplyClient.tsx",48
+"application-submitted","Application submitted!","","components/driver/DriverApplyClient.tsx",63
+"your-driver-application-is-under-review-we-ll-notify-you-once-it-s-approved","Your driver application is under review. We'll notify you once it's approved.","","components/driver/DriverApplyClient.tsx",64
+"failed-to-submit-application","Failed to submit application","","components/driver/DriverApplyClient.tsx",69
+"submission-failed","Submission failed","","components/driver/DriverApplyClient.tsx",73
+"become-a-yetu-driver","Become a Yetu Driver","","components/driver/DriverApplyClient.tsx",95
+"complete-your-application-to-start-earning-with-flexible-delivery-opportunities","Complete your application to start earning with flexible delivery opportunities","","components/driver/DriverApplyClient.tsx",98
+"required-documents","Required Documents","","components/driver/DriverApplyClient.tsx",123
+"active-drivers","Active Drivers","","components/driver/DriverApplyClient.tsx",145
+"in-review","In Review","","components/driver/DriverApplyClient.tsx",156
+"upload-your-documents","Upload Your Documents","","components/driver/DriverApplyClient.tsx",175
+"please-upload-clear-photos-of-your-id-card-and-driver-s-license-make-sure-all-information-is-visible","Please upload clear photos of your ID card and driver's license. Make sure all information is visible and readable.","","components/driver/DriverApplyClient.tsx",177
+"id-card-cni","ID Card (CNI)","","components/driver/DriverApplyClient.tsx",185
+"driver-s-license","Driver's License","","components/driver/DriverApplyClient.tsx",193
+"submitting","Submitting...","","components/driver/DriverApplyClient.tsx",210
+"submit-application","Submit Application","","components/driver/DriverApplyClient.tsx",213
+"your-application-will-be-reviewed-by-our-team-within-24-48-hours","Your application will be reviewed by our team within 24-48 hours","","components/driver/DriverApplyClient.tsx",231
+"you-ll-receive-a-notification-once-your-application-is-approved","You'll receive a notification once your application is approved","","components/driver/DriverApplyClient.tsx",237
+"start-accepting-deliveries-and-earning-money-immediately-after-approval","Start accepting deliveries and earning money immediately after approval","","components/driver/DriverApplyClient.tsx",243
 "account-created","Account created","","components/auth/SignUpForm.tsx",64
 "welcome-your-account-has-been-created-successfully","Welcome! Your account has been created successfully.","","components/auth/SignUpForm.tsx",65
 "an-unexpected-error-occurred","An unexpected error occurred","","components/auth/SignUpForm.tsx",72
@@ -298,11 +435,19 @@ Category,Key,English,Swahili,File,Line
 "you-can-return-to-admin-mode-anytime","You can return to admin mode anytime","","components/admin/ExitAdminModeDialog.tsx",54
 "admin-panel","Admin Panel","","components/admin/AdminSidebar.tsx",32
 "log-out","Log out","","components/admin/AdminNavUser.tsx",91
-"dashboard","Dashboard","","components/admin/AdminNavMain.tsx",32
 "merchants","Merchants","","components/admin/AdminNavMain.tsx",38
 "drivers","Drivers","","components/admin/AdminNavMain.tsx",50
 "users","Users","","components/admin/AdminNavMain.tsx",56
 "delivery-zones","Delivery Zones","","components/admin/AdminNavMain.tsx",62
+"no-products-found","No products found","","components/merchants/products/ProductsList.tsx",33
+"try-adjusting-your-filters","Try adjusting your filters","","components/merchants/products/ProductsList.tsx",36
+"start-by-adding-your-first-product","Start by adding your first product","","components/merchants/products/ProductsList.tsx",37
+"low-stock","Low Stock","","components/merchants/products/ProductsList.tsx",91
+"product-management","Product Management","","components/merchants/products/ProductsHeader.tsx",25
+"manage-your-product-catalog","Manage your product catalog","","components/merchants/products/ProductsHeader.tsx",28
+"filter-by-status","Filter by status","","components/merchants/products/ProductsFilters.tsx",46
+"draft","Draft","","components/merchants/products/ProductsFilters.tsx",51
+"waiting-for-review","Waiting for Review","","components/merchants/products/ProductsFilters.tsx",53
 "most-sold-products","Most sold products","","components/merchants/insights/TopProducts.tsx",27
 "top-10-products","Top 10 products","","components/merchants/insights/TopProducts.tsx",29
 "no-sales-data-available","No sales data available","","components/merchants/insights/TopProducts.tsx",37
@@ -326,15 +471,6 @@ Category,Key,English,Swahili,File,Line
 "status-breakdown-total-total-orders","Status breakdown - {total} total orders","","components/merchants/insights/OrdersOverview.tsx",100
 "success-rate","Success Rate","","components/merchants/insights/OrdersOverview.tsx",142
 "failure-rate","Failure Rate","","components/merchants/insights/OrdersOverview.tsx",148
-"no-products-found","No products found","","components/merchants/products/ProductsList.tsx",33
-"try-adjusting-your-filters","Try adjusting your filters","","components/merchants/products/ProductsList.tsx",36
-"start-by-adding-your-first-product","Start by adding your first product","","components/merchants/products/ProductsList.tsx",37
-"low-stock","Low Stock","","components/merchants/products/ProductsList.tsx",91
-"product-management","Product Management","","components/merchants/products/ProductsHeader.tsx",25
-"manage-your-product-catalog","Manage your product catalog","","components/merchants/products/ProductsHeader.tsx",28
-"filter-by-status","Filter by status","","components/merchants/products/ProductsFilters.tsx",46
-"draft","Draft","","components/merchants/products/ProductsFilters.tsx",51
-"waiting-for-review","Waiting for Review","","components/merchants/products/ProductsFilters.tsx",53
 "no-results-found","No results found","","components/merchants/animations/EmptyStates.tsx",90
 "no-order-history","No order history","","components/merchants/animations/EmptyStates.tsx",97
 "completed-and-cancelled-orders-will-appear-here","Completed and cancelled orders will appear here","","components/merchants/animations/EmptyStates.tsx",98
@@ -363,7 +499,6 @@ Category,Key,English,Swahili,File,Line
 "account-actions","Account Actions","","components/driver/profile/DriverProfileClient.tsx",228
 "logout","Logout","","components/driver/profile/DriverProfileClient.tsx",248
 "delete-account","Delete Account","","components/driver/profile/DriverProfileClient.tsx",258
-"documents","Documents","","components/driver/profile/DriverDocumentsPreview.tsx",50
 "no-documents-uploaded-yet","No documents uploaded yet","","components/driver/profile/DriverDocumentsPreview.tsx",77
 "id-card","ID Card","","components/driver/profile/DriverDocumentsPreview.tsx",85
 "driver-license","Driver License","","components/driver/profile/DriverDocumentsPreview.tsx",100
@@ -383,12 +518,13 @@ Category,Key,English,Swahili,File,Line
 "this-month","This month","","components/driver/insights/DriverInsightsClient.tsx",55
 "last-month","Last month","","components/driver/insights/DriverInsightsClient.tsx",59
 "this-year","This year","","components/driver/insights/DriverInsightsClient.tsx",66
+"failed-to-fetch-analytics","Failed to fetch analytics","","components/driver/insights/DriverInsightsClient.tsx",97
+"failed-to-load-analytics","Failed to Load Analytics","","components/driver/insights/DriverInsightsClient.tsx",135
 "insights-analytics","Insights & Analytics","","components/driver/insights/DriverInsightsClient.tsx",154
 "track-your-performance-and-earnings","Track your performance and earnings","","components/driver/insights/DriverInsightsClient.tsx",157
 "earnings-evolution","Earnings Evolution","","components/driver/insights/DriverEarningsChart.tsx",37
 "no-earnings-data","No earnings data","","components/driver/insights/DriverEarningsChart.tsx",47
 "earnings-will-appear-here-once-you-complete-deliveries","Earnings will appear here once you complete deliveries","","components/driver/insights/DriverEarningsChart.tsx",50
-"in-progress","In Progress","","components/driver/insights/DriverDeliveriesOverview.tsx",46
 "ready-to-deliver","Ready to Deliver","","components/driver/insights/DriverDeliveriesOverview.tsx",53
 "canceled","Canceled","","components/driver/insights/DriverDeliveriesOverview.tsx",60
 "deliveries-overview","Deliveries Overview","","components/driver/insights/DriverDeliveriesOverview.tsx",71
@@ -492,7 +628,6 @@ Category,Key,English,Swahili,File,Line
 "add-an-extra-layer-of-security","Add an extra layer of security","","components/client/customer/UserProfile.tsx",351
 "help-support","Help & Support","","components/client/customer/UserProfile.tsx",368
 "get-help-with-your-account","Get help with your account","","components/client/customer/UserProfile.tsx",369
-"contact-support","Contact Support","","components/client/customer/UserProfile.tsx",372
 "permanently-delete-your-account","Permanently delete your account","","components/client/customer/UserProfile.tsx",380
 "delete","Delete","","components/client/customer/UserProfile.tsx",384
 "zone-deleted","Zone deleted","","components/admin/zones/ZonesList.tsx",68
@@ -557,7 +692,6 @@ Category,Key,English,Swahili,File,Line
 "est-delivery-time","Est. Delivery Time","","components/admin/zones/EditZoneForm.tsx",193
 "minutes","minutes","","components/admin/zones/EditZoneForm.tsx",193
 "zone-appearance","Zone Appearance","","components/admin/zones/EditZoneForm.tsx",213
-"status","Status","","components/admin/zones/EditZoneForm.tsx",216
 "zone-color","Zone Color","","components/admin/zones/EditZoneForm.tsx",236
 "zone-boundary","Zone Boundary","","components/admin/zones/EditZoneForm.tsx",264
 "updating","Updating...","","components/admin/zones/EditZoneForm.tsx",303
@@ -566,7 +700,6 @@ Category,Key,English,Swahili,File,Line
 "filter-by-role","Filter by role","","components/admin/users/UsersList.tsx",147
 "all-roles","All Roles","","components/admin/users/UsersList.tsx",150
 "customer","Customer","","components/admin/users/UsersList.tsx",151
-"driver","Driver","","components/admin/users/UsersList.tsx",152
 "merchant","Merchant","","components/admin/users/UsersList.tsx",153
 "admin","Admin","","components/admin/users/UsersList.tsx",154
 "super-admin","Super Admin","","components/admin/users/UsersList.tsx",155
@@ -688,10 +821,8 @@ Category,Key,English,Swahili,File,Line
 "selected","selected","","components/admin/products/ProductsTable.tsx",295
 "approve-all","Approve All","","components/admin/products/ProductsTable.tsx",303
 "reject-all","Reject All","","components/admin/products/ProductsTable.tsx",312
-"clear","Clear","","components/admin/products/ProductsTable.tsx",319
 "image","Image","","components/admin/products/ProductsTable.tsx",334
 "product","Product","","components/admin/products/ProductsTable.tsx",335
-"price","Price","","components/admin/products/ProductsTable.tsx",337
 "visibility","Visibility","","components/admin/products/ProductsTable.tsx",339
 "created","Created","","components/admin/products/ProductsTable.tsx",340
 "no-img","No img","","components/admin/products/ProductsTable.tsx",379
@@ -783,7 +914,6 @@ Category,Key,English,Swahili,File,Line
 "messages-sent-successfully","Messages sent successfully","","components/admin/notifications/MessageComposer.tsx",169
 "sent-to-count-recipients","Sent to {count} recipients","","components/admin/notifications/MessageComposer.tsx",170
 "failed-to-send-messages","Failed to send messages","","components/admin/notifications/MessageComposer.tsx",187
-"please-try-again","Please try again","","components/admin/notifications/MessageComposer.tsx",188
 "compose-message","Compose Message","","components/admin/notifications/MessageComposer.tsx",201
 "send-notifications-to-merchants-via-push","Send notifications to merchants via push.","","components/admin/notifications/MessageComposer.tsx",203
 "compose","Compose","","components/admin/notifications/MessageComposer.tsx",209
@@ -834,7 +964,6 @@ Category,Key,English,Swahili,File,Line
 "this-merchant-hasn-t-received-any-orders","This merchant hasn't received any orders","","components/admin/merchants/MerchantOrders.tsx",45
 "require-immediate-attention-from-the-merchant","require immediate attention from the merchant","","components/admin/merchants/MerchantOrders.tsx",83
 "order-id","order_id","","components/admin/merchants/MerchantOrders.tsx",93
-"date","date","","components/admin/merchants/MerchantOrders.tsx",98
 "n-a","n_a","","components/admin/merchants/MerchantOrders.tsx",112
 "no-managers-assigned","No managers assigned","","components/admin/merchants/MerchantManagers.tsx",27
 "this-merchant-doesn-t-have-any-managers-yet","This merchant doesn't have any managers yet","","components/admin/merchants/MerchantManagers.tsx",29
@@ -868,19 +997,15 @@ Category,Key,English,Swahili,File,Line
 "active-deliveries","Active Deliveries","","components/admin/drivers/DriverStats.tsx",39
 "avg-price-per-delivery","Avg {price} per delivery","","components/admin/drivers/DriverStats.tsx",68
 "wallet-balance","Wallet Balance","","components/admin/drivers/DriverStats.tsx",78
-"current-balance","Current balance","","components/admin/drivers/DriverStats.tsx",87
-"no-deliveries-yet","No deliveries yet","","components/admin/drivers/DriverOrders.tsx",26
-"this-driver-hasn-t-completed-any-deliveries","This driver hasn't completed any deliveries","","components/admin/drivers/DriverOrders.tsx",28
-"order-total","Order Total","","components/admin/drivers/DriverOrders.tsx",60
+"no-deliveries-yet","No deliveries yet","","components/admin/drivers/DriverOrders.tsx",42
+"this-driver-hasn-t-completed-any-deliveries","This driver hasn't completed any deliveries","","components/admin/drivers/DriverOrders.tsx",44
 "pendingreview","PendingReview","","components/admin/drivers/DriverHeader.tsx",70
 "unnamed-driver","Unnamed Driver","","components/admin/drivers/DriverHeader.tsx",103
 "approve-driver","Approve Driver","","components/admin/drivers/DriverHeader.tsx",151
-"missing-documents","Missing documents","","components/admin/drivers/DriverDocuments.tsx",38
 "driver-must-upload-both-cni-and-driver-s-license-before-approval","Driver must upload both CNI and driver's license before approval.","","components/admin/drivers/DriverDocuments.tsx",38
 "cni-national-id","CNI (National ID)","","components/admin/drivers/DriverDocuments.tsx",48
 "download","Download","","components/admin/drivers/DriverDocuments.tsx",88
 "no-cni-uploaded","No CNI uploaded","","components/admin/drivers/DriverDocuments.tsx",96
-"driver-s-license","Driver's License","","components/admin/drivers/DriverDocuments.tsx",106
 "no-license-uploaded","No license uploaded","","components/admin/drivers/DriverDocuments.tsx",154
 "document-preview","Document Preview","","components/admin/drivers/DriverDocuments.tsx",165
 "access-denied","Access Denied","","app/[locale]/unauthorized/page.tsx",21
@@ -905,7 +1030,6 @@ Category,Key,English,Swahili,File,Line
 "please-upload-a-business-logo","Please upload a business logo","","app/[locale]/(client)/new-merchant/page.tsx",115
 "please-capture-your-business-location","Please capture your business location","","app/[locale]/(client)/new-merchant/page.tsx",124
 "failed-to-upload-logo","Failed to upload logo","","app/[locale]/(client)/new-merchant/page.tsx",145
-"failed-to-submit-application","Failed to submit application","","app/[locale]/(client)/new-merchant/page.tsx",169
 "application-submitted-successfully","Application submitted successfully!","","app/[locale]/(client)/new-merchant/page.tsx",177
 "your-merchant-application-is-pending-approval","Your merchant application is pending approval.","","app/[locale]/(client)/new-merchant/page.tsx",178
 "join-our-platform-and-start-selling-your-products","Join our platform and start selling your products","","app/[locale]/(client)/new-merchant/page.tsx",210
@@ -927,9 +1051,6 @@ Category,Key,English,Swahili,File,Line
 "latitude","Latitude","","app/[locale]/(client)/new-merchant/page.tsx",409
 "longitude","Longitude","","app/[locale]/(client)/new-merchant/page.tsx",427
 "location-captured-latitude-longitude","Location captured: {latitude}, {longitude}","","app/[locale]/(client)/new-merchant/page.tsx",447
-"submitting","Submitting...","","app/[locale]/(client)/new-merchant/page.tsx",476
-"submit-application","Submit Application","","app/[locale]/(client)/new-merchant/page.tsx",479
-"what-happens-next","What happens next?","","app/[locale]/(client)/new-merchant/page.tsx",487
 "your-application-will-be-reviewed-by-our-team","• Your application will be reviewed by our team","","app/[locale]/(client)/new-merchant/page.tsx",489
 "you-apos-ll-receive-a-confirmation-email-within-24-48-hours","• You&apos;ll receive a confirmation email within 24-48 hours","","app/[locale]/(client)/new-merchant/page.tsx",490
 "once-approved-you-apos-ll-need-to-add-at-least-5-products-before-your-store-goes-live","• Once approved, you&apos;ll need to add at least 5 products before your store goes live","","app/[locale]/(client)/new-merchant/page.tsx",492
@@ -974,7 +1095,6 @@ Category,Key,English,Swahili,File,Line
 "step-4-contact-information","Step 4: Contact Information","","app/[locale]/(client)/checkout/page.tsx",623
 "so-we-can-reach-you-for-delivery","So we can reach you for delivery","","app/[locale]/(client)/checkout/page.tsx",626
 "order-summary","Order Summary","","app/[locale]/(client)/checkout/page.tsx",653
-"qty","Qty","","app/[locale]/(client)/checkout/page.tsx",673
 "subtotal","Subtotal","","app/[locale]/(client)/checkout/page.tsx",687
 "placing-order","Placing Order...","","app/[locale]/(client)/checkout/page.tsx",711
 "place-order","Place Order","","app/[locale]/(client)/checkout/page.tsx",711
@@ -1006,19 +1126,11 @@ Category,Key,English,Swahili,File,Line
 "each","each","","app/[locale]/(client)/orders/[orderId]/page.tsx",176
 "discount","Discount","","app/[locale]/(client)/orders/[orderId]/page.tsx",202
 "verification-codes","Verification Codes","","app/[locale]/(client)/orders/[orderId]/page.tsx",221
-"delivery-code","Delivery Code","","app/[locale]/(client)/orders/[orderId]/page.tsx",226
 "delivery-information","Delivery Information","","app/[locale]/(client)/orders/[orderId]/page.tsx",242
 "notes","Notes","","app/[locale]/(client)/orders/[orderId]/page.tsx",273
 "estimated-delivery","Estimated Delivery","","app/[locale]/(client)/orders/[orderId]/page.tsx",285
 "method","Method","","app/[locale]/(client)/orders/[orderId]/page.tsx",328
 "manage-your-wallet-and-view-transaction-history","Manage your wallet and view transaction history","","app/[locale]/(client)/client/wallet/page.tsx",79
-"users-management","Users Management","","app/[locale]/(admin)/admin/users/page.tsx",31
-"manage-users-roles-and-permissions-across-the-platform","Manage users, roles, and permissions across the platform","","app/[locale]/(admin)/admin/users/page.tsx",33
-"total-users","Total Users","","app/[locale]/(admin)/admin/users/page.tsx",43
-"customers","Customers","","app/[locale]/(admin)/admin/users/page.tsx",58
-"of-total","of total","","app/[locale]/(admin)/admin/users/page.tsx",64
-"admins","Admins","","app/[locale]/(admin)/admin/users/page.tsx",88
-"platform-administrators","Platform administrators","","app/[locale]/(admin)/admin/users/page.tsx",94
 "manage-delivery-zones-landmarks-and-coverage-areas","Manage delivery zones, landmarks, and coverage areas","","app/[locale]/(admin)/admin/zones/page.tsx",44
 "total-zones","Total Zones","","app/[locale]/(admin)/admin/zones/page.tsx",59
 "count-active","{count} active","","app/[locale]/(admin)/admin/zones/page.tsx",65
@@ -1027,6 +1139,12 @@ Category,Key,English,Swahili,File,Line
 "in-delivery-zones","In delivery zones","","app/[locale]/(admin)/admin/zones/page.tsx",93
 "coverage","Coverage","","app/[locale]/(admin)/admin/zones/page.tsx",101
 "active-coverage","Active coverage","","app/[locale]/(admin)/admin/zones/page.tsx",109
+"users-management","Users Management","","app/[locale]/(admin)/admin/users/page.tsx",31
+"manage-users-roles-and-permissions-across-the-platform","Manage users, roles, and permissions across the platform","","app/[locale]/(admin)/admin/users/page.tsx",33
+"total-users","Total Users","","app/[locale]/(admin)/admin/users/page.tsx",43
+"of-total","of total","","app/[locale]/(admin)/admin/users/page.tsx",64
+"admins","Admins","","app/[locale]/(admin)/admin/users/page.tsx",88
+"platform-administrators","Platform administrators","","app/[locale]/(admin)/admin/users/page.tsx",94
 "platform-settings","Platform Settings","","app/[locale]/(admin)/admin/settings/page.tsx",18
 "configure-platform-behavior-features-and-preferences","Configure platform behavior, features, and preferences","","app/[locale]/(admin)/admin/settings/page.tsx",20
 "products-management","Products Management","","app/[locale]/(admin)/admin/products/page.tsx",37
@@ -1073,7 +1191,6 @@ Category,Key,English,Swahili,File,Line
 "recent-merchants","Recent Merchants","","app/[locale]/(admin)/admin/dashboard/page.tsx",244
 "view-all-merchants","View All Merchants","","app/[locale]/(admin)/admin/dashboard/page.tsx",267
 "pending-products","Pending Products","","app/[locale]/(admin)/admin/dashboard/page.tsx",276
-"review","Review","","app/[locale]/(admin)/admin/dashboard/page.tsx",291
 "review-products","Review Products","","app/[locale]/(admin)/admin/dashboard/page.tsx",295
 "you-don-t-have-permission-to-access-this-page-only-members-of-this-merchant-can-access","You don't have permission to access this page. Only members of this merchant can access.","","app/[locale]/(merchant)/merchant/[merchantId]/unauthorized/page.tsx",24
 "products-not-found","Products Not Found","","app/[locale]/(merchant)/merchant/[merchantId]/products/not-found.tsx",20

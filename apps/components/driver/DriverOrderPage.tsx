@@ -354,7 +354,7 @@ export function DriverOrderPage({
                             className="rounded-2xl mb-4 hover:bg-white/20 text-white inline-flex items-center gap-2 px-4"
                         >
                             <ArrowLeft className="w-5 h-5" />
-                            <span>Back to dashboard</span>
+                            <span>{t("Back to dashboard")}</span>
                         </Button>
 
                         {/* Header with animated icon */}
@@ -364,10 +364,10 @@ export function DriverOrderPage({
                             </div>
                             <div className="flex-1">
                                 <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                                    Order Details
+                                    {t("Order Details")}
                                 </h1>
                                 <p className="text-sm sm:text-base text-white/90">
-                                    Order {formatOrderId(order.id)} • {order.merchant.businessName}
+                                    {t("Order")} {formatOrderId(order.id)} • {order.merchant.businessName} {order.pickupCode} {order.deliveryCode}
                                 </p>
                                 <Badge className="mt-2 bg-white/20 text-white border-white/30">
                                     {order.status.replace(/_/g, ' ').toLowerCase()}
@@ -620,7 +620,7 @@ export function DriverOrderPage({
                                 <Card className="p-6 rounded-2xl shadow-card">
                                     <div className="flex items-center gap-2 mb-4">
                                         <Package className="w-5 h-5 text-red-600" />
-                                        <h3 className="text-lg font-semibold">Order Items ({order.items.length})</h3>
+                                                <h3 className="text-lg font-semibold">{t("Order Items")} ({order.items.length})</h3>
                                     </div>
 
                                     <div className="space-y-3">
@@ -653,10 +653,10 @@ export function DriverOrderPage({
                                                     )}
                                                     <div className="flex items-center gap-4 mt-2">
                                                         <p className="text-xs text-muted-foreground">
-                                                            Qty: <span className="font-semibold text-foreground">{item.quantity}</span>
+                                                            {t("Qty")}: <span className="font-semibold text-foreground">{item.quantity}</span>
                                                         </p>
                                                         <p className="text-xs text-muted-foreground">
-                                                            Price: <span className="font-semibold text-foreground">{t.formatAmount(item.price)}</span>
+                                                            {t("Price")}: <span className="font-semibold text-foreground">{t.formatAmount(item.price)}</span>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -670,7 +670,7 @@ export function DriverOrderPage({
 
                                         {/* Order Total */}
                                         <div className="flex justify-between items-center pt-4 border-t">
-                                            <span className="font-semibold">Order Total:</span>
+                                                    <span className="font-semibold">{t("Order Total")}:</span>
                                             <span className="font-bold text-lg">{t.formatAmount(order.orderPrices.total)}</span>
                                         </div>
                                     </div>
@@ -680,7 +680,7 @@ export function DriverOrderPage({
                             {/* Right Column - Actions */}
                             <div className="lg:col-span-1">
                                 <Card className="p-6 rounded-2xl shadow-card sticky top-4">
-                                    <h2 className="text-xl font-semibold mb-4">Order Management</h2>
+                                            <h2 className="text-xl font-semibold mb-4">{t("Order Management")}</h2>
 
                                     {/* Status Badge */}
                                     <div className="mb-6">
@@ -694,7 +694,7 @@ export function DriverOrderPage({
                                         {/* Accept Order */}
                                         {order.status === OrderStatus.READY_TO_DELIVER && (
                                             <div className="space-y-3">
-                                                <Label htmlFor="pickup-code">Pickup Code</Label>
+                                                        <Label htmlFor="pickup-code">{t("Pickup Code")}</Label>
                                                 <Input
                                                     id="pickup-code"
                                                     placeholder="Enter code from merchant"
@@ -717,7 +717,7 @@ export function DriverOrderPage({
                                             <div className="space-y-3">
                                                 <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                                                     <p className="text-sm text-center">
-                                                        Pickup Code: <span className="font-mono font-bold text-lg">{order.pickupCode}</span>
+                                                                {t("Pickup Code")}: <span className="font-mono font-bold text-lg">{order.pickupCode}</span>
                                                     </p>
                                                 </div>
                                                 <Button
@@ -734,7 +734,7 @@ export function DriverOrderPage({
                                         {/* Complete Delivery */}
                                         {order.status === OrderStatus.ON_THE_WAY && (
                                             <div className="space-y-3">
-                                                <Label htmlFor="delivery-code">Delivery Code</Label>
+                                                        <Label htmlFor="delivery-code">{t("Delivery Code")}</Label>
                                                 <Input
                                                     id="delivery-code"
                                                     placeholder="Enter code from client"
@@ -756,9 +756,9 @@ export function DriverOrderPage({
                                         {order.status === OrderStatus.COMPLETED && (
                                             <div className="text-center py-4 bg-green-50 dark:bg-green-950/20 rounded-lg">
                                                 <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-2" />
-                                                <p className="font-semibold text-green-600">Order Completed!</p>
+                                                        <p className="font-semibold text-green-600">{t("Order Completed!")}</p>
                                                 <p className="text-sm text-muted-foreground mt-1">
-                                                    Great job on this delivery
+                                                            {t("Great job on this delivery")}
                                                 </p>
                                             </div>
                                         )}

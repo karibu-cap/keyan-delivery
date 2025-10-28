@@ -17,10 +17,12 @@ import AnimatedStatsCard from "./AnimatedStatsCard";
 import DriverDocumentsPreview from "./profile/DriverDocumentsPreview";
 import { DocumentUpload, UploadedDocument } from "./DocumentUpload";
 import { useBlockBackNavigation } from "@/hooks/use-block-back-navigation";
+import { useT } from "@/hooks/use-inline-translation";
 
 export default function DriverReviewClient() {
     const { user, authUser, refreshSession } = useAuthStore();
     const { toast } = useToast();
+    const t = useT();
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [activeTab, setActiveTab] = useState("preview");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,8 +88,8 @@ export default function DriverReviewClient() {
 
         if (!cniDocument && !licenseDocument) {
             toast({
-                title: "No changes made",
-                description: "Please upload at least one document to update your application",
+                title: t("No changes made"),
+                description: t("Please upload at least one document to update your application"),
                 variant: "destructive",
             });
             return;
@@ -103,8 +105,8 @@ export default function DriverReviewClient() {
 
             if (result.success) {
                 toast({
-                    title: "Documents updated!",
-                    description: "Your application status has been updated to PENDING. Reloading page...",
+                    title: t("Documents updated!"),
+                    description: t("Your application status has been updated to PENDING. Reloading page..."),
                     variant: "default",
                 });
                 
@@ -115,12 +117,12 @@ export default function DriverReviewClient() {
                 // This will show the PENDING interface instead of REJECTED
                 window.location.reload();
             } else {
-                throw new Error(result.error || "Failed to update documents");
+                throw new Error(result.error || t("Failed to update documents"));
             }
         } catch (error) {
             toast({
-                title: "Update failed",
-                description: error instanceof Error ? error.message : "Please try again later",
+                title: t("Update failed"),
+                description: error instanceof Error ? error.message : t("Please try again later"),
                 variant: "destructive",
             });
         } finally {
@@ -135,31 +137,31 @@ export default function DriverReviewClient() {
                 icon: Clock,
                 iconAnimation: "animate-spin",
                 iconAnimationDuration: "3s",
-                title: "Application Under Review",
-                description: "Your driver application is currently being reviewed by our team",
+                title: t("Application Under Review"),
+                description: t("Your driver application is currently being reviewed by our team"),
             };
         }
         if (isRejected) {
             return {
                 icon: XCircle,
                 iconAnimation: "animate-bounce",
-                title: "Application Rejected",
-                description: "Your driver application has been rejected. Please review the information below.",
+                title: t("Application Rejected"),
+                description: t("Your driver application has been rejected. Please review the information below."),
             };
         }
         if (isBanned) {
             return {
                 icon: AlertTriangle,
                 iconAnimation: "animate-bounce",
-                title: "Account Suspended",
-                description: "Your driver account has been suspended by our administrators",
+                title: t("Account Suspended"),
+                description: t("Your driver account has been suspended by our administrators"),
             };
         }
         return {
             icon: Clock,
             iconAnimation: "",
-            title: "Application Status",
-            description: "Check your driver application status",
+            title: t("Application Status"),
+            description: t("Check your driver application status"),
         };
     };
 
@@ -196,8 +198,8 @@ export default function DriverReviewClient() {
                     {isPending && (
                         <>
                             <AnimatedStatsCard
-                                title="Application Status"
-                                value="Under Review"
+                                title={t("Application Status")}
+                                value={t("Under Review")}
                                 icon={Clock}
                                 color="text-blue-600"
                                 bgColor="bg-blue-50 dark:bg-blue-950/20"
@@ -205,8 +207,8 @@ export default function DriverReviewClient() {
                                 animationDelay={0}
                             />
                             <AnimatedStatsCard
-                                title="Review Time"
-                                value="24-48h"
+                                title={t("Review Time")}
+                                value={t("24-48h")}
                                 icon={FileText}
                                 color="text-purple-600"
                                 bgColor="bg-purple-50 dark:bg-purple-950/20"
@@ -214,8 +216,8 @@ export default function DriverReviewClient() {
                                 animationDelay={100}
                             />
                             <AnimatedStatsCard
-                                title="Documents"
-                                value="Submitted"
+                                title={t("Documents")}
+                                value={t("Submitted")}
                                 icon={CheckCircle}
                                 color="text-green-600"
                                 bgColor="bg-green-50 dark:bg-green-950/20"
@@ -228,8 +230,8 @@ export default function DriverReviewClient() {
                     {isRejected && (
                         <>
                             <AnimatedStatsCard
-                                title="Application Status"
-                                value="Rejected"
+                                title={t("Application Status")}
+                                value={t("Rejected")}
                                 icon={XCircle}
                                 color="text-red-600"
                                 bgColor="bg-red-50 dark:bg-red-950/20"
@@ -237,8 +239,8 @@ export default function DriverReviewClient() {
                                 animationDelay={0}
                             />
                             <AnimatedStatsCard
-                                title="Documents"
-                                value="View Only"
+                                title={t("Documents")}
+                                value={t("View Only")}
                                 icon={FileText}
                                 color="text-orange-600"
                                 bgColor="bg-orange-50 dark:bg-orange-950/20"
@@ -246,8 +248,8 @@ export default function DriverReviewClient() {
                                 animationDelay={100}
                             />
                             <AnimatedStatsCard
-                                title="Contact Support"
-                                value="Available"
+                                title={t("Contact Support")}
+                                value={t("Available")}
                                 icon={Mail}
                                 color="text-blue-600"
                                 bgColor="bg-blue-50 dark:bg-blue-950/20"
@@ -260,8 +262,8 @@ export default function DriverReviewClient() {
                     {isBanned && (
                         <>
                             <AnimatedStatsCard
-                                title="Account Status"
-                                value="Suspended"
+                                title={t("Account Status")}
+                                value={t("Suspended")}
                                 icon={AlertTriangle}
                                 color="text-red-600"
                                 bgColor="bg-red-50 dark:bg-red-950/20"
@@ -269,8 +271,8 @@ export default function DriverReviewClient() {
                                 animationDelay={0}
                             />
                             <AnimatedStatsCard
-                                title="Access"
-                                value="Restricted"
+                                title={t("Access")}
+                                value={t("Restricted")}
                                 icon={XCircle}
                                 color="text-orange-600"
                                 bgColor="bg-orange-50 dark:bg-orange-950/20"
@@ -278,8 +280,8 @@ export default function DriverReviewClient() {
                                 animationDelay={100}
                             />
                             <AnimatedStatsCard
-                                title="Contact Support"
-                                value="Required"
+                                title={t("Contact Support")}
+                                value={t("Required")}
                                 icon={Mail}
                                 color="text-blue-600"
                                 bgColor="bg-blue-50 dark:bg-blue-950/20"
@@ -302,34 +304,34 @@ export default function DriverReviewClient() {
                         <Card className="p-6 rounded-2xl shadow-card bg-blue-50 dark:bg-blue-950/20">
                             <h3 className="font-semibold mb-3 flex items-center gap-2">
                                 <Clock className="w-5 h-5 text-blue-600" />
-                                What happens next?
+                                {t("What happens next?")}
                             </h3>
                             <div className="grid md:grid-cols-3 gap-4 text-sm">
                                 <div className="flex items-start gap-3">
                                     <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                        1
+                                        {t("1")}
                                     </div>
                                     <div>
-                                        <p className="font-medium">Review Process</p>
-                                        <p className="text-muted-foreground">Our team reviews your documents</p>
+                                        <p className="font-medium">{t("Review Process")}</p>
+                                        <p className="text-muted-foreground">{t("Our team reviews your documents")}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                        2
+                                        {t("2")}
                                     </div>
                                     <div>
-                                        <p className="font-medium">Notification</p>
-                                        <p className="text-muted-foreground">You'll receive an email with results</p>
+                                        <p className="font-medium">{t("Notification")}</p>
+                                        <p className="text-muted-foreground">{t("You'll receive an email with results")}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                        3
+                                        {t("3")}
                                     </div>
                                     <div>
-                                        <p className="font-medium">Start Earning</p>
-                                        <p className="text-muted-foreground">Accept deliveries once approved</p>
+                                        <p className="font-medium">{t("Start Earning")}</p>
+                                        <p className="text-muted-foreground">{t("Accept deliveries once approved")}</p>
                                     </div>
                                 </div>
                             </div>

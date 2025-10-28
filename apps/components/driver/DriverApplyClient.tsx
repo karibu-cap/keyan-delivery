@@ -17,10 +17,12 @@ import { DocumentUpload, UploadedDocument } from "./DocumentUpload";
 import AnimatedStatsCard from "./AnimatedStatsCard";
 import { useApplyStats } from "@/hooks/use-apply-stats";
 import { useBlockBackNavigation } from "@/hooks/use-block-back-navigation";
+import { useT } from "@/hooks/use-inline-translation";
 
 export default function DriverApplyClient() {
     const router = useRouter();
     const { toast } = useToast();
+    const t = useT();
     const { refreshSession } = useAuthStore();
     const { stats, loading: statsLoading } = useApplyStats();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,8 +35,8 @@ export default function DriverApplyClient() {
 
         if (!cniDocument || !licenseDocument) {
             toast({
-                title: "Missing documents",
-                description: "Please upload both your ID card and driver's license",
+                title: t("Missing documents"),
+                description: t("Please upload both your ID card and driver's license"),
                 variant: "destructive",
             });
             return;
@@ -42,8 +44,8 @@ export default function DriverApplyClient() {
 
         if (!cniDocument.base64 || !licenseDocument.base64) {
             toast({
-                title: "Error processing documents",
-                description: "Please re-upload your documents",
+                title: t("Error processing documents"),
+                description: t("Please re-upload your documents"),
                 variant: "destructive",
             });
             return;
@@ -58,18 +60,18 @@ export default function DriverApplyClient() {
                 await refreshSession();
 
                 toast({
-                    title: "Application submitted!",
-                    description: "Your driver application is under review. We'll notify you once it's approved.",
+                    title: t("Application submitted!"),
+                    description: t("Your driver application is under review. We'll notify you once it's approved."),
                     variant: "default",
                 });
                 router.push(ROUTES.driverReview);
             } else {
-                throw new Error(result.error || "Failed to submit application");
+                throw new Error(result.error || t("Failed to submit application"));
             }
         } catch (error) {
             toast({
-                title: "Submission failed",
-                description: error instanceof Error ? error.message : "Please try again later",
+                title: t("Submission failed"),
+                description: error instanceof Error ? error.message : t("Please try again later"),
                 variant: "destructive",
             });
         } finally {
@@ -90,10 +92,10 @@ export default function DriverApplyClient() {
                             </div>
                             <div className="flex-1">
                                 <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                                    Become a Yetu Driver
+                                    {t("Become a Yetu Driver")}
                                 </h1>
                                 <p className="text-sm sm:text-base text-white/90">
-                                    Complete your application to start earning with flexible delivery opportunities
+                                    {t("Complete your application to start earning with flexible delivery opportunities")}
                                 </p>
                             </div>
                         </div>
@@ -118,7 +120,7 @@ export default function DriverApplyClient() {
                         <>
                             {/* Required Documents */}
                             <AnimatedStatsCard
-                                title="Required Documents"
+                                title={t("Required Documents")}
                                 value={stats?.requiredDocuments.toString() || "2"}
                                 icon={FileText}
                                 color="text-blue-600"
@@ -129,7 +131,7 @@ export default function DriverApplyClient() {
 
                             {/* Review Time */}
                             <AnimatedStatsCard
-                                title="Review Time"
+                                title={t("Review Time")}
                                 value={stats?.avgReviewTimeHours ? `${stats.avgReviewTimeHours}h` : "24-48h"}
                                 icon={Clock}
                                 color="text-purple-600"
@@ -140,7 +142,7 @@ export default function DriverApplyClient() {
 
                             {/* Active Drivers */}
                             <AnimatedStatsCard
-                                title="Active Drivers"
+                                title={t("Active Drivers")}
                                 value={stats?.activeDriversCount ? `${stats.activeDriversCount.toLocaleString()}+` : "1,250+"}
                                 icon={Users}
                                 color="text-green-600"
@@ -151,7 +153,7 @@ export default function DriverApplyClient() {
 
                             {/* Drivers in Review */}
                             <AnimatedStatsCard
-                                title="In Review"
+                                title={t("In Review")}
                                 value={stats?.driversInReviewCount?.toString() || "48"}
                                 icon={TrendingUp}
                                 color="text-orange-600"
@@ -170,9 +172,9 @@ export default function DriverApplyClient() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Header */}
                         <div className="space-y-2">
-                            <h2 className="text-xl sm:text-2xl font-bold">Upload Your Documents</h2>
+                            <h2 className="text-xl sm:text-2xl font-bold">{t("Upload Your Documents")}</h2>
                             <p className="text-sm text-muted-foreground">
-                                Please upload clear photos of your ID card and driver's license. Make sure all information is visible and readable.
+                                {t("Please upload clear photos of your ID card and driver's license. Make sure all information is visible and readable.")}
                             </p>
                         </div>
 
@@ -180,7 +182,7 @@ export default function DriverApplyClient() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* CNI Upload */}
                             <DocumentUpload
-                                label="ID Card (CNI)"
+                                label={t("ID Card (CNI)")}
                                 id="cni-upload"
                                 onFileChange={setCniDocument}
                                 disabled={isSubmitting}
@@ -188,7 +190,7 @@ export default function DriverApplyClient() {
 
                             {/* Driver License Upload */}
                             <DocumentUpload
-                                label="Driver's License"
+                                label={t("Driver's License")}
                                 id="license-upload"
                                 onFileChange={setLicenseDocument}
                                 disabled={isSubmitting}
@@ -205,10 +207,10 @@ export default function DriverApplyClient() {
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                        Submitting...
+                                        {t("Submitting...")}
                                     </>
                                 ) : (
-                                    "Submit Application"
+                                    t("Submit Application")
                                 )}
                             </Button>
                         </div>
@@ -219,26 +221,26 @@ export default function DriverApplyClient() {
                 <div className="mt-8 p-6 bg-accent/30 rounded-2xl">
                     <h3 className="font-semibold mb-4 flex items-center gap-2">
                         <FileText className="w-5 h-5 text-primary" />
-                        What happens next?
+                        {t("What happens next?")}
                     </h3>
                     <ol className="space-y-3 text-sm text-muted-foreground">
                         <li className="flex items-start gap-3">
                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center text-xs">
                                 1
                             </span>
-                            <span>Your application will be reviewed by our team within 24-48 hours</span>
+                            <span>{t("Your application will be reviewed by our team within 24-48 hours")}</span>
                         </li>
                         <li className="flex items-start gap-3">
                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center text-xs">
                                 2
                             </span>
-                            <span>You'll receive a notification once your application is approved</span>
+                            <span>{t("You'll receive a notification once your application is approved")}</span>
                         </li>
                         <li className="flex items-start gap-3">
                             <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center text-xs">
                                 3
                             </span>
-                            <span>Start accepting deliveries and earning money immediately after approval</span>
+                            <span>{t("Start accepting deliveries and earning money immediately after approval")}</span>
                         </li>
                     </ol>
                 </div>

@@ -45,7 +45,7 @@ export default function WalletBalance({ wallet, stats, userType, withdrawalUrl }
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <p className="text-4xl font-bold">
-                                    KES {wallet.balance.toFixed(2)}
+                                    {t.formatAmount(wallet.balance)}
                                 </p>
                                 <p className="text-sm opacity-90">
                                     {t('Last updated')}: {new Date(wallet.updatedAt).toLocaleDateString()}
@@ -69,7 +69,7 @@ export default function WalletBalance({ wallet, stats, userType, withdrawalUrl }
                 {/* Total Earned - Animated */}
                 <AnimatedStatsCard
                     title={t('Total Earned')}
-                    value={`KES ${(stats?.totalEarned || 0).toFixed(2)}`}
+                    value={t.formatAmount(stats?.totalEarned || 0)}
                     icon={TrendingUp}
                     color="text-green-600"
                     bgColor="bg-green-50 dark:bg-green-950/20"

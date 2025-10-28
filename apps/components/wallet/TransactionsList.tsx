@@ -139,17 +139,17 @@ export default function TransactionsList({
                                         <SelectValue placeholder="Type" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">All Types</SelectItem>
+                                        <SelectItem value="all">{t("All Types")}</SelectItem>
                                         <SelectItem value="credit">
                                             <div className="flex items-center gap-2">
                                                 <ArrowUpCircle className="w-4 h-4 text-green-600" />
-                                                Credit
+                                                {t("Credit")}
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="debit">
                                             <div className="flex items-center gap-2">
                                                 <ArrowDownCircle className="w-4 h-4 text-red-600" />
-                                                Debit
+                                                {t("Debit")}
                                             </div>
                                         </SelectItem>
                                     </SelectContent>
@@ -164,23 +164,23 @@ export default function TransactionsList({
                                         <SelectValue placeholder="Status" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
+                                        <SelectItem value="all">{t("All Status")}</SelectItem>
                                         <SelectItem value="COMPLETED">
                                             <div className="flex items-center gap-2">
                                                 <CheckCircle2 className="w-4 h-4 text-green-600" />
-                                                Completed
+                                                {t("Completed")}
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="PENDING">
                                             <div className="flex items-center gap-2">
                                                 <Clock className="w-4 h-4 text-orange-600" />
-                                                Pending
+                                                {t("Pending")}
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="FAILED">
                                             <div className="flex items-center gap-2">
                                                 <XCircle className="w-4 h-4 text-red-600" />
-                                                Failed
+                                                {t("Failed")}
                                             </div>
                                         </SelectItem>
                                     </SelectContent>
@@ -195,7 +195,7 @@ export default function TransactionsList({
                                         className="h-9 text-xs animate-in fade-in zoom-in duration-300"
                                     >
                                         <XCircle className="w-3 h-3 mr-1" />
-                                        Clear
+                                        {t("Clear")}
                                     </Button>
                                 )}
                             </div>
@@ -209,12 +209,12 @@ export default function TransactionsList({
                                         {currentFilters.type === 'credit' ? (
                                             <>
                                                 <ArrowUpCircle className="w-3 h-3" />
-                                                Credit Only
+                                                {t("Credit Only")}
                                             </>
                                         ) : (
                                             <>
                                                 <ArrowDownCircle className="w-3 h-3" />
-                                                Debit Only
+                                                    {t("Debit Only")}
                                             </>
                                         )}
                                     </div>
@@ -224,19 +224,19 @@ export default function TransactionsList({
                                         {currentFilters.status === 'COMPLETED' && (
                                             <>
                                                 <CheckCircle2 className="w-3 h-3" />
-                                                Completed Only
+                                                {t("Completed Only")}
                                             </>
                                         )}
                                         {currentFilters.status === 'PENDING' && (
                                             <>
                                                 <Clock className="w-3 h-3" />
-                                                Pending Only
+                                                {t("Pending Only")}
                                             </>
                                         )}
                                         {currentFilters.status === 'FAILED' && (
                                             <>
                                                 <XCircle className="w-3 h-3" />
-                                                Failed Only
+                                                {t("Failed Only")}
                                             </>
                                         )}
                                     </div>
@@ -336,10 +336,10 @@ export default function TransactionsList({
                                         onClick={() => handlePageChange(pagination.page - 1)}
                                         disabled={pagination.page === 1}
                                     >
-                                        Previous
+                                            {t("Previous")}
                                     </Button>
                                     <span className="text-sm text-muted-foreground">
-                                        Page {pagination.page} of {pagination.totalPages}
+                                            {t("Page")} {pagination.page} {t("of")} {pagination.totalPages}
                                     </span>
                                     <Button
                                         variant="outline"
@@ -347,7 +347,7 @@ export default function TransactionsList({
                                         onClick={() => handlePageChange(pagination.page + 1)}
                                         disabled={pagination.page === pagination.totalPages}
                                     >
-                                        Next
+                                            {t("Next")}
                                     </Button>
                                 </div>
                             )}

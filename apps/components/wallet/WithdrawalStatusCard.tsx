@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, XCircle, Clock, Loader2, Wallet } from "lucide-react";
 import { WithdrawalStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import { useT } from "@/hooks/use-inline-translation";
 
 interface WithdrawalData {
     id: string;
@@ -25,11 +26,12 @@ interface WithdrawalStatusCardProps {
 }
 
 export function WithdrawalStatusCard({ withdrawal }: WithdrawalStatusCardProps) {
+    const t = useT();
     if (!withdrawal) {
         return (
             <Card className="rounded-2xl shadow-card border-dashed animate-in fade-in slide-in-from-right-4 duration-500">
                 <CardHeader>
-                    <CardTitle className="text-base">Latest Withdrawal</CardTitle>
+                    <CardTitle className="text-base">{t("Latest Withdrawal")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-center py-8">
@@ -37,7 +39,7 @@ export function WithdrawalStatusCard({ withdrawal }: WithdrawalStatusCardProps) 
                             <div className="p-4 bg-muted/50 rounded-full">
                                 <Wallet className="w-8 h-8 text-muted-foreground/40" />
                             </div>
-                            <p className="text-sm text-muted-foreground">No withdrawal requests yet</p>
+                            <p className="text-sm text-muted-foreground">{t("No withdrawal requests yet")}</p>
                         </div>
                     </div>
                 </CardContent>
@@ -106,24 +108,24 @@ export function WithdrawalStatusCard({ withdrawal }: WithdrawalStatusCardProps) 
             </CardHeader>
             <CardContent className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-700" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
                 <div>
-                    <p className="text-sm text-muted-foreground mb-1">Amount</p>
-                    <p className="text-2xl font-bold">KES {withdrawal.amount.toFixed(2)}</p>
+                    <p className="text-sm text-muted-foreground mb-1">{t("Amount")}</p>
+                    <p className="text-2xl font-bold">{t.formatAmount(withdrawal.amount)}</p>
                 </div>
 
                 <div>
-                    <p className="text-sm text-muted-foreground mb-1">Phone Number</p>
+                    <p className="text-sm text-muted-foreground mb-1">{t("Phone Number")}</p>
                     <p className="font-medium">{withdrawal.phoneNumber}</p>
                 </div>
 
                 <div>
-                    <p className="text-sm text-muted-foreground mb-1">Transaction ID</p>
+                    <p className="text-sm text-muted-foreground mb-1">{t("Transaction ID")}</p>
                     <p className="text-xs font-mono bg-muted px-2 py-1 rounded">
                         {withdrawal.transaction.id}
                     </p>
                 </div>
 
                 <div>
-                    <p className="text-sm text-muted-foreground mb-1">Date</p>
+                    <p className="text-sm text-muted-foreground mb-1">{t("Date")}</p>
                     <p className="text-sm">
                         {new Date(withdrawal.createdAt).toLocaleString('en-KE', {
                             dateStyle: 'medium',
@@ -133,7 +135,7 @@ export function WithdrawalStatusCard({ withdrawal }: WithdrawalStatusCardProps) 
                 </div>
 
                 <div>
-                    <p className="text-sm text-muted-foreground mb-1">Status</p>
+                    <p className="text-sm text-muted-foreground mb-1">{t("Status")}</p>
                     <div className={cn("inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium", config.bgColor, config.color)}>
                         {withdrawal.status}
                     </div>
