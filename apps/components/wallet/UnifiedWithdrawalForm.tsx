@@ -19,6 +19,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useT } from "@/hooks/use-inline-translation";
 
 const MIN_WITHDRAWAL_AMOUNT = 500; // KES
 
@@ -48,6 +49,7 @@ export function UnifiedWithdrawalForm({
     merchantId
 }: UnifiedWithdrawalFormProps) {
     const { toast } = useToast();
+    const t = useT();
     const [amount, setAmount] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [countryCode, setCountryCode] = useState('+254');
@@ -91,8 +93,8 @@ export function UnifiedWithdrawalForm({
         // Validate amount
         if (isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
             toast({
-                title: "Invalid amount",
-                description: "Please enter a valid amount",
+                title: t("Invalid amount"),
+                description: t("Please enter a valid amount"),
                 variant: "destructive",
             });
             return;
@@ -101,8 +103,8 @@ export function UnifiedWithdrawalForm({
         // Check minimum withdrawal
         if (withdrawalAmount < MIN_WITHDRAWAL_AMOUNT) {
             toast({
-                title: "Amount too low",
-                description: `Minimum withdrawal amount is KES ${MIN_WITHDRAWAL_AMOUNT.toFixed(2)}`,
+                title: t("Amount too low"),
+                description: t('Minimum withdrawal amount is') + t.formatAmount(MIN_WITHDRAWAL_AMOUNT),
                 variant: "destructive",
             });
             return;
@@ -111,8 +113,8 @@ export function UnifiedWithdrawalForm({
         // Check balance
         if (withdrawalAmount > availableBalance) {
             toast({
-                title: "Insufficient balance",
-                description: `You only have KES ${availableBalance.toFixed(2)} available`,
+                title: t("Insufficient balance"),
+                description: t("You only have ") + t.formatAmount(availableBalance) + t(" available"),
                 variant: "destructive",
             });
             return;
@@ -121,8 +123,8 @@ export function UnifiedWithdrawalForm({
         // Validate phone number
         if (!phoneNumber || typeof phoneNumber !== 'string') {
             toast({
-                title: "Phone number required",
-                description: "Please enter your mobile money number",
+                title: t("Phone number required"),
+                description: t("Please enter your mobile money number"),
                 variant: "destructive",
             });
             return;
@@ -131,8 +133,8 @@ export function UnifiedWithdrawalForm({
         const selectedCountry = COUNTRY_CODES.find(c => c.code === countryCode);
         if (!selectedCountry || !selectedCountry.regex.test(phoneNumber.replace(/\s/g, ""))) {
             toast({
-                title: "Invalid phone number",
-                description: `Please enter a valid ${selectedCountry?.country} mobile number`,
+                title: t("Invalid phone number"),
+                description: t(`Please enter a valid ${selectedCountry?.country} mobile number`),
                 variant: "destructive",
             });
             return;
@@ -161,8 +163,8 @@ export function UnifiedWithdrawalForm({
 
             if (data.success) {
                 toast({
-                    title: "Withdrawal request submitted",
-                    description: `KES ${withdrawalAmount.toFixed(2)} will be sent to ${phoneNumber}`,
+                    title: t("Withdrawal request submitted"),
+                    description: t(`KES ${t.formatAmount(withdrawalAmount)} will be sent to ${phoneNumber}`),
                     variant: "default",
                 });
                 setAmount("");
@@ -171,12 +173,12 @@ export function UnifiedWithdrawalForm({
                     onSuccess();
                 }
             } else {
-                throw new Error(data.message || "Failed to process withdrawal");
+                throw new Error(data.message || t("Failed to process withdrawal"));
             }
         } catch (error) {
             toast({
-                title: "Withdrawal failed",
-                description: error instanceof Error ? error.message : "Please try again",
+                title: t("Withdrawal failed"),
+                description: error instanceof Error ? error.message : t("Please try again"),
                 variant: "destructive",
             });
         } finally {
@@ -189,7 +191,7 @@ export function UnifiedWithdrawalForm({
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <WalletIcon className="w-5 h-5 text-primary" />
-                    Withdraw Funds
+                    {t("Withdraw Funds")}
                 </CardTitle>
             </CardHeader>
             <CardContent className="animate-in fade-in slide-in-from-bottom-2 duration-700" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
@@ -198,15 +200,15 @@ export function UnifiedWithdrawalForm({
                     <Alert className="mb-4 border-red-200 bg-red-50 animate-in fade-in zoom-in duration-300">
                         <AlertCircle className="h-4 w-4 text-red-600" />
                         <AlertDescription className="text-red-800">
-                            <strong>Insufficient Balance!</strong>
+                            <strong>{t("Insufficient Balance!")}</strong>
                             <br />
-                            You need at least <strong>KES {MIN_WITHDRAWAL_AMOUNT.toFixed(2)}</strong> to withdraw.
+                            {t("You need at least")} <strong>{t.formatAmount(MIN_WITHDRAWAL_AMOUNT)}</strong> {t("to withdraw.")}
                             <br />
-                            Current balance: <strong>KES {availableBalance.toFixed(2)}</strong>
+                            {t("Current balance:")} <strong>{t.formatAmount(availableBalance)}</strong>
                             <br />
                             {availableBalance === 0
-                                ? '💡 Start earning by completing deliveries!'
-                                : `💡 You need KES ${(MIN_WITHDRAWAL_AMOUNT - availableBalance).toFixed(2)} more.`
+                                ? t("💡 Start earning by completing deliveries!")
+                                : t(`💡 You need ${t.formatAmount(MIN_WITHDRAWAL_AMOUNT - availableBalance)} more.`)
                             }
                         </AlertDescription>
                     </Alert>
@@ -217,7 +219,7 @@ export function UnifiedWithdrawalForm({
                     <Alert className="mb-4 border-orange-200 bg-orange-50">
                         <AlertCircle className="h-4 w-4 text-orange-600" />
                         <AlertDescription className="text-orange-800">
-                            You have a pending withdrawal. Please wait for it to complete before requesting another.
+                            {t("You have a pending withdrawal. Please wait for it to complete before requesting another.")}
                         </AlertDescription>
                     </Alert>
                 )}
@@ -226,12 +228,12 @@ export function UnifiedWithdrawalForm({
                     <div className="p-4 bg-accent/50 rounded-lg">
                         <p className="text-sm text-muted-foreground mb-1">Available Balance</p>
                         <p className="text-2xl font-bold text-primary">
-                            KES {availableBalance.toFixed(2)}
+                            {t.formatAmount(availableBalance)}
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="amount">Withdrawal Amount *</Label>
+                        <Label htmlFor="amount">{t("Withdrawal Amount *")}</Label>
                         <Input
                             id="amount"
                             type="number"
@@ -253,15 +255,15 @@ export function UnifiedWithdrawalForm({
                         <p className={`text-xs ${isAmountValid() === false ? 'text-red-500' : 'text-muted-foreground'}`}>
                             {isAmountValid() === false
                                 ? availableBalance === 0
-                                    ? '⚠️ Insufficient balance. You need to earn money first!'
-                                    : `Amount must be between KES ${MIN_WITHDRAWAL_AMOUNT} and KES ${availableBalance.toFixed(2)}`
-                                : `Minimum withdrawal: KES ${MIN_WITHDRAWAL_AMOUNT.toFixed(2)}`
+                                    ? t('⚠️ Insufficient balance. You need to earn money first!')
+                                    : t(`Amount must be between KES ${t.formatAmount(MIN_WITHDRAWAL_AMOUNT)} and KES ${t.formatAmount(availableBalance)}`)
+                                : t(`Minimum withdrawal:  ${t.formatAmount(MIN_WITHDRAWAL_AMOUNT)}`)
                             }
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="phoneNumber">Mobile Money Number *</Label>
+                        <Label htmlFor="phoneNumber">{t("Mobile Money Number *")}</Label>
                         <div className="flex gap-2">
                             {/* Country Code Selector */}
                             <Select value={countryCode} onValueChange={setCountryCode}>
@@ -314,10 +316,12 @@ export function UnifiedWithdrawalForm({
                         {loading ? (
                             <>
                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Processing...
+                                {t("Processing...")}
                             </>
                         ) : (
-                            "Request Withdrawal"
+
+                            t("Request Withdrawal")
+
                         )}
                     </Button>
                 </form>

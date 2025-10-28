@@ -19,6 +19,7 @@ import { usePathname } from 'next/navigation';
 import { ROUTES } from '@/lib/router';
 import { useAuthStore } from '@/hooks/use-auth-store';
 import { DriverStatus, UserRole } from '@prisma/client';
+import { useT } from '@/hooks/use-inline-translation';
 
 interface Item {
     name: string,
@@ -26,69 +27,73 @@ interface Item {
     path: string,
     mobileLabel: string
 }
+ 
 
-// Navigation items for APPROVED drivers
-const approvedNavItems = [
-    {
-        name: 'Dashboard',
-        icon: Package,
-        path: ROUTES.driverDashboard,
-        mobileLabel: 'Orders'
-    },
-    {
-        name: 'Insights',
-        icon: BarChart3,
-        path: ROUTES.driverInsights,
-        mobileLabel: 'Insights'
-    },
-    {
-        name: 'Wallet',
-        icon: Wallet,
-        path: ROUTES.driverWallet,
-        mobileLabel: 'Wallet'
-    },
-    {
-        name: 'Profile',
-        icon: User,
-        path: ROUTES.driverProfile,
-        mobileLabel: 'Profile'
-    },
-];
-
-// Navigation items for NON-APPROVED drivers
-const pendingNavItems = [
-    {
-        name: 'Customers',
-        icon: User,
-        path: ROUTES.home,
-        mobileLabel: 'Customers'
-    },
-    {
-        name: 'Review Status',
-        icon: Clock,
-        path: '/driver/review',
-        mobileLabel: 'Review'
-    },
-];
-
-
-// Navigation items for user that will becomme drivers
-const userNavItems = [
-    {
-        name: 'Customers',
-        icon: User,
-        path: ROUTES.home,
-        mobileLabel: 'Customers'
-    },
-    {
-        name: 'Apply',
-        icon: FileText,
-        path: '/driver/apply',
-        mobileLabel: 'Apply'
-    },
-];
 
 export default function DriverNavbar() {
+    const t = useT();
+
+    // Navigation items for APPROVED drivers
+    const approvedNavItems = [
+        {
+            name: t('Dashboard'),
+            icon: Package,
+            path: ROUTES.driverDashboard,
+            mobileLabel: t('Orders')
+        },
+        {
+            name: t('Insights'),
+            icon: BarChart3,
+            path: ROUTES.driverInsights,
+            mobileLabel: t('Insights')
+        },
+        {
+            name: t('Wallet'),
+            icon: Wallet,
+            path: ROUTES.driverWallet,
+            mobileLabel: t('Wallet')
+        },
+        {
+            name: t('Profile'),
+            icon: User,
+            path: ROUTES.driverProfile,
+            mobileLabel: t('Profile')
+        },
+    ];
+
+    // Navigation items for NON-APPROVED drivers
+    const pendingNavItems = [
+        {
+            name: t('Customers'),
+            icon: User,
+            path: ROUTES.home,
+            mobileLabel: t('Customers')
+        },
+        {
+            name: t('Review Status'),
+            icon: Clock,
+            path: '/driver/review',
+            mobileLabel: t('Review')
+        },
+    ];
+
+
+    // Navigation items for user that will becomme drivers
+    const userNavItems = [
+        {
+            name: t('Customers'),
+            icon: User,
+            path: ROUTES.home,
+            mobileLabel: t('Customers')
+        },
+        {
+            name: t('Apply'),
+            icon: FileText,
+            path: '/driver/apply',
+            mobileLabel: t('Apply')
+        },
+    ];
+
     const [isOpen, setIsOpen] = React.useState(false);
     const pathname = usePathname();
     const { user, refreshSession } = useAuthStore();
@@ -138,10 +143,10 @@ export default function DriverNavbar() {
                             </div>
                             <div className="hidden sm:flex flex-col">
                                 <span className="text-xl font-bold text-red-600">
-                                    Yetu
+                                    {t("Yetu")}
                                 </span>
                                 <span className="text-xs text-muted-foreground -mt-1">
-                                    Driver
+                                    {t("Driver")}
                                 </span>
                             </div>
                         </Link>

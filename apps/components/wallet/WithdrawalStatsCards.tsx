@@ -4,6 +4,7 @@
 "use client";
 
 import AnimatedStatsCard from "@/components/driver/AnimatedStatsCard";
+import { useT } from "@/hooks/use-inline-translation";
 import { ArrowDownToLine, CheckCircle2, XCircle, Clock } from "lucide-react";
 
 interface WithdrawalStats {
@@ -19,10 +20,11 @@ interface WithdrawalStatsCardsProps {
 }
 
 export function WithdrawalStatsCards({ stats, loading = false }: WithdrawalStatsCardsProps) {
+    const t = useT();
     return (
         <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
             <AnimatedStatsCard
-                title="Total Withdrawals"
+                title= {t("Total Withdrawals")}
                 value={stats?.total || 0}
                 icon={ArrowDownToLine}
                 color="text-blue-600"
@@ -33,7 +35,7 @@ export function WithdrawalStatsCards({ stats, loading = false }: WithdrawalStats
             />
 
             <AnimatedStatsCard
-                title="Successful"
+                title={t("Successful")}
                 value={stats?.successful || 0}
                 icon={CheckCircle2}
                 color="text-green-600"
@@ -44,7 +46,7 @@ export function WithdrawalStatsCards({ stats, loading = false }: WithdrawalStats
             />
 
             <AnimatedStatsCard
-                title="Failed"
+                title={t("Failed")}
                 value={stats?.failed || 0}
                 icon={XCircle}
                 color="text-red-600"
@@ -55,7 +57,7 @@ export function WithdrawalStatsCards({ stats, loading = false }: WithdrawalStats
             />
 
             <AnimatedStatsCard
-                title="In Progress"
+                title={t("In Progress")}
                 value={stats?.pending || 0}
                 icon={Clock}
                 color="text-orange-600"

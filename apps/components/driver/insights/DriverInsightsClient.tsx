@@ -94,7 +94,7 @@ export default function DriverInsightsClient() {
                 setAnalytics(data);
             } catch (err) {
                 console.error('Failed to fetch analytics:', err);
-                setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
+                setError(err instanceof Error ? err.message : t('Failed to fetch analytics'));
             } finally {
                 setLoading(false);
             }
@@ -121,7 +121,7 @@ export default function DriverInsightsClient() {
             setAnalytics(data);
         } catch (err) {
             console.error('Failed to fetch analytics:', err);
-            setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
+            setError(err instanceof Error ? err.message : t('Failed to fetch analytics'));
         } finally {
             setLoading(false);
             setIsRetrying(false);
@@ -132,7 +132,7 @@ export default function DriverInsightsClient() {
     if (error && !loading && !analytics) {
         return (
             <ErrorState
-                title="Failed to Load Analytics"
+                title={t("Failed to Load Analytics")}
                 message="We couldn't load your insights data. Please check your internet connection and try again."
                 onRetry={handleRetry}
                 showBackButton={true}

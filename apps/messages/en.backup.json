@@ -403,7 +403,7 @@
   "failed-to-update-order": "Failed to update order",
   "failed-to-update-order-status": "Failed to update order status",
   "completed-and-cancelled-orders-will-appear-here": "Completed and cancelled orders will appear here",
-  "customer": "customer",
+  "customer": "Customer",
   "merchant-dashboard": "Merchant Dashboard",
   "manage-your-store-products-and-orders": "Manage your store, products, and orders",
   "add-product": "Add Product",
@@ -840,7 +840,7 @@
   "supermarkets-stores": "Supermarkets & Stores",
   "medical-health": "Medical & Health",
   "search-merchants": "Search merchants...",
-  "selected": "Selected",
+  "selected": "selected",
   "clear-all": "Clear all",
   "loading-merchants": "Loading merchants...",
   "no-merchants-found-matching-query": "No merchants found matching \"{query}\"",
@@ -1034,7 +1034,7 @@
   "go-to-profile": "Go to Profile",
   "if-you-believe-this-is-an-error-please-contact-support": "If you believe this is an error, please contact support.",
   "total-merchants": "Total Merchants",
-  "pending-approval": "pending approval",
+  "pending-approval": "Pending Approval",
   "total-users": "Total Users",
   "active-platform-users": "Active platform users",
   "welcome-back-here-s-what-s-happening-with-your-platform-today": "Welcome back! Here's what's happening with your platform today.",
@@ -1353,5 +1353,8 @@
   "exit-admin-mode": "Exit Admin Mode?",
   "you-can-return-to-admin-mode-anytime": "You can return to admin mode anytime",
   "log-out": "Log out",
-  "admin-panel": "Admin Panel"
+  "admin-panel": "Admin Panel",
+  "your-transaction-history-will-appear-here": "Your transaction history will appear here",
+  "send-notifications-to-merchants-via-push": "Send notifications to merchants via push.",
+  "manage-your-wallet-and-view-transaction-history": "Manage your wallet and view transaction history"
 }

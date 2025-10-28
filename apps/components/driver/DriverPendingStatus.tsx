@@ -11,9 +11,11 @@ import { useState } from "react";
 import type { UploadedDocument } from "./DocumentUpload";
 import { DocumentUpload } from "./DocumentUpload";
 import DriverDocumentsPreview from "./profile/DriverDocumentsPreview";
+import { useT } from "@/hooks/use-inline-translation";
 
 export function DriverPendingStatus() {
     const { toast } = useToast();
+    const t = useT();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [cniDocument, setCniDocument] = useState<UploadedDocument | null>(null);
     const [licenseDocument, setLicenseDocument] = useState<UploadedDocument | null>(null);
@@ -26,8 +28,8 @@ export function DriverPendingStatus() {
 
         if (!cniDocument && !licenseDocument) {
             toast({
-                title: "No changes made",
-                description: "Please upload at least one document to update your application",
+                title: t("No changes made"),
+                description: t("Please upload at least one document to update your application"),
                 variant: "destructive",
             });
             return;
@@ -45,20 +47,20 @@ export function DriverPendingStatus() {
                 if (result.success) {
                     setActiveTab("documents");
                     toast({
-                        title: "Documents updated!",
-                        description: "Your updated documents have been submitted for review.",
+                        title: t("Documents updated!"),
+                        description: t("Your updated documents have been submitted for review."),
                         variant: "default",
                     });
                     setCniDocument(null);
                     setLicenseDocument(null);
                 } else {
-                    throw new Error(result.error || "Failed to update documents");
+                    throw new Error(result.error || t("Failed to update documents"));
                 }
             }
         } catch (error) {
             toast({
-                title: "Update failed",
-                description: error instanceof Error ? error.message : "Please try again later",
+                title: t("Update failed"),
+                description: error instanceof Error ? error.message : t("Please try again later"),
                 variant: "destructive",
             });
         } finally {
@@ -78,10 +80,10 @@ export function DriverPendingStatus() {
                         </div>
                         {/* Header Title */}
                         <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                            Application Under Review
+                            {t("Application Under Review")}
                         </h1>
                         <p className="text-sm sm:text-base text-white/90">
-                            Your driver application is currently being reviewed by our team
+                            {t("Your driver application is currently being reviewed by our team")}
                         </p>
                     </div>
                 </div>
@@ -98,7 +100,7 @@ export function DriverPendingStatus() {
                                 className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
                             >
                                 <FileText className="w-4 h-4 mr-2" />
-                                <span className="hidden sm:inline">Your Documents</span>
+                                <span className="hidden sm:inline">{t("Your Documents")}</span>
                                 {/* <span className="ml-2 px-2 py-0.5 rounded-full bg-background/20 text-xs font-semibold">
                                     {availableOrders.length}
                                 </span> */}
@@ -108,7 +110,7 @@ export function DriverPendingStatus() {
                                 className="rounded-lg data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-200"
                             >
                                 <Upload className="w-4 h-4 mr-2" />
-                                <span className="hidden sm:inline">Update Documents</span>
+                                <span className="hidden sm:inline">{t("Update Documents")}</span>
                                 {/* <span className="ml-2 px-2 py-0.5 rounded-full bg-background/20 text-xs font-semibold">
                                     {inProgressOrders.length}
                                 </span> */}
@@ -125,21 +127,21 @@ export function DriverPendingStatus() {
                         <TabsContent value="update" className="space-y-6">
                             <Card className="p-8 rounded-2xl shadow-card">
                                 <div className="mb-6">
-                                    <h2 className="text-xl font-semibold mb-2">Update Application Documents</h2>
+                                    <h2 className="text-xl font-semibold mb-2">{t("Update Application Documents")}</h2>
                                     <p className="text-muted-foreground">
-                                        Upload new documents if you want to modify your application or if requested by our administrators.
+                                        {t("Upload new documents if you want to modify your application or if requested by our administrators.")}
                                     </p>
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     {/* Requirements Info */}
                                     <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                                        <h3 className="font-medium text-blue-900 mb-2">Document Requirements</h3>
+                                        <h3 className="font-medium text-blue-900 mb-2">{t("Document Requirements")}</h3>
                                         <ul className="text-sm text-blue-800 space-y-1">
-                                            <li>• Valid national ID card (CNI)</li>
-                                            <li>• {"Valid driver's license"}</li>
-                                            <li>• Documents must be clear and readable</li>
-                                            <li>• Accepted formats: JPEG, PNG, (max 1MB each)</li>
+                                            <li>• {t("Valid national ID card (CNI)")}</li>
+                                            <li>• {t("Valid driver's license")}</li>
+                                            <li>• {t("Documents must be clear and readable")}</li>
+                                            <li>• {t("Accepted formats: JPEG, PNG, (max 1MB each)")}</li>
                                         </ul>
                                     </div>
 
@@ -170,7 +172,7 @@ export function DriverPendingStatus() {
                                             {isSubmitting ? "Updating..." : "Update Documents"}
                                         </Button>
                                         <p className="text-xs text-muted-foreground text-center mt-2">
-                                            Only upload documents that have been changed or specifically requested by administrators.
+                                            {t("Only upload documents that have been changed or specifically requested by administrators.")}
                                         </p>
                                     </div>
                                 </form>
@@ -180,33 +182,33 @@ export function DriverPendingStatus() {
 
                     {/* Additional Information */}
                     <Card className="p-6 rounded-2xl shadow-card bg-gray-50">
-                        <h3 className="font-semibold mb-3">What happens next?</h3>
+                        <h3 className="font-semibold mb-3">{t("What happens next?")}</h3>
                         <div className="grid md:grid-cols-3 gap-4 text-sm">
                             <div className="flex items-start gap-3">
                                 <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                    1
+                                    {t("1")}
                                 </div>
                                 <div>
-                                    <p className="font-medium">Review Process</p>
-                                    <p className="text-muted-foreground">Our team will review your updated documents</p>
+                                    <p className="font-medium">{t("Review Process")}</p>
+                                    <p className="text-muted-foreground">{t("Our team will review your updated documents")}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
                                 <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                    2
+                                    {t("2")}
                                 </div>
                                 <div>
-                                    <p className="font-medium">Notification</p>
+                                    <p className="font-medium">{t("Notification")}</p>
                                     <p className="text-muted-foreground">{"You'll receive an email notification with the results"}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
                                 <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                    3
+                                    {t("3")}
                                 </div>
                                 <div>
-                                    <p className="font-medium">Approval</p>
-                                    <p className="text-muted-foreground">Once approved, you can start accepting deliveries</p>
+                                    <p className="font-medium">{t("Approval")}</p>
+                                    <p className="text-muted-foreground">{t("Once approved, you can start accepting deliveries")}</p>
                                 </div>
                             </div>
                         </div>

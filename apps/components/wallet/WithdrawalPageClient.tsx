@@ -11,6 +11,7 @@ import { UnifiedWithdrawalForm } from '@/components/wallet/UnifiedWithdrawalForm
 import { WithdrawalStatusCard } from '@/components/wallet/WithdrawalStatusCard';
 import { WithdrawalStatsCards } from '@/components/wallet/WithdrawalStatsCards';
 import { useWithdrawal } from '@/hooks/use-withdrawal';
+import { useT } from '@/hooks/use-inline-translation';
 
 export type WalletUserType = 'driver' | 'merchant' | 'customer';
 
@@ -23,7 +24,7 @@ interface WithdrawalPageClientProps {
 
 export default function WithdrawalPageClient({ balance, userType, backUrl, merchantId }: WithdrawalPageClientProps) {
     const { latestWithdrawal, stats, loading, refetch, hasPendingWithdrawal } = useWithdrawal(userType);
-
+    const t = useT();
     return (
         <div className="min-h-screen">
             {/* Hero Section with Red Gradient */}
@@ -38,17 +39,17 @@ export default function WithdrawalPageClient({ balance, userType, backUrl, merch
                                 size="sm"
                             >
                                 <ArrowLeft className="w-4 h-4 mr-2" />
-                                Back to Wallet
+                                {t("Back to Wallet")}
                             </Button>
                         </Link>
 
                         {/* Header Title */}
                         <div className="mb-6">
                             <h1 className="text-2xl sm:text-3xl font-bold text-white truncate">
-                                Withdraw Funds
+                                {t("Withdraw Funds")}
                             </h1>
                             <p className="mt-1 sm:mt-2 text-sm text-white/90 truncate">
-                                Request withdrawal to your MTN Mobile Money account
+                                {t("Request withdrawal to your MTN Mobile Money account")}
                             </p>
                         </div>
                     </div>
