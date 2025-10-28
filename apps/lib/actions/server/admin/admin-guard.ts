@@ -62,7 +62,7 @@ export async function checkIsAdmin() {
 
         if (!user) return { isAdmin: false, user: null };
 
-        const isAdmin = user.roles.includes(UserRole.super_admin) || user.email.endsWith("@karibu-cap.com");
+        const isAdmin = user.roles.includes(UserRole.super_admin);
         return { isAdmin, user: isAdmin ? user : null };
     } catch (error) {
         console.error("Error checking admin status:", error);
