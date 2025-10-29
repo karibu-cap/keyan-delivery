@@ -23,7 +23,7 @@ import { reverseGeocode } from "@/lib/utils/client/geo_coding";
 import { useDriverOrders } from "@/hooks/use-driver-orders-query";
 import { useWallet } from "@/hooks/use-wallet-query";
 import { useT } from "@/hooks/use-inline-translation";
-import { useOrderTracking } from "@/hooks/use-order-tracking";
+import { useOrderTracking } from "@/hooks/use-order-tracking-query";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -92,6 +92,9 @@ export function DriverOrderPage({
 
     // Check GPS permission on mount
     useEffect(() => {
+        let permissionResult: PermissionStatus | null = null;
+        let handlePermissionChange: (() => void) | null = null;
+
         const checkPermission = async () => {
             if (!navigator.geolocation) {
                 setIsCheckingPermission(false);
@@ -102,15 +105,17 @@ export function DriverOrderPage({
                 // Try to get permission status if supported
                 if ('permissions' in navigator) {
                     const result = await navigator.permissions.query({ name: 'geolocation' });
+                    permissionResult = result;
 
                     if (result.state === 'granted') {
                         setHasLocationPermission(true);
                     }
 
                     // Listen for permission changes
-                    result.addEventListener('change', () => {
+                    handlePermissionChange = () => {
                         setHasLocationPermission(result.state === 'granted');
-                    });
+                    };
+                    result.addEventListener('change', handlePermissionChange);
                 }
             } catch (error) {
                 console.error('Error checking permission:', error);
@@ -120,6 +125,13 @@ export function DriverOrderPage({
         };
 
         checkPermission();
+
+        // Return cleanup function
+        return () => {
+            if (permissionResult && handlePermissionChange) {
+                permissionResult.removeEventListener('change', handlePermissionChange);
+            }
+        };
     }, []);
 
     // Handle permission granted
@@ -273,11 +285,11 @@ export function DriverOrderPage({
         let waypoints = "";
         let destination = "";
 
-        // Construire l'itinéraire selon le statut de la commande
+        // Construire l'itin?raire selon le statut de la commande
         switch (order.status) {
             case OrderStatus.READY_TO_DELIVER:
             case OrderStatus.ACCEPTED_BY_DRIVER:
-                // Afficher Driver → Merchant → Client (3 acteurs)
+                // Afficher Driver ? Merchant ? Client (3 acteurs)
                 if (order.merchant.address.latitude !== 0 && order.merchant.address.longitude !== 0) {
                     waypoints = `${order.merchant.address.latitude},${order.merchant.address.longitude}`;
                 }
@@ -285,7 +297,7 @@ export function DriverOrderPage({
                 break;
 
             case OrderStatus.ON_THE_WAY:
-                // Afficher Driver → Client (2 acteurs)
+                // Afficher Driver ? Client (2 acteurs)
                 destination = `${order.deliveryInfo.location.lat},${order.deliveryInfo.location.lng}`;
                 break;
 
@@ -317,7 +329,7 @@ export function DriverOrderPage({
     };
 
 
-    // Les fonctions getOrderStatusColor et getOrderStatusLabel sont maintenant importées depuis @/lib/orders-utils
+    // Les fonctions getOrderStatusColor et getOrderStatusLabel sont maintenant import?es depuis @/lib/orders-utils
 
     const getStatusIcon = (status: OrderStatus) => {
         switch (status) {
@@ -361,7 +373,7 @@ export function DriverOrderPage({
                                     {t("Order Details")}
                                 </h1>
                                 <p className="text-sm sm:text-base text-white/90">
-                                    {t("Order")} {formatOrderId(order.id)} • {order.merchant.businessName} {order.pickupCode} {order.deliveryCode}
+                                    {t("Order")} {formatOrderId(order.id)} ? {order.merchant.businessName} {order.pickupCode} {order.deliveryCode}
                                 </p>
                                 <Badge className={cn(
                                     "mt-2 border-2 font-semibold",

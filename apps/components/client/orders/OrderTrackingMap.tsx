@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, memo } from "react";
 import { Package, MapPin, Truck, Clock, CheckCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OrderStatus } from "@prisma/client";
-import { useOrderTracking } from "@/hooks/use-order-tracking";
+import { useOrderTracking } from "@/hooks/use-order-tracking-query";
+import { Order } from "@/lib/models/order";
 import dynamic from "next/dynamic";
 
 // Dynamically import the tracking map
@@ -25,33 +26,36 @@ interface OrderTrackingMapProps {
     initialStatus: OrderStatus;
 }
 
-export default function OrderTrackingMap({ orderId, initialStatus }: OrderTrackingMapProps) {
+function OrderTrackingMap({ orderId, initialStatus }: OrderTrackingMapProps) {
     const { trackingData, loading, error } = useOrderTracking({
         orderId,
         enabled: initialStatus === OrderStatus.ON_THE_WAY || initialStatus === OrderStatus.ACCEPTED_BY_DRIVER,
     });
 
-    const [estimatedTime, setEstimatedTime] = useState<string>("Calculating...");
+    // Estimated time is now calculated with useMemo below
 
-    // Calculate estimated delivery time based on distance
-    useEffect(() => {
-        if (trackingData?.driverCurrentLocation && trackingData?.deliveryInfo) {
-            // Simple estimation: assume 30 km/h average speed
-            const R = 6371; // Earth's radius in km
-            const dLat = ((trackingData.deliveryInfo.location.lat - trackingData.driverCurrentLocation.latitude) * Math.PI) / 180;
-            const dLon = ((trackingData.deliveryInfo.location.lng - trackingData.driverCurrentLocation.longitude) * Math.PI) / 180;
-            const a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos((trackingData.driverCurrentLocation.latitude * Math.PI) / 180) *
-                Math.cos((trackingData.deliveryInfo.location.lat * Math.PI) / 180) *
-                Math.sin(dLon / 2) *
-                Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distance = R * c;
-
-            const timeInMinutes = Math.round((distance / 30) * 60);
-            setEstimatedTime(`${timeInMinutes} min`);
+    // Memoize expensive distance calculation
+    const estimatedTime = useMemo(() => {
+        const order = trackingData as Order | null;
+        if (!order?.driverCurrentLocation || !order?.deliveryInfo) {
+            return "Calculating...";
         }
+
+        // Simple estimation: assume 30 km/h average speed
+        const R = 6371; // Earth's radius in km
+        const dLat = ((order.deliveryInfo.location.lat - order.driverCurrentLocation.latitude) * Math.PI) / 180;
+        const dLon = ((order.deliveryInfo.location.lng - order.driverCurrentLocation.longitude) * Math.PI) / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos((order.driverCurrentLocation.latitude * Math.PI) / 180) *
+            Math.cos((order.deliveryInfo.location.lat * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
+
+        const timeInMinutes = Math.round((distance / 30) * 60);
+        return `${timeInMinutes} min`;
     }, [trackingData]);
 
     if (loading && !trackingData) {
@@ -111,7 +115,8 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
         }
     };
 
-    const statusInfo = getStatusInfo(trackingData?.status || initialStatus);
+    const order = trackingData as Order | null;
+    const statusInfo = getStatusInfo(order?.status || initialStatus);
     const StatusIcon = statusInfo.icon;
 
     return (
@@ -126,21 +131,21 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
                         <h3 className={`text-lg font-semibold ${statusInfo.color}`}>
                             {statusInfo.text}
                         </h3>
-                        {trackingData?.status === OrderStatus.ON_THE_WAY && (
+                        {order?.status === OrderStatus.ON_THE_WAY && (
                             <p className="text-sm text-muted-foreground mt-1">
                                 Estimated arrival: {estimatedTime}
                             </p>
                         )}
                     </div>
                     <Badge variant="outline" className="text-xs">
-                        {trackingData?.status.replace(/_/g, " ").toLowerCase() || "Processing"}
+                        {order?.status.replace(/_/g, " ").toLowerCase() || "Processing"}
                     </Badge>
                 </div>
             </Card>
 
             {/* Map Section */}
-            {(trackingData?.status === OrderStatus.ON_THE_WAY ||
-                trackingData?.status === OrderStatus.ACCEPTED_BY_DRIVER) && trackingData && (
+            {(order?.status === OrderStatus.ON_THE_WAY ||
+                order?.status === OrderStatus.ACCEPTED_BY_DRIVER) && order && (
                     <Card className="p-4 sm:p-6 rounded-2xl shadow-card">
                         <div className="mb-4">
                             <h2 className="text-lg sm:text-xl font-semibold">Live Tracking</h2>
@@ -152,51 +157,52 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
                         {/* Map */}
                         <div className="relative w-full h-[400px] rounded-2xl overflow-hidden">
                             <DriverTrackingMap
-                                orderStatus={trackingData.status}
+                                orderStatus={order.status}
                                 driverLocation={
-                                    trackingData.driverCurrentLocation
+                                    order.driverCurrentLocation
                                         ? {
-                                            latitude: trackingData.driverCurrentLocation.latitude,
-                                            longitude: trackingData.driverCurrentLocation.longitude,
+                                            latitude: order.driverCurrentLocation.latitude,
+                                            longitude: order.driverCurrentLocation.longitude,
                                         }
                                         : null
                                 }
                                 merchantLocation={
-                                    trackingData.merchant.address
+                                    order.merchant.address
                                         ? {
-                                            latitude: trackingData.merchant.address.latitude,
-                                            longitude: trackingData.merchant.address.longitude,
-                                            name: trackingData.merchant.businessName,
+                                            latitude: order.merchant.address.latitude,
+                                            longitude: order.merchant.address.longitude,
+                                            name: order.merchant.businessName,
                                         }
                                         : null
                                 }
                                 deliveryLocation={{
-                                    latitude: trackingData.deliveryInfo.location.lat,
-                                    longitude: trackingData.deliveryInfo.location.lng,
-                                    address: trackingData.deliveryInfo.address,
+                                    latitude: order.deliveryInfo.location.lat,
+                                    longitude: order.deliveryInfo.location.lng,
+                                    address: order.deliveryInfo.address,
                                 }}
                             />
                         </div>
 
                         {/* Location Info */}
                         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {trackingData.merchant.address && (
+                            {order.merchant.address && (
                                 <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg">
                                     <Package className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-orange-900">Pickup</p>
                                         <p className="text-xs text-orange-700 truncate">
-                                            {trackingData.merchant.businessName}
+                                            {order.merchant.businessName}
                                         </p>
                                     </div>
                                 </div>
                             )}
+
                             <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
                                 <MapPin className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-green-900">Delivery</p>
                                     <p className="text-xs text-green-700 truncate">
-                                        {trackingData.deliveryInfo.address}
+                                        {order.deliveryInfo.address}
                                     </p>
                                 </div>
                             </div>
@@ -205,7 +211,7 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
                 )}
 
             {/* Completed State */}
-            {trackingData?.status === OrderStatus.COMPLETED && (
+            {order?.status === OrderStatus.COMPLETED && (
                 <Card className="p-8 rounded-2xl bg-green-50 border-2 border-green-200">
                     <div className="text-center">
                         <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
@@ -223,3 +229,5 @@ export default function OrderTrackingMap({ orderId, initialStatus }: OrderTracki
         </div>
     );
 }
+
+export default memo(OrderTrackingMap);
