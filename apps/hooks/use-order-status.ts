@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { OrderStatus } from "@prisma/client";
 import { updateOrderStatusByDriver } from "@/lib/actions/client/driver";
 import { ROUTES } from "@/lib/router";
+import { useT } from './use-inline-translation';
 
 interface OrderStatusState {
     loading: boolean;
@@ -80,6 +81,7 @@ export function useOrderStatus(options: {
     const store = useOrderStatusStore();
     const { toast } = useToast();
     const router = useRouter();
+    const t = useT();
 
     const updateOrderStatus = async (
         orderId: string,
@@ -89,21 +91,21 @@ export function useOrderStatus(options: {
         const result = await store.updateOrderStatus(orderId, action, code);
 
         if (result.success) {
-            let successMessage = "Action completed successfully!";
+            let successMessage = t("Action completed successfully!");
             switch (action) {
                 case OrderStatus.ACCEPTED_BY_DRIVER:
-                    successMessage = "Order accepted successfully!";
+                    successMessage = t("Order accepted successfully!");
                     break;
                 case OrderStatus.ON_THE_WAY:
-                    successMessage = "Order marked as on the way!";
+                    successMessage = t("Order marked as on the way!");
                     break;
                 case OrderStatus.COMPLETED:
-                    successMessage = "Delivery completed!";
+                    successMessage = t("Delivery completed!");
                     break;
             }
 
             toast({
-                title: "Success",
+                title: t("Success"),
                 description: successMessage,
             });
 
@@ -120,8 +122,8 @@ export function useOrderStatus(options: {
             }
         } else {
             toast({
-                title: "Error",
-                description: result.error || "Failed to complete action",
+                title: t("Error"),
+                description: result.error || t("Failed to complete action"),
                 variant: "destructive",
             });
         }

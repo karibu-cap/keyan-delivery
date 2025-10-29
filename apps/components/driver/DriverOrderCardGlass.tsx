@@ -37,18 +37,18 @@ export function DriverOrderCardGlass({
     const [isCompleting, setIsCompleting] = useState(false);
     const router = useRouter();
 
-    const { refreshOrders } = useDriverOrders();
+    const { silentRefresh } = useDriverOrders();
     const { refreshWallet } = useWallet();
 
     const { acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
         redirectOnComplete: false,
-        onOrderUpdate: () => {
+        onOrderUpdate: async () => {
             setPickupCode("");
             setDeliveryCode("");
             setIsAccepting(false);
             setIsStarting(false);
             setIsCompleting(false);
-            refreshOrders();
+            await silentRefresh();
             refreshWallet();
         }
     });
@@ -92,16 +92,16 @@ export function DriverOrderCardGlass({
     };
 
     const handleViewDetails = () => {
-        router.push(ROUTES.driverOrderDetails(order.id));
+        router.push(ROUTES.driverOrdersDetails(order.id));
     };
 
     return (
         <Card className="relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 group">
             {/* Gradient Background */}
-            <div className="absolute inset-0 bg-background from-red-500/10 via-purple-500/10 to-blue-500/10 dark:from-red-600/20 dark:via-purple-600/20 dark:to-blue-600/20" />
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-purple-500/10 to-blue-500/10 dark:from-red-600/20 dark:via-purple-600/20 dark:to-blue-600/20" />
 
             {/* Glass Effect */}
-            <div className="absolute inset-0 backdrop-blur-xl bg-white dark:bg-gray-900/60" />
+            <div className="absolute inset-0 backdrop-blur-xl bg-white/60 dark:bg-gray-900/60" />
 
             {/* Animated Border Gradient */}
             <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ padding: '2px', borderRadius: 'inherit' }}>

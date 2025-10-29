@@ -19,6 +19,7 @@ interface DriverOrdersState {
     loadOrders: () => Promise<void>;
     fetchOrderDetails: (orderId: string) => Promise<Order>;
     refreshOrders: () => Promise<void>;
+    silentRefresh: () => Promise<void>;
 }
 
 export const useDriverOrders = create(
@@ -68,6 +69,33 @@ export const useDriverOrders = create(
             },
             refreshOrders: async () => {
                 await get().loadOrders();
+            },
+            silentRefresh: async () => {
+                const { user } = useAuthStore.getState();
+                if (user?.driverStatus !== DriverStatus.APPROVED) {
+                    return;
+                }
+
+                try {
+                    // Silent refresh without loading state
+                    const [availableResult, inProgressResult, completedResult] = await Promise.all([
+                        fetchDriverAvailableOrders(),
+                        fetchDriverInProgressOrders(),
+                        fetchDriverCompletedOrders()
+                    ]);
+
+                    if (availableResult.success && inProgressResult.success && completedResult.success) {
+                        set({
+                            availableOrders: availableResult.data,
+                            inProgressOrders: inProgressResult.data,
+                            completedOrders: completedResult.data,
+                            isApproved: true,
+                            error: null
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error during silent refresh:", error);
+                }
             },
             fetchOrderDetails: async (orderId: string) => {
                 set({ loading: true });

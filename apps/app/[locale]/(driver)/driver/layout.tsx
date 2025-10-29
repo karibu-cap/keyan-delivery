@@ -11,7 +11,7 @@ export default function DriverLayout({
     return (
         <div className='driver-theme'>
             <DriverNavbar />
-            <div className="mt-14 md:mt-16 min-h-screen">
+            <div className="mt-14 mb-16 md:mt-16 min-h-screen">
                 {children}
             </div>
         </div>

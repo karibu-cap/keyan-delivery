@@ -37,18 +37,18 @@ export function DriverOrderCardTimeline({
     const [isCompleting, setIsCompleting] = useState(false);
     const router = useRouter();
 
-    const { refreshOrders } = useDriverOrders();
+    const { silentRefresh } = useDriverOrders();
     const { refreshWallet } = useWallet();
 
     const { acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
         redirectOnComplete: false,
-        onOrderUpdate: () => {
+        onOrderUpdate: async () => {
             setPickupCode("");
             setDeliveryCode("");
             setIsAccepting(false);
             setIsStarting(false);
             setIsCompleting(false);
-            refreshOrders();
+            await silentRefresh();
             refreshWallet();
         }
     });
@@ -92,7 +92,7 @@ export function DriverOrderCardTimeline({
     };
 
     const handleViewDetails = () => {
-        router.push(ROUTES.driverOrderDetails(order.id));
+        router.push(ROUTES.driverOrdersDetails(order.id));
     };
 
     // Determine timeline progress

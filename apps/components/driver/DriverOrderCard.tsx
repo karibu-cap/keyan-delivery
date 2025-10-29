@@ -40,25 +40,25 @@ export function DriverOrderCard({
     const [isCompleting, setIsCompleting] = useState(false);
     const router = useRouter();
 
-    const { refreshOrders } = useDriverOrders();
+    const { silentRefresh } = useDriverOrders();
     const { refreshWallet } = useWallet();
 
     const { acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
         redirectOnComplete: false,
-        onOrderUpdate: () => {
+        onOrderUpdate: async () => {
             // Refresh orders after successful action
             setPickupCode("");
             setDeliveryCode("");
             setIsAccepting(false);
             setIsStarting(false);
             setIsCompleting(false);
-            refreshOrders();
+            await silentRefresh();
             refreshWallet();
         }
     });
 
     const handleViewOrderDetails = (orderId: string) => {
-        router.push(ROUTES.driverOrderDetails(orderId));
+        router.push(ROUTES.driverOrdersDetails(orderId));
     };
 
     const handleAcceptOrder = async () => {

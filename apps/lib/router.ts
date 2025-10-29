@@ -36,7 +36,7 @@ export const ROUTES = {
   // Driver routes
   driverApply: '/driver/apply',
   driverDashboard: '/driver/dashboard',
-  driverOrderDetails: (id: string) => `/driver/order/${id}`,
+  driverOrdersDetails: (id: string) => `/driver/orders/${id}`,
   driverEarnings: '/driver/earnings',
   driverWallet: '/driver/wallet',
   driverWalletWithdrawal: '/driver/wallet/withdrawal',

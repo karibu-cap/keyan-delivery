@@ -3,13 +3,13 @@ export function createCustomIcon(emoji: string, color: string, label: string) {
         <div style="position: relative; width: 40px; height: 40px;">
             <!-- Marker principal -->
             <div style="
-                background: linear-gradient(135deg, ${color} 0%, ${adjustBrightness(color, -20)}% 100%);
+                background: linear-gradient(135deg, ${color} 0%, ${adjustBrightness(color, -30)}% 100%);
                 width: 40px;
                 height: 40px;
                 border-radius: 50% 50% 50% 0;
                 transform: rotate(-45deg);
-                border: 3px solid white;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                border: 4px solid white;
+                box-shadow: 0 6px 16px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -68,17 +68,17 @@ function adjustBrightness(color: string, percent: number): string {
 export const MAP_ICONS = {
    driver: {
       emoji: "🚗",
-      color: "#3b82f6", // blue-500
+      color: "#2563eb", // blue-600 (plus foncé)
       label: "Driver",
    },
    merchant: {
       emoji: "🏪",
-      color: "#f59e0b", // amber-500
+      color: "#d97706", // amber-600 (plus foncé)
       label: "Merchant",
    },
    delivery: {
       emoji: "🏠",
-      color: "#10b981", // green-500
+      color: "#059669", // green-600 (plus foncé)
       label: "Delivery",
    },
 } as const;
@@ -87,9 +87,9 @@ export const MAP_ICONS = {
  * Configuration des couleurs de routes
  */
 export const ROUTE_COLORS = {
-   driverToMerchant: "#3b82f6", // blue-500
-   merchantToDelivery: "#f59e0b", // amber-500
-   driverToDelivery: "#10b981", // green-500
+   driverToMerchant: "#2563eb", // blue-600 (plus foncé)
+   merchantToDelivery: "#d97706", // amber-600 (plus foncé)
+   driverToDelivery: "#059669", // green-600 (plus foncé)
 } as const;
 
 /**
