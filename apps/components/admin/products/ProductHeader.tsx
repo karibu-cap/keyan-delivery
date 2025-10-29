@@ -13,9 +13,10 @@ import Link from "next/link";
 import { useT } from "@/hooks/use-inline-translation";
 import { useAction } from "next-safe-action/hooks";
 import { ProductStatus } from "@prisma/client";
+import type { IProduct } from "@/types/generic_types";
 
 interface ProductHeaderProps {
-    product: any;
+    product: IProduct;
 }
 
 export function ProductHeader({ product }: ProductHeaderProps) {
@@ -147,12 +148,12 @@ export function ProductHeader({ product }: ProductHeaderProps) {
                         <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                             <Store className="h-4 w-4" />
                             <Link
-                                href={`/admin/merchants/${product.merchant.id}`}
+                                href={`/admin/merchants/${product?.merchant?.id}`}
                                 className="hover:underline"
                             >
-                                {product.merchant.businessName}
+                                {product?.merchant?.businessName}
                             </Link>
-                            {product.merchant.isVerified && (
+                            {product?.merchant?.isVerified && (
                                 <Badge variant="outline" className="text-xs">
                                     {t("Verified Merchant")}
                                 </Badge>
@@ -168,10 +169,10 @@ export function ProductHeader({ product }: ProductHeaderProps) {
                                 {t.formatAmount(product.price)}
                             </span>
                         </div>
-                        {product.stock !== null && (
+                        {product.inventory !== null && (
                             <div>
                                 <span className="text-muted-foreground">{t("stock")}:</span>
-                                <span className="ml-2 font-semibold">{product.stock}</span>
+                                <span className="ml-2 font-semibold">{product.inventory?.stockQuantity}</span>
                             </div>
                         )}
                         {product.rating && (

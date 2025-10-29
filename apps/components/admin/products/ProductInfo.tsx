@@ -2,9 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getServerT } from "@/i18n/server-translations";
+import type { IProduct } from "@/types/generic_types";
 
 interface ProductInfoProps {
-    product: any;
+    product: IProduct;
 }
 
 export async function ProductInfo({ product }: ProductInfoProps) {
@@ -47,7 +48,7 @@ export async function ProductInfo({ product }: ProductInfoProps) {
                         )}
                     </div>
 
-                    {product.unit && (
+                    {product?.unit && (
                         <div>
                             <label className="text-sm font-medium text-muted-foreground">
                                 {t("Unit")}
@@ -105,12 +106,12 @@ export async function ProductInfo({ product }: ProductInfoProps) {
                             </div>
                         </>
                     )}
-                    {product.stock !== null && (
+                    {product?.inventory?.stockQuantity !== null && (
                         <div>
                             <label className="text-sm font-medium text-muted-foreground">
                                 {t("Total Stock")}
                             </label>
-                            <p className="text-lg font-bold">{product.stock}</p>
+                            <p className="text-lg font-bold">{product?.inventory?.stockQuantity}</p>
                         </div>
                     )}
                 </CardContent>

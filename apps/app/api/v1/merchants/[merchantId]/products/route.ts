@@ -29,12 +29,21 @@ export async function GET(request: NextRequest, props: { params: Promise<{ merch
     const limit = Math.max(1, Math.min(100, parseInt(limitParam))); // Between 1 and 100
     const offset = Math.max(0, parseInt(offsetParam));
 
-    return await getMerchantProducts(merchantId, {
+    const result = await getMerchantProducts(merchantId, {
         status,
         search: search || undefined,
         limit,
         offset,
     });
+
+    if (!result) {
+        return NextResponse.json({
+            success: false,
+            error: 'No products found',
+        }, { status: 404 });
+    }
+
+    return NextResponse.json(result);
 }
 
 export async function POST(request: NextRequest, props: { params: Promise<{ merchantId: string }> }) {
@@ -112,7 +121,6 @@ export async function POST(request: NextRequest, props: { params: Promise<{ merc
                 description,
                 price: parseFloat(price),
                 compareAtPrice: compareAtPrice ? parseFloat(compareAtPrice) : null,
-                stock: parseInt(stock),
                 unit: unit || 'unit',
                 status: status || ProductStatus.DRAFT,
                 visibility: status === ProductStatus.WAITING_FOR_REVIEW,

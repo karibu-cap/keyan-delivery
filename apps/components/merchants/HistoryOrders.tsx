@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useT } from "@/hooks/use-inline-translation";
 import { OptimizedImage } from "@/components/ClsOptimization";
-import type { Order } from "@/types/merchant_types";
+import type { Order } from "@/types/generic_types";
 import { OrderStatus } from "@prisma/client";
 import { useState, useMemo } from "react";
 import { getStatusIcon, formatOrderId, getOrderStatusColor } from "@/lib/orders-utils";

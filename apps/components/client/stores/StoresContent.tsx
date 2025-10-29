@@ -3,14 +3,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { useT } from "@/hooks/use-inline-translation";
-import { IMerchant } from "@/lib/actions/server/stores";
+import type { IMerchant } from "@/types/generic_types";
 import { MerchantType } from "@prisma/client";
 import { Store } from "lucide-react";
 import { useMemo } from "react";
@@ -65,10 +65,10 @@ export function StoresContent({ stores, selectedMerchantType }: StoresContentPro
       isAllSelected
         ? stores
         : stores.filter(
-            (store) =>
-              (store as IMerchant & { merchantType?: string }).merchantType ===
-              selectedMerchantType,
-          );
+          (store) =>
+            (store as IMerchant & { merchantType?: string }).merchantType ===
+            selectedMerchantType,
+        );
 
     return { merchantTypeFilters: filters, filteredStores: filtered };
   }, [stores, selectedMerchantType, t]);
@@ -108,21 +108,19 @@ export function StoresContent({ stores, selectedMerchantType }: StoresContentPro
                     ? "secondary"
                     : "outline"
                 }
-                className={`rounded-full px-6 py-3 h-auto text-sm font-medium transition-all ${
-                  (selectedMerchantType || ALL_FILTER_ID) === filter.id
+                className={`rounded-full px-6 py-3 h-auto text-sm font-medium transition-all ${(selectedMerchantType || ALL_FILTER_ID) === filter.id
                     ? "bg-gray-900 text-white hover:bg-gray-800"
                     : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
-                }`}
+                  }`}
                 onClick={() => handleFilterChange(filter.id)}
               >
                 {filter.name}
                 <Badge
                   variant="secondary"
-                  className={`ml-2 ${
-                    (selectedMerchantType || ALL_FILTER_ID) === filter.id
+                  className={`ml-2 ${(selectedMerchantType || ALL_FILTER_ID) === filter.id
                       ? "bg-white text-gray-900"
                       : "bg-gray-100 text-gray-600"
-                  }`}
+                    }`}
                 >
                   {filter.count}
                 </Badge>

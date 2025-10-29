@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OptimizedImage } from "@/components/ClsOptimization";
 import { Package } from "lucide-react";
 import Link from "next/link";
-import type { Product } from "@/types/merchant_types";
 import { getServerT } from "@/i18n/server-translations";
 
 import { SlideUp, StaggerChildren, StaggerItem } from "./animations/TransitionWrappers";
+import type { IProduct } from "@/types/generic_types";
 
 interface RecentProductsProps {
-     products: Product[];
+     products: IProduct[];
      merchantId: string;
 }
 
@@ -73,7 +73,7 @@ export default async function RecentProducts({ products, merchantId }: RecentPro
                                                                  {product.title}
                                                             </h4>
                                                             <p className="text-xs sm:text-sm text-muted-foreground mb-1">
-                                                                 {t("Stock")}: {product.stock ?? 0}
+                                                                 {t("Stock")}: {product.inventory?.quantity ?? 0}
                                                             </p>
                                                             <div className="flex items-center gap-2 flex-wrap">
                                                                  <span className="font-bold text-sm sm:text-base">

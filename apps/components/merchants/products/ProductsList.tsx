@@ -3,12 +3,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/hooks/use-inline-translation";
-import { IProduct } from "@/lib/actions/server/stores";
 import { getStatusColor, getStatusIcon, getStatusName } from "@/lib/product-utils";
 import { AlertCircle, Edit, Plus } from "lucide-react";
 import { OptimizedImage } from "@/components/ClsOptimization";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { IProduct } from "@/types/generic_types";
 
 interface ProductsListProps {
      products: IProduct[];
@@ -99,14 +99,14 @@ export default function ProductsList({
                                              {t.formatAmount(product.price)}
                                         </span>
                                         <span className="hidden sm:inline">•</span>
-                                        <span>Stock: {product.stock}</span>
+                                        <span>Stock: {product.inventory?.stockQuantity}</span>
                                         <span className="hidden sm:inline">•</span>
                                         <span className="truncate max-w-[150px]">
-                                             {product.categories[0]?.category.name || 'Uncategorized'}
+                                             {product?.categories?.[0]?.category?.name || 'Uncategorized'}
                                         </span>
                                         <span className="hidden md:inline">•</span>
                                         <span className="hidden md:inline">
-                                             {product._count.OrderItem} {t("orders")}
+                                             {product?._count?.OrderItem} {t("orders")}
                                         </span>
                                    </div>
                               </div>

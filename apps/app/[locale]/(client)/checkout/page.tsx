@@ -192,13 +192,13 @@ const EnhancedCheckout = () => {
         productId: item.product.id,
         quantity: item.quantity,
         price: item.price,
-        merchantId: item.product.merchant.id,
+        merchantId: item.product.merchant?.id,
       })),
       deliveryInfo: {
         additionalNotes: deliveryInfo.additionalNotes,
         deliveryContact: deliveryInfo.deliveryContact,
         landmarkName: deliveryInfo.landmarkName,
-        manualCoordinates: manualCoordinates, // NEW: Include manual coordinates
+        manualCoordinates: manualCoordinates,
       },
       orderPrices: {
         subtotal,

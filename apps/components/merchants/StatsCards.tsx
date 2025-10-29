@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Package, WalletIcon, ShoppingBag, Star } from "lucide-react";
 import { getServerT } from "@/i18n/server-translations";
 
-import type { DashboardStats } from "@/types/merchant_types";
+import type { DashboardStats } from "@/types/generic_types";
 import { StaggerChildren, StaggerItem, ScaleIn } from "./animations/TransitionWrappers";
 
 interface StatsCardsProps {

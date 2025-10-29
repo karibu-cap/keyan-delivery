@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { IProduct } from "@/lib/actions/server/stores"
 import { OptimizedImage } from "@/components/ClsOptimization"
 import { useT } from "@/hooks/use-inline-translation"
+import { IProduct } from "@/types/generic_types"
 interface ProductCardProps {
     product: IProduct
 }

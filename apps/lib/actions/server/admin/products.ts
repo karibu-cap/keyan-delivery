@@ -83,15 +83,7 @@ export async function getProductDetails(productId: string) {
     const product = await prisma.product.findUnique({
         where: { id: productId },
         include: {
-            merchant: {
-                select: {
-                    id: true,
-                    businessName: true,
-                    phone: true,
-                    isVerified: true,
-                    logoUrl: true,
-                },
-            },
+            merchant: true,
             images: true,
             categories: {
                 include: {

@@ -1,4 +1,4 @@
-import type { IProduct } from "@/lib/actions/server/stores";
+import type { IProduct } from "@/types/generic_types";
 
 export interface CartItem {
     product: IProduct;

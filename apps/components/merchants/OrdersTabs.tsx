@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import ActiveOrders from "./ActiveOrders";
 import HistoryOrders from "./HistoryOrders";
 import { useT } from "@/hooks/use-inline-translation";
-import type { Order } from "@/types/merchant_types";
+import type { Order } from "@/types/generic_types";
 import { ShoppingBag, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { updateOrderStatus } from "@/lib/actions/merchants";

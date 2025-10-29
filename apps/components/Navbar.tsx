@@ -10,7 +10,6 @@ import { ProductModal } from "@/components/ui/product-modal";
 import { useAuthStore } from "@/hooks/use-auth-store";
 import { useCart } from "@/hooks/use-cart";
 import { useT } from "@/hooks/use-inline-translation";
-import { IProduct } from "@/lib/actions/server/stores";
 import { ROUTES } from "@/lib/router";
 import {
   LogOut,
@@ -26,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import type { IProduct } from "@/types/generic_types";
 
 const Navbar = () => {
   const t = useT();
@@ -90,7 +90,6 @@ const Navbar = () => {
       inventory: null,
       unit: null,
       metadata: { seoTitle: '', seoDescription: '', keywords: [] },
-      stock: null,
       badges: [],
       weight: null,
       weightUnit: null,

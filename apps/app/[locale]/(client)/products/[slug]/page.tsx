@@ -61,10 +61,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
         notFound();
     }
 
-    const categoryIds = product.categories.map((c) => c.categoryId);
+    const categoryIds = product.categories?.map((c) => c.categoryId) || [];
     const relatedProducts = await fetchRelatedProducts(product.slug, categoryIds, product.merchantId);
 
-    
+
     return (
         <>
             <ProductDetailClient product={product} relatedProducts={relatedProducts} />

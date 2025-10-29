@@ -5,19 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { OptimizedImage } from "@/components/ClsOptimization";
 import { Package } from "lucide-react";
 import { useT } from "@/hooks/use-inline-translation";
-
-interface Product {
-    id: string;
-    title: string;
-    price: number;
-    status: string;
-    visibility: boolean;
-    stock: number | null;
-    images: Array<{ url: string }>;
-}
+import type { IProduct } from "@/types/generic_types";
 
 interface MerchantProductsProps {
-    products: Product[];
+    products: IProduct[];
 }
 
 export function MerchantProducts({ products }: MerchantProductsProps) {
@@ -87,9 +78,9 @@ export function MerchantProducts({ products }: MerchantProductsProps) {
                                 <Badge variant={product.visibility ? "default" : "secondary"}>
                                     {product.visibility ? "Visible" : "Hidden"}
                                 </Badge>
-                                {product.stock !== null && (
+                                {product.inventory !== null && (
                                     <Badge variant="outline">
-                                        {t("Stock:")} {product.stock}
+                                        {t("Stock:")} {product.inventory?.stockQuantity}
                                     </Badge>
                                 )}
                             </div>

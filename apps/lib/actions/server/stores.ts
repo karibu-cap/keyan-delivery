@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import type { IMerchant, IProduct } from '@/types/generic_types';
 import { Prisma, ProductStatus } from "@prisma/client";
 import { cache } from 'react';
 
@@ -45,50 +46,6 @@ export type IMerchantList = Prisma.MerchantGetPayload<{
 export type IMerchantDetail = Prisma.MerchantGetPayload<{
   include: typeof MerchantIncludes.storeDataById;
 }>;
-
-
-
-export type IProduct = Prisma.ProductGetPayload<{
-  include: {
-    categories: {
-      include: {
-        category: true
-      }
-    }
-    images: true
-    merchant: true
-    _count: {
-      select: {
-        OrderItem: true,
-        cartItems: true,
-      },
-    },
-  }
-
-}>
-export type IMerchant = Prisma.MerchantGetPayload<{
-  include: {
-    products: {
-      include: {
-        categories: {
-          include: {
-            category: true
-          }
-        }
-        images: true
-        merchant: true
-        _count: {
-          select: {
-            OrderItem: true,
-            cartItems: true,
-          },
-        },
-      }
-    };
-    managers: true;
-  };
-}>;
-
 
 
 export interface Aisle {
