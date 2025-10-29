@@ -15,9 +15,13 @@ import ErrorState from './ErrorState';
 import LocationPermissionCard from './LocationPermissionCard';
 import { useBlockBackNavigation } from '@/hooks/use-block-back-navigation';
 
-export default function DriverDashboardClient() {
-    const { availableOrders, inProgressOrders, completedOrders, loading: orderLoading, error, refreshOrders } = useDriverOrders();
-    const [activeTab, setActiveTab] = useState('available');
+interface DriverDashboardClientProps {
+    initialTab?: string;
+}
+
+export default function DriverDashboardClient({ initialTab }: DriverDashboardClientProps) {
+    const { availableOrders, inProgressOrders, completedOrders, loading: orderLoading, error, refreshOrders, silentRefresh } = useDriverOrders();
+    const [activeTab, setActiveTab] = useState(initialTab || 'available');
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [isRetrying, setIsRetrying] = useState(false);
     const [hasLocationPermission, setHasLocationPermission] = useState(false);
@@ -72,11 +76,11 @@ export default function DriverDashboardClient() {
         if (!hasLocationPermission) return;
 
         const interval = setInterval(() => {
-            refreshOrders();
+            silentRefresh();
         }, 30000); // 30 seconds
 
         return () => clearInterval(interval);
-    }, [refreshOrders, hasLocationPermission]);
+    }, [silentRefresh, hasLocationPermission]);
 
     // Initial load
     useEffect(() => {
@@ -233,8 +237,12 @@ export default function DriverDashboardClient() {
 
                     <TabsContent value="available" className="space-y-4 mt-6">
                         {isCheckingPermission ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+                            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                                {[1, 2, 3].map((i) => (
+                                    <Card key={i} className="p-4">
+                                        <Skeleton className="h-32 w-full" />
+                                    </Card>
+                                ))}
                             </div>
                         ) : !hasLocationPermission ? (
                             <LocationPermissionCard
@@ -265,8 +273,12 @@ export default function DriverDashboardClient() {
 
                     <TabsContent value="active" className="space-y-4 mt-6">
                         {isCheckingPermission ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+                            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                                {[1, 2, 3].map((i) => (
+                                    <Card key={i} className="p-4">
+                                        <Skeleton className="h-32 w-full" />
+                                    </Card>
+                                ))}
                             </div>
                         ) : !hasLocationPermission ? (
                             <LocationPermissionCard
@@ -297,8 +309,12 @@ export default function DriverDashboardClient() {
 
                     <TabsContent value="completed" className="space-y-4 mt-6">
                         {isCheckingPermission ? (
-                            <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+                            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                                {[1, 2, 3].map((i) => (
+                                    <Card key={i} className="p-4">
+                                        <Skeleton className="h-32 w-full" />
+                                    </Card>
+                                ))}
                             </div>
                         ) : !hasLocationPermission ? (
                             <LocationPermissionCard

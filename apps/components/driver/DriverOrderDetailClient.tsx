@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useDriverOrders } from "@/hooks/use-driver-orders";
 import ErrorState from "@/components/driver/ErrorState";
 
-export default function OrderDetailPage() {
+export default function DriverOrderDetailClient() {
     const params = useParams();
     const router = useRouter();
     const { fetchOrderDetails, error, loading } = useDriverOrders();
@@ -17,24 +17,42 @@ export default function OrderDetailPage() {
     const [order, setOrder] = useState<Order | null>(null);
     const [isRetrying, setIsRetrying] = useState(false);
     const [hasError, setHasError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const orderId = params.orderId as string;
 
     useEffect(() => {
-        if (orderId) {
-            const loadData = async () => {
-                try {
-                    // Fetch order details from API
-                    const response = await fetchOrderDetails(orderId);
+        if (!orderId) return;
+        
+        let isMounted = true;
+        
+        const loadData = async () => {
+            try {
+                setIsLoading(true);
+                // Fetch order details from API
+                const response = await fetchOrderDetails(orderId);
+                if (isMounted) {
                     setOrder(response);
                     setHasError(false);
-                } catch (err) {
+                }
+            } catch (err) {
+                if (isMounted) {
                     setHasError(true);
                 }
-            };
-            loadData();
-        }
-    }, [fetchOrderDetails, orderId]);
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        };
+        
+        loadData();
+        
+        return () => {
+            isMounted = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [orderId]); // Retirer fetchOrderDetails des dépendances pour éviter le double chargement
 
     const handleRetry = async () => {
         setIsRetrying(true);
@@ -56,8 +74,10 @@ export default function OrderDetailPage() {
         let tab = 'orders'; // default
 
         if (order) {
-            if (order.status === 'ACCEPTED_BY_DRIVER' || order.status === 'ON_THE_WAY') {
-                tab = 'deliveries';
+            if (order.status === 'ACCEPTED_BY_DRIVER') {
+                tab = 'available';
+            } else if (order.status === 'ON_THE_WAY') {
+               tab = 'active';
             } else if (order.status === 'COMPLETED') {
                 tab = 'completed';
             }
@@ -67,7 +87,7 @@ export default function OrderDetailPage() {
     };
 
     // Show error state if fetch failed
-    if (hasError && !loading) {
+    if (hasError && !isLoading) {
         return (
             <ErrorState
                 title="Failed to Load Order"
@@ -79,7 +99,7 @@ export default function OrderDetailPage() {
         );
     }
 
-    if (loading || !order) {
+    if (isLoading || !order) {
         return (
             <div className="min-h-screen">
                 {/* Hero Skeleton */}

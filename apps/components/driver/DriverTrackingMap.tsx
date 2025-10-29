@@ -4,7 +4,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Navigation, ZoomIn, ZoomOut, WifiOff } from "lucide-react";
+import { Crosshair, ZoomIn, ZoomOut, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { Badge } from "@/components/ui/badge";
@@ -56,6 +56,7 @@ export default function DriverTrackingMap({
     const [isLoadingMap, setIsLoadingMap] = useState(true);
     const isOnline = useOnlineStatus();
 
+    // Déterminer quels éléments afficher selon le statut
     const shouldShowDriverToMerchant =
         (orderStatus === OrderStatus.READY_TO_DELIVER || orderStatus === OrderStatus.ACCEPTED_BY_DRIVER) &&
         driverLocation && merchantLocation && merchantLocation.latitude !== 0;
@@ -65,18 +66,23 @@ export default function DriverTrackingMap({
         merchantLocation && merchantLocation.latitude !== 0;
 
     const shouldShowDriverToDelivery =
-        orderStatus === OrderStatus.ON_THE_WAY && !!driverLocation;
+        orderStatus === OrderStatus.ON_THE_WAY && driverLocation !== null;
 
     const shouldShowOnlyDelivery =
         orderStatus === OrderStatus.COMPLETED;
 
-    console.log('orderStatus : ', orderStatus);
-    console.log('driverLocation : ', driverLocation);
-    console.log('merchantLocation : ', merchantLocation);
-    console.log('shouldShowDriverToMerchant : ', shouldShowDriverToMerchant);
-    console.log('shouldShowMerchantToDelivery : ', shouldShowMerchantToDelivery);
-    console.log('shouldShowDriverToDelivery : ', shouldShowDriverToDelivery);
-    console.log('shouldShowOnlyDelivery : ', shouldShowOnlyDelivery);
+    // Debug logs (à retirer en production)
+    if (process.env.NODE_ENV === 'development') {
+        console.log('=== DriverTrackingMap Debug ===');
+        console.log('Status:', orderStatus);
+        console.log('Driver Location:', driverLocation);
+        console.log('Merchant Location:', merchantLocation);
+        console.log('Delivery Location:', deliveryLocation);
+        console.log('shouldShowDriverToDelivery:', shouldShowDriverToDelivery);
+        console.log('shouldShowDriverToMerchant:', shouldShowDriverToMerchant);
+        console.log('shouldShowOnlyDelivery:', shouldShowOnlyDelivery);
+        console.log('================================');
+    }
 
     const { route: driverToMerchantRoute } = useRouting({
         origin: driverLocation,
@@ -98,7 +104,19 @@ export default function DriverTrackingMap({
 
     // Initialize map with Leaflet
     useEffect(() => {
-        if (!mapContainerRef.current || mapRef.current) return;
+        if (!mapContainerRef.current) return;
+        
+        // Prevent double initialization - vérifier si le container a déjà une carte
+        if (mapRef.current) {
+            return;
+        }
+
+        // Vérifier si le container est déjà initialisé par Leaflet
+        const container = mapContainerRef.current;
+        if (container && (container as any)._leaflet_id) {
+            console.warn('Map container already has Leaflet instance, cleaning up...');
+            return;
+        }
 
         const initializeMap = async () => {
             try {
@@ -168,12 +186,18 @@ export default function DriverTrackingMap({
         initializeMap();
 
         return () => {
+            // Cleanup on unmount
             if (mapRef.current) {
-                mapRef.current.remove();
+                try {
+                    mapRef.current.remove();
+                } catch (error) {
+                    console.error('Error removing map:', error);
+                }
                 mapRef.current = null;
             }
+            setMapLoaded(false);
         };
-    }, []);
+    }, []); // Empty dependency array - only run once
 
     // Update markers and routes when data changes
     useEffect(() => {
@@ -484,12 +508,39 @@ export default function DriverTrackingMap({
     };
 
     const handleRecenter = () => {
-        if (mapRef.current && driverLocation) {
-            mapRef.current.setView(
-                [driverLocation.latitude, driverLocation.longitude],
-                15,
-                { animate: true }
-            );
+        if (!mapRef.current) return;
+
+        const bounds: [number, number][] = [];
+
+        // Ajouter tous les points visibles selon le statut
+        if (shouldShowOnlyDelivery) {
+            // Mode COMPLETED : centrer sur la livraison
+            bounds.push([deliveryLocation.latitude, deliveryLocation.longitude]);
+        } else if (orderStatus === OrderStatus.ON_THE_WAY) {
+            // Mode ON_THE_WAY : centrer sur driver et livraison
+            if (driverLocation) {
+                bounds.push([driverLocation.latitude, driverLocation.longitude]);
+            }
+            bounds.push([deliveryLocation.latitude, deliveryLocation.longitude]);
+        } else {
+            // Mode READY_TO_DELIVER/ACCEPTED_BY_DRIVER : centrer sur tous les acteurs
+            if (driverLocation) {
+                bounds.push([driverLocation.latitude, driverLocation.longitude]);
+            }
+            if (merchantLocation && merchantLocation.latitude !== 0) {
+                bounds.push([merchantLocation.latitude, merchantLocation.longitude]);
+            }
+            bounds.push([deliveryLocation.latitude, deliveryLocation.longitude]);
+        }
+
+        // Recentrer la carte sur tous les points
+        if (bounds.length > 0) {
+            mapRef.current.fitBounds(bounds, { 
+                padding: [50, 50], 
+                maxZoom: 15,
+                animate: true,
+                duration: 0.5
+            });
         }
     };
 
@@ -528,29 +579,30 @@ export default function DriverTrackingMap({
                     <Button
                         size="icon"
                         variant="secondary"
-                        className="rounded-full shadow-lg"
+                        className="rounded-full shadow-lg hover:scale-110 transition-transform"
                         onClick={handleZoomIn}
+                        title="Zoom in"
                     >
                         <ZoomIn className="w-4 h-4" />
                     </Button>
                     <Button
                         size="icon"
                         variant="secondary"
-                        className="rounded-full shadow-lg"
+                        className="rounded-full shadow-lg hover:scale-110 transition-transform"
                         onClick={handleZoomOut}
+                        title="Zoom out"
                     >
                         <ZoomOut className="w-4 h-4" />
                     </Button>
-                    {driverLocation && (
-                        <Button
-                            size="icon"
-                            variant="secondary"
-                            className="rounded-full shadow-lg"
-                            onClick={handleRecenter}
-                        >
-                            <Navigation className="w-4 h-4" />
-                        </Button>
-                    )}
+                    <Button
+                        size="icon"
+                        variant="default"
+                        className="rounded-full shadow-lg bg-primary hover:bg-primary/90 hover:scale-110 transition-transform"
+                        onClick={handleRecenter}
+                        title="Recentrer la carte"
+                    >
+                        <Crosshair className="w-4 h-4" />
+                    </Button>
                 </div>
             )}
         </div>

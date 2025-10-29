@@ -30,7 +30,8 @@ import Image from "next/image";
 import { Order } from "@/lib/models/order";
 import LocationPermissionCard from "./LocationPermissionCard";
 import AnimatedStatsCard from "./AnimatedStatsCard";
-import { formatOrderId, getOrderDriverFee, validCoordinates } from "@/lib/orders-utils";
+import { formatOrderId, getOrderDriverFee, validCoordinates, getOrderStatusColor, getOrderStatusLabel } from "@/lib/orders-utils";
+import { cn } from "@/lib/utils";
 
 // Dynamically import the tracking map
 const DriverTrackingMap = dynamic(
@@ -71,15 +72,16 @@ export function DriverOrderPage({
     const [hasLocationPermission, setHasLocationPermission] = useState(false);
     const [isCheckingPermission, setIsCheckingPermission] = useState(true);
 
-    const { refreshOrders } = useDriverOrders();
+    const { silentRefresh } = useDriverOrders();
     const { refreshWallet } = useWallet();
 
     const { loading, acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
         redirectOnComplete: false,
-        onOrderUpdate: () => {
+        onOrderUpdate: async () => {
             setPickupCode("");
             setDeliveryCode("");
-            refreshOrders();
+            // Silent refresh pour mettre à jour instantanément sans loading
+            await silentRefresh();
             refreshWallet();
         }
     });
@@ -262,11 +264,45 @@ export function DriverOrderPage({
     };
 
     const openInGoogleMaps = () => {
-        const destination = `${order.deliveryInfo.location.lat},${order.deliveryInfo.location.lng}`;
         const origin = currentLocation
             ? `${currentLocation.latitude},${currentLocation.longitude}`
             : "";
-        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+
+        let waypoints = "";
+        let destination = "";
+
+        // Construire l'itinéraire selon le statut de la commande
+        switch (order.status) {
+            case OrderStatus.READY_TO_DELIVER:
+            case OrderStatus.ACCEPTED_BY_DRIVER:
+                // Afficher Driver → Merchant → Client (3 acteurs)
+                if (order.merchant.address.latitude !== 0 && order.merchant.address.longitude !== 0) {
+                    waypoints = `${order.merchant.address.latitude},${order.merchant.address.longitude}`;
+                }
+                destination = `${order.deliveryInfo.location.lat},${order.deliveryInfo.location.lng}`;
+                break;
+
+            case OrderStatus.ON_THE_WAY:
+                // Afficher Driver → Client (2 acteurs)
+                destination = `${order.deliveryInfo.location.lat},${order.deliveryInfo.location.lng}`;
+                break;
+
+            case OrderStatus.COMPLETED:
+                // Afficher seulement le point de livraison
+                destination = `${order.deliveryInfo.location.lat},${order.deliveryInfo.location.lng}`;
+                break;
+
+            default:
+                destination = `${order.deliveryInfo.location.lat},${order.deliveryInfo.location.lng}`;
+        }
+
+        // Construire l'URL Google Maps
+        let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+        
+        if (waypoints) {
+            url += `&waypoints=${waypoints}`;
+        }
+
         window.open(url, "_blank");
     };
 
@@ -278,51 +314,8 @@ export function DriverOrderPage({
         }
     };
 
-    console.log(order.merchant.address);
-    console.log(order.deliveryInfo);
 
-
-    function getOrderStatusColor(status: OrderStatus): string {
-        switch (status) {
-            case OrderStatus.PENDING:
-                return "bg-yellow-500 text-yellow-50 border-yellow-500"
-            case OrderStatus.ACCEPTED_BY_MERCHANT:
-            case OrderStatus.ACCEPTED_BY_DRIVER:
-                return "bg-blue-500 text-blue-50 border-blue-500"
-            case OrderStatus.IN_PREPARATION:
-            case OrderStatus.READY_TO_DELIVER:
-                return "bg-purple-500 text-purple-50 border-purple-500"
-            case OrderStatus.ON_THE_WAY:
-                return "bg-indigo-500 text-indigo-50 border-indigo-500"
-            case OrderStatus.COMPLETED:
-                return "bg-green-500 text-green-50 border-green-500"
-            case OrderStatus.REJECTED_BY_MERCHANT:
-            case OrderStatus.REJECTED_BY_DRIVER:
-            case OrderStatus.CANCELED_BY_MERCHANT:
-            case OrderStatus.CANCELED_BY_DRIVER:
-                return "bg-red-500 text-red-50 border-red-500"
-            default:
-                return "bg-gray-500 text-gray-50 border-gray-500"
-        }
-    }
-
-    function getOrderStatusLabel(status: OrderStatus): string {
-        const labels: Record<OrderStatus, string> = {
-            [OrderStatus.PENDING]: "Pending",
-            [OrderStatus.ACCEPTED_BY_MERCHANT]: "Accepted by Merchant",
-            [OrderStatus.ACCEPTED_BY_DRIVER]: "Driver Assigned",
-            [OrderStatus.REJECTED_BY_MERCHANT]: "Rejected by Merchant",
-            [OrderStatus.REJECTED_BY_DRIVER]: "Rejected by Driver",
-            [OrderStatus.CANCELED_BY_MERCHANT]: "Cancelled by Merchant",
-            [OrderStatus.CANCELED_BY_DRIVER]: "Cancelled by Driver",
-            [OrderStatus.ON_THE_WAY]: "On the Way",
-            [OrderStatus.IN_PREPARATION]: "In Preparation",
-            [OrderStatus.READY_TO_DELIVER]: "Ready to Deliver",
-            [OrderStatus.COMPLETED]: "Completed",
-        }
-
-        return labels[status] || status
-    }
+    // Les fonctions getOrderStatusColor et getOrderStatusLabel sont maintenant importées depuis @/lib/orders-utils
 
     const getStatusIcon = (status: OrderStatus) => {
         switch (status) {
@@ -368,8 +361,14 @@ export function DriverOrderPage({
                                 <p className="text-sm sm:text-base text-white/90">
                                     {t("Order")} {formatOrderId(order.id)} • {order.merchant.businessName} {order.pickupCode} {order.deliveryCode}
                                 </p>
-                                <Badge className="mt-2 bg-white/20 text-white border-white/30">
-                                    {order.status.replace(/_/g, ' ').toLowerCase()}
+                                <Badge className={cn(
+                                    "mt-2 border-2 font-semibold",
+                                    getOrderStatusColor(order.status)
+                                )}>
+                                    <span className="flex items-center gap-1.5">
+                                        {getStatusIcon(order.status)}
+                                        {getOrderStatusLabel(order.status)}
+                                    </span>
                                 </Badge>
                             </div>
                         </div>
@@ -455,7 +454,15 @@ export function DriverOrderPage({
                                     <div className="relative z-0 w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden">
                                         <DriverTrackingMap
                                             orderStatus={order.status}
-                                            driverLocation={currentLocation}
+                                            driverLocation={
+                                                currentLocation || 
+                                                (order.driverCurrentLocation?.latitude && order.driverCurrentLocation?.longitude
+                                                    ? {
+                                                        latitude: order.driverCurrentLocation.latitude,
+                                                        longitude: order.driverCurrentLocation.longitude,
+                                                    }
+                                                    : null)
+                                            }
                                             merchantLocation={
                                                 order.merchant.address.latitude !== 0 && order.merchant.address.longitude !== 0
                                                     ? {
@@ -683,8 +690,16 @@ export function DriverOrderPage({
 
                                     {/* Status Badge */}
                                     <div className="mb-6">
-                                        <Badge className="w-full justify-center py-2 text-sm">
-                                            {order.status.replace(/_/g, ' ').toLowerCase()}
+                                        <Badge 
+                                            className={cn(
+                                                "w-full justify-center py-2.5 text-sm font-semibold border-2 rounded-lg",
+                                                getOrderStatusColor(order.status)
+                                            )}
+                                        >
+                                            <span className="flex items-center gap-2">
+                                                {getStatusIcon(order.status)}
+                                                {getOrderStatusLabel(order.status)}
+                                            </span>
                                         </Badge>
                                     </div>
 

@@ -15,6 +15,11 @@ export const metadata: Metadata = {
    },
 };
 
-export default function DriverDashboardPage() {
-   return <DriverDashboardClient />;
+type Props = {
+   searchParams: Promise<{ tab?: string }>;
+};
+
+export default async function DriverDashboardPage({ searchParams }: Props) {
+   const params = await searchParams;
+   return <DriverDashboardClient initialTab={params.tab} />;
 }
