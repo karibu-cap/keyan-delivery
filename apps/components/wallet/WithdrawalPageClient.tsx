@@ -10,7 +10,7 @@ import { ROUTES } from '@/lib/router';
 import { UnifiedWithdrawalForm } from '@/components/wallet/UnifiedWithdrawalForm';
 import { WithdrawalStatusCard } from '@/components/wallet/WithdrawalStatusCard';
 import { WithdrawalStatsCards } from '@/components/wallet/WithdrawalStatsCards';
-import { useWithdrawal } from '@/hooks/use-withdrawal';
+import { useWithdrawal } from '@/hooks/use-withdrawal-query';
 import { useT } from '@/hooks/use-inline-translation';
 
 export type WalletUserType = 'driver' | 'merchant' | 'customer';

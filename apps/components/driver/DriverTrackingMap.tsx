@@ -3,13 +3,13 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback, memo } from "react";
 import { Crosshair, ZoomIn, ZoomOut, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { Badge } from "@/components/ui/badge";
 import { preloadMapTiles } from "@/lib/utils/offline";
-import { useRouting } from "@/hooks/use-routing";
+import { useRouting } from "@/hooks/use-routing-query";
 import { OrderStatus } from "@prisma/client";
 import { createCustomIcon, MAP_ICONS, ROUTE_COLORS, injectMapStyles } from "@/lib/utils/map-icons";
 
@@ -41,7 +41,7 @@ interface DriverTrackingMapProps {
     onMapReady?: () => void;
 }
 
-export default function DriverTrackingMap({
+function DriverTrackingMap({
     driverLocation,
     merchantLocation,
     deliveryLocation,
@@ -56,20 +56,19 @@ export default function DriverTrackingMap({
     const [isLoadingMap, setIsLoadingMap] = useState(true);
     const isOnline = useOnlineStatus();
 
-    // Déterminer quels éléments afficher selon le statut
-    const shouldShowDriverToMerchant =
-        (orderStatus === OrderStatus.READY_TO_DELIVER || orderStatus === OrderStatus.ACCEPTED_BY_DRIVER) &&
-        driverLocation && merchantLocation && merchantLocation.latitude !== 0;
-
-    const shouldShowMerchantToDelivery =
-        (orderStatus === OrderStatus.READY_TO_DELIVER || orderStatus === OrderStatus.ACCEPTED_BY_DRIVER) &&
-        merchantLocation && merchantLocation.latitude !== 0;
-
-    const shouldShowDriverToDelivery =
-        orderStatus === OrderStatus.ON_THE_WAY && driverLocation !== null;
-
-    const shouldShowOnlyDelivery =
-        orderStatus === OrderStatus.COMPLETED;
+    // Memoize display flags to prevent unnecessary recalculations
+    const displayFlags = useMemo(() => ({
+        shouldShowDriverToMerchant:
+            (orderStatus === OrderStatus.READY_TO_DELIVER || orderStatus === OrderStatus.ACCEPTED_BY_DRIVER) &&
+            driverLocation && merchantLocation && merchantLocation.latitude !== 0,
+        shouldShowMerchantToDelivery:
+            (orderStatus === OrderStatus.READY_TO_DELIVER || orderStatus === OrderStatus.ACCEPTED_BY_DRIVER) &&
+            merchantLocation && merchantLocation.latitude !== 0,
+        shouldShowDriverToDelivery:
+            orderStatus === OrderStatus.ON_THE_WAY && driverLocation !== null,
+        shouldShowOnlyDelivery:
+            orderStatus === OrderStatus.COMPLETED,
+    }), [orderStatus, driverLocation, merchantLocation]);
 
     // Debug logs (à retirer en production)
     if (process.env.NODE_ENV === 'development') {
@@ -78,28 +77,26 @@ export default function DriverTrackingMap({
         console.log('Driver Location:', driverLocation);
         console.log('Merchant Location:', merchantLocation);
         console.log('Delivery Location:', deliveryLocation);
-        console.log('shouldShowDriverToDelivery:', shouldShowDriverToDelivery);
-        console.log('shouldShowDriverToMerchant:', shouldShowDriverToMerchant);
-        console.log('shouldShowOnlyDelivery:', shouldShowOnlyDelivery);
+        console.log('Display Flags:', displayFlags);
         console.log('================================');
     }
 
     const { route: driverToMerchantRoute } = useRouting({
         origin: driverLocation,
         destination: merchantLocation,
-        enabled: shouldShowDriverToMerchant,
+        enabled: displayFlags.shouldShowDriverToMerchant,
     });
 
     const { route: merchantToDeliveryRoute } = useRouting({
         origin: merchantLocation,
         destination: deliveryLocation,
-        enabled: shouldShowMerchantToDelivery,
+        enabled: displayFlags.shouldShowMerchantToDelivery,
     });
 
     const { route: driverToDeliveryRoute } = useRouting({
         origin: driverLocation,
         destination: deliveryLocation,
-        enabled: shouldShowDriverToDelivery,
+        enabled: displayFlags.shouldShowDriverToDelivery,
     });
 
     // Initialize map with Leaflet
@@ -222,7 +219,7 @@ export default function DriverTrackingMap({
             // ====================
             // COMPLETED: Afficher seulement le point de livraison
             // ====================
-            if (shouldShowOnlyDelivery) {
+            if (displayFlags.shouldShowOnlyDelivery) {
                 const deliveryIcon = L.divIcon({
                     className: "custom-marker",
                     html: createCustomIcon(
@@ -491,7 +488,7 @@ export default function DriverTrackingMap({
         driverToMerchantRoute,
         merchantToDeliveryRoute,
         driverToDeliveryRoute,
-        shouldShowOnlyDelivery,
+        displayFlags,
     ]);
 
     // Zoom controls
@@ -513,10 +510,10 @@ export default function DriverTrackingMap({
         const bounds: [number, number][] = [];
 
         // Ajouter tous les points visibles selon le statut
-        if (shouldShowOnlyDelivery) {
+        if (displayFlags.shouldShowOnlyDelivery) {
             // Mode COMPLETED : centrer sur la livraison
             bounds.push([deliveryLocation.latitude, deliveryLocation.longitude]);
-        } else if (orderStatus === OrderStatus.ON_THE_WAY) {
+        } else if (displayFlags.shouldShowDriverToDelivery) {
             // Mode ON_THE_WAY : centrer sur driver et livraison
             if (driverLocation) {
                 bounds.push([driverLocation.latitude, driverLocation.longitude]);
@@ -608,3 +605,5 @@ export default function DriverTrackingMap({
         </div>
     );
 }
+
+export default memo(DriverTrackingMap);
