@@ -5,27 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { useT } from "@/hooks/use-inline-translation";
-import { IProduct } from "@/lib/actions/server/stores";
+import type { IProduct } from "@/types/generic_types";
 import { motion } from "framer-motion";
 import { CheckCircle, Minus, Plus, Star } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo } from "react";
 
 interface MerchantProductProps {
-    product: IProduct & {
-        compareAtPrice?: number | null;
-        rating?: number | null;
-        reviewCount?: number | null;
-        badges?: string[];
-        weight?: number | null;
-        weightUnit?: string | null;
-        promotions?: Array<{
-            type: string;
-            title: string;
-            spendAmount?: number;
-            saveAmount?: number;
-        }>;
-    };
+    product: IProduct;
     index: number;
 }
 

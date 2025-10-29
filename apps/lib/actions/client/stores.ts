@@ -1,4 +1,4 @@
-import { IMerchant } from "../server/stores";
+import type { IMerchant } from "@/types/generic_types";
 
 interface PaginationInfo {
     total: number;

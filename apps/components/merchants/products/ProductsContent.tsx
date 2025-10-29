@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { IProduct } from "@/lib/actions/server/stores";
+import { IProduct } from "@/types/generic_types";
 import { useMemo, useState } from "react";
 import ProductsFilters from "./ProductsFilters";
 import ProductsList from "./ProductsList";
@@ -32,7 +32,7 @@ export default function ProductsContent({
                const query = searchQuery.toLowerCase();
                filtered = filtered.filter(p =>
                     p.title.toLowerCase().includes(query) ||
-                    p.categories[0]?.category.name.toLowerCase().includes(query)
+                    p.categories?.[0]?.category?.name?.toLowerCase().includes(query)
                );
           }
 

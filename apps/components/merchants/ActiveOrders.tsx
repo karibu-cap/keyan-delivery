@@ -16,11 +16,11 @@ import {
      User,
 } from "lucide-react";
 import { useT } from "@/hooks/use-inline-translation";
-import type { Order } from "@/types/merchant_types";
+import type { Order } from "@/types/generic_types";
 import { OrderStatus } from "@prisma/client";
 import { OptimizedImage } from "@/components/ClsOptimization";
 import { useState } from "react";
-import { getStatusIcon, getNextStatus, getOrderStatusColor, canReject, canCancel } from "@/lib/orders-utils";
+import { getStatusIcon, getNextStatus, getOrderStatusColor, canReject, canCancel, formatOrderId } from "@/lib/orders-utils";
 import EmptyState from "./animations/EmptyStates";
 import { HoverScale, StaggerChildren, StaggerItem } from "./animations/TransitionWrappers";
 
@@ -30,9 +30,6 @@ interface ActiveOrdersProps {
      isUpdating: boolean;
 }
 
-const formatOrderId = (id: string): string => {
-     return `#${id.slice(0, 8).toUpperCase()}`;
-};
 
 const formatPhoneNumber = (phone: string): string => {
      // Format: (237) 6XX XXX XXX
@@ -64,7 +61,7 @@ export default function ActiveOrders({
      isUpdating,
 }: ActiveOrdersProps) {
      const t = useT();
-     const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
+     const [updatingOrder, setUpdatingOrder] = useState<{ orderId: string, status: OrderStatus } | null>(null);
 
      // Sort orders: PENDING first, then by most recent update
      const sortedOrders = [...orders].sort((a, b) => {
@@ -78,11 +75,11 @@ export default function ActiveOrders({
      });
 
      const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
-          setUpdatingOrderId(orderId);
+          setUpdatingOrder({ orderId, status: newStatus });
           try {
                await onStatusUpdate(orderId, newStatus);
           } finally {
-               setUpdatingOrderId(null);
+               setUpdatingOrder(null);
           }
      };
 
@@ -103,7 +100,7 @@ export default function ActiveOrders({
                     const StatusIcon = getStatusIcon(order.status);
                     const isPending = order.status === OrderStatus.PENDING;
                     const nextStatus = getNextStatus(order.status);
-                    const isThisOrderUpdating = updatingOrderId === order.id || isUpdating;
+                    const isThisOrderUpdating = updatingOrder?.orderId === order.id || isUpdating;
 
                     return (
                          <StaggerItem key={order.id}>
@@ -276,7 +273,7 @@ export default function ActiveOrders({
                                                                  disabled={isThisOrderUpdating}
                                                                  className="w-full sm:flex-1 bg-primary hover:bg-primary"
                                                             >
-                                                                 {isThisOrderUpdating ? (
+                                                                 {isThisOrderUpdating && [OrderStatus.ACCEPTED_BY_MERCHANT, OrderStatus.IN_PREPARATION, OrderStatus.READY_TO_DELIVER].some((status) => status === updatingOrder?.status) ? (
                                                                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                                                                  ) : (
                                                                       <CheckCircle className="w-4 h-4 mr-2" />
@@ -302,7 +299,7 @@ export default function ActiveOrders({
                                                                  disabled={isThisOrderUpdating}
                                                                  className="w-full sm:flex-1"
                                                             >
-                                                                 {isThisOrderUpdating ? (
+                                                                 {isThisOrderUpdating && OrderStatus.REJECTED_BY_MERCHANT === updatingOrder?.status ? (
                                                                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                                                                  ) : (
                                                                       <XCircle className="w-4 h-4 mr-2" />
@@ -323,7 +320,7 @@ export default function ActiveOrders({
                                                                  disabled={isThisOrderUpdating}
                                                                  className="w-full sm:w-auto"
                                                             >
-                                                                 {isThisOrderUpdating ? (
+                                                                 {isThisOrderUpdating && OrderStatus.CANCELED_BY_MERCHANT === updatingOrder?.status ? (
                                                                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                                                                  ) : (
                                                                       <XCircle className="w-4 h-4 mr-2" />

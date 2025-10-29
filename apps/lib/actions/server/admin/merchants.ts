@@ -134,12 +134,6 @@ export async function getMerchantDetails(merchantId: string) {
 export const approveMerchant = actionAdminClient
     .inputSchema(z.object({ id: z.string().min(1) }))
     .action(async ({ parsedInput: { id } }) => {
-        const activeProductsCount = await prisma.product.count({
-            where: { merchantId: id, status: "VERIFIED", visibility: true },
-        });
-        if (activeProductsCount < 5) {
-            throw new ActionError(`Merchant must have at least 5 active products. Currently has ${activeProductsCount}.`);
-        }
 
         await prisma.merchant.update({
             where: { id },

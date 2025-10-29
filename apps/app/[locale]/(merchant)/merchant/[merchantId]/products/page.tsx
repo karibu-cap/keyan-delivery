@@ -35,19 +35,13 @@ async function getProducts(merchantId: string) {
      try {
           const res = await getMerchantProducts(merchantId, { limit: 100 });
 
-          if (!res.ok) {
-               return null;
-          }
-
-          const data = await res.json();
-
-          if (!data.success) {
+          if (!res) {
                return null;
           }
 
           return {
-               products: data.products,
-               total: data.total,
+               products: res.products,
+               total: res.total,
           };
      } catch (error) {
           console.error({ message: 'Error fetching products:', error });

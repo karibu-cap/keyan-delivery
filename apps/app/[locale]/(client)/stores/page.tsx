@@ -1,7 +1,8 @@
 import { StoresContent } from "@/components/client/stores/StoresContent";
 import { StoresLoading } from "@/components/client/stores/StoresLoading";
 import { getServerT } from "@/i18n/server-translations";
-import { fetchMerchants, IMerchant } from "@/lib/actions/server/stores";
+import { fetchMerchants } from "@/lib/actions/server/stores";
+import type { IMerchant } from "@/types/generic_types";
 import type { MerchantType } from "@prisma/client";
 
 import { Suspense } from "react";

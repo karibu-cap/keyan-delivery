@@ -1,13 +1,21 @@
 import { getMerchantOrders } from '@/lib/actions/server/merchants';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest, props: { params: Promise<{ merchantId: string }> }) {
     const params = await props.params
     const merchantId = params.merchantId;
 
-    // Parse query parameters
-    const { searchParams } = new URL(request.url);
-    const type = (searchParams.get('type') || 'active') as 'active' | 'history';
+    const orders = await getMerchantOrders(merchantId);
 
-    return await getMerchantOrders(merchantId, type);
+    if (!orders) {
+        return NextResponse.json({
+            success: false,
+            message: 'Orders not found'
+        }, { status: 403 });
+    }
+
+    return NextResponse.json({
+        success: true,
+        data: orders
+    });
 }

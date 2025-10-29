@@ -146,7 +146,7 @@ export async function notifyMerchantNewOrder(
 
     const payload: NotificationPayload = {
         title: t('🛒 New order!'),
-        body: t(`You have received a new order of ${orderTotal.toFixed(2)} $`),
+        body: t(`You have received a new order of {total} $`, { total: orderTotal.toFixed(2) }),
         icon: '/icons/ios/192.png',
         badge: '/icons/ios/72.png',
         tag: `new-order-${orderId}`,

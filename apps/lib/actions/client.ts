@@ -1,12 +1,12 @@
+import type { IMerchant, IProduct } from "@/types/generic_types";
 import { Media, Merchant, User } from "@prisma/client";
-import { IMerchant, IProduct } from "./server/stores";
 
 export interface SearchResult {
   id: string;
   title: string;
   type: 'product' | 'merchant';
   image?: string;
-  price?: number; 
+  price?: number;
   category?: string;
   product?: IProduct;
   merchant?: IMerchant;
@@ -53,7 +53,7 @@ export const getUserById = async (id: string): Promise<User | null> => {
   return res.data.user
 }
 
-export const getCurrentUser= async (): Promise<User | null> => {
+export const getCurrentUser = async (): Promise<User | null> => {
   const user = await fetch(`/api/v1/users`, {
     method: 'GET',
   })

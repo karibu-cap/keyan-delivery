@@ -1,9 +1,9 @@
 "use client";
 
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { IProduct } from "@/lib/actions/server/stores";
 import { AnimatePresence, motion } from "framer-motion";
 import { MerchantProduct } from "./MerchantProduct";
+import type { IProduct } from "@/types/generic_types";
 
 interface ProductGridProps {
     products: IProduct[];

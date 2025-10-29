@@ -1,6 +1,7 @@
 import MerchantNavBar from '@/components/merchants/MerchantNavBar';
 import { ProtectedClientPage } from '@/components/auth/ProtectedClientPage';
 import '../../../../globals.css'
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
 const VerifyMerchantLayout = ({
     children,
@@ -23,9 +24,11 @@ export default function MerchantLayout({
     return (
         <div className="merchant-theme w-full">
             <ProtectedClientPage>
-                <VerifyMerchantLayout>
-                    {children}
-                </VerifyMerchantLayout>
+                <QueryProvider>
+                    <VerifyMerchantLayout>
+                        {children}
+                    </VerifyMerchantLayout>
+                </QueryProvider>
             </ProtectedClientPage>
         </div>
     );

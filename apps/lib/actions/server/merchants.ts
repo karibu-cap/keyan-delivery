@@ -422,15 +422,13 @@ export async function getMerchantProducts(
         limit?: number;
         offset?: number;
     }
-): Promise<NextResponse> {
+) {
     try {
         const token = await verifySession();
 
         if (!token?.user.id) {
-            return NextResponse.json(
-                { success: false, error: 'Unauthorized' },
-                { status: 401 }
-            );
+            console.error('User not found');
+            return;
         }
 
         // Find user by UID
@@ -439,10 +437,20 @@ export async function getMerchantProducts(
         });
 
         if (!user) {
-            return NextResponse.json(
-                { success: false, error: 'User not found' },
-                { status: 404 }
-            );
+            console.error('User not found');
+            return;
+        }
+
+        const hasAccess = await prisma.userMerchantManager.findFirst({
+            where: {
+                userId: user.id,
+                merchantId,
+            },
+        });
+
+        if (!hasAccess) {
+            console.error('No access');
+            return;
         }
 
         const where: any = { merchantId };
@@ -482,120 +490,124 @@ export async function getMerchantProducts(
 
         const total = await prisma.product.count({ where });
 
-        return NextResponse.json({
-            success: true,
+        return {
             products,
             total,
             hasMore: filters?.offset ? (filters.offset + (filters?.limit || 0)) < total : false
-        });
+        };
     } catch (error) {
         console.error({ message: 'Error fetching merchant products:', error });
-        return NextResponse.json(
-            { success: false, products: [], total: 0 },
-            { status: 500 }
-        );
+        return {
+            products: [],
+            total: 0,
+            hasMore: false
+        };
     }
 }
 
 /**
  * Get merchant orders (complete logic including auth)
  */
-export async function getMerchantOrders(
-    merchantId: string,
-    type: "active" | "history" = "active"
-): Promise<NextResponse> {
-    try {
-        const token = await verifySession();
+export async function getMerchantOrders(merchantId: string) {
+    const token = await verifySession();
 
-        if (!token?.user.id) {
-            return NextResponse.json(
-                { success: false, error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+    if (!token?.user.id) {
+        console.error('User not found');
+        return;
+    }
 
-        // Find user by UID
-        const user = await prisma.user.findUnique({
-            where: {
-                id: token.user.id,
-            },
-        });
+    // Find user by UID
+    const user = await prisma.user.findUnique({
+        where: {
+            id: token.user.id,
+        },
+    });
 
-        if (!user) {
-            return NextResponse.json(
-                { success: false, error: 'User not found' },
-                { status: 404 }
-            );
-        }
+    if (!user) {
+        console.error('User not found');
+        return;
+    }
+    const hasAccess = await prisma.userMerchantManager.findFirst({
+        where: {
+            userId: user.id,
+            merchantId,
+        },
+    });
 
-        const activeStatuses = [
-            OrderStatus.PENDING,
-            OrderStatus.ACCEPTED_BY_MERCHANT,
-            OrderStatus.IN_PREPARATION,
-            OrderStatus.READY_TO_DELIVER,
-            OrderStatus.ACCEPTED_BY_DRIVER,
-            OrderStatus.ON_THE_WAY,
-        ];
+    if (!hasAccess) {
+        console.error('No access');
+        return;
+    }
 
-        const historyStatuses = [
-            OrderStatus.COMPLETED,
-            OrderStatus.CANCELED_BY_MERCHANT,
-            OrderStatus.CANCELED_BY_DRIVER,
-            OrderStatus.REJECTED_BY_MERCHANT,
-            OrderStatus.REJECTED_BY_DRIVER,
-        ];
-
-        const orders = await prisma.order.findMany({
+    const [activeOrders, historyOrders] = await Promise.all([
+        prisma.order.findMany({
             where: {
                 merchantId,
                 status: {
-                    in: type === 'active' ? activeStatuses : historyStatuses,
+                    in: [
+                        OrderStatus.PENDING,
+                        OrderStatus.ACCEPTED_BY_MERCHANT,
+                        OrderStatus.IN_PREPARATION,
+                        OrderStatus.READY_TO_DELIVER,
+                        OrderStatus.ACCEPTED_BY_DRIVER,
+                        OrderStatus.ON_THE_WAY,
+                    ],
                 },
             },
             include: {
                 items: {
                     include: {
-                        product: {
-                            include: {
-                                images: true,
-                            },
-                        },
+                        product: true,
                     },
                 },
                 user: {
                     select: {
-                        id: true,
                         name: true,
                         phone: true,
-                        email: true,
                     },
                 },
             },
-            orderBy: [
-                ...(type === 'active' ? [{ status: 'asc' as const }] : []),
-                { createdAt: 'desc' as const },
-            ],
-        });
-
-        const pendingCount = await prisma.order.count({
+            orderBy: { createdAt: 'desc' },
+        }),
+        prisma.order.findMany({
             where: {
                 merchantId,
-                status: OrderStatus.PENDING,
+                status: {
+                    in: [
+                        OrderStatus.COMPLETED,
+                        OrderStatus.CANCELED_BY_MERCHANT,
+                        OrderStatus.CANCELED_BY_DRIVER,
+                        OrderStatus.REJECTED_BY_MERCHANT,
+                    ],
+                },
             },
-        });
+            include: {
+                items: {
+                    include: {
+                        product: true,
+                    },
+                },
+                user: {
+                    select: {
+                        name: true,
+                        phone: true,
+                    },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 20,
+        }),
+    ]);
 
-        return NextResponse.json({
-            success: true,
-            orders,
-            pendingCount,
-        });
-    } catch (error) {
-        console.error({ message: 'Error fetching merchant orders:', error });
-        return NextResponse.json(
-            { success: false, orders: [], pendingCount: 0 },
-            { status: 500 }
-        );
-    }
+    const pendingCount = activeOrders.filter(
+        (o) => o.status === OrderStatus.PENDING
+    ).length;
+
+    return {
+        activeOrders,
+        historyOrders,
+        pendingCount,
+    };
 }
 
 /**

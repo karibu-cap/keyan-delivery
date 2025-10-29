@@ -3,7 +3,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/hooks/use-inline-translation";
-import { IMerchant } from "@/lib/actions/server/stores";
 import { MerchantType } from "@prisma/client";
 import {
     Pill,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
+import type { IMerchant } from "@/types/generic_types";
 
 interface StoreCardProps {
     store: IMerchant;

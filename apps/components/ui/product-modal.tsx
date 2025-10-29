@@ -1,7 +1,6 @@
 "use client";
 
 import { useCart } from "@/hooks/use-cart";
-import { IProduct } from "@/lib/actions/server/stores";
 import {
     CheckCircle,
     ChevronRight,
@@ -21,6 +20,7 @@ import { Button } from "./button";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "./dialog";
 import { OptimizedImage } from "../ClsOptimization";
 import { useT } from "@/hooks/use-inline-translation";
+import type { IProduct } from "@/types/generic_types";
 
 interface ProductModalProps {
     product: IProduct | null;
@@ -243,7 +243,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                                     variant="link"
                                     className="text-sm p-0 h-auto text-primary hover:text-primary/80"
                                 >
-                                    {t('Visit')} {product.merchant.businessName}
+                                    {t('Visit')} {product.merchant?.businessName}
                                     <ChevronRight className="w-4 h-4 ml-1" />
                                 </Button>
                             </div>

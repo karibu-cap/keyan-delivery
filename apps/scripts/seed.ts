@@ -794,7 +794,6 @@ async function seedDatabase() {
             visibility: true,
             rating: faker.number.float({ min: 3.5, max: 5.0 }),
             reviewCount: faker.number.int({ min: 50, max: 500 }),
-            stock: faker.number.int({ min: 20, max: 200 }),
             badges: template.badges as ('BEST_SELLER' | 'ORGANIC' | 'NO_PRESERVATIVES' | 'LOW_FAT' | 'LOW_SUGAR' | 'NON_GMO' | 'NEW' | 'SALE')[],
             weight: template.unit === 'lb' ? faker.number.float({ min: 0.5, max: 5.0 }) : undefined,
             weightUnit: template.unit === 'lb' ? 'lb' : undefined,

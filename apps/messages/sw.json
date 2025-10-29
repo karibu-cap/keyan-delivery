@@ -1467,5 +1467,6 @@
   "you-ll-receive-a-notification-once-your-application-is-approved": "Utapokea arifa mara tu maombi yako yatakapopitishwa",
   "start-accepting-deliveries-and-earning-money-immediately-after-approval": "Anza kukubali kujifungua na kupata pesa mara baada ya idhini",
   "failed-to-fetch-analytics": "Imeshindwa kuchukua uchambuzi",
-  "failed-to-load-analytics": "Imeshindwa kupakia uchambuzi"
+  "failed-to-load-analytics": "Imeshindwa kupakia uchambuzi",
+  "we-encountered-an-error-while-loading-your-order": "Tulikutana na kosa wakati wa kupakia agizo lako."
 }
