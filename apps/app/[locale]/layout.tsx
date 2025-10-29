@@ -10,7 +10,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { routing } from "@/i18n/routing";
 import { getSession } from "@/lib/auth-server";
 import { generateHomeMetadata, generateOrganizationStructuredData } from "@/lib/metadata";
-import { QueryProvider } from "@/lib/providers/query-provider";
 import type { Metadata } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { Geist, Geist_Mono } from "next/font/google";
