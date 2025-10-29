@@ -17,11 +17,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OrderStatus } from "@prisma/client";
-import { useOrderStatus } from "@/hooks/use-order-status";
+import { useOrderStatus } from "@/hooks/use-order-status-query";
 import { calculateRouteDistance } from "@/lib/utils/routing";
 import { reverseGeocode } from "@/lib/utils/client/geo_coding";
-import { useDriverOrders } from "@/hooks/use-driver-orders";
-import { useWallet } from "@/hooks/use-wallet";
+import { useDriverOrders } from "@/hooks/use-driver-orders-query";
+import { useWallet } from "@/hooks/use-wallet-query";
 import { useT } from "@/hooks/use-inline-translation";
 import { useOrderTracking } from "@/hooks/use-order-tracking";
 import { useToast } from "@/hooks/use-toast";
@@ -72,7 +72,6 @@ export function DriverOrderPage({
     const [hasLocationPermission, setHasLocationPermission] = useState(false);
     const [isCheckingPermission, setIsCheckingPermission] = useState(true);
 
-    const { silentRefresh } = useDriverOrders();
     const { refreshWallet } = useWallet();
 
     const { loading, acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
@@ -80,9 +79,12 @@ export function DriverOrderPage({
         onOrderUpdate: async () => {
             setPickupCode("");
             setDeliveryCode("");
-            // Silent refresh pour mettre à jour instantanément sans loading
-            await silentRefresh();
-            refreshWallet();
+            
+            // Refresh wallet only when order is completed (driver gets paid)
+            if (order.status === 'ON_THE_WAY') {
+                refreshWallet();
+            }
+            // Note: Order cache invalidation is handled automatically by useOrderStatus
         }
     });
 

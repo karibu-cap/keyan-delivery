@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package, Truck, CheckCircle2 } from 'lucide-react';
-import { useDriverOrders } from '@/hooks/use-driver-orders';
+import { useDriverOrders } from '@/hooks/use-driver-orders-query';
 import DriverOrdersList from './DriverOrdersList';
 import DriverStatsGrid from './DriverStatsGrid';
 import ErrorState from './ErrorState';
@@ -20,7 +20,19 @@ interface DriverDashboardClientProps {
 }
 
 export default function DriverDashboardClient({ initialTab }: DriverDashboardClientProps) {
-    const { availableOrders, inProgressOrders, completedOrders, loading: orderLoading, error, refreshOrders, silentRefresh } = useDriverOrders();
+    const { 
+        availableOrders, 
+        inProgressOrders, 
+        completedOrders, 
+        loading: orderLoading, 
+        error, 
+        refreshAvailableOrders,
+        refreshInProgressOrders,
+        refreshCompletedOrders,
+        silentRefreshAvailableOrders,
+        silentRefreshInProgressOrders,
+        silentRefreshCompletedOrders,
+    } = useDriverOrders();
     const [activeTab, setActiveTab] = useState(initialTab || 'available');
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [isRetrying, setIsRetrying] = useState(false);
@@ -32,11 +44,18 @@ export default function DriverDashboardClient({ initialTab }: DriverDashboardCli
     const handleRetry = async () => {
         setIsRetrying(true);
         setIsInitialLoad(true);
-        await refreshOrders();
+        // Refresh only the active tab
+        if (activeTab === 'available') {
+            await refreshAvailableOrders();
+        } else if (activeTab === 'active') {
+            await refreshInProgressOrders();
+        } else if (activeTab === 'completed') {
+            await refreshCompletedOrders();
+        }
         setTimeout(() => {
             setIsInitialLoad(false);
             setIsRetrying(false);
-        }, 1000);
+        }, 500);
     };
 
     // Check GPS permission on mount
@@ -71,24 +90,38 @@ export default function DriverDashboardClient({ initialTab }: DriverDashboardCli
         checkPermission();
     }, []);
 
-    // Auto-refresh data every 30 seconds (silent refresh, no skeleton)
+    // Auto-refresh every 30 seconds (silent) - only active tab
     useEffect(() => {
         if (!hasLocationPermission) return;
 
         const interval = setInterval(() => {
-            silentRefresh();
+            // Only refresh the active tab to reduce API calls
+            if (activeTab === 'available') {
+                silentRefreshAvailableOrders();
+            } else if (activeTab === 'active') {
+                silentRefreshInProgressOrders();
+            } else if (activeTab === 'completed') {
+                silentRefreshCompletedOrders();
+            }
         }, 30000); // 30 seconds
 
         return () => clearInterval(interval);
-    }, [silentRefresh, hasLocationPermission]);
+    }, [activeTab, hasLocationPermission, silentRefreshAvailableOrders, silentRefreshInProgressOrders, silentRefreshCompletedOrders]);
 
-    // Initial load
+    // Initial load - only load the active tab
     useEffect(() => {
         if (!hasLocationPermission) return;
 
-        refreshOrders();
+        // Load only the active tab on mount
+        if (activeTab === 'available') {
+            refreshAvailableOrders();
+        } else if (activeTab === 'active') {
+            refreshInProgressOrders();
+        } else if (activeTab === 'completed') {
+            refreshCompletedOrders();
+        }
         setTimeout(() => setIsInitialLoad(false), 1000);
-    }, [refreshOrders, hasLocationPermission]);
+    }, [hasLocationPermission]); // Only run on mount
 
     // Auto-redirect to appropriate tab when order status changes
     useEffect(() => {
@@ -265,7 +298,7 @@ export default function DriverDashboardClient({ initialTab }: DriverDashboardCli
                                 emptyTitle="No Available Orders"
                                 emptyDescription="Check back later for new delivery opportunities"
                                 type="available"
-                                onRefresh={refreshOrders}
+                                onRefresh={refreshAvailableOrders}
                                 isInitialLoad={isInitialLoad}
                             />
                         )}
@@ -301,7 +334,7 @@ export default function DriverDashboardClient({ initialTab }: DriverDashboardCli
                                 emptyTitle="No Active Deliveries"
                                 emptyDescription="Accept an order to start delivering"
                                 type="active"
-                                onRefresh={refreshOrders}
+                                onRefresh={refreshInProgressOrders}
                                 isInitialLoad={isInitialLoad}
                             />
                         )}
@@ -337,7 +370,7 @@ export default function DriverDashboardClient({ initialTab }: DriverDashboardCli
                                 emptyTitle="No Completed Deliveries"
                                 emptyDescription="Completed deliveries will appear here"
                                 type="completed"
-                                onRefresh={refreshOrders}
+                                onRefresh={refreshCompletedOrders}
                                 isInitialLoad={isInitialLoad}
                             />
                         )}

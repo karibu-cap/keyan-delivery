@@ -1,7 +1,6 @@
 "use client";
 
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { OrderStatus } from "@prisma/client";
@@ -11,74 +10,56 @@ import { useT } from './use-inline-translation';
 
 interface OrderStatusState {
     loading: boolean;
-    updateOrderStatus: (orderId: string, action: OrderStatus, code?: string) => Promise<{ success: boolean; error?: string }>;
-    acceptOrder: (orderId: string, pickupCode: string) => Promise<{ success: boolean; error?: string }>;
-    startDelivery: (orderId: string) => Promise<{ success: boolean; error?: string }>;
-    completeDelivery: (orderId: string, deliveryCode: string) => Promise<{ success: boolean; error?: string }>;
+    setLoading: (loading: boolean) => void;
 }
 
-export const useOrderStatusStore = create(
-    persist<OrderStatusState>(
-        (set, get) => ({
-            loading: false,
-            updateOrderStatus: async (orderId, action, code) => {
-                set({ loading: true });
+// Simple store without persistence - only for loading state
+const useOrderStatusStore = create<OrderStatusState>((set) => ({
+    loading: false,
+    setLoading: (loading: boolean) => set({ loading }),
+}));
 
-                try {
-                    // Validation based on action
-                    if (action === OrderStatus.ACCEPTED_BY_DRIVER && !code) {
-                        set({ loading: false });
-                        return { success: false, error: "Please enter the pickup code" };
-                    }
+// Pure functions without storage
+const updateOrderStatusAction = async (
+    orderId: string,
+    action: OrderStatus,
+    code?: string
+): Promise<{ success: boolean; error?: string }> => {
+    // Validation based on action
+    if (action === OrderStatus.ACCEPTED_BY_DRIVER && !code) {
+        return { success: false, error: "Please enter the pickup code" };
+    }
 
-                    if (action === OrderStatus.COMPLETED && !code) {
-                        set({ loading: false });
-                        return { success: false, error: "Please enter the delivery code" };
-                    }
+    if (action === OrderStatus.COMPLETED && !code) {
+        return { success: false, error: "Please enter the delivery code" };
+    }
 
-                    const requestBody: { action: string; pickupCode?: string; deliveryCode?: string } = { action: action };
+    const requestBody: { action: string; pickupCode?: string; deliveryCode?: string } = { action: action };
 
-                    if (code) {
-                        requestBody[action === OrderStatus.ACCEPTED_BY_DRIVER ? "pickupCode" : "deliveryCode"] = code.trim().toLocaleLowerCase();
-                    }
+    if (code) {
+        requestBody[action === OrderStatus.ACCEPTED_BY_DRIVER ? "pickupCode" : "deliveryCode"] = code.trim().toLocaleLowerCase();
+    }
 
-                    const response = await updateOrderStatusByDriver({
-                        action: action,
-                        pickupCode: requestBody.pickupCode,
-                        deliveryCode: requestBody.deliveryCode,
-                        orderId: orderId,
-                    });
+    try {
+        const response = await updateOrderStatusByDriver({
+            action: action,
+            pickupCode: requestBody.pickupCode,
+            deliveryCode: requestBody.deliveryCode,
+            orderId: orderId,
+        });
 
-                    set({ loading: false });
-                    return { success: response.success, error: response.error };
-                } catch (error) {
-                    set({ loading: false });
-                    return { success: false, error: "Failed to complete action" };
-                }
-            },
-            acceptOrder: async (orderId, pickupCode) => {
-                return get().updateOrderStatus(orderId, OrderStatus.ACCEPTED_BY_DRIVER, pickupCode);
-            },
-            startDelivery: async (orderId) => {
-                return get().updateOrderStatus(orderId, OrderStatus.ON_THE_WAY);
-            },
-            completeDelivery: async (orderId, deliveryCode) => {
-                return get().updateOrderStatus(orderId, OrderStatus.COMPLETED, deliveryCode);
-            },
-        }),
-        {
-            name: 'order-status-store',
-            storage: createJSONStorage(() => localStorage),
-        }
-    )
-);
+        return { success: response.success, error: response.error };
+    } catch (error) {
+        return { success: false, error: "Failed to complete action" };
+    }
+};
 
 // Hook that provides toast notifications and routing
 export function useOrderStatus(options: {
     redirectOnComplete?: boolean;
     onOrderUpdate?: () => void;
 } = {}) {
-    const store = useOrderStatusStore();
+    const { loading, setLoading } = useOrderStatusStore();
     const { toast } = useToast();
     const router = useRouter();
     const t = useT();
@@ -88,7 +69,9 @@ export function useOrderStatus(options: {
         action: OrderStatus,
         code?: string
     ) => {
-        const result = await store.updateOrderStatus(orderId, action, code);
+        setLoading(true);
+        const result = await updateOrderStatusAction(orderId, action, code);
+        setLoading(false);
 
         if (result.success) {
             let successMessage = t("Action completed successfully!");
@@ -131,20 +114,20 @@ export function useOrderStatus(options: {
         return result;
     };
 
-    const acceptOrder = (orderId: string, pickupCode: string) => {
+    const acceptOrder = async (orderId: string, pickupCode: string) => {
         return updateOrderStatus(orderId, OrderStatus.ACCEPTED_BY_DRIVER, pickupCode);
     };
 
-    const startDelivery = (orderId: string) => {
+    const startDelivery = async (orderId: string) => {
         return updateOrderStatus(orderId, OrderStatus.ON_THE_WAY);
     };
 
-    const completeDelivery = (orderId: string, deliveryCode: string) => {
+    const completeDelivery = async (orderId: string, deliveryCode: string) => {
         return updateOrderStatus(orderId, OrderStatus.COMPLETED, deliveryCode);
     };
 
     return {
-        loading: store.loading,
+        loading,
         acceptOrder,
         startDelivery,
         completeDelivery,
