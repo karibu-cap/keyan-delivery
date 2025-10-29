@@ -1,16 +1,15 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { useDriverOrders } from "@/hooks/use-driver-orders";
+import { useDriverOrders } from "@/hooks/use-driver-orders-query";
 import { useT } from "@/hooks/use-inline-translation";
-import { useWallet } from "@/hooks/use-wallet";
+import { useWallet } from "@/hooks/use-wallet-query";
 import {
     Package,
     Clock,
     Wallet,
     Motorbike,
 } from "lucide-react";
-import { useEffect } from "react";
 
 
 export function DriverStatsCards() {
@@ -18,9 +17,7 @@ export function DriverStatsCards() {
     const { balance, refreshWallet } = useWallet();
     const { availableOrders, inProgressOrders, completedOrders } = useDriverOrders();
 
-    useEffect(() => {
-        refreshWallet();
-    }, []);
+    // TanStack Query fetches automatically, no need for manual refresh on mount
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="p-6 rounded-2xl shadow-card">

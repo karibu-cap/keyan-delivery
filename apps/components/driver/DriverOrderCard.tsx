@@ -12,13 +12,12 @@ import {
     WalletIcon,
     Navigation,
 } from "lucide-react";
-import { useOrderStatus } from "@/hooks/use-order-status";
+import { useOrderStatus } from '@/hooks/use-order-status-query';
 import { Truck } from "lucide-react";
 import { OrderStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/router";
-import { useDriverOrders } from "@/hooks/use-driver-orders";
-import { useWallet } from "@/hooks/use-wallet";
+import { useWallet } from '@/hooks/use-wallet-query';
 import { useT } from "@/hooks/use-inline-translation";
 import { formatOrderId, getOrderDriverFee } from "@/lib/orders-utils";
 import { Order } from "@/lib/models/order";
@@ -40,20 +39,23 @@ export function DriverOrderCard({
     const [isCompleting, setIsCompleting] = useState(false);
     const router = useRouter();
 
-    const { silentRefresh } = useDriverOrders();
     const { refreshWallet } = useWallet();
 
     const { acceptOrder, startDelivery, completeDelivery } = useOrderStatus({
         redirectOnComplete: false,
         onOrderUpdate: async () => {
-            // Refresh orders after successful action
+            // Reset loading states
             setPickupCode("");
             setDeliveryCode("");
             setIsAccepting(false);
             setIsStarting(false);
             setIsCompleting(false);
-            await silentRefresh();
-            refreshWallet();
+            
+            // Refresh wallet only when order is completed (driver gets paid)
+            if (order.status === 'ON_THE_WAY') {
+                refreshWallet();
+            }
+            // Note: Order cache invalidation is handled automatically by useOrderStatus
         }
     });
 
