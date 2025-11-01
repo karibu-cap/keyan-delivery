@@ -68,36 +68,37 @@ function DriverTrackingMap({
             orderStatus === OrderStatus.ON_THE_WAY && driverLocation !== null,
         shouldShowOnlyDelivery:
             orderStatus === OrderStatus.COMPLETED,
-    }), [orderStatus, driverLocation, merchantLocation]);
+    }), [orderStatus, driverLocation?.latitude, driverLocation?.longitude, merchantLocation?.latitude, merchantLocation?.longitude]);
 
-    // Debug logs (à retirer en production)
-    if (process.env.NODE_ENV === 'development') {
-        console.log('=== DriverTrackingMap Debug ===');
-        console.log('Status:', orderStatus);
-        console.log('Driver Location:', driverLocation);
-        console.log('Merchant Location:', merchantLocation);
-        console.log('Delivery Location:', deliveryLocation);
-        console.log('Display Flags:', displayFlags);
-        console.log('================================');
-    }
+    // Memoize route data to prevent unnecessary re-fetching
+    const routeConfigs = useMemo(() => ({
+        driverToMerchant: {
+            origin: driverLocation,
+            destination: merchantLocation,
+            enabled: displayFlags.shouldShowDriverToMerchant,
+        },
+        merchantToDelivery: {
+            origin: merchantLocation,
+            destination: deliveryLocation,
+            enabled: displayFlags.shouldShowMerchantToDelivery,
+        },
+        driverToDelivery: {
+            origin: driverLocation,
+            destination: deliveryLocation,
+            enabled: displayFlags.shouldShowDriverToDelivery,
+        },
+    }), [
+        driverLocation?.latitude, driverLocation?.longitude,
+        merchantLocation?.latitude, merchantLocation?.longitude,
+        deliveryLocation.latitude, deliveryLocation.longitude,
+        displayFlags.shouldShowDriverToMerchant,
+        displayFlags.shouldShowMerchantToDelivery,
+        displayFlags.shouldShowDriverToDelivery
+    ]);
 
-    const { route: driverToMerchantRoute } = useRouting({
-        origin: driverLocation,
-        destination: merchantLocation,
-        enabled: displayFlags.shouldShowDriverToMerchant,
-    });
-
-    const { route: merchantToDeliveryRoute } = useRouting({
-        origin: merchantLocation,
-        destination: deliveryLocation,
-        enabled: displayFlags.shouldShowMerchantToDelivery,
-    });
-
-    const { route: driverToDeliveryRoute } = useRouting({
-        origin: driverLocation,
-        destination: deliveryLocation,
-        enabled: displayFlags.shouldShowDriverToDelivery,
-    });
+    const { route: driverToMerchantRoute } = useRouting(routeConfigs.driverToMerchant);
+    const { route: merchantToDeliveryRoute } = useRouting(routeConfigs.merchantToDelivery);
+    const { route: driverToDeliveryRoute } = useRouting(routeConfigs.driverToDelivery);
 
     // Initialize map with Leaflet
     useEffect(() => {
@@ -481,14 +482,11 @@ function DriverTrackingMap({
         updateMapContent();
     }, [
         mapLoaded,
-        driverLocation,
-        merchantLocation,
-        deliveryLocation,
+        driverLocation?.latitude, driverLocation?.longitude,
+        merchantLocation?.latitude, merchantLocation?.longitude,
+        deliveryLocation.latitude, deliveryLocation.longitude,
         orderStatus,
-        driverToMerchantRoute,
-        merchantToDeliveryRoute,
-        driverToDeliveryRoute,
-        displayFlags,
+        routeConfigs, // Use memoized configs instead of individual routes
     ]);
 
     // Zoom controls
@@ -606,4 +604,18 @@ function DriverTrackingMap({
     );
 }
 
-export default memo(DriverTrackingMap);
+export default memo(DriverTrackingMap, (prevProps, nextProps) => {
+    // Only re-render if critical props actually changed
+    return (
+        prevProps.orderStatus === nextProps.orderStatus &&
+        prevProps.driverLocation?.latitude === nextProps.driverLocation?.latitude &&
+        prevProps.driverLocation?.longitude === nextProps.driverLocation?.longitude &&
+        prevProps.merchantLocation?.latitude === nextProps.merchantLocation?.latitude &&
+        prevProps.merchantLocation?.longitude === nextProps.merchantLocation?.longitude &&
+        prevProps.deliveryLocation.latitude === nextProps.deliveryLocation.latitude &&
+        prevProps.deliveryLocation.longitude === nextProps.deliveryLocation.longitude &&
+        prevProps.merchantLocation?.name === nextProps.merchantLocation?.name &&
+        prevProps.deliveryLocation.address === nextProps.deliveryLocation.address &&
+        prevProps.onMapReady === nextProps.onMapReady
+    );
+});

@@ -32,19 +32,17 @@ function OrderTrackingMap({ orderId, initialStatus }: OrderTrackingMapProps) {
         enabled: initialStatus === OrderStatus.ON_THE_WAY || initialStatus === OrderStatus.ACCEPTED_BY_DRIVER,
     });
 
-    // Estimated time is now calculated with useMemo below
-
-    // Memoize expensive distance calculation
-    const estimatedTime = useMemo(() => {
+    // Memoize expensive distance and time calculations - only recalculate when coordinates change
+    const { distance, estimatedTime } = useMemo(() => {
         const order = trackingData as Order | null;
         if (!order?.driverCurrentLocation || !order?.deliveryInfo) {
-            return "Calculating...";
+            return { distance: 0, estimatedTime: '--:--' };
         }
 
-        // Simple estimation: assume 30 km/h average speed
+        // Haversine formula to calculate distance between two points
         const R = 6371; // Earth's radius in km
-        const dLat = ((order.deliveryInfo.location.lat - order.driverCurrentLocation.latitude) * Math.PI) / 180;
-        const dLon = ((order.deliveryInfo.location.lng - order.driverCurrentLocation.longitude) * Math.PI) / 180;
+        const dLat = (order.deliveryInfo.location.lat - order.driverCurrentLocation.latitude) * Math.PI / 180;
+        const dLon = (order.deliveryInfo.location.lng - order.driverCurrentLocation.longitude) * Math.PI / 180;
         const a =
             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos((order.driverCurrentLocation.latitude * Math.PI) / 180) *
@@ -52,11 +50,25 @@ function OrderTrackingMap({ orderId, initialStatus }: OrderTrackingMapProps) {
             Math.sin(dLon / 2) *
             Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
+        const distance = R * c; // Distance in km
 
-        const timeInMinutes = Math.round((distance / 30) * 60);
-        return `${timeInMinutes} min`;
-    }, [trackingData]);
+        // Calculate ETA (assuming average speed of 30km/h)
+        const hours = distance / 30;
+        const minutes = Math.round(hours * 60);
+        const displayHours = Math.floor(minutes / 60);
+        const displayMinutes = minutes % 60;
+        const estimatedTime = `${displayHours}:${displayMinutes < 10 ? '0' : ''}${displayMinutes}`;
+
+        return {
+            distance: distance.toFixed(1),
+            estimatedTime
+        };
+    }, [
+        trackingData?.driverCurrentLocation?.latitude,
+        trackingData?.driverCurrentLocation?.longitude,
+        trackingData?.deliveryInfo?.location?.lat,
+        trackingData?.deliveryInfo?.location?.lng
+    ]);
 
     if (loading && !trackingData) {
         return (
@@ -230,4 +242,8 @@ function OrderTrackingMap({ orderId, initialStatus }: OrderTrackingMapProps) {
     );
 }
 
-export default memo(OrderTrackingMap);
+export default memo(OrderTrackingMap, (prevProps, nextProps) => {
+    // Only re-render if orderId or initialStatus actually changed
+    return prevProps.orderId === nextProps.orderId &&
+           prevProps.initialStatus === nextProps.initialStatus;
+});
