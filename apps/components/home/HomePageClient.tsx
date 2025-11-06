@@ -3,12 +3,19 @@
 import { useAuthStore } from "@/hooks/use-auth-store";
 import { useT } from "@/hooks/use-inline-translation";
 import { ROUTES } from "@/lib/router";
-import { Car, Clock, Shield, ShoppingBag, Store, Zap } from "lucide-react";
+import { Car, ChevronRight, Clock, Shield, ShoppingBag, Store, Zap } from "lucide-react";
 import Link from "next/link";
 import { useAuthModal } from "../auth/AuthModal";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { UserRole } from "@prisma/client";
+import Lottie from "../Lottie";
+import openBusiness from "@/public/assets/open_business.json";
+import deliveryFoodSplash from "@/public/assets/delivery_food_splash.json";
+import eCommerce from "@/public/assets/e_comerce.json";
+import shopOnline from "@/public/assets/shop_online.json";
+import fireworks from "@/public/assets/fireworks.json";
+import { motion } from "framer-motion";
 
 export function HomePageClient() {
     const { user } = useAuthStore();
@@ -56,9 +63,7 @@ export function HomePageClient() {
                         {/* Become a Merchant */}
                         <Card className="p-8 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
                             <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 rounded-2xl gradient-hero flex items-center justify-center mb-4">
-                                    <Store className="w-8 h-8 text-white" />
-                                </div>
+                                <Lottie src={openBusiness} className="w-[160px] " loop={false} autoplay={true} />
                                 <h3 className="text-2xl font-bold mb-3">{t("Become a Merchant")}</h3>
                                 <p className="text-muted-foreground mb-6">
                                     {t("List your products and reach thousands of customers in your area")}
@@ -74,7 +79,7 @@ export function HomePageClient() {
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <span className="text-primary mt-1">✓</span>
-                                        <span>{t("Get paid weekly")}</span>
+                                        <span>{t("Get paid daily")}</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <span className="text-primary mt-1">✓</span>
@@ -95,9 +100,7 @@ export function HomePageClient() {
                         {/* Become a Driver */}
                         <Card className="p-8 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
                             <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 rounded-2xl gradient-hero flex items-center justify-center mb-4">
-                                    <Car className="w-8 h-8 text-white" />
-                                </div>
+                                <Lottie src={deliveryFoodSplash} className="w-[160px] " loop={false} autoplay={true} />
                                 <h3 className="text-2xl font-bold mb-3">{t("Become a Driver")}</h3>
                                 <p className="text-muted-foreground mb-6">
                                     {t("Earn money on your schedule by delivering orders in your area")}
@@ -134,16 +137,39 @@ export function HomePageClient() {
             </section>
 
             {/* Features Section */}
-            <section className="py-20 px-4">
-                <div className="container mx-auto max-w-7xl">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-foreground mb-4">
-                            {t("Why Choose Yetu?")}
-                        </h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                            {t("We've built the most reliable last-mile delivery platform with your convenience in mind")}
-                        </p>
+            <section className="px-4 pb-4">
+                <div className="container mx-auto max-w-7xl flex flex-col justify-center items-center">
+                    <div className="flex flex-col lg:flex-row gap-8 items-center justify-center">
+                        <Lottie src={eCommerce} className="lg:w-96 w-48" loop={false} autoplay={true} />
+                        <div className="text-center mb-16 flex flex-col gap-4 justify-center items-center">
+                            <h2 className="text-4xl font-bold text-foreground mb-4">
+                                {t("Why Choose Yetu?")}
+                            </h2>
+                            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                                {t("PataUpesi is your local shopping and delivery app, where you can order everything you need from nearby stores, restaurants, and pharmacies, and get it delivered to you in minutes.")}
+                            </p>
+                            <Lottie src={shopOnline} className="w-48 lg:hidden" loop={false} autoplay={true} />
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2, duration: 0.5 }}
+                                className="flex w-full justify-center"
+                            >
+                                <Link href={ROUTES.stores} className="block cursor-pointer">
+                                    <motion.button
+                                        className={`cursor-pointer text-primary-foreground bg-primary px-4 py-2.5 rounded-md font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center justify-center gap-2`}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        {t('Start Shopping')}
+                                        <ChevronRight className="w-5 h-5" />
+                                    </motion.button>
+                                </Link>
+                            </motion.div>
+                        </div>
+                        <Lottie src={shopOnline} className="w-96 max-lg:hidden" loop={false} autoplay={true} />
                     </div>
+
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {features.map((feature, index) => (
@@ -164,37 +190,43 @@ export function HomePageClient() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 px-4 gradient-hero">
-                <div className="container mx-auto max-w-4xl text-center text-white">
-                    <h2 className="text-4xl font-bold mb-6">
-                        {t("Ready to Get Started?")}
-                    </h2>
-                    <p className="text-xl mb-8 text-white/90">
-                        {t("Join thousands of happy customers enjoying fast, reliable delivery")}
-                    </p>
-                    <div className="flex flex-wrap gap-4 justify-center">
-                        <Button
-                            asChild
-                            size="lg"
-                            className="bg-white text-primary hover:bg-white/90 shadow-lg text-lg px-8 rounded-2xl"
-                        >
-                            <Link href={ROUTES.stores}>
-                                {t("Browse Stores")}
-                            </Link>
-                        </Button>
-                        <Button
-                            size="lg"
-                            className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
-                            onClick={() => openModal(ROUTES.newMerchant)}
-                        >
-                            {t("Partner With Us")}
-                        </Button>
+            <section className="relative gradient-hero h-80">
+                <div className="h-full w-full relative overflow-hidden">
+                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center" />
+                    <div className="text-white text-center absolute z-10 h-full w-full justify-items-center">
+                        <div className="justify-items-center justify-center flex flex-col lg:max-w-1/2 h-full">
+                            <h2 className="text-4xl font-bold mb-6">
+                                {t("Ready to Get Started?")}
+                            </h2>
+                            <p className="text-xl mb-8 text-white/90">
+                                {t("Join thousands of customers shopping from local stores and getting their orders delivered fast - only on PataUpesi")}
+                            </p>
+                            <div className="flex flex-wrap gap-4 justify-center">
+                                <Button
+                                    asChild
+                                    size="lg"
+                                    className="bg-white text-primary hover:bg-white/90 shadow-lg text-lg px-8 rounded-2xl"
+                                >
+                                    <Link href={ROUTES.stores}>
+                                        {t("Browse Stores")}
+                                    </Link>
+                                </Button>
+                                <Button
+                                    size="lg"
+                                    className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 rounded-2xl"
+                                    onClick={() => openModal(ROUTES.newMerchant)}
+                                >
+                                    {t("Partner With Us")}
+                                </Button>
+                            </div>
+                        </div>
                     </div>
+                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center right-0" />
                 </div>
-            </section>
+            </section >
 
             {/* Footer */}
-            <footer className="bg-card border-t border-border py-12 px-4">
+            < footer className="bg-card border-t border-border py-12 px-4" >
                 <div className="container mx-auto max-w-7xl">
                     <div className="grid md:grid-cols-4 gap-8 mb-8">
                         <div>
@@ -205,7 +237,7 @@ export function HomePageClient() {
                                 <span className="text-xl font-bold text-primary">Yetu</span>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                                {t("Your trusted last-mile delivery partner")}
+                                {t("Your all-in-one local shopping and delivery platform")}
                             </p>
                         </div>
 
@@ -240,7 +272,7 @@ export function HomePageClient() {
                         <p>&copy; 2025 Yetu. {t("All rights reserved.")}</p>
                     </div>
                 </div>
-            </footer>
+            </footer >
         </>
     );
 }

@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
          );
       }
 
-      // Get orders ready for delivery
+      // Get orders ready for deliversy
       const orders = await prisma.order.findMany({
          where: {
             status: {

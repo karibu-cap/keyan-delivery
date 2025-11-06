@@ -2,19 +2,16 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useT } from "@/hooks/use-inline-translation";
 import type { IMerchant } from "@/types/generic_types";
 import { MerchantType } from "@prisma/client";
 import { Store } from "lucide-react";
 import { useMemo } from "react";
 import { StoreCard } from "./StoreCard";
+import Lottie from "@/components/Lottie"
+import food from "@/public/assets/food.json";
+import medicalShield from "@/public/assets/medical_shield.json";
+import shoppingCart from "@/public/assets/shopping_cart.json";
 
 interface StoresContentProps {
   stores: IMerchant[];
@@ -88,18 +85,18 @@ export function StoresContent({ stores, selectedMerchantType }: StoresContentPro
       {/* Header Section */}
       <section className="bg-white py-8 px-4 border-b border-gray-200">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {t("Your stores")}
-            </h1>
-            <p className="text-gray-600">
-              {t("Shop from {count} stores", { count: filteredStores.length })}
+          <div className="mb-6 flex items-center justify-between">
+            <p className="text-gray-600 font-bold">
+              {t("Shop from local stores")}
               {filteredStores.length !== 1 ? "s" : ""} {t("near you")}
             </p>
+            {selectedMerchantType === MerchantType.FOOD && <Lottie src={food} autoplay={true} loop={false} className="w-24" />}
+            {selectedMerchantType === MerchantType.PHARMACY && <Lottie src={medicalShield} autoplay={true} loop={false} className="w-24" />}
+            {selectedMerchantType === MerchantType.GROCERY && <Lottie src={shoppingCart} autoplay={true} loop={false} className="w-24" />}
           </div>
 
           {/* Desktop Filters */}
-          <div className="hidden md:flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3">
             {merchantTypeFilters.map((filter) => (
               <Button
                 key={filter.id}
@@ -109,8 +106,8 @@ export function StoresContent({ stores, selectedMerchantType }: StoresContentPro
                     : "outline"
                 }
                 className={`rounded-full px-6 py-3 h-auto text-sm font-medium transition-all ${(selectedMerchantType || ALL_FILTER_ID) === filter.id
-                    ? "bg-gray-900 text-white hover:bg-gray-800"
-                    : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                  ? "bg-gray-900 text-white hover:bg-gray-800"
+                  : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
                   }`}
                 onClick={() => handleFilterChange(filter.id)}
               >
@@ -118,33 +115,14 @@ export function StoresContent({ stores, selectedMerchantType }: StoresContentPro
                 <Badge
                   variant="secondary"
                   className={`ml-2 ${(selectedMerchantType || ALL_FILTER_ID) === filter.id
-                      ? "bg-white text-gray-900"
-                      : "bg-gray-100 text-gray-600"
+                    ? "bg-white text-gray-900"
+                    : "bg-gray-100 text-gray-600"
                     }`}
                 >
                   {filter.count}
                 </Badge>
               </Button>
             ))}
-          </div>
-
-          {/* Mobile Filter Dropdown */}
-          <div className="md:hidden">
-            <Select
-              value={selectedMerchantType || ALL_FILTER_ID}
-              onValueChange={handleFilterChange}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={t("Select category")} />
-              </SelectTrigger>
-              <SelectContent>
-                {merchantTypeFilters.map((filter) => (
-                  <SelectItem key={filter.id} value={filter.id}>
-                    {filter.name} ({filter.count})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </section>

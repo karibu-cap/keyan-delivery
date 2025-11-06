@@ -111,42 +111,6 @@ export function OfflineProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
-// Offline indicator component
-export function OfflineIndicator() {
-    const { isOnline, connectionType, retry, retryCount, maxRetries } = useOffline();
-    const t = useT()
-
-    if (isOnline) {
-        return (
-            <div className="fixed bottom-4 right-4 z-50 bg-primary/10 text-primary/80 px-3 py-2 rounded-full text-sm flex items-center gap-2">
-                <Wifi className="w-4 h-4" />
-                <span className="hidden sm:inline">
-                    {connectionType === '4g' ? '4G' : connectionType || 'Online'}
-                </span>
-            </div>
-        );
-    }
-
-    return (
-        <div className="fixed bottom-4 right-4 z-50 bg-red-100 text-red-800 px-3 py-2 rounded-full text-sm flex items-center gap-2">
-            <WifiOff className="w-4 h-4" />
-            <span className="hidden sm:inline">{t("Offline")}</span>
-            {retryCount > 0 && (
-                <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={retry}
-                    className="h-6 px-2 text-xs"
-                    disabled={retryCount >= maxRetries}
-                >
-                    <RefreshCw className="w-3 h-3 mr-1" />
-                    {t("Retry")} ({retryCount}/{maxRetries})
-                </Button>
-            )}
-        </div>
-    );
-}
-
 // Network error boundary for API failures
 interface NetworkErrorBoundaryProps {
     children: React.ReactNode;
