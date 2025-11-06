@@ -1,21 +1,20 @@
 'use client'
 import { useT } from '@/hooks/use-inline-translation'
 import { ROUTES } from '@/lib/router'
+import animationData from "@/public/assets/confetti_animation.json"
 import { MerchantType } from '@prisma/client'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronRight, Pause, Pill, Play, ShoppingBag, Store } from 'lucide-react'
 import Link from "next/link"
 import { useEffect, useState } from 'react'
-import React from 'react'
 import { useAuthModal } from './auth/AuthModal'
 import { OptimizedImage } from './ClsOptimization'
 import Lottie from './Lottie'
-import animationData from "@/public/assets/confetti_animation.json"
 
 const LottieComponent = ({
      className = 'w-16',
      loop = true,
-     autoplay = true
+     autoplay = true,
 }) => <Lottie src={animationData} className={className} autoplay={autoplay} loop={loop} />;
 
 export default function DynamicHeroCarousel() {

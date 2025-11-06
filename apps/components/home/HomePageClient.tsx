@@ -3,19 +3,19 @@
 import { useAuthStore } from "@/hooks/use-auth-store";
 import { useT } from "@/hooks/use-inline-translation";
 import { ROUTES } from "@/lib/router";
-import { Car, ChevronRight, Clock, Shield, ShoppingBag, Store, Zap } from "lucide-react";
-import Link from "next/link";
-import { useAuthModal } from "../auth/AuthModal";
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
-import { UserRole } from "@prisma/client";
-import Lottie from "../Lottie";
-import openBusiness from "@/public/assets/open_business.json";
 import deliveryFoodSplash from "@/public/assets/delivery_food_splash.json";
 import eCommerce from "@/public/assets/e_comerce.json";
-import shopOnline from "@/public/assets/shop_online.json";
 import fireworks from "@/public/assets/fireworks.json";
+import openBusiness from "@/public/assets/open_business.json";
+import shopOnline from "@/public/assets/shop_online.json";
+import { UserRole } from "@prisma/client";
 import { motion } from "framer-motion";
+import { ChevronRight, Clock, Shield, ShoppingBag, Zap } from "lucide-react";
+import Link from "next/link";
+import { useAuthModal } from "../auth/AuthModal";
+import Lottie from "../Lottie";
+import { Button } from "../ui/button";
+import { Card } from "../ui/card";
 
 export function HomePageClient() {
     const { user } = useAuthStore();
@@ -63,7 +63,7 @@ export function HomePageClient() {
                         {/* Become a Merchant */}
                         <Card className="p-8 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
                             <div className="flex flex-col items-center text-center">
-                                <Lottie src={openBusiness} className="w-[160px] " loop={false} autoplay={true} />
+                                <Lottie src={openBusiness} className="w-[160px] " loop={true} autoplay={true} />
                                 <h3 className="text-2xl font-bold mb-3">{t("Become a Merchant")}</h3>
                                 <p className="text-muted-foreground mb-6">
                                     {t("List your products and reach thousands of customers in your area")}
@@ -100,7 +100,7 @@ export function HomePageClient() {
                         {/* Become a Driver */}
                         <Card className="p-8 rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
                             <div className="flex flex-col items-center text-center">
-                                <Lottie src={deliveryFoodSplash} className="w-[160px] " loop={false} autoplay={true} />
+                                <Lottie src={deliveryFoodSplash} className="w-[160px] " loop={true} autoplay={true} />
                                 <h3 className="text-2xl font-bold mb-3">{t("Become a Driver")}</h3>
                                 <p className="text-muted-foreground mb-6">
                                     {t("Earn money on your schedule by delivering orders in your area")}
@@ -140,7 +140,7 @@ export function HomePageClient() {
             <section className="px-4 pb-4">
                 <div className="container mx-auto max-w-7xl flex flex-col justify-center items-center">
                     <div className="flex flex-col lg:flex-row gap-8 items-center justify-center">
-                        <Lottie src={eCommerce} className="lg:w-96 w-48" loop={false} autoplay={true} />
+                        <Lottie src={eCommerce} className="lg:w-96 w-48" loop={true} autoplay={true} />
                         <div className="text-center mb-16 flex flex-col gap-4 justify-center items-center">
                             <h2 className="text-4xl font-bold text-foreground mb-4">
                                 {t("Why Choose Yetu?")}
@@ -148,7 +148,7 @@ export function HomePageClient() {
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                                 {t("PataUpesi is your local shopping and delivery app, where you can order everything you need from nearby stores, restaurants, and pharmacies, and get it delivered to you in minutes.")}
                             </p>
-                            <Lottie src={shopOnline} className="w-48 lg:hidden" loop={false} autoplay={true} />
+                            <Lottie src={shopOnline} className="w-48 lg:hidden" loop={true} autoplay={true} />
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -167,7 +167,7 @@ export function HomePageClient() {
                                 </Link>
                             </motion.div>
                         </div>
-                        <Lottie src={shopOnline} className="w-96 max-lg:hidden" loop={false} autoplay={true} />
+                        <Lottie src={shopOnline} className="w-96 max-lg:hidden" loop={true} autoplay={true} />
                     </div>
 
 
@@ -190,9 +190,9 @@ export function HomePageClient() {
             </section>
 
             {/* CTA Section */}
-            <section className="relative gradient-hero h-80">
+            <section className="relative gradient-hero h-80 max-md:h-100">
                 <div className="h-full w-full relative overflow-hidden">
-                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center" />
+                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center" speed={0.2} />
                     <div className="text-white text-center absolute z-10 h-full w-full justify-items-center">
                         <div className="justify-items-center justify-center flex flex-col lg:max-w-1/2 h-full">
                             <h2 className="text-4xl font-bold mb-6">
@@ -221,7 +221,7 @@ export function HomePageClient() {
                             </div>
                         </div>
                     </div>
-                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center right-0" />
+                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center right-0" speed={0.2} />
                 </div>
             </section >
 

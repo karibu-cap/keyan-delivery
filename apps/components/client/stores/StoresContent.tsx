@@ -1,17 +1,17 @@
 "use client";
 
+import Lottie from "@/components/Lottie";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/hooks/use-inline-translation";
+import food from "@/public/assets/food.json";
+import medicalShield from "@/public/assets/medical_shield.json";
+import shoppingCart from "@/public/assets/shopping_cart.json";
 import type { IMerchant } from "@/types/generic_types";
 import { MerchantType } from "@prisma/client";
 import { Store } from "lucide-react";
 import { useMemo } from "react";
 import { StoreCard } from "./StoreCard";
-import Lottie from "@/components/Lottie"
-import food from "@/public/assets/food.json";
-import medicalShield from "@/public/assets/medical_shield.json";
-import shoppingCart from "@/public/assets/shopping_cart.json";
 
 interface StoresContentProps {
   stores: IMerchant[];
@@ -90,9 +90,9 @@ export function StoresContent({ stores, selectedMerchantType }: StoresContentPro
               {t("Shop from local stores")}
               {filteredStores.length !== 1 ? "s" : ""} {t("near you")}
             </p>
-            {selectedMerchantType === MerchantType.FOOD && <Lottie src={food} autoplay={true} loop={false} className="w-24" />}
-            {selectedMerchantType === MerchantType.PHARMACY && <Lottie src={medicalShield} autoplay={true} loop={false} className="w-24" />}
-            {selectedMerchantType === MerchantType.GROCERY && <Lottie src={shoppingCart} autoplay={true} loop={false} className="w-24" />}
+            {selectedMerchantType === MerchantType.FOOD && <Lottie src={food} autoplay={true} loop={true} className="w-24" />}
+            {selectedMerchantType === MerchantType.PHARMACY && <Lottie src={medicalShield} autoplay={true} loop={true} className="w-24" />}
+            {selectedMerchantType === MerchantType.GROCERY && <Lottie src={shoppingCart} autoplay={true} loop={true} className="w-24" />}
           </div>
 
           {/* Desktop Filters */}
