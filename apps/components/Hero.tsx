@@ -15,7 +15,7 @@ import animationData from "@/public/assets/confetti_animation.json"
 const LottieComponent = ({
      className = 'w-16',
      loop = true,
-     autoplay = true
+     autoplay = true,
 }) => <Lottie src={animationData} className={className} autoplay={autoplay} loop={loop} />;
 
 export default function DynamicHeroCarousel() {
