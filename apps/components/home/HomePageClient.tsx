@@ -116,7 +116,7 @@ export function HomePageClient() {
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <span className="text-primary mt-1">✓</span>
-                                        <span>{t("Weekly payouts")}</span>
+                                        <span>{t("Get paid daily")}</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <span className="text-primary mt-1">✓</span>
