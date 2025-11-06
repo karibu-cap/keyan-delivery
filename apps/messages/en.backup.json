@@ -565,7 +565,7 @@
   "browse-and-shop-from-stores": "Browse and shop from stores",
   "view-your-orders-and-cart": "View your orders and cart",
   "manage-your-customer-profile": "Manage your customer profile",
-  "you-can-return-to-merchant-mode-anytime-from-your-profile": "You can return to merchant mode anytime from your profile.",
+  "you-can-return-to-merchant-mode-anytime-from-your-profile": "You can return to merchant mode anytime from your profile",
   "call": "Call",
   "accept-order": "Accept Order",
   "start-preparation": "Start Preparation",
@@ -970,7 +970,7 @@
   "failed-to-delete-driver": "Failed to delete driver",
   "banned": "Banned",
   "unknown": "Unknown",
-  "deliveries": "deliveries",
+  "deliveries": "Deliveries",
   "joined": "Joined",
   "no-drivers-found": "No drivers found",
   "n-a": "n_a",
@@ -1467,5 +1467,6 @@
   "you-ll-receive-a-notification-once-your-application-is-approved": "You'll receive a notification once your application is approved",
   "start-accepting-deliveries-and-earning-money-immediately-after-approval": "Start accepting deliveries and earning money immediately after approval",
   "failed-to-fetch-analytics": "Failed to fetch analytics",
-  "failed-to-load-analytics": "Failed to Load Analytics"
+  "failed-to-load-analytics": "Failed to Load Analytics",
+  "we-encountered-an-error-while-loading-your-order": "We encountered an error while loading your order."
 }

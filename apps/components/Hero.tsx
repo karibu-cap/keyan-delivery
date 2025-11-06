@@ -6,8 +6,17 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronRight, Pause, Pill, Play, ShoppingBag, Store } from 'lucide-react'
 import Link from "next/link"
 import { useEffect, useState } from 'react'
+import React from 'react'
 import { useAuthModal } from './auth/AuthModal'
 import { OptimizedImage } from './ClsOptimization'
+import Lottie from './Lottie'
+import animationData from "@/public/assets/confetti_animation.json"
+
+const LottieComponent = ({
+     className = 'w-16',
+     loop = true,
+     autoplay = true
+}) => <Lottie src={animationData} className={className} autoplay={autoplay} loop={loop} />;
 
 export default function DynamicHeroCarousel() {
      const [currentIndex, setCurrentIndex] = useState(0)
@@ -19,11 +28,11 @@ export default function DynamicHeroCarousel() {
                type: 'grocery',
                icon: ShoppingBag,
                emoji: '🥬',
-               title: t('Shop from local groceries, restaurants, and pharmacies in you area. Get your items delivered to you instantly.'),
+               title: t('Shop everything you need from town in one app and get it delivered to you in minutes.'),
                subtitle: '',
                description: t('Farm-fresh produce, pantry essentials, and daily necessities delivered in minutes.'),
-               imageOverlayText: t('Fresh Groceries Delivered to your door in minutes after your order.'),
-               buttonText: t('Shop Groceries'),
+               imageOverlayText: t('Buy fresh groceries from local stores in your area and get them delivered to you in minutes.'),
+               buttonText: t('Get Groceries'),
                buttonRoute: `/stores?merchantType=${MerchantType.GROCERY}`,
                gradient: 'from-green-100 via-green-200 to-green-500',
                accentColor: 'bg-green-300',
@@ -39,11 +48,11 @@ export default function DynamicHeroCarousel() {
                icon: Store,
                emoji: '🍕',
 
-               title: t('Delicious Food'),
+               title: t('Shop everything you need from town in one app and get it delivered to you in minutes.'),
                subtitle: t('Hot & Fresh Always'),
                description: t('Your favorite restaurants and local eateries, delivering happiness one meal at a time.'),
-               imageOverlayText: t('Delicious Meals from Restaurants near you are ready to be delivered to you'),
-               buttonText: t('Buy Meals'),
+               imageOverlayText: t('Order delicious meals from restaurants in vour area and get them delivered to you in minutes'),
+               buttonText: t('Get Meals'),
                buttonRoute: `/stores?merchantType=${MerchantType.FOOD}`,
                gradient: 'from-orange-100 via-orange-200 to-orange-500',
                accentColor: 'bg-orange-200',
@@ -58,11 +67,11 @@ export default function DynamicHeroCarousel() {
                type: 'pharmacy',
                icon: Pill,
                emoji: '💊',
-               title: t('Healthcare Essentials'),
+               title: t('Shop from local groceries, restaurants, and pharmacies in you area. Get your items delivered to you instantly.'),
                subtitle: t('Trusted & Reliable'),
                description: t('Prescription medications, health products, and wellness items delivered with care.'),
-               imageOverlayText: t('Shop Prescription Medications and health products, without leaving your home.'),
-               buttonText: t('Buy Medications'),
+               imageOverlayText: t('Buy prescription meds and health products from trusted pharmacies in vour and get them delivered to you'),
+               buttonText: t('Get Medications'),
                buttonRoute: `/stores?merchantType=${MerchantType.PHARMACY}`,
                gradient: 'from-cyan-100 via-cyan-200 to-cyan-500',
                accentColor: 'bg-cyan-300',
@@ -134,41 +143,48 @@ export default function DynamicHeroCarousel() {
                                              {current.title}
                                         </p>
                                    </motion.div>
-
-                                   {/* A2: Start Shopping Button */}
-                                   <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.2, duration: 0.5 }}
-                                   >
-                                        <Link href={ROUTES.stores} className="block">
-                                             <motion.button
-                                                  className={`w-full ${current.buttonBg} ${current.textColor} ${current.buttonHover} px-4 py-2.5 rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center justify-center gap-2`}
-                                                  whileHover={{ scale: 1.02 }}
-                                                  whileTap={{ scale: 0.98 }}
+                                   <div className="flex flex-row gap-4 items-center justify-center">
+                                        <LottieComponent />
+                                        <div className="flex flex-col gap-4 m-auto">
+                                             {/* A2: Start Shopping Button */}
+                                             <motion.div
+                                                  initial={{ opacity: 0, y: 20 }}
+                                                  animate={{ opacity: 1, y: 0 }}
+                                                  transition={{ delay: 0.2, duration: 0.5 }}
+                                                  className="flex w-full justify-center"
                                              >
-                                                  {t('Start Shopping')}
-                                                  <ChevronRight className="w-5 h-5" />
-                                             </motion.button>
-                                        </Link>
-                                   </motion.div>
+                                                  <Link href={ROUTES.stores} className="block">
+                                                       <motion.button
+                                                            className={`${current.buttonBg} ${current.textColor} ${current.buttonHover} px-4 py-2.5 rounded-md font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center justify-center gap-2`}
+                                                            whileHover={{ scale: 1.02 }}
+                                                            whileTap={{ scale: 0.98 }}
+                                                       >
+                                                            {t('Start Shopping')}
+                                                            <ChevronRight className="w-5 h-5" />
+                                                       </motion.button>
+                                                  </Link>
+                                             </motion.div>
 
-                                   {/* A3: Become a Merchant Button */}
-                                   <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.3, duration: 0.5 }}
-                                        className="flex w-full justify-center"
-                                   >
-                                        <motion.button
-                                             className={`bg-white/90 backdrop-blur-sm border-2 border-white/60 ${current.textColor} hover:bg-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 inline-flex items-center justify-center gap-2`}
-                                             whileHover={{ scale: 1.02 }}
-                                             whileTap={{ scale: 0.98 }}
-                                             onClick={() => openModal(ROUTES.newMerchant)}
-                                        >
-                                             {t('Become a Merchant')}
-                                        </motion.button>
-                                   </motion.div>
+                                             {/* A3: Become a Merchant Button */}
+                                             <motion.div
+                                                  initial={{ opacity: 0, y: 20 }}
+                                                  animate={{ opacity: 1, y: 0 }}
+                                                  transition={{ delay: 0.3, duration: 0.5 }}
+                                                  className="flex w-full justify-center"
+                                             >
+                                                  <motion.button
+                                                       className={`bg-white/90 backdrop-blur-sm border-2 border-white/60 ${current.textColor} hover:bg-white px-4 py-2.5 rounded-md font-semibold text-sm transition-all duration-300 inline-flex items-center justify-center gap-2`}
+                                                       whileHover={{ scale: 1.02 }}
+                                                       whileTap={{ scale: 0.98 }}
+                                                       onClick={() => openModal(ROUTES.newMerchant)}
+                                                  >
+                                                       {t('Become a Merchant')}
+                                                  </motion.button>
+                                             </motion.div>
+                                        </div>
+                                        <LottieComponent />
+
+                                   </div>
 
                                    {/* A4: Stats */}
                                    <motion.div
@@ -251,7 +267,7 @@ export default function DynamicHeroCarousel() {
                                                             {/* A7: Button on Image */}
                                                             <Link href={current.buttonRoute}>
                                                                  <motion.button
-                                                                      className={`${current.buttonBg} ${current.textColor} px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg font-semibold text-sm shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center gap-2`}
+                                                                      className={`${current.buttonBg} ${current.textColor} px-4 sm:px-5 py-2 sm:py-2.5 rounded-md font-semibold text-sm shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center gap-2`}
                                                                       whileHover={{ scale: 1.05 }}
                                                                       whileTap={{ scale: 0.95 }}
                                                                  >
@@ -327,32 +343,35 @@ export default function DynamicHeroCarousel() {
                                    </motion.div>
 
                                    {/* A2: CTA Buttons */}
-                                   <motion.div
-                                        className="flex flex-col sm:flex-row flex-wrap gap-4"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.2, duration: 0.5 }}
-                                   >
-                                        <Link href="/stores">
+                                   <div className="flex flex-row gap-4 items-center">
+                                        <LottieComponent className='w-12' />
+                                        <motion.div
+                                             className="flex flex-row gap-4"
+                                             initial={{ opacity: 0, y: 20 }}
+                                             animate={{ opacity: 1, y: 0 }}
+                                             transition={{ delay: 0.2, duration: 0.5 }}
+                                        >
+                                             <Link href="/stores">
+                                                  <motion.button
+                                                       className={`${current.buttonBg} ${current.textColor} ${current.buttonHover} px-2 py-4 rounded-md font-semibold text-sm shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center justify-center gap-2`}
+                                                       whileHover={{ scale: 1.05 }}
+                                                       whileTap={{ scale: 0.95 }}
+                                                  >
+                                                       {t('Start Shopping')}
+                                                       <ChevronRight className="w-5 h-5" />
+                                                  </motion.button>
+                                             </Link>
                                              <motion.button
-                                                  className={`${current.buttonBg} ${current.textColor} ${current.buttonHover} px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center justify-center gap-2`}
+                                                  className={`bg-white/90 backdrop-blur-sm border-2 border-white/60 ${current.textColor} px-2 hover:bg-white py-4 rounded-md font-semibold text-sm transition-all duration-300 inline-flex items-center justify-center gap-2`}
                                                   whileHover={{ scale: 1.05 }}
                                                   whileTap={{ scale: 0.95 }}
+                                                  onClick={() => openModal(ROUTES.newMerchant)}
                                              >
-                                                  {t('Start Shopping')}
-                                                  <ChevronRight className="w-5 h-5" />
+                                                  {t('Become a Merchant')}
                                              </motion.button>
-                                        </Link>
-                                        <motion.button
-                                             className={`bg-white/90 backdrop-blur-sm border-2 border-white/60 ${current.textColor} hover:bg-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 inline-flex items-center justify-center gap-2`}
-                                             whileHover={{ scale: 1.05 }}
-                                             whileTap={{ scale: 0.95 }}
-                                             onClick={() => openModal(ROUTES.newMerchant)}
-                                        >
-                                             {t('Become a Merchant')}
-                                        </motion.button>
-                                   </motion.div>
-
+                                        </motion.div>
+                                        <LottieComponent className='w-12' />
+                                   </div>
                                    {/* Stats */}
                                    <motion.div
                                         className="grid grid-cols-3 gap-6"
@@ -379,6 +398,7 @@ export default function DynamicHeroCarousel() {
                                              </motion.div>
                                         ))}
                                    </motion.div>
+
 
                                    {/* A3: Slide Indicators and Controls */}
                                    <motion.div
@@ -478,7 +498,7 @@ export default function DynamicHeroCarousel() {
                                                             {/* A6: Button on Image */}
                                                             <Link href={current.buttonRoute}>
                                                                  <motion.button
-                                                                      className={`${current.buttonBg} ${current.textColor} px-8 py-3.5 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center gap-2`}
+                                                                      className={`${current.buttonBg} ${current.textColor} px-8 py-3.5 rounded-md font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center gap-2`}
                                                                       whileHover={{ scale: 1.05 }}
                                                                       whileTap={{ scale: 0.95 }}
                                                                  >
@@ -505,6 +525,6 @@ export default function DynamicHeroCarousel() {
                          />
                     </svg>
                </div>
-          </div>
+          </div >
      )
 }

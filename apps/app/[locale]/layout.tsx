@@ -3,7 +3,7 @@ import { FontOptimizer } from "@/components/ClsOptimization";
 import { NotificationClientWrapper } from "@/components/notifications/NotificationClientWrapper";
 import NotificationHandler from "@/components/notifications/NotificationHandler";
 import ServicesWorkerRegistration from "@/components/notifications/ServiceWorkerRegistration";
-import { OfflineIndicator, OfflineNetworkErrorBoundary, OfflineProvider } from "@/components/OfflineSupport";
+import { OfflineNetworkErrorBoundary, OfflineProvider } from "@/components/OfflineSupport";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Toaster } from "@/components/ui/toaster";
@@ -108,7 +108,6 @@ export default async function RootLayout({
                                                             <ErrorBoundary>
                                                                  {children}
                                                                  <Toaster />
-                                                                 <OfflineIndicator />
                                                             </ErrorBoundary>
                                                        </OfflineNetworkErrorBoundary>
                                                   </OfflineProvider>
