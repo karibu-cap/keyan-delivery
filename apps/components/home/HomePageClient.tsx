@@ -192,7 +192,7 @@ export function HomePageClient() {
             {/* CTA Section */}
             <section className="relative gradient-hero h-80">
                 <div className="h-full w-full relative overflow-hidden">
-                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center" />
+                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center" speed={0.2} />
                     <div className="text-white text-center absolute z-10 h-full w-full justify-items-center">
                         <div className="justify-items-center justify-center flex flex-col lg:max-w-1/2 h-full">
                             <h2 className="text-4xl font-bold mb-6">
@@ -221,7 +221,7 @@ export function HomePageClient() {
                             </div>
                         </div>
                     </div>
-                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center right-0" />
+                    <Lottie src={fireworks} className="w-64 absolute lg:top-0 lg:bottom-0 flex flex-col justify-center items-center right-0" speed={0.2} />
                 </div>
             </section >
 
