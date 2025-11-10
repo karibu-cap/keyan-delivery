@@ -5,10 +5,10 @@ import animationData from "@/public/assets/confetti_animation.json"
 import { MerchantType } from '@prisma/client'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronRight, Pause, Pill, Play, ShoppingBag, Store } from 'lucide-react'
+import Image from 'next/image'
 import Link from "next/link"
 import { useEffect, useState } from 'react'
 import { useAuthModal } from './auth/AuthModal'
-import { OptimizedImage } from './ClsOptimization'
 import Lottie from './Lottie'
 
 const LottieComponent = ({
@@ -224,7 +224,7 @@ export default function DynamicHeroCarousel() {
                                         <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                                              {/* Product Image */}
                                              <div className="relative w-full aspect-[16/10]">
-                                                  <OptimizedImage
+                                                  <Image
                                                        src={current.image}
                                                        alt={current.title}
                                                        fill
@@ -455,7 +455,7 @@ export default function DynamicHeroCarousel() {
                                         <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                                              {/* Product Image */}
                                              <div className="relative w-full aspect-[4/3]">
-                                                  <OptimizedImage
+                                                  <Image
                                                        src={current.image}
                                                        alt={current.title}
                                                        fill

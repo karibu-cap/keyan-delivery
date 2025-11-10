@@ -79,8 +79,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     alt,
     width,
     height,
-    priority = false,
-    preload = false,
     blurDataURL,
     fallbackSrc,
     onLoad,
@@ -105,17 +103,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         setHasError(false);
         setRetryAttempts(0);
     }, [src]);
-
-    // Preload image if requested
-    useEffect(() => {
-        if (preload && typeof window !== 'undefined') {
-            const img = new window.Image();
-            img.onload = () => {
-                // Image preloaded successfully
-            };
-            img.src = src as string;
-        }
-    }, [src, preload]);
 
     // Generate responsive sizes if not provided
     const imageSizes = sizes ?? (responsive ? getResponsiveSizes(width as number, height as number) : undefined);
@@ -157,7 +144,6 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
                 src={src}
                 alt={alt}
                 {...(props.fill ? {} : { width, height })}
-                priority={priority}
                 blurDataURL={BLUR}
                 placeholder={hasError ? 'empty' : 'blur'}
                 sizes={imageSizes}
