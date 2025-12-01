@@ -121,15 +121,16 @@ export default function DynamicHeroCarousel() {
 
                <div className="container mx-auto max-w-7xl sm:px-6 py-6 sm:py-8 lg:py-9 relative">
                     {/* MOBILE LAYOUT */}
-                    <div className="lg:hidden px-4 flex flex-col">
+                    <div className="lg:hidden px-4 flex flex-col space-y-4">
+                         {/* Top Section - Slides with AnimatePresence */}
                          <AnimatePresence mode="wait">
                               <motion.div
-                                   key={`mobile-content-${currentIndex}`}
+                                   key={`mobile-top-${currentIndex}`}
                                    initial={{ opacity: 0 }}
                                    animate={{ opacity: 1 }}
                                    exit={{ opacity: 0 }}
                                    transition={{ duration: 0.6, ease: 'easeInOut' }}
-                                   className="space-y-4 max-h-screen overflow-hidden"
+                                   className="space-y-4"
                               >
                                    <motion.div
                                         initial={{ opacity: 0, y: -20 }}
@@ -209,14 +210,17 @@ export default function DynamicHeroCarousel() {
                                              </div>
                                         ))}
                                    </motion.div>
+                              </motion.div>
+                         </AnimatePresence>
 
-                                   {/* A5: Image with overlay */}
-                                   <motion.div
-                                        className="relative"
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.5, duration: 0.6 }}
-                                   >
+                         {/* Bottom Card - Changes with background but doesn't slide */}
+                         <motion.div
+                              key={`mobile-card-${currentIndex}`}
+                              className="relative"
+                              initial={{ opacity: 1 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.6 }}
+                         >
                                         {/* Glow effect */}
                                         <motion.div
                                              className="absolute inset-0 bg-white/20 blur-3xl rounded-full"
@@ -284,39 +288,37 @@ export default function DynamicHeroCarousel() {
                                         </div>
                                    </motion.div>
 
-                                   {/* A8: Slide Controls */}
-                                   <motion.div
-                                        className="flex items-center justify-start gap-2"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.7, duration: 0.5 }}
-                                   >
-                                        {/* Slide Indicators */}
-                                        <div className="flex gap-2">
-                                             {merchantTypes.map((_, index) => (
-                                                  <motion.button
-                                                       key={index}
-                                                       onClick={() => setCurrentIndex(index)}
-                                                       className={`h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-12 bg-gray-800' : 'w-8 bg-gray-400'
-                                                            }`}
-                                                       whileHover={{ backgroundColor: 'rgba(55, 65, 81, 0.8)' }}
-                                                  />
-                                             ))}
-                                        </div>
-
-                                        {/* Pause/Play Button */}
+                         {/* A8: Slide Controls */}
+                         <motion.div
+                              className="flex items-center justify-start gap-2"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.7, duration: 0.5 }}
+                         >
+                              {/* Slide Indicators */}
+                              <div className="flex gap-2">
+                                   {merchantTypes.map((_, index) => (
                                         <motion.button
-                                             onClick={() => setIsPaused(!isPaused)}
-                                             className="bg-white/20 backdrop-blur-sm border border-gray-400 rounded-full p-2.5 hover:bg-white/30 transition-all duration-300 text-gray-800"
-                                             whileHover={{ scale: 1.05 }}
-                                             whileTap={{ scale: 0.95 }}
-                                             title={isPaused ? t('Play slideshow') : t('Pause slideshow')}
-                                        >
-                                             {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-                                        </motion.button>
-                                   </motion.div>
-                              </motion.div>
-                         </AnimatePresence>
+                                             key={index}
+                                             onClick={() => setCurrentIndex(index)}
+                                             className={`h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-12 bg-gray-800' : 'w-8 bg-gray-400'
+                                                  }`}
+                                             whileHover={{ backgroundColor: 'rgba(55, 65, 81, 0.8)' }}
+                                        />
+                                   ))}
+                              </div>
+
+                              {/* Pause/Play Button */}
+                              <motion.button
+                                   onClick={() => setIsPaused(!isPaused)}
+                                   className="bg-white/20 backdrop-blur-sm border border-gray-400 rounded-full p-2.5 hover:bg-white/30 transition-all duration-300 text-gray-800"
+                                   whileHover={{ scale: 1.05 }}
+                                   whileTap={{ scale: 0.95 }}
+                                   title={isPaused ? t('Play slideshow') : t('Pause slideshow')}
+                              >
+                                   {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                              </motion.button>
+                         </motion.div>
                     </div>
 
                     {/* DESKTOP LAYOUT */}
@@ -461,9 +463,9 @@ export default function DynamicHeroCarousel() {
                                         />
 
                                         {/* A4: Main Image Card */}
-                                        <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+                                        <div className="relative rounded-3xl overflow-hidden shadow-2xl transform scale-110">
                                              {/* Product Image */}
-                                             <div className="relative w-full aspect-[4/3]">
+                                             <div className="relative w-full aspect-[16/10]">
                                                   <Image
                                                        src={current.image}
                                                        alt={current.title}

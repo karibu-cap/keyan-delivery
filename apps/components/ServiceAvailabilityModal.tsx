@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useT } from '@/hooks/use-inline-translation';
+import { toast } from '@/hooks/use-toast';
 
 export function ServiceAvailabilityModal() {
   const t = useT();
@@ -58,7 +59,36 @@ export function ServiceAvailabilityModal() {
 
   const handleShareLocation = async () => {
     console.log('🔘 Share location button clicked');
-    await requestLocation();
+    try {
+      await requestLocation();
+      // Modal will close automatically via useEffect when hasLocationPermission becomes true
+    } catch (error) {
+      console.error('❌ Location request failed in modal:', error);
+      // Close modal but don't mark as seen so user can try again later
+      setIsOpen(false);
+      
+      // Show detailed error message to user via toast
+      toast({
+        variant: 'destructive',
+        title: t('Location access blocked'),
+        duration: Infinity,
+        description: (
+          <div className="space-y-2 text-sm">
+            <p>{t('We need your location to show you nearby stores and calculate delivery times')}</p>
+            <div className="mt-3">
+              <p className="font-semibold">{t('To enable location access')}</p>
+              <ol className="list-decimal list-inside space-y-1 mt-2">
+                <li>{t('Click the lock icon in your browser address bar')}</li>
+                <li>{t('Find location permissions')}</li>
+                <li>{t('Change it to allow')}</li>
+                <li>{t('Refresh the page')}</li>
+              </ol>
+            </div>
+            <p className="text-xs mt-3 opacity-80">{t('You can also enable it in your browser settings under privacy security')}</p>
+          </div>
+        ),
+      });
+    }
   };
 
   const handleClose = () => {

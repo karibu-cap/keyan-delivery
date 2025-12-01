@@ -1512,5 +1512,17 @@
   "highest-rating": "Highest rating",
   "a-z-store-name": "A-Z (Store name)",
   "select-a-category-to-view-stores": "Select a category to view stores",
-  "choose-from-grocery-food-or-pharmacy": "Choose from Grocery, Food, or Pharmacy"
+  "choose-from-grocery-food-or-pharmacy": "Choose from Grocery, Food, or Pharmacy",
+  "your-location": "Your location:",
+  "from-migori-town": "from migori town",
+  "location-access-blocked": "Location Access Blocked",
+  "we-need-your-location-to-show-you-nearby-stores-and-calculate-delivery-times": "We need your location to show you nearby stores and calculate delivery times.",
+  "to-enable-location-access": "To enable location access:",
+  "find-location-permissions": "Find \"Location\" permissions",
+  "refresh-the-page": "Refresh the page",
+  "you-can-also-enable-it-in-your-browser-settings-under-privacy-security": "You can also enable it in your browser settings under Privacy & Security.",
+  "buy-groceries-online-from-local-stores-in-and-around-migori": "Buy Groceries online from local stores in and around Migori",
+  "order-meals-online-from-local-restaurants-in-and-around-migori": "Order meals online from local restaurants in and around Migori",
+  "buy-medications-online-from-local-pharmacies-in-and-around-migori": "Buy medications online from local pharmacies in and around Migori",
+  "shop-online-from-local-stores-in-and-around-migori": "Shop online from local stores in and around Migori"
 }
