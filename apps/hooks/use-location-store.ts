@@ -188,6 +188,9 @@ export const useLocationStore = create<LocationState>()(
             hasLocationPermission: false,
             isLoading: false,
           });
+          
+          // Re-throw the error so calling code can handle it
+          throw error;
         }
       },
 

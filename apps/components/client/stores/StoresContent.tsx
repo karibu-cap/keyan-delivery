@@ -48,13 +48,13 @@ export function StoresContent({ stores, selectedMerchantType }: StoresContentPro
     const location = userCity || "your area";
     switch (selectedMerchantType) {
       case MerchantType.GROCERY:
-        return t("Buy Groceries online from local stores in and around") + " " + location;
+        return t("Buy Groceries online from local stores in and around Migori");
       case MerchantType.FOOD:
-        return t("Order meals online from local restaurants in and around") + " " + location;
+        return t("Order meals online from local restaurants in and around Migori");
       case MerchantType.PHARMACY:
-        return t("Buy medications online from local pharmacies in and around") + " " + location;
+        return t("Buy medications online from local pharmacies in and around Migori");
       default:
-        return t("Shop online from local stores in and around") + " " + location;
+        return t("Shop online from local stores in and around Migori");
     }
   };
 

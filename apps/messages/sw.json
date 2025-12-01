@@ -1514,5 +1514,15 @@
   "select-a-category-to-view-stores": "Chagua kitengo kutazama maduka",
   "choose-from-grocery-food-or-pharmacy": "Chagua kutoka kwa mboga, chakula, au maduka ya dawa",
   "your-location": "Your location:",
-  "from-migori-town": "from migori town"
+  "from-migori-town": "from migori town",
+  "location-access-blocked": "Ufikiaji wa eneo umefungwa",
+  "we-need-your-location-to-show-you-nearby-stores-and-calculate-delivery-times": "Tunahitaji eneo lako kukuonyesha duka za karibu na kuhesabu nyakati za utoaji.",
+  "to-enable-location-access": "Ili kuwezesha ufikiaji wa eneo:",
+  "find-location-permissions": "Pata ruhusa za \"eneo\"",
+  "refresh-the-page": "Boresha ukurasa",
+  "you-can-also-enable-it-in-your-browser-settings-under-privacy-security": "Unaweza pia kuiwezesha katika mipangilio ya kivinjari chako chini ya faragha na usalama.",
+  "buy-groceries-online-from-local-stores-in-and-around-migori": "Nunua mboga mkondoni kutoka kwa maduka ya ndani ndani na karibu na Migori",
+  "order-meals-online-from-local-restaurants-in-and-around-migori": "Agiza milo mkondoni kutoka kwa mikahawa ya ndani ndani na karibu na Migori",
+  "buy-medications-online-from-local-pharmacies-in-and-around-migori": "Nunua dawa mkondoni kutoka kwa maduka ya dawa ndani na karibu na Migori",
+  "shop-online-from-local-stores-in-and-around-migori": "Nunua mkondoni kutoka kwa maduka ya ndani na karibu na Migori"
 }

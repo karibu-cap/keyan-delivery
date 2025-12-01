@@ -14,12 +14,20 @@ Category,Key,English,Swahili,File,Line
 "hello-name","Hello {name}","","hooks/use-inline-translation.ts",16
 "total-amount","Total: {amount}","","hooks/use-inline-translation.ts",19
 "click-linkhere-link","Click <link>here</link>","","hooks/use-inline-translation.ts",22
-"service-availability-notice","Service availability notice","","components/ServiceAvailabilityModal.tsx",74
-"our-services-are-currently-available-only-in-migori-and-nearby-areas","Our services are currently available only in migori and nearby areas","","components/ServiceAvailabilityModal.tsx",78
-"if-you-are-in-migori-please-allow-us-to-access-your-location-so-we-can-show-you-nearby-stores","if you are in migori please allow us to access your location so we can show you nearby stores","","components/ServiceAvailabilityModal.tsx",81
-"getting-location","getting location","","components/ServiceAvailabilityModal.tsx",92
-"share-location","share location","","components/ServiceAvailabilityModal.tsx",92
-"if-you-are-not-in-migori-unfortunately-you-wont-be-able-to-use-the-app-at-this-time","if you are not in migori unfortunately you wont be able to use the app at this time","","components/ServiceAvailabilityModal.tsx",96
+"location-access-blocked","Location access blocked","","components/ServiceAvailabilityModal.tsx",73
+"we-need-your-location-to-show-you-nearby-stores-and-calculate-delivery-times","We need your location to show you nearby stores and calculate delivery times","","components/ServiceAvailabilityModal.tsx",76
+"to-enable-location-access","To enable location access","","components/ServiceAvailabilityModal.tsx",78
+"click-the-lock-icon-in-your-browser-address-bar","Click the lock icon in your browser address bar","","components/ServiceAvailabilityModal.tsx",80
+"find-location-permissions","Find location permissions","","components/ServiceAvailabilityModal.tsx",81
+"change-it-to-allow","Change it to allow","","components/ServiceAvailabilityModal.tsx",82
+"refresh-the-page","Refresh the page","","components/ServiceAvailabilityModal.tsx",83
+"you-can-also-enable-it-in-your-browser-settings-under-privacy-security","You can also enable it in your browser settings under privacy security","","components/ServiceAvailabilityModal.tsx",86
+"service-availability-notice","Service availability notice","","components/ServiceAvailabilityModal.tsx",103
+"our-services-are-currently-available-only-in-migori-and-nearby-areas","Our services are currently available only in migori and nearby areas","","components/ServiceAvailabilityModal.tsx",107
+"if-you-are-in-migori-please-allow-us-to-access-your-location-so-we-can-show-you-nearby-stores","if you are in migori please allow us to access your location so we can show you nearby stores","","components/ServiceAvailabilityModal.tsx",110
+"getting-location","getting location","","components/ServiceAvailabilityModal.tsx",121
+"share-location","share location","","components/ServiceAvailabilityModal.tsx",121
+"if-you-are-not-in-migori-unfortunately-you-wont-be-able-to-use-the-app-at-this-time","if you are not in migori unfortunately you wont be able to use the app at this time","","components/ServiceAvailabilityModal.tsx",125
 "connection-restored","🔗 Connection restored","","components/OfflineSupport.tsx",49
 "connection-lost","📴 Connection lost","","components/OfflineSupport.tsx",56
 "connection-problem","Connection Problem","","components/OfflineSupport.tsx",219
@@ -33,11 +41,11 @@ Category,Key,English,Swahili,File,Line
 "profile","Profile","","components/Navbar.tsx",177
 "orders","Orders","","components/Navbar.tsx",180
 "sign-out","Sign Out","","components/Navbar.tsx",183
-"application-only-available-in-migori","Application only  available in  migori","","components/LocationDisplay.tsx",57
-"you-are-in-migori","You are in migori","","components/LocationDisplay.tsx",70
-"your-location","Your location:","","components/LocationDisplay.tsx",83
-"from-migori-town","from migori town","","components/LocationDisplay.tsx",83
-"calculating-distance","calculating-distance","","components/LocationDisplay.tsx",84
+"application-only-available-in-migori","Application only  available in  migori","","components/LocationDisplay.tsx",64
+"you-are-in-migori","You are in migori","","components/LocationDisplay.tsx",77
+"your-location","Your location:","","components/LocationDisplay.tsx",90
+"from-migori-town","from migori town","","components/LocationDisplay.tsx",90
+"calculating-distance","calculating-distance","","components/LocationDisplay.tsx",91
 "shop-everything-you-need-from-town-in-one-app-and-get-it-delivered-to-you-in-minutes","Shop everything you need from town in one app and get it delivered to you in minutes.","","components/Hero.tsx",31
 "farm-fresh-produce-pantry-essentials-and-daily-necessities-delivered-in-minutes","Farm-fresh produce, pantry essentials, and daily necessities delivered in minutes.","","components/Hero.tsx",33
 "buy-fresh-groceries-from-local-stores-in-your-area-and-get-them-delivered-to-you-in-minutes","Buy fresh groceries from local stores in your area and get them delivered to you in minutes.","","components/Hero.tsx",34
@@ -52,13 +60,13 @@ Category,Key,English,Swahili,File,Line
 "prescription-medications-health-products-and-wellness-items-delivered-with-care","Prescription medications, health products, and wellness items delivered with care.","","components/Hero.tsx",72
 "buy-prescription-meds-and-health-products-from-trusted-pharmacies-in-vour-and-get-them-delivered-to-","Buy prescription meds and health products from trusted pharmacies in vour and get them delivered to you","","components/Hero.tsx",73
 "get-medications","Get Medications","","components/Hero.tsx",74
-"start-shopping","Start Shopping","","components/Hero.tsx",165
-"become-a-merchant","Become a Merchant","","components/Hero.tsx",184
-"partner-stores","Partner Stores","","components/Hero.tsx",200
-"products","Products","","components/Hero.tsx",201
-"avg-delivery","Avg Delivery","","components/Hero.tsx",202
-"play-slideshow","Play slideshow","","components/Hero.tsx",313
-"pause-slideshow","Pause slideshow","","components/Hero.tsx",313
+"start-shopping","Start Shopping","","components/Hero.tsx",166
+"become-a-merchant","Become a Merchant","","components/Hero.tsx",185
+"partner-stores","Partner Stores","","components/Hero.tsx",201
+"products","Products","","components/Hero.tsx",202
+"avg-delivery","Avg Delivery","","components/Hero.tsx",203
+"play-slideshow","Play slideshow","","components/Hero.tsx",317
+"pause-slideshow","Pause slideshow","","components/Hero.tsx",317
 "new-order","🛒 New order!","","lib/notifications/push-service.ts",148
 "view-order","View order","","lib/notifications/push-service.ts",161
 "your-order-has-been-accepted-by-merchantname","Your order has been accepted by {merchantName}","","lib/notifications/push-service.ts",180
@@ -306,9 +314,7 @@ Category,Key,English,Swahili,File,Line
 "permission-denied","Permission Denied","","components/driver/LocationPermissionCard.tsx",189
 "not-supported","Not Supported","","components/driver/LocationPermissionCard.tsx",191
 "how-to-enable-location","How to enable location:","","components/driver/LocationPermissionCard.tsx",203
-"click-the-lock-icon-in-your-browser-address-bar","Click the lock icon in your browser address bar","","components/driver/LocationPermissionCard.tsx",205
 "find-location-in-the-permissions-list","Find ""Location"" in the permissions list","","components/driver/LocationPermissionCard.tsx",206
-"change-it-to-allow","Change it to ""Allow""","","components/driver/LocationPermissionCard.tsx",207
 "refresh-the-page-and-try-again","Refresh the page and try again","","components/driver/LocationPermissionCard.tsx",208
 "error-loading-data","Error Loading Data","","components/driver/ErrorState.tsx",43
 "we-encountered-an-error-while-loading-your-data-please-check-your-internet-connection-and-try-again","We encountered an error while loading your data. Please check your internet connection and try again.","","components/driver/ErrorState.tsx",47
@@ -538,10 +544,10 @@ Category,Key,English,Swahili,File,Line
 "deliveries-overview","Deliveries Overview","","components/driver/insights/DriverDeliveriesOverview.tsx",71
 "status-breakdown","Status breakdown","","components/driver/insights/DriverDeliveriesOverview.tsx",73
 "oops-something-went-wrong","Oops! Something went wrong","","components/client/stores/StoresError.tsx",20
-"buy-groceries-online-from-local-stores-in-and-around","Buy Groceries online from local stores in and around","","components/client/stores/StoresContent.tsx",51
-"order-meals-online-from-local-restaurants-in-and-around","Order meals online from local restaurants in and around","","components/client/stores/StoresContent.tsx",53
-"buy-medications-online-from-local-pharmacies-in-and-around","Buy medications online from local pharmacies in and around","","components/client/stores/StoresContent.tsx",55
-"shop-online-from-local-stores-in-and-around","Shop online from local stores in and around","","components/client/stores/StoresContent.tsx",57
+"buy-groceries-online-from-local-stores-in-and-around-migori","Buy Groceries online from local stores in and around Migori","","components/client/stores/StoresContent.tsx",51
+"order-meals-online-from-local-restaurants-in-and-around-migori","Order meals online from local restaurants in and around Migori","","components/client/stores/StoresContent.tsx",53
+"buy-medications-online-from-local-pharmacies-in-and-around-migori","Buy medications online from local pharmacies in and around Migori","","components/client/stores/StoresContent.tsx",55
+"shop-online-from-local-stores-in-and-around-migori","Shop online from local stores in and around Migori","","components/client/stores/StoresContent.tsx",57
 "select-a-category","Select a category","","components/client/stores/StoresContent.tsx",116
 "grocery","Grocery","","components/client/stores/StoresContent.tsx",117
 "food","Food","","components/client/stores/StoresContent.tsx",118
@@ -580,21 +586,6 @@ Category,Key,English,Swahili,File,Line
 "fresh-and-quality-products","Fresh and quality products","","components/client/products/ProductDetailClient.tsx",373
 "product-description","Product Description","","components/client/products/ProductDetailClient.tsx",409
 "sku","SKU","","components/client/products/ProductDetailClient.tsx",417
-"location-outside-delivery-zone","Location outside delivery zone","","components/client/map/MapPicker.tsx",150
-"please-select-a-location-within-the-shaded-area","Please select a location within the shaded area.","","components/client/map/MapPicker.tsx",151
-"geolocation-not-supported","Geolocation not supported","","components/client/map/MapPicker.tsx",212
-"your-browser-doesn-t-support-geolocation","Your browser doesn't support geolocation.","","components/client/map/MapPicker.tsx",213
-"you-re-outside-the-delivery-zone","You're outside the delivery zone","","components/client/map/MapPicker.tsx",239
-"your-current-location-is-not-within-our-delivery-area-please-select-a-location-within-the-shaded-zon","Your current location is not within our delivery area. Please select a location within the shaded zone.","","components/client/map/MapPicker.tsx",240
-"unable-to-get-location","Unable to get location","","components/client/map/MapPicker.tsx",250
-"please-check-your-location-permissions-and-try-again","Please check your location permissions and try again.","","components/client/map/MapPicker.tsx",251
-"drop-a-pin-at-your-exact-location","Drop a pin at your exact location","","components/client/map/MapPicker.tsx",284
-"tap-anywhere-on-the-map-or-drag-the-red-marker-to-your-delivery-location","Tap anywhere on the map or drag the red marker to your delivery location.","","components/client/map/MapPicker.tsx",287
-"you-can-only-select-locations-within-the-shaded-delivery-zone","You can only select locations within the shaded delivery zone.","","components/client/map/MapPicker.tsx",288
-"use-my-location","Use my location","","components/client/map/MapPicker.tsx",330
-"location-selected","Location selected","","components/client/map/MapPicker.tsx",356
-"high-accuracy","High accuracy","","components/client/map/MapPicker.tsx",365
-"tip-zoom-in-for-better-precision-the-more-accurate-your-pin-the-easier-delivery-will-be","Tip: Zoom in for better precision. The more accurate your pin, the easier delivery will be!","","components/client/map/MapPicker.tsx",373
 "order-confirmed","Order Confirmed","","components/client/orders/OrderTimeline.tsx",14
 "preparing-order","Preparing Order","","components/client/orders/OrderTimeline.tsx",15
 "out-for-delivery","Out for Delivery","","components/client/orders/OrderTimeline.tsx",16
@@ -611,6 +602,21 @@ Category,Key,English,Swahili,File,Line
 "failed-to-download-receipt-please-try-again","Failed to download receipt. Please try again.","","components/client/orders/OrderActions.tsx",50
 "view-receipt","View Receipt","","components/client/orders/OrderActions.tsx",66
 "track-order","Track Order","","components/client/orders/OrderActions.tsx",72
+"location-outside-delivery-zone","Location outside delivery zone","","components/client/map/MapPicker.tsx",150
+"please-select-a-location-within-the-shaded-area","Please select a location within the shaded area.","","components/client/map/MapPicker.tsx",151
+"geolocation-not-supported","Geolocation not supported","","components/client/map/MapPicker.tsx",212
+"your-browser-doesn-t-support-geolocation","Your browser doesn't support geolocation.","","components/client/map/MapPicker.tsx",213
+"you-re-outside-the-delivery-zone","You're outside the delivery zone","","components/client/map/MapPicker.tsx",239
+"your-current-location-is-not-within-our-delivery-area-please-select-a-location-within-the-shaded-zon","Your current location is not within our delivery area. Please select a location within the shaded zone.","","components/client/map/MapPicker.tsx",240
+"unable-to-get-location","Unable to get location","","components/client/map/MapPicker.tsx",250
+"please-check-your-location-permissions-and-try-again","Please check your location permissions and try again.","","components/client/map/MapPicker.tsx",251
+"drop-a-pin-at-your-exact-location","Drop a pin at your exact location","","components/client/map/MapPicker.tsx",284
+"tap-anywhere-on-the-map-or-drag-the-red-marker-to-your-delivery-location","Tap anywhere on the map or drag the red marker to your delivery location.","","components/client/map/MapPicker.tsx",287
+"you-can-only-select-locations-within-the-shaded-delivery-zone","You can only select locations within the shaded delivery zone.","","components/client/map/MapPicker.tsx",288
+"use-my-location","Use my location","","components/client/map/MapPicker.tsx",330
+"location-selected","Location selected","","components/client/map/MapPicker.tsx",356
+"high-accuracy","High accuracy","","components/client/map/MapPicker.tsx",365
+"tip-zoom-in-for-better-precision-the-more-accurate-your-pin-the-easier-delivery-will-be","Tip: Zoom in for better precision. The more accurate your pin, the easier delivery will be!","","components/client/map/MapPicker.tsx",373
 "profile-updated","Profile Updated","","components/client/customer/UserProfile.tsx",55
 "your-profile-has-been-successfully-updated","Your profile has been successfully updated","","components/client/customer/UserProfile.tsx",56
 "failed-to-update-profile-please-try-again","Failed to update profile. Please try again.","","components/client/customer/UserProfile.tsx",62
