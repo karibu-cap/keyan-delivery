@@ -15,19 +15,19 @@ Category,Key,English,Swahili,File,Line
 "total-amount","Total: {amount}","","hooks/use-inline-translation.ts",19
 "click-linkhere-link","Click <link>here</link>","","hooks/use-inline-translation.ts",22
 "location-access-blocked","Location access blocked","","components/ServiceAvailabilityModal.tsx",73
-"we-need-your-location-to-show-you-nearby-stores-and-calculate-delivery-times","We need your location to show you nearby stores and calculate delivery times","","components/ServiceAvailabilityModal.tsx",76
-"to-enable-location-access","To enable location access","","components/ServiceAvailabilityModal.tsx",78
-"click-the-lock-icon-in-your-browser-address-bar","Click the lock icon in your browser address bar","","components/ServiceAvailabilityModal.tsx",80
-"find-location-permissions","Find location permissions","","components/ServiceAvailabilityModal.tsx",81
-"change-it-to-allow","Change it to allow","","components/ServiceAvailabilityModal.tsx",82
-"refresh-the-page","Refresh the page","","components/ServiceAvailabilityModal.tsx",83
-"you-can-also-enable-it-in-your-browser-settings-under-privacy-security","You can also enable it in your browser settings under privacy security","","components/ServiceAvailabilityModal.tsx",86
-"service-availability-notice","Service availability notice","","components/ServiceAvailabilityModal.tsx",103
-"our-services-are-currently-available-only-in-migori-and-nearby-areas","Our services are currently available only in migori and nearby areas","","components/ServiceAvailabilityModal.tsx",107
-"if-you-are-in-migori-please-allow-us-to-access-your-location-so-we-can-show-you-nearby-stores","if you are in migori please allow us to access your location so we can show you nearby stores","","components/ServiceAvailabilityModal.tsx",110
-"getting-location","getting location","","components/ServiceAvailabilityModal.tsx",121
-"share-location","share location","","components/ServiceAvailabilityModal.tsx",121
-"if-you-are-not-in-migori-unfortunately-you-wont-be-able-to-use-the-app-at-this-time","if you are not in migori unfortunately you wont be able to use the app at this time","","components/ServiceAvailabilityModal.tsx",125
+"we-need-your-location-to-show-you-nearby-stores-and-calculate-delivery-times","We need your location to show you nearby stores and calculate delivery times","","components/ServiceAvailabilityModal.tsx",77
+"to-enable-location-access","To enable location access","","components/ServiceAvailabilityModal.tsx",79
+"click-the-lock-icon-in-your-browser-address-bar","Click the lock icon in your browser address bar","","components/ServiceAvailabilityModal.tsx",81
+"find-location-permissions","Find location permissions","","components/ServiceAvailabilityModal.tsx",82
+"change-it-to-allow","Change it to allow","","components/ServiceAvailabilityModal.tsx",83
+"refresh-the-page","Refresh the page","","components/ServiceAvailabilityModal.tsx",84
+"you-can-also-enable-it-in-your-browser-settings-under-privacy-security","You can also enable it in your browser settings under privacy security","","components/ServiceAvailabilityModal.tsx",87
+"service-availability-notice","Service availability notice","","components/ServiceAvailabilityModal.tsx",104
+"our-services-are-currently-available-only-in-migori-and-nearby-areas","Our services are currently available only in migori and nearby areas","","components/ServiceAvailabilityModal.tsx",108
+"if-you-are-in-migori-please-allow-us-to-access-your-location-so-we-can-show-you-nearby-stores","if you are in migori please allow us to access your location so we can show you nearby stores","","components/ServiceAvailabilityModal.tsx",111
+"getting-location","getting location","","components/ServiceAvailabilityModal.tsx",122
+"share-location","share location","","components/ServiceAvailabilityModal.tsx",122
+"if-you-are-not-in-migori-unfortunately-you-wont-be-able-to-use-the-app-at-this-time","if you are not in migori unfortunately you wont be able to use the app at this time","","components/ServiceAvailabilityModal.tsx",126
 "connection-restored","🔗 Connection restored","","components/OfflineSupport.tsx",49
 "connection-lost","📴 Connection lost","","components/OfflineSupport.tsx",56
 "connection-problem","Connection Problem","","components/OfflineSupport.tsx",219
@@ -37,10 +37,10 @@ Category,Key,English,Swahili,File,Line
 "reload-page","Reload Page","","components/OfflineSupport.tsx",252
 "sign-out-error","Sign out error:","","components/Navbar.tsx",53
 "search-for-products-or-stores","Search for Products or Stores","","components/Navbar.tsx",131
-"sign-in","Sign In","","components/Navbar.tsx",162
-"profile","Profile","","components/Navbar.tsx",177
-"orders","Orders","","components/Navbar.tsx",180
-"sign-out","Sign Out","","components/Navbar.tsx",183
+"sign-in","Sign In","","components/Navbar.tsx",163
+"profile","Profile","","components/Navbar.tsx",178
+"orders","Orders","","components/Navbar.tsx",181
+"sign-out","Sign Out","","components/Navbar.tsx",184
 "application-only-available-in-migori","Application only  available in  migori","","components/LocationDisplay.tsx",64
 "you-are-in-migori","You are in migori","","components/LocationDisplay.tsx",77
 "your-location","Your location:","","components/LocationDisplay.tsx",90
@@ -567,7 +567,8 @@ Category,Key,English,Swahili,File,Line
 "on-sale","On Sale","","components/client/stores/StoreDetailContent.tsx",218
 "special-offers","Special Offers","","components/client/stores/StoreDetailContent.tsx",221
 "all-products","All Products","","components/client/stores/StoreDetailContent.tsx",241
-"shop-now","Shop now","","components/client/stores/StoreCard.tsx",96
+"km-away","km away","","components/client/stores/StoreCard.tsx",71
+"shop-now","Shop now","","components/client/stores/StoreCard.tsx",91
 "browse-aisles","Browse aisles","","components/client/stores/MobileCategoryDrawer.tsx",55
 "spend","Spend","","components/client/stores/MerchantProduct.tsx",129
 "off","off","","components/client/stores/MerchantProduct.tsx",165
@@ -653,15 +654,59 @@ Category,Key,English,Swahili,File,Line
 "get-help-with-your-account","Get help with your account","","components/client/customer/UserProfile.tsx",363
 "permanently-delete-your-account","Permanently delete your account","","components/client/customer/UserProfile.tsx",374
 "delete","Delete","","components/client/customer/UserProfile.tsx",378
+"search-by-name-email-or-phone","Search by name, email, or phone...","","components/admin/users/UsersList.tsx",139
+"filter-by-role","Filter by role","","components/admin/users/UsersList.tsx",147
+"all-roles","All Roles","","components/admin/users/UsersList.tsx",150
+"customer","Customer","","components/admin/users/UsersList.tsx",151
+"merchant","Merchant","","components/admin/users/UsersList.tsx",153
+"admin","Admin","","components/admin/users/UsersList.tsx",154
+"super-admin","Super Admin","","components/admin/users/UsersList.tsx",155
+"driver-status","Driver status","","components/admin/users/UsersList.tsx",160
+"all-statuses","All Statuses","","components/admin/users/UsersList.tsx",163
+"approved","Approved","","components/admin/users/UsersList.tsx",164
+"banned","Banned","","components/admin/users/UsersList.tsx",167
+"showing-count-users","Showing {count} users","","components/admin/users/UsersList.tsx",174
+"no-users-found","No users found","","components/admin/users/UsersList.tsx",182
+"try-adjusting-your-search-or-filters","Try adjusting your search or filters","","components/admin/users/UsersList.tsx",184
+"user","User","","components/admin/users/UsersList.tsx",192
+"roles","Roles","","components/admin/users/UsersList.tsx",194
+"joined","Joined","","components/admin/users/UsersList.tsx",197
+"actions","Actions","","components/admin/users/UsersList.tsx",198
+"no-name","No name","","components/admin/users/UsersList.tsx",214
+"no-phone","No phone","","components/admin/users/UsersList.tsx",230
+"manage-roles","Manage Roles","","components/admin/users/UsersList.tsx",276
+"delete-user","Delete User","","components/admin/users/UsersList.tsx",287
+"can-place-orders-and-shop","Can place orders and shop","","components/admin/users/UserRoleDialog.tsx",52
+"can-deliver-orders","Can deliver orders","","components/admin/users/UserRoleDialog.tsx",59
+"can-manage-stores-and-products","Can manage stores and products","","components/admin/users/UserRoleDialog.tsx",66
+"can-manage-users-and-content","Can manage users and content","","components/admin/users/UserRoleDialog.tsx",73
+"cannot-update-roles","Cannot update roles","","components/admin/users/UserRoleDialog.tsx",86
+"failed-to-update-user-roles","Failed to update user roles","","components/admin/users/UserRoleDialog.tsx",93
+"manage-user-roles","Manage User Roles","","components/admin/users/UserRoleDialog.tsx",132
+"select-roles-for","Select roles for","","components/admin/users/UserRoleDialog.tsx",134
+"current-roles","Current Roles","","components/admin/users/UserRoleDialog.tsx",141
+"no-roles-assigned","No roles assigned","","components/admin/users/UserRoleDialog.tsx",150
+"available-roles","Available Roles","","components/admin/users/UserRoleDialog.tsx",157
+"super-admin-role-grants-full-access-to-the-platform-use-with-caution","Super Admin role grants full access to the platform. Use with caution.","","components/admin/users/UserRoleDialog.tsx",202
+"saving","Saving...","","components/admin/users/UserRoleDialog.tsx",216
+"user-deleted","User deleted","","components/admin/users/DeleteUserDialog.tsx",48
+"the-user-has-been-permanently-deleted","The user has been permanently deleted","","components/admin/users/DeleteUserDialog.tsx",49
+"cannot-delete-user","Cannot delete user","","components/admin/users/DeleteUserDialog.tsx",57
+"failed-to-delete-user","Failed to delete user","","components/admin/users/DeleteUserDialog.tsx",64
+"please-type-delete-to-confirm","Please type DELETE to confirm","","components/admin/users/DeleteUserDialog.tsx",75
+"are-you-sure-you-want-to-delete","Are you sure you want to delete","","components/admin/users/DeleteUserDialog.tsx",100
+"this-action-cannot-be-undone-all-user-data-will-be-permanently-deleted","This action cannot be undone. All user data will be permanently deleted.","","components/admin/users/DeleteUserDialog.tsx",103
+"this-user-has-count-orders-deletion-may-fail","This user has {count} orders. Deletion may fail.","","components/admin/users/DeleteUserDialog.tsx",108
+"type","Type","","components/admin/users/DeleteUserDialog.tsx",117
+"to-confirm","to confirm","","components/admin/users/DeleteUserDialog.tsx",117
+"deleting","Deleting...","","components/admin/users/DeleteUserDialog.tsx",141
 "zone-deleted","Zone deleted","","components/admin/zones/ZonesList.tsx",68
 "delivery-zone-has-been-deleted-successfully","Delivery zone has been deleted successfully","","components/admin/zones/ZonesList.tsx",69
 "failed-to-delete-zone","Failed to delete zone","","components/admin/zones/ZonesList.tsx",75
 "search-zones-by-name-or-code","Search zones by name or code...","","components/admin/zones/ZonesList.tsx",103
-"all-statuses","All Statuses","","components/admin/zones/ZonesList.tsx",114
 "inactive","Inactive","","components/admin/zones/ZonesList.tsx",116
 "showing-count-zones","Showing {count} zones","","components/admin/zones/ZonesList.tsx",123
 "no-zones-found","No zones found","","components/admin/zones/ZonesList.tsx",132
-"try-adjusting-your-search-or-filters","Try adjusting your search or filters","","components/admin/zones/ZonesList.tsx",135
 "create-your-first-delivery-zone-to-get-started","Create your first delivery zone to get started","","components/admin/zones/ZonesList.tsx",136
 "create-zone","Create Zone","","components/admin/zones/ZonesList.tsx",140
 "delivery-fee","Delivery Fee","","components/admin/zones/ZonesList.tsx",211
@@ -669,7 +714,6 @@ Category,Key,English,Swahili,File,Line
 "landmarks","Landmarks","","components/admin/zones/ZonesList.tsx",229
 "delete-zone","Delete Zone","","components/admin/zones/ZonesList.tsx",265
 "are-you-sure-you-want-to-delete-this-delivery-zone-this-action-cannot-be-undone-zones-with-existing-","Are you sure you want to delete this delivery zone? This action cannot be undone. Zones with existing orders cannot be deleted.","","components/admin/zones/ZonesList.tsx",267
-"deleting","Deleting...","","components/admin/zones/ZonesList.tsx",279
 "you-must-draw-a-polygon","You must draw a polygon","","components/admin/zones/ZoneDrawMap.tsx",69
 "you-can-save-only-one-polygone","You can save only one polygone","","components/admin/zones/ZoneDrawMap.tsx",77
 "please-enter-an-address","Please enter an address","","components/admin/zones/LandmarksManager.tsx",92
@@ -719,49 +763,6 @@ Category,Key,English,Swahili,File,Line
 "zone-boundary","Zone Boundary","","components/admin/zones/EditZoneForm.tsx",264
 "updating","Updating...","","components/admin/zones/EditZoneForm.tsx",303
 "update-zone","Update Zone","","components/admin/zones/EditZoneForm.tsx",308
-"search-by-name-email-or-phone","Search by name, email, or phone...","","components/admin/users/UsersList.tsx",139
-"filter-by-role","Filter by role","","components/admin/users/UsersList.tsx",147
-"all-roles","All Roles","","components/admin/users/UsersList.tsx",150
-"customer","Customer","","components/admin/users/UsersList.tsx",151
-"merchant","Merchant","","components/admin/users/UsersList.tsx",153
-"admin","Admin","","components/admin/users/UsersList.tsx",154
-"super-admin","Super Admin","","components/admin/users/UsersList.tsx",155
-"driver-status","Driver status","","components/admin/users/UsersList.tsx",160
-"approved","Approved","","components/admin/users/UsersList.tsx",164
-"banned","Banned","","components/admin/users/UsersList.tsx",167
-"showing-count-users","Showing {count} users","","components/admin/users/UsersList.tsx",174
-"no-users-found","No users found","","components/admin/users/UsersList.tsx",182
-"user","User","","components/admin/users/UsersList.tsx",192
-"roles","Roles","","components/admin/users/UsersList.tsx",194
-"joined","Joined","","components/admin/users/UsersList.tsx",197
-"actions","Actions","","components/admin/users/UsersList.tsx",198
-"no-name","No name","","components/admin/users/UsersList.tsx",214
-"no-phone","No phone","","components/admin/users/UsersList.tsx",230
-"manage-roles","Manage Roles","","components/admin/users/UsersList.tsx",276
-"delete-user","Delete User","","components/admin/users/UsersList.tsx",287
-"can-place-orders-and-shop","Can place orders and shop","","components/admin/users/UserRoleDialog.tsx",52
-"can-deliver-orders","Can deliver orders","","components/admin/users/UserRoleDialog.tsx",59
-"can-manage-stores-and-products","Can manage stores and products","","components/admin/users/UserRoleDialog.tsx",66
-"can-manage-users-and-content","Can manage users and content","","components/admin/users/UserRoleDialog.tsx",73
-"cannot-update-roles","Cannot update roles","","components/admin/users/UserRoleDialog.tsx",86
-"failed-to-update-user-roles","Failed to update user roles","","components/admin/users/UserRoleDialog.tsx",93
-"manage-user-roles","Manage User Roles","","components/admin/users/UserRoleDialog.tsx",132
-"select-roles-for","Select roles for","","components/admin/users/UserRoleDialog.tsx",134
-"current-roles","Current Roles","","components/admin/users/UserRoleDialog.tsx",141
-"no-roles-assigned","No roles assigned","","components/admin/users/UserRoleDialog.tsx",150
-"available-roles","Available Roles","","components/admin/users/UserRoleDialog.tsx",157
-"super-admin-role-grants-full-access-to-the-platform-use-with-caution","Super Admin role grants full access to the platform. Use with caution.","","components/admin/users/UserRoleDialog.tsx",202
-"saving","Saving...","","components/admin/users/UserRoleDialog.tsx",216
-"user-deleted","User deleted","","components/admin/users/DeleteUserDialog.tsx",48
-"the-user-has-been-permanently-deleted","The user has been permanently deleted","","components/admin/users/DeleteUserDialog.tsx",49
-"cannot-delete-user","Cannot delete user","","components/admin/users/DeleteUserDialog.tsx",57
-"failed-to-delete-user","Failed to delete user","","components/admin/users/DeleteUserDialog.tsx",64
-"please-type-delete-to-confirm","Please type DELETE to confirm","","components/admin/users/DeleteUserDialog.tsx",75
-"are-you-sure-you-want-to-delete","Are you sure you want to delete","","components/admin/users/DeleteUserDialog.tsx",100
-"this-action-cannot-be-undone-all-user-data-will-be-permanently-deleted","This action cannot be undone. All user data will be permanently deleted.","","components/admin/users/DeleteUserDialog.tsx",103
-"this-user-has-count-orders-deletion-may-fail","This user has {count} orders. Deletion may fail.","","components/admin/users/DeleteUserDialog.tsx",108
-"type","Type","","components/admin/users/DeleteUserDialog.tsx",117
-"to-confirm","to confirm","","components/admin/users/DeleteUserDialog.tsx",117
 "settings-saved","Settings saved","","components/admin/settings/SettingsClient.tsx",97
 "general-settings-have-been-updated-successfully","General settings have been updated successfully","","components/admin/settings/SettingsClient.tsx",98
 "failed-to-update-settings","Failed to update settings","","components/admin/settings/SettingsClient.tsx",104
