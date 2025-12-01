@@ -28,7 +28,7 @@ export async function preloadMapTiles(
 
     // Preload tiles
     try {
-        const cache = await caches.open('Yetu-map-tiles-v1');
+        const cache = await caches.open('Pataupesi-map-tiles-v1');
         const promises = tiles.map(async (url) => {
             const response = await fetch(url);
             if (response.ok) {
@@ -49,7 +49,7 @@ export async function preloadMapTiles(
  */
 export async function clearOldMapTiles() {
     try {
-        const cache = await caches.open('Yetu-map-tiles-v1');
+        const cache = await caches.open('Pataupesi-map-tiles-v1');
         const requests = await cache.keys();
 
         let deletedCount = 0;

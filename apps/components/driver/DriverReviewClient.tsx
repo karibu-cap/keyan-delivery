@@ -441,7 +441,7 @@ export default function DriverReviewClient() {
                                 Need Help?
                             </h3>
                             <p className="text-xs text-muted-foreground">
-                                Contact our support team at <span className="font-mono text-primary">support@yetu.com</span> for assistance.
+                                Contact our support team at <span className="font-mono text-primary">support@pataupesi.com</span> for assistance.
                             </p>
                         </Card>
                     </div>
@@ -474,7 +474,7 @@ export default function DriverReviewClient() {
                             <p className="text-xs text-muted-foreground mb-3">
                                 For questions about your account suspension, please reach out to our support team:
                             </p>
-                            <p className="text-sm font-mono text-primary">support@yetu.com</p>
+                            <p className="text-sm font-mono text-primary">support@pataupesi.com</p>
                         </Card>
                     </div>
                 )}
@@ -505,7 +505,7 @@ export default function DriverReviewClient() {
                             <p className="text-xs text-muted-foreground mb-3">
                                 For questions about your application status, please contact:
                             </p>
-                            <p className="text-sm font-mono text-primary">support@yetu.com</p>
+                            <p className="text-sm font-mono text-primary">support@pataupesi.com</p>
                         </Card>
                     </div>
                 )}

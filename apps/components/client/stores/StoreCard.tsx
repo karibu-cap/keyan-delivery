@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useT } from "@/hooks/use-inline-translation";
 import { MerchantType } from "@prisma/client";
 import {
+    MapPin,
     Pill,
     ShoppingBag,
     Star,
@@ -16,7 +17,7 @@ import { useCallback } from "react";
 import type { IMerchant } from "@/types/generic_types";
 
 interface StoreCardProps {
-    store: IMerchant;
+    store: IMerchant & { distance?: number };
     index: number;
 }
 
@@ -59,11 +60,21 @@ export function StoreCard({ store, index }: StoreCardProps) {
                         <h3 className="font-semibold text-gray-900 text-lg group-hover:text-primary transition-colors">
                             {store.businessName}
                         </h3>
-                        <div className="flex items-center space-x-1 text-sm text-gray-600">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-medium">
-                                {store.rating?.toFixed(1) || "4.5"}
-                            </span>
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center space-x-1 text-sm text-gray-600">
+                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                <span className="font-medium">
+                                    {store.rating?.toFixed(1) || "4.5"}
+                                </span>
+                            </div>
+                            {store.distance !== undefined && (
+                                <div className="flex items-center space-x-1 text-sm text-gray-600">
+                                    <MapPin className="w-4 h-4 text-primary" />
+                                    <span className="font-medium">
+                                        {store.distance} km
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

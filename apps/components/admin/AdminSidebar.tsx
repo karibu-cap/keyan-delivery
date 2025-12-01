@@ -29,7 +29,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
                         >
                             <Link href="/admin/dashboard">
                                 <Image src={"/icons/ios/256.png"} alt="logo" width={30} height={30} />
-                                <span className="text-lg font-semibold">Yetu {t('Admin Panel')}</span>
+                                <span className="text-lg font-semibold">Pataupesi {t('Admin Panel')}</span>
                             </Link>
                         </SidebarMenuButton>
 

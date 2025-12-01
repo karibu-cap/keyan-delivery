@@ -11,7 +11,7 @@ import { Suspense } from "react";
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: "Your Stores | Yetu",
+  title: "Your Stores | Pataupesi",
   description: "Shop from stores near you",
 };
 

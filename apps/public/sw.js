@@ -1,6 +1,6 @@
-const CACHE_NAME = 'Yetu-delivery-v2';
-const RUNTIME_CACHE = 'Yetu-runtime-v2';
-const MAP_TILES_CACHE = 'Yetu-map-tiles-v1';
+const CACHE_NAME = 'Pataupesi-delivery-v2';
+const RUNTIME_CACHE = 'Pataupesi-runtime-v2';
+const MAP_TILES_CACHE = 'Pataupesi-map-tiles-v1';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [

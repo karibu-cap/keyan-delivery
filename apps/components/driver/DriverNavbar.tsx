@@ -143,7 +143,7 @@ export default function DriverNavbar() {
                             </div>
                             <div className="hidden sm:flex flex-col">
                                 <span className="text-xl font-bold text-red-600">
-                                    {t("Yetu")}
+                                    {t("Pataupesi")}
                                 </span>
                                 <span className="text-xs text-muted-foreground -mt-1">
                                     {t("Driver")}
@@ -188,7 +188,7 @@ export default function DriverNavbar() {
                             <Truck className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-semibold text-sm">Yetu</span>
+                            <span className="font-semibold text-sm">Pataupesi</span>
                             <span className="text-xs text-muted-foreground -mt-0.5">Driver</span>
                         </div>
                     </Link>
@@ -206,7 +206,7 @@ export default function DriverNavbar() {
                                     <Truck className="w-5 h-5 text-white" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="font-semibold text-sm">Yetu</span>
+                                    <span className="font-semibold text-sm">Pataupesi</span>
                                     <span className="text-xs text-muted-foreground -mt-0.5">Driver</span>
                                 </div>
                             </Link></SheetTitle>

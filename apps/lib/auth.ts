@@ -35,7 +35,7 @@ export const auth = betterAuth({
             generateId: false, // Let MongoDB generate the IDs
         },
 
-        cookiePrefix: "yetu",
+        cookiePrefix: "pataupesi",
     },
     trustedOrigins: [process.env.NEXT_PUBLIC_APP_URL!, "http://localhost:3000"],
     user: {

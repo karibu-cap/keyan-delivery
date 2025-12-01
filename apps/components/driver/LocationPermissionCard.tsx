@@ -26,8 +26,11 @@ export default function LocationPermissionCard({
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const requestLocationPermission = async () => {
+        console.log('🚀 LocationPermissionCard: Requesting location permission');
+        
         // Check if geolocation is supported
         if (!navigator.geolocation) {
+            console.error('❌ Geolocation not supported');
             setPermissionState('unsupported');
             setErrorMessage(t('Geolocation is not supported by your browser'));
             return;
@@ -35,34 +38,46 @@ export default function LocationPermissionCard({
 
         setPermissionState('requesting');
         setErrorMessage('');
+        console.log('📍 Opening browser permission popup...');
 
         try {
             // Request permission and get current position
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     // Permission granted
+                    console.log('✅ Location permission granted:', {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy
+                    });
                     setPermissionState('idle');
                     onPermissionGranted(position);
                 },
                 (error) => {
                     // Permission denied or error
-                    console.error('Geolocation error:', error);
+                    console.error('❌ Geolocation error:', error);
+                    console.log('Error code:', error.code);
+                    console.log('Error message:', error.message);
 
                     switch (error.code) {
                         case error.PERMISSION_DENIED:
+                            console.log('🚫 User denied location permission');
                             setPermissionState('denied');
                             setErrorMessage(t('Location permission denied. Please enable location access in your browser settings.'));
                             if (onPermissionDenied) onPermissionDenied();
                             break;
                         case error.POSITION_UNAVAILABLE:
+                            console.log('⚠️ Position unavailable');
                             setPermissionState('error');
                             setErrorMessage(t('Location information is unavailable. Please check your device settings.'));
                             break;
                         case error.TIMEOUT:
+                            console.log('⏱️ Location request timed out');
                             setPermissionState('error');
                             setErrorMessage(t('Location request timed out. Please try again.'));
                             break;
                         default:
+                            console.log('❓ Unknown geolocation error');
                             setPermissionState('error');
                             setErrorMessage(t('An unknown error occurred while getting your location.'));
                     }
@@ -74,13 +89,14 @@ export default function LocationPermissionCard({
                 }
             );
         } catch (error) {
-            console.error('Error requesting location:', error);
+            console.error('❌ Exception while requesting location:', error);
             setPermissionState('error');
             setErrorMessage(t('Failed to request location permission'));
         }
     };
 
     const handleRetry = () => {
+        console.log('🔄 Retrying location permission request');
         setPermissionState('idle');
         setErrorMessage('');
         requestLocationPermission();

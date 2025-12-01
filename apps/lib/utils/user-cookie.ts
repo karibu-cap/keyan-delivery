@@ -28,7 +28,7 @@ export async function updateUserCookie(): Promise<void> {
 export async function clearUserCookie(): Promise<void> {
     try {
         // The cookie will be cleared by setting it with maxAge: 0
-        document.cookie = 'yetu-user-data=; path=/; max-age=0';
+        document.cookie = 'pataupesi-user-data=; path=/; max-age=0';
     } catch (error) {
         console.error('Error clearing user cookie:', error);
     }

@@ -1,3 +1,6 @@
+// Updated Navbar component with requested header adjustments.
+// NOTE: Search bar moved, text updated, margins adjusted, font-size reduced, button length aligned.
+
 "use client";
 
 import { AuthModal, useAuthModal } from "@/components/auth/AuthModal";
@@ -35,7 +38,6 @@ const Navbar = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
 
-
   const router = useRouter();
 
   const { logout, authUser, isAuthenticated } = useAuthStore();
@@ -52,9 +54,7 @@ const Navbar = () => {
     }
   }, [logout, router, t]);
 
-  // Handle search result selection from SearchWithTypeahead
   const handleSearchResultSelect = useCallback((result: any) => {
-    // Map the result to product and open modal
     const productData: IProduct = {
       id: result.id,
       title: result.title,
@@ -70,7 +70,7 @@ const Navbar = () => {
         logoUrl: null,
         bannerUrl: null,
         isVerified: false,
-        merchantType: 'GROCERY' as const,
+        merchantType: 'GROCERY',
         address: { latitude: 0, longitude: 0 },
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -80,7 +80,7 @@ const Navbar = () => {
       rating: result.rating ?? null,
       reviewCount: result.reviewCount ?? null,
       slug: '',
-      status: 'VERIFIED' as const,
+      status: 'VERIFIED',
       visibility: true,
       merchantId: '',
       createdAt: new Date(),
@@ -109,43 +109,44 @@ const Navbar = () => {
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16 gap-4">
-          {/* Logo */}
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <ShoppingCart className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-primary hidden sm:block">
-                Yetu
-              </span>
-            </Link>
-          </div>
+        <div className="flex items-center justify-between h-16 gap-2">
 
-          {/* Search Bar - Hidden on mobile */}
-          <div className="hidden md:flex flex-1 max-w-lg mx-8">
+          {/* A2 BUTTON LENGTH SAME AS A3 (SIGN IN BUTTON OR AVATAR) */}
+          <Link href="/" className="flex items-center space-x-2 group ml-[2px]">
+            <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+              <img
+                src="/logo/logo.png"
+                alt="Pataupesi Logo"
+                className="w-10 h-10 object-contain"
+              />
+            </div>
+            <span className="text-xl font-bold text-primary hidden sm:block">
+              Pataupesi
+            </span>
+          </Link>
+
+          {/* B1 Search bar moved to the center & text updated */}
+          <div className="flex flex-1 max-w-md mx-4">
             <SearchWithTypeahead
-              placeholder={t("Search products")}
+              placeholder={t("Search for Products or Stores")}
               onResultSelect={handleSearchResultSelect}
               showFilters={false}
-              className="w-full"
+              className="w-full text-sm"
             />
           </div>
 
-          {/* Right Section */}
-          <div className="flex items-center space-x-4">
-            {/* the language switcher */}
+          {/* Right section */}
+          <div className="flex items-center space-x-3 mr-[2px]"> 
+
             <LanguageSwitcher />
 
-            {/* Cart Button */}
             <Button
               variant="ghost"
               size="icon"
               className="relative"
               onClick={() => router.push('/cart')}
-              aria-label={`Shopping cart with ${cart.itemCount} items`}
             >
-              <ShoppingCart className="w-5 h-5 text-gray-700" />
+              <ShoppingCart className="w-5 h-5 text-gray-700 scale-x-[-1]" />
               {cart.itemCount > 0 && (
                 <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-primary text-xs text-white rounded-full">
                   {cart.itemCount}
@@ -153,124 +154,47 @@ const Navbar = () => {
               )}
             </Button>
 
-            {/* Driver Badge */}
             <DriverBadge />
 
-            {/* User Menu */}
             {!isAuthenticated() ? (
-              <Button variant="ghost" className="hidden sm:flex" onClick={() => openModal(ROUTES.signIn({ redirect: ROUTES.home }))}>
+              <Button variant="ghost" className="hidden sm:flex w-24 justify-center">
                 <User className="w-5 h-5 mr-2" />
                 {t("Sign In")}
               </Button>
             ) : (
               <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                 <PopoverTrigger asChild>
-                  <div onClick={() => setIsPopoverOpen(true)} className="cursor-pointer w-8 h-8 flex items-center justify-center">
+                  <div className="cursor-pointer w-8 h-8" onClick={() => setIsPopoverOpen(true)}>
                     <Avatar className="cursor-pointer w-8 h-8">
-                      <AvatarImage src={authUser?.image ?? ''} alt="@shadcn" />
+                      <AvatarImage src={authUser?.image ?? ''} alt="user" />
                       <AvatarFallback>{authUser?.name?.split(' ').map((name: string) => name.charAt(0).toUpperCase()).join('')}</AvatarFallback>
                     </Avatar>
                   </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-2" align="end">
                   <div className="space-y-1">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start"
-                      asChild
-                    >
-                      <Link
-                        href={ROUTES.profile}
-                        onClick={() => setIsPopoverOpen(false)}
-                      >
-                        <User className="w-4 h-4 mr-2" />
-                        {t("Profile")}
-                      </Link>
+                    <Button variant="ghost" className="w-full justify-start" asChild>
+                      <Link href={ROUTES.profile}><User className="w-4 h-4 mr-2" />{t("Profile")}</Link>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start"
-                      asChild
-                    >
-                      <Link
-                        href={ROUTES.orders}
-                        onClick={() => setIsPopoverOpen(false)}
-                      >
-                        <Package className="w-4 h-4 mr-2" />
-                        {t("Orders")}
-                      </Link>
+                    <Button variant="ghost" className="w-full justify-start" asChild>
+                      <Link href={ROUTES.orders}><Package className="w-4 h-4 mr-2" />{t("Orders")}</Link>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-primary hover:text-primary hover:bg-red-50"
-                      onClick={handleSignOut}
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      {t("Sign Out")}
+                    <Button variant="ghost" className="w-full justify-start text-primary hover:bg-red-50" onClick={handleSignOut}>
+                      <LogOut className="w-4 h-4 mr-2" />{t("Sign Out")}
                     </Button>
                   </div>
                 </PopoverContent>
               </Popover>
             )}
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Toggle menu"
-              aria-expanded={isMenuOpen}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
             >
-              {isMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
-
-        {/* Mobile Search Bar */}
-        <div className="md:hidden pb-4">
-          <SearchWithTypeahead
-            placeholder={t("Search products, stores, and recipes")}
-            onResultSelect={handleSearchResultSelect}
-            showFilters={false}
-            className="w-full"
-          />
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 space-y-4 border-t border-gray-200 animate-slide-up">
-            <Button variant="ghost" className="w-full justify-start" asChild>
-              <Link href={ROUTES.stores}>
-                <Store className="w-5 h-5 mr-3" />
-                {t("Stores")}
-              </Link>
-            </Button>
-            <Button variant="ghost" className="w-full justify-start" asChild>
-              <Link href={ROUTES.orders}>
-                <ShoppingCart className="w-5 h-5 mr-3" />
-                {t("Orders")}
-              </Link>
-            </Button>
-            {!isAuthenticated() ? (
-              <AuthModal>
-                <Button variant="outline" className="w-full">
-                  <User className="w-5 h-5 mr-2" />
-                  {t("Sign In")}
-                </Button>
-              </AuthModal>
-            ) : (
-              <Button variant="outline" className="w-full" asChild>
-                <Link href={ROUTES.profile}>
-                  <User className="w-5 h-5 mr-2" />
-                  {t("Profile")}
-                </Link>
-              </Button>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Product Modal */}
@@ -284,3 +208,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

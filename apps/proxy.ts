@@ -58,7 +58,7 @@ export async function proxy(request: NextRequest) {
   }
 
   const sessionCookie = getSessionCookie(request, {
-    cookiePrefix: "yetu"
+    cookiePrefix: "pataupesi"
   });
 
   if (isProtectedPath(basePath)) {

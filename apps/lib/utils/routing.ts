@@ -86,7 +86,7 @@ export async function calculateRouteDistance(
         const response = await fetch(url, {
             signal: controller.signal,
             headers: {
-                'User-Agent': 'Yetu-Delivery-App/1.0',
+                'User-Agent': 'Pataupesi-Delivery-App/1.0',
             },
         });
 

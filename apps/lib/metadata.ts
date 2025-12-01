@@ -5,8 +5,8 @@ import { prisma } from './prisma';
 // Base metadata configuration
 export const baseMetadata = {
     title: {
-        default: 'Yetu Delivery - Fast & Fresh Grocery Delivery',
-        template: '%s | Yetu Delivery',
+        default: 'Pataupesi Delivery - Fast & Fresh Grocery Delivery',
+        template: '%s | Pataupesi Delivery',
     },
     description: 'Get fresh groceries, food, and pharmacy items delivered to your door in minutes. Fast, reliable delivery service with real-time tracking.',
     keywords: [
@@ -18,9 +18,9 @@ export const baseMetadata = {
         'fast delivery',
         'local delivery',
     ],
-    authors: [{ name: 'Yetu Delivery' }],
-    creator: 'Yetu Delivery',
-    publisher: 'Yetu Delivery',
+    authors: [{ name: 'Pataupesi Delivery' }],
+    creator: 'Pataupesi Delivery',
+    publisher: 'Pataupesi Delivery',
     formatDetection: {
         email: false,
         address: false,
@@ -38,24 +38,24 @@ export const baseMetadata = {
         type: 'website',
         locale: 'en_US',
         url: '/',
-        title: 'Yetu Delivery - Fast & Fresh Grocery Delivery',
+        title: 'Pataupesi Delivery - Fast & Fresh Grocery Delivery',
         description: 'Get fresh groceries, food, and pharmacy items delivered to your door in minutes.',
-        siteName: 'Yetu Delivery',
+        siteName: 'Pataupesi Delivery',
         images: [
             {
                 url: '/og-image.jpg',
                 width: 1200,
                 height: 630,
-                alt: 'Yetu Delivery - Fast & Fresh Grocery Delivery',
+                alt: 'Pataupesi Delivery - Fast & Fresh Grocery Delivery',
             },
         ],
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Yetu Delivery - Fast & Fresh Grocery Delivery',
+        title: 'Pataupesi Delivery - Fast & Fresh Grocery Delivery',
         description: 'Get fresh groceries, food, and pharmacy items delivered to your door in minutes.',
         images: ['/og-image.jpg'],
-        creator: '@Yetudelivery',
+        creator: '@Pataupesidelivery',
     },
     robots: {
         index: true,
@@ -77,7 +77,7 @@ export const baseMetadata = {
 export async function generateHomeMetadata(locale = 'en'): Promise<Metadata> {
     return {
         ...baseMetadata,
-        title: locale === 'en' ? 'Yetu Delivery - Fast & Fresh Grocery Delivery' : 'Yetu Delivery - Uwasilishaji Haraka wa Mboga',
+        title: locale === 'en' ? 'Pataupesi Delivery - Fast & Fresh Grocery Delivery' : 'Pataupesi Delivery - Uwasilishaji Haraka wa Mboga',
         description: locale === 'en'
             ? 'Get fresh groceries, food, and pharmacy items delivered to your door in minutes. Fast, reliable delivery service with real-time tracking.'
             : 'Pata mboga, chakula na dawa zilizowasilishwa mlangoni mwako kwa dakika. Huduma ya uwasilishaji wa haraka na ya kuaminika yenye ufuatiliaji wa wakati halisi.',
@@ -111,8 +111,8 @@ export async function generateProductMetadata(
         }
 
         const title = locale === 'en'
-            ? `${product.title} - Fresh & Quality | Yetu Delivery`
-            : `${product.title} - Ubora na Safi | Yetu Delivery`;
+            ? `${product.title} - Fresh & Quality | Pataupesi Delivery`
+            : `${product.title} - Ubora na Safi | Pataupesi Delivery`;
 
         const description = locale === 'en'
             ? `Buy ${product.title} from ${product.merchant.businessName}. ${product.description.substring(0, 160)}...`
@@ -158,7 +158,7 @@ export async function generateProductMetadata(
         console.error({ message: 'Error generating product metadata:', error });
         return {
             ...baseMetadata,
-            title: 'Product - Yetu Delivery',
+            title: 'Product - Pataupesi Delivery',
         };
     }
 }
@@ -172,7 +172,7 @@ export async function generateMerchantMetadata(
     if (!merchantId) {
         return {
             ...baseMetadata,
-            title: 'Store - Yetu Delivery',
+            title: 'Store - Pataupesi Delivery',
         };
     }
 
@@ -196,8 +196,8 @@ export async function generateMerchantMetadata(
         }
 
         const title = locale === 'en'
-            ? `${merchant.businessName} - Order Online | Yetu Delivery`
-            : `${merchant.businessName} - Agiza Mtandaoni | Yetu Delivery`;
+            ? `${merchant.businessName} - Order Online | Pataupesi Delivery`
+            : `${merchant.businessName} - Agiza Mtandaoni | Pataupesi Delivery`;
 
         const description = locale === 'en'
             ? `Order from ${merchant.businessName}. ${merchant._count.products} products available for fast delivery.`
@@ -240,7 +240,7 @@ export async function generateMerchantMetadata(
         console.error({ message: 'Error generating merchant metadata:', error });
         return {
             ...baseMetadata,
-            title: 'Store - Yetu Delivery',
+            title: 'Store - Pataupesi Delivery',
         };
     }
 }
@@ -270,8 +270,8 @@ export async function generateCategoryMetadata(
         }
 
         const title = locale === 'en'
-            ? `${category.name} - Shop Online | Yetu Delivery`
-            : `${category.name} - Duka Mtandaoni | Yetu Delivery`;
+            ? `${category.name} - Shop Online | Pataupesi Delivery`
+            : `${category.name} - Duka Mtandaoni | Pataupesi Delivery`;
 
         const description = locale === 'en'
             ? `Shop ${category.name} products. ${category._count.products} items available for fast delivery. ${category.description || ''}`
@@ -304,7 +304,7 @@ export async function generateCategoryMetadata(
         console.error({ message: 'Error generating category metadata:', error });
         return {
             ...baseMetadata,
-            title: 'Category - Yetu Delivery',
+            title: 'Category - Pataupesi Delivery',
         };
     }
 }
@@ -314,7 +314,7 @@ export function generateOrganizationStructuredData() {
     return {
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: 'Yetu Delivery',
+        name: 'Pataupesi Delivery',
         url: process.env.NEXT_PUBLIC_APP_URL,
         logo: `${process.env.NEXT_PUBLIC_APP_URL}/logo.png`,
         description: 'Fast and fresh grocery delivery service',
@@ -324,9 +324,9 @@ export function generateOrganizationStructuredData() {
             addressLocality: 'Nairobi',
         },
         sameAs: [
-            'https://facebook.com/Yetudelivery',
-            'https://twitter.com/Yetudelivery',
-            'https://instagram.com/Yetudelivery',
+            'https://facebook.com/Pataupesidelivery',
+            'https://twitter.com/Pataupesidelivery',
+            'https://instagram.com/Pataupesidelivery',
         ],
         contactPoint: {
             '@type': 'ContactPoint',

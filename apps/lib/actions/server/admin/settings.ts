@@ -42,8 +42,8 @@ interface PlatformSettings {
 // Default settings
 const defaultSettings: PlatformSettings = {
     general: {
-        platformName: 'Yetu Marketplace',
-        platformEmail: 'admin@yetu.com',
+        platformName: 'Pataupesi Marketplace',
+        platformEmail: 'admin@pataupesi.com',
         platformPhone: '+237 123 456 789',
         currency: 'XAF',
         timezone: 'Africa/Douala',
