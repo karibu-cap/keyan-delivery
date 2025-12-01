@@ -5,11 +5,11 @@ import { Metadata } from 'next';
 import DriverReviewClient from "@/components/driver/DriverReviewClient";
 
 export const metadata: Metadata = {
-   title: 'Application Review | Yetu Driver',
+   title: 'Application Review | Pataupesi Driver',
    description: 'Check the status of your driver application and view your submitted documents.',
-   keywords: ['driver review', 'application status', 'driver documents', 'yetu driver'],
+   keywords: ['driver review', 'application status', 'driver documents', 'pataupesi driver'],
    openGraph: {
-      title: 'Driver Application Review | Yetu',
+      title: 'Driver Application Review | Pataupesi',
       description: 'Check your driver application status',
       type: 'website',
    },

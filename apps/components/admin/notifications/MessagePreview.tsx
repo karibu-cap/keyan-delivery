@@ -95,7 +95,7 @@ export function MessagePreview({ title, body, channel, onClose }: MessagePreview
                         </div>
                         <div>
                             <p className="text-sm opacity-90">{t('Admin Notification')}</p>
-                            <p className="text-xs opacity-75">admin@yetu.com</p>
+                            <p className="text-xs opacity-75">admin@pataupesi.com</p>
                         </div>
                     </div>
                     <h1 className="text-2xl font-bold">{title}</h1>

@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useEffect, useState } from 'react'
 import { useAuthModal } from './auth/AuthModal'
 import Lottie from './Lottie'
+import { LocationDisplay } from './LocationDisplay'
 
 const LottieComponent = ({
      className = 'w-16',
@@ -130,12 +131,15 @@ export default function DynamicHeroCarousel() {
                                    transition={{ duration: 0.6, ease: 'easeInOut' }}
                                    className="space-y-4 max-h-screen overflow-hidden"
                               >
-                                   {/* A1: Top Text */}
                                    <motion.div
                                         initial={{ opacity: 0, y: -20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.1, duration: 0.5 }}
                                    >
+
+                                        {/* Location Display */}
+                                        <LocationDisplay />
+
                                         <p
                                              className={`${current.textColor} text-base sm:text-base font-bold leading-relaxed`}
                                         >
@@ -327,12 +331,17 @@ export default function DynamicHeroCarousel() {
                                    transition={{ duration: 0.6, ease: 'easeInOut' }}
                                    className={`${current.textColor} space-y-12`}
                               >
+
                                    {/* A1: Top Text */}
                                    <motion.div
                                         initial={{ opacity: 0, y: -20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.1, duration: 0.5 }}
                                    >
+
+                                        {/* Location Display */}
+                                        <LocationDisplay />
+                                        
                                         <p className={`text-xl lg:text-3xl ${current.textColor} font-bold leading-relaxed`}>
                                              {current.title}
                                         </p>

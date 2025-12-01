@@ -92,7 +92,7 @@ export default function DriverApplyClient() {
                             </div>
                             <div className="flex-1">
                                 <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                                    {t("Become a Yetu Driver")}
+                                    {t("Become a Pataupesi Driver")}
                                 </h1>
                                 <p className="text-sm sm:text-base text-white/90">
                                     {t("Complete your application to start earning with flexible delivery opportunities")}

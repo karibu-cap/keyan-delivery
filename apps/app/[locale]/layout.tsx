@@ -34,7 +34,7 @@ export const metadata: Metadata = {
      appleWebApp: {
           capable: true,
           statusBarStyle: "default",
-          title: "Yetu Delivery",
+          title: "Pataupesi Delivery",
      },
 };
 
@@ -72,7 +72,7 @@ export default async function RootLayout({
                     <meta name="theme-color" content="#10b981" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
                     <meta name="mobile-web-app-capable" content="yes" />
-                    <meta name="apple-mobile-web-app-title" content="Yetu Delivery" />
+                    <meta name="apple-mobile-web-app-title" content="Pataupesi Delivery" />
                     <link rel="apple-touch-icon" href="/icons/ios/192.png" />
                     <link rel="icon" href="/icons/favicon.ico" />
                     {/* Organization Structured Data */}

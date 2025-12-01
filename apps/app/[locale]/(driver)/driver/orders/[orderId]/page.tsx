@@ -5,11 +5,11 @@ import { Metadata } from 'next';
 import DriverOrderDetailClient from "@/components/driver/DriverOrderDetailClient";
 
 export const metadata: Metadata = {
-   title: 'Order Details | Yetu Driver',
+   title: 'Order Details | Pataupesi Driver',
    description: 'View order details, track delivery progress, and manage your current delivery.',
-   keywords: ['order details', 'delivery tracking', 'driver order', 'yetu driver'],
+   keywords: ['order details', 'delivery tracking', 'driver order', 'pataupesi driver'],
    openGraph: {
-      title: 'Order Details | Yetu Driver',
+      title: 'Order Details | Pataupesi Driver',
       description: 'View and manage your delivery order',
       type: 'website',
    },

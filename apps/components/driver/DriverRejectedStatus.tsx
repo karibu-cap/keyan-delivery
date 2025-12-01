@@ -58,7 +58,7 @@ export function DriverRejectedStatus() {
                     <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
                         <h3 className="font-semibold mb-2 text-sm">Need Help?</h3>
                         <p className="text-xs text-muted-foreground">
-                            Contact our support team at <span className="font-mono text-primary">support@yetu.com</span> for assistance.
+                            Contact our support team at <span className="font-mono text-primary">support@pataupesi.com</span> for assistance.
                         </p>
                     </div>
                 </Card>

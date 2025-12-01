@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         const response = NextResponse.json({ success: true });
 
         // Set user data cookie
-        response.cookies.set('yetu-user-data', JSON.stringify({
+        response.cookies.set('pataupesi-user-data', JSON.stringify({
             id: user.id,
             roles: user.roles,
             driverStatus: user.driverStatus,

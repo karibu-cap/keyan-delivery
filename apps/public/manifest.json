@@ -1,6 +1,6 @@
 {
-    "name": "Yetu Delivery - Fast & Fresh Grocery Delivery",
-    "short_name": "Yetu Delivery",
+    "name": "Pataupesi Delivery - Fast & Fresh Grocery Delivery",
+    "short_name": "Pataupesi Delivery",
     "description": "Get fresh groceries, food, and pharmacy items delivered to your door in minutes.",
     "start_url": "/",
     "display": "standalone",
@@ -80,7 +80,7 @@
     },
     "protocol_handlers": [
         {
-            "protocol": "web+Yetudelivery",
+            "protocol": "web+Pataupesidelivery",
             "url": "/?handle=%s"
         }
     ]

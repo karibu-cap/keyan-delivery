@@ -8,6 +8,11 @@ export const localeNames: Record<Locale, string> = {
     sw: 'Kiswahili',
 };
 
+export const localeShortNames: Record<Locale, string> = {
+    en: 'En',
+    sw: 'Kw',
+};
+
 export const localeFlags: Record<Locale, string> = {
     en: '🇬🇧',
     sw: '🇹🇿',

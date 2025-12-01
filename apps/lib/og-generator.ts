@@ -98,7 +98,7 @@ export async function generateProductOG(
                     }, 'K'),
                     React.createElement('span', {
                         style: { fontSize: '18px', fontWeight: '600' }
-                    }, 'Yetu Delivery')
+                    }, 'Pataupesi Delivery')
                 ),
                 React.createElement('div', {
                     style: { fontSize: '14px', opacity: 0.9 }
@@ -335,7 +335,7 @@ export async function generateMerchantOG(
                     }, 'K'),
                     React.createElement('span', {
                         style: { fontSize: '18px', fontWeight: '600' }
-                    }, 'Yetu Delivery')
+                    }, 'Pataupesi Delivery')
                 ),
                 React.createElement('div', {
                     style: { fontSize: '14px', opacity: 0.9 }
@@ -480,7 +480,7 @@ export async function generateMerchantOG(
                             color: OG_COLORS.TEXT_MUTED,
                             marginTop: '12px',
                         }
-                    }, `Order from ${merchant.businessName} on Yetu Delivery`)
+                    }, `Order from ${merchant.businessName} on Pataupesi Delivery`)
                 )
             )
         ),
@@ -559,7 +559,7 @@ export async function generateCategoryOG(
                     }, 'K'),
                     React.createElement('span', {
                         style: { fontSize: '18px', fontWeight: '600' }
-                    }, 'Yetu Delivery')
+                    }, 'Pataupesi Delivery')
                 )
             ),
             // Main Content
@@ -640,7 +640,7 @@ export async function generateCategoryOG(
                             color: OG_COLORS.TEXT_MUTED,
                             marginTop: '24px',
                         }
-                    }, `Shop ${category.name.toLowerCase()} on Yetu Delivery`)
+                    }, `Shop ${category.name.toLowerCase()} on Pataupesi Delivery`)
                 )
             )
         ),

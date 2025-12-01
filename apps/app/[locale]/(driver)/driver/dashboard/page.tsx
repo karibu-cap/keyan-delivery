@@ -5,11 +5,11 @@ import { Metadata } from 'next';
 import DriverDashboardClient from "@/components/driver/DriverDashboardClient";
 
 export const metadata: Metadata = {
-   title: 'Dashboard | Yetu Driver',
+   title: 'Dashboard | Pataupesi Driver',
    description: 'Manage your deliveries, track earnings, and view available orders on your driver dashboard.',
-   keywords: ['driver dashboard', 'deliveries', 'orders', 'earnings', 'yetu driver'],
+   keywords: ['driver dashboard', 'deliveries', 'orders', 'earnings', 'pataupesi driver'],
    openGraph: {
-      title: 'Driver Dashboard | Yetu',
+      title: 'Driver Dashboard | Pataupesi',
       description: 'Manage your deliveries and track your earnings',
       type: 'website',
    },

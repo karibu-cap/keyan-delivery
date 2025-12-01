@@ -5,11 +5,11 @@ import { Metadata } from 'next';
 import DriverApplyClient from "@/components/driver/DriverApplyClient";
 
 export const metadata: Metadata = {
-   title: 'Apply as Driver | Yetu',
-   description: 'Join Yetu as a delivery driver. Upload your documents and start earning with flexible delivery opportunities.',
-   keywords: ['driver application', 'become a driver', 'delivery driver', 'earn money', 'yetu driver'],
+   title: 'Apply as Driver | Pataupesi',
+   description: 'Join Pataupesi as a delivery driver. Upload your documents and start earning with flexible delivery opportunities.',
+   keywords: ['driver application', 'become a driver', 'delivery driver', 'earn money', 'pataupesi driver'],
    openGraph: {
-      title: 'Become a Yetu Driver',
+      title: 'Become a Pataupesi Driver',
       description: 'Join our team of drivers and start earning today',
       type: 'website',
    },

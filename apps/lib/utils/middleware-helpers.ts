@@ -19,7 +19,7 @@ export interface UserCookieData {
  */
 export function getUserFromCookie(request: NextRequest): UserCookieData | null {
    try {
-      const cookieValue = request.cookies.get('yetu-user-data')?.value;
+      const cookieValue = request.cookies.get('pataupesi-user-data')?.value;
 
       if (!cookieValue) {
          return null;
