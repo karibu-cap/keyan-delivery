@@ -136,7 +136,7 @@ const Navbar = () => {
           </div>
 
           {/* Right section */}
-          <div className="flex items-center space-x-3 mr-[2px]"> 
+          <div className="flex items-center space-x-3 mr-[2px]">
 
             <LanguageSwitcher />
 
@@ -157,7 +157,8 @@ const Navbar = () => {
             <DriverBadge />
 
             {!isAuthenticated() ? (
-              <Button variant="ghost" className="hidden sm:flex w-24 justify-center">
+              <Button variant="ghost" className="hidden sm:flex w-24 justify-center"
+                onClick={() => openModal()}>
                 <User className="w-5 h-5 mr-2" />
                 {t("Sign In")}
               </Button>
