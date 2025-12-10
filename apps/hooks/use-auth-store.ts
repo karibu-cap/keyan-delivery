@@ -35,7 +35,7 @@ interface AuthState {
   refreshSession: () => Promise<void>;
 
   // Helpers
-  isAuthenticated: () => boolean;
+  isAuthenticated: () => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -201,11 +201,17 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      isAuthenticated: () => {
+      isAuthenticated: async () => {
         const { authUser, lastOnlineSync } = get();
 
+        const user = await getUser()
+
+        if(!user){
+          return false;
+        }
+
         if (navigator.onLine) {
-          return !!(authUser);
+          return !!(user);
         }
 
         if (!navigator.onLine && authUser && lastOnlineSync) {

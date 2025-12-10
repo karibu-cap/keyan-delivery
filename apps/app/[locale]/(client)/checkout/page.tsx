@@ -7,12 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuthStore } from "@/hooks/use-auth-store";
 import { useCart } from "@/hooks/use-cart";
 import { useT } from "@/hooks/use-inline-translation";
 import { useToast } from "@/hooks/use-toast";
+import { getUserById } from "@/lib/actions/client";
 import { getDeliveryZones, type DeliveryZone } from "@/lib/actions/client/zone";
 import { createOrders } from "@/lib/actions/orders";
+import { isPointInPolygon } from "@/lib/coordinate-resolver";
 import { ROUTES } from "@/lib/router";
+import type { LongLat } from "@prisma/client";
 import {
   ArrowLeft,
   Check,
@@ -24,11 +28,10 @@ import {
   Shield,
   Star,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import type { LongLat } from "@prisma/client";
 
 // Dynamic import for MapPicker (client-side only)
 const MapPicker = dynamic(() => import("@/components/client/map/MapPicker"), {
@@ -45,6 +48,12 @@ interface DeliveryInfo {
   deliveryContact: string;
   landmarkName?: string;
   manualCoordinates?: LongLat;
+}
+type AddressType = 'home' | 'work' | 'landmark' | 'map';
+interface SavedAddress {
+  type: 'home' | 'work';
+  coordinates: LongLat;
+  label: string;
 }
 
 const EnhancedCheckout = () => {
@@ -67,6 +76,9 @@ const EnhancedCheckout = () => {
   });
   const [isLoadingZones, setIsLoadingZones] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { authUser } = useAuthStore();
+  const [addressType, setAddressType] = useState<AddressType | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
 
   // Fetch delivery zones on mount
   useEffect(() => {
@@ -92,6 +104,36 @@ const EnhancedCheckout = () => {
 
     fetchDeliveryZones();
   }, []);
+
+  useEffect( () => {
+    const fetchUserAddress= async () =>{ const user = await getUserById(authUser?.id ?? '');
+
+    if (!user || !user?.address) {
+      return;
+    }
+      const addresses: SavedAddress[] = [];
+      
+      if (user?.address?.homeLocation) {
+        addresses.push({
+          type: 'home',
+          coordinates: user?.address?.homeLocation,
+          label: t("Home Address")
+        });
+      }
+      
+      if (user?.address?.workLocation) {
+        addresses.push({
+          type: 'work',
+          coordinates: user?.address?.workLocation,
+          label: t("Work Address")
+        });
+      }
+      
+      setSavedAddresses(addresses);};
+      fetchUserAddress();
+    
+  }, [authUser]);
+
 
   // Reset landmark and delivery info when zone changes
   useEffect(() => {
@@ -140,10 +182,16 @@ const EnhancedCheckout = () => {
   // Validation
   const canPlaceOrder = () => {
     if (!selectedZone) return false;
-    if (selectedLandmark === null) return false;
+    if (addressType === null) return false;
 
     // If map option selected, require coordinates
-    if (selectedLandmark === 'map' && !manualCoordinates) return false;
+    if (addressType === 'map' && !manualCoordinates) return false;
+
+    // For home/work, coordinates are already set
+    if ((addressType === 'home' || addressType === 'work') && !manualCoordinates) return false;
+
+    // For landmark, require selection
+    if (addressType === 'landmark' && !selectedLandmark) return false;
 
     if (!deliveryInfo.additionalNotes.trim()) return false;
     if (!deliveryInfo.deliveryContact.trim() || deliveryInfo.deliveryContact.length < 9) return false;
@@ -245,8 +293,18 @@ const EnhancedCheckout = () => {
 
   // Get coordinate source display info
   const getCoordinateSourceInfo = () => {
-    // CASE 1: MANUAL - User dropped pin on map
-    if (selectedLandmark === 'map' && manualCoordinates) {
+    // CASE 1: HOME/WORK - User selected saved address
+    if ((addressType === 'home' || addressType === 'work') && manualCoordinates) {
+      return {
+        icon: "🏠",
+        text: addressType === 'home' ? t("Your home address") : t("Your work address"),
+        color: "text-green-600",
+        confidence: t("High accuracy - Saved location")
+      };
+    }
+
+    // CASE 2: MANUAL - User dropped pin on map
+    if (addressType === 'map' && manualCoordinates) {
       return {
         icon: "🎯",
         text: t("Precise location from map pin"),
@@ -255,10 +313,10 @@ const EnhancedCheckout = () => {
       };
     }
 
-    // CASE 2: LANDMARK - User selected a landmark
-    if (deliveryInfo.landmarkName && selectedLandmark !== 'none' && selectedLandmark !== 'map') {
+    // CASE 3: LANDMARK - User selected a landmark
+    if (addressType === 'landmark' && selectedLandmark) {
       return {
-        icon: "🎯",
+        icon: "📍",
         text: t("Precise location from landmark"),
         color: "text-green-600",
         confidence: t("High accuracy")
@@ -274,6 +332,38 @@ const EnhancedCheckout = () => {
   };
 
   const coordinateInfo = getCoordinateSourceInfo();
+
+  const handleAddressSelect = (type: AddressType, value?: string | LongLat) => {
+  setAddressType(type);
+  setSelectedLandmark(null);
+  setManualCoordinates(null);
+  setShowMapPicker(false);
+
+  if (type === 'home' || type === 'work') {
+    const address = savedAddresses.find(a => a.type === type);
+    if (address && selectedZone) {
+      // Check if address is in selected zone
+      if (!isPointInPolygon(address.coordinates, selectedZone.geometry)) {
+        toast({
+          title: t("Address not in zone"),
+          description: t("This saved address is outside the selected delivery zone"),
+          variant: 'destructive',
+        });
+        setAddressType(null);
+        return;
+      }
+      setManualCoordinates(address.coordinates);
+      setDeliveryInfo(prev => ({ ...prev, landmarkName: undefined }));
+    }
+  } else if (type === 'landmark' && typeof value === 'string') {
+    setSelectedLandmark(value);
+    setDeliveryInfo(prev => ({ ...prev, landmarkName: value }));
+  } else if (type === 'map') {
+    setSelectedLandmark('map');
+    setShowMapPicker(true);
+    setDeliveryInfo(prev => ({ ...prev, landmarkName: undefined }));
+  }
+};
 
   return (
     <div className="min-h-screen bg-background pb-8">
@@ -409,55 +499,98 @@ const EnhancedCheckout = () => {
                     </p>
                   </div>
                 </div>
-                <p className="text-lg font-semibold"> {t("Our delivery zones")}</p>
-                <div className="space-y-3 max-h-[300px] overflow-y-scroll bg-accent border-2 rounded-xl p-4">
-                  {/* Sort: Popular landmarks first */}
-                  {selectedZone.landmarks
-                    .sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0))
-                    .map((landmark) => (
-                      <button
-                        key={landmark.name}
-                        onClick={() => handleLandmarkSelect(landmark.name)}
-                        className={`w-full p-4 bg-white border-2 rounded-xl text-left transition-all hover:border-primary ${selectedLandmark === landmark.name
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border'
-                          }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xl">
-                              {landmark.category === 'supermarket' && '🏪'}
-                              {landmark.category === 'station' && '⛽'}
-                              {landmark.category === 'market' && '🏛️'}
-                              {landmark.category === 'airport' && '✈️'}
-                              {landmark.category === 'neighborhood' && '🏘️'}
-                              {!landmark.category && '📍'}
+
+                {/* Saved Addresses Section */}
+                {savedAddresses.length > 0 && (
+                  <>
+                    <p className="text-lg font-semibold mb-3">{t("Your Saved Addresses")}</p>
+                    <div className="space-y-3 mb-6">
+                      {savedAddresses.map((address) => (
+                        <button
+                          key={address.type}
+                          onClick={() => handleAddressSelect(address.type)}
+                          className={`w-full p-4 border-2 rounded-xl text-left transition-all hover:border-primary ${addressType === address.type
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border'
+                            }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xl">
+                                {address.type === 'home' ? '🏠' : '💼'}
+                              </div>
+                              <div>
+                                <p className="font-medium">{address.label}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {t("Saved location")}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-medium">{landmark.name}</p>
-                              {landmark.isPopular && (
-                                <span className="text-xs text-primary flex items-center gap-1">
-                                  <Star className="w-3 h-3 fill-current" />
-                                  {t("Popular choice")}
-                                </span>
+                            {addressType === address.type && (
+                              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                <Check className="text-white" size={16} />
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Landmarks Section */}
+                {selectedZone.landmarks && selectedZone.landmarks.length > 0 && (
+                  <>
+                    <p className="text-lg font-semibold mb-3">{t("Our delivery zones")}</p>
+                    <div className="space-y-3 max-h-[300px] overflow-y-scroll bg-accent border-2 rounded-xl p-4 mb-6">
+                      {selectedZone.landmarks
+                        .sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0))
+                        .map((landmark) => (
+                          <button
+                            key={landmark.name}
+                            onClick={() => handleAddressSelect('landmark', landmark.name)}
+                            className={`w-full p-4 bg-white border-2 rounded-xl text-left transition-all hover:border-primary ${addressType === 'landmark' && selectedLandmark === landmark.name
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border'
+                              }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xl">
+                                  {landmark.category === 'supermarket' && '🏪'}
+                                  {landmark.category === 'station' && '⛽'}
+                                  {landmark.category === 'market' && '🏛️'}
+                                  {landmark.category === 'airport' && '✈️'}
+                                  {landmark.category === 'neighborhood' && '🏘️'}
+                                  {!landmark.category && '📍'}
+                                </div>
+                                <div>
+                                  <p className="font-medium">{landmark.name}</p>
+                                  {landmark.isPopular && (
+                                    <span className="text-xs text-primary flex items-center gap-1">
+                                      <Star className="w-3 h-3 fill-current" />
+                                      {t("Popular choice")}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              {addressType === 'landmark' && selectedLandmark === landmark.name && (
+                                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                  <Check className="text-white" size={16} />
+                                </div>
                               )}
                             </div>
-                          </div>
-                          {selectedLandmark === landmark.name && (
-                            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                              <Check className="text-white" size={16} />
-                            </div>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                </div>
-                <p className="text-lg font-semibold">{t("Other option")}</p>
+                          </button>
+                        ))}
+                    </div>
+                  </>
+                )}
 
-                {/* OPTION: Drop pin on map */}
+                {/* Other Options Section */}
+                <p className="text-lg font-semibold mb-3">{t("Other option")}</p>
                 <button
-                  onClick={() => handleLandmarkSelect('map')}
-                  className={`w-full p-4 border-2 rounded-xl text-left transition-all hover:border-primary ${selectedLandmark === 'map'
+                  onClick={() => handleAddressSelect('map')}
+                  className={`w-full p-4 border-2 rounded-xl text-left transition-all hover:border-primary ${addressType === 'map'
                     ? 'border-primary bg-primary/5'
                     : 'border-border'
                     }`}
@@ -474,7 +607,7 @@ const EnhancedCheckout = () => {
                         </p>
                       </div>
                     </div>
-                    {selectedLandmark === 'map' && (
+                    {addressType === 'map' && (
                       <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                         <Check className="text-white" size={16} />
                       </div>
@@ -492,7 +625,7 @@ const EnhancedCheckout = () => {
             ))}
 
             {/* STEP 2.5: Map Picker - Shows when user selects "Drop pin on map" */}
-            {selectedZone && selectedLandmark === 'map' && showMapPicker && (
+            {selectedZone && addressType === 'map' && showMapPicker && (
               <Card className="p-6 rounded-2xl shadow-card animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
@@ -529,7 +662,7 @@ const EnhancedCheckout = () => {
             )}
 
             {/* STEP 3: Delivery Address */}
-            {selectedZone && selectedLandmark !== null && (selectedLandmark !== 'map' || manualCoordinates) && (
+            {selectedZone && addressType !== null && (addressType !== 'map' || manualCoordinates) && (
               <Card className="p-6 rounded-2xl shadow-card animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">
@@ -612,7 +745,7 @@ const EnhancedCheckout = () => {
             )}
 
             {/* STEP 4: Contact Information */}
-            {selectedZone && selectedLandmark !== null && (selectedLandmark !== 'map' || manualCoordinates) && deliveryInfo.additionalNotes && (
+            {selectedZone && addressType !== null && (addressType !== 'map' || manualCoordinates)  && deliveryInfo.additionalNotes && (
               <Card className="p-6 rounded-2xl shadow-card animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center">

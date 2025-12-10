@@ -1,7 +1,7 @@
 'use client';
 
-import { isInMigoriZone } from '@/lib/utils/location';
 import { reverseGeocode } from '@/lib/utils/client/geo_coding';
+import { isInMigoriZone } from '@/lib/utils/location';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -55,34 +55,27 @@ export const useLocationStore = create<LocationState>()(
       setHasSeenModal: (hasSeen) => set({ hasSeenModal: hasSeen }),
 
       checkPermissionStatus: async () => {
-        console.log('🔍 Checking geolocation permission status...');
         
         if (!navigator.permissions) {
-          console.log('⚠️ Permissions API not supported');
           return;
         }
 
         try {
           const result = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
-          console.log('📝 Permission state:', result.state);
           
           const currentState = get().hasLocationPermission;
           
           if (result.state === 'granted') {
-            console.log('✅ Permission already granted');
             set({ hasLocationPermission: true });
             // If permission is granted and we don't have current location, get it
             if (!get().currentLocation) {
-              console.log('🔄 Auto-retrieving location since permission is granted');
               get().requestLocation();
             }
           } else if (result.state === 'denied') {
-            console.log('🚫 Permission denied in browser settings');
             if (currentState !== false) {
               set({ hasLocationPermission: false });
             }
           } else {
-            console.log('❓ Permission prompt (not yet decided) - state:', result.state);
             // Only set to null if we don't already have a definitive answer
             if (currentState === null) {
               set({ hasLocationPermission: null });
@@ -91,7 +84,6 @@ export const useLocationStore = create<LocationState>()(
 
           // Listen for permission changes
           result.addEventListener('change', () => {
-            console.log('🔄 Permission changed to:', result.state);
             if (result.state === 'granted') {
               set({ hasLocationPermission: true });
             } else if (result.state === 'denied') {

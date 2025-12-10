@@ -46,7 +46,7 @@ export function SignInForm({ onToggleForm, onSuccess, redirectUrl }: SignInFormP
 
     try {
       await signIn(data.email, data.password, redirectUrl)
-      if (isAuthenticated()) {
+      if (await isAuthenticated()) {
         onSuccess?.()
       }
     } catch (err) {
@@ -61,7 +61,7 @@ export function SignInForm({ onToggleForm, onSuccess, redirectUrl }: SignInFormP
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle(redirectUrl)
-      if (isAuthenticated()) {
+      if (await isAuthenticated()) {
         onSuccess?.()
       }
     } catch (err) {
