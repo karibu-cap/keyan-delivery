@@ -1,9 +1,6 @@
-// Updated Navbar component with requested header adjustments.
-// NOTE: Search bar moved, text updated, margins adjusted, font-size reduced, button length aligned.
-
 "use client";
 
-import { AuthModal, useAuthModal } from "@/components/auth/AuthModal";
+import { useAuthModal } from "@/components/auth/AuthModal";
 import { SearchWithTypeahead } from "@/components/client/search/SearchWithTypeahead";
 import { DriverBadge } from "@/components/driver/DriverBadge";
 import { Badge } from "@/components/ui/badge";
@@ -14,21 +11,20 @@ import { useAuthStore } from "@/hooks/use-auth-store";
 import { useCart } from "@/hooks/use-cart";
 import { useT } from "@/hooks/use-inline-translation";
 import { ROUTES } from "@/lib/router";
+import type { IProduct } from "@/types/generic_types";
 import {
   LogOut,
   Menu,
   Package,
   ShoppingCart,
-  Store,
   User,
   X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import type { IProduct } from "@/types/generic_types";
 
 const Navbar = () => {
   const t = useT();
@@ -42,7 +38,18 @@ const Navbar = () => {
 
   const { logout, authUser, isAuthenticated } = useAuthStore();
 
+
   const { cart } = useCart();
+
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const auth = await isAuthenticated();
+      setIsAuth(auth);
+    };
+    checkAuth();
+  }, [isAuthenticated]);
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -156,7 +163,7 @@ const Navbar = () => {
 
             <DriverBadge />
 
-            {!isAuthenticated() ? (
+            {!isAuth ? (
               <Button variant="ghost" className="hidden sm:flex w-24 justify-center"
                 onClick={() => openModal()}>
                 <User className="w-5 h-5 mr-2" />

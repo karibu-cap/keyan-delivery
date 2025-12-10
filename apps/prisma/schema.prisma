@@ -340,11 +340,17 @@ model Order {
 
 // --------------------------------User model------------------------------------
 
+type Address {
+  homeLocation LongLat?
+  workLocation LongLat?
+}
+
 model User {
   id                String                @id @default(auto()) @map("_id") @db.ObjectId
   email             String                @unique
   emailVerified     Boolean               @default(false)
   image             String?
+  address           Address?
   phone             String?
   roles             UserRole[]            @default([customer])
   cni               String?
@@ -582,7 +588,7 @@ model ProductPromotion {
 
 model CartItem {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String?   @db.ObjectId
+  userId         String?  @db.ObjectId
   product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId      String   @db.ObjectId
   quantity       Int      @default(1)

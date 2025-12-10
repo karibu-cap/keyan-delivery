@@ -129,6 +129,7 @@
     "@typescript-eslint/parser": "^8.46.1",
     "@vitalets/google-translate-api": "^9.2.1",
     "autoprefixer": "^10.4.21",
+    "baseline-browser-mapping": "^2.9.5",
     "chokidar": "^4.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
